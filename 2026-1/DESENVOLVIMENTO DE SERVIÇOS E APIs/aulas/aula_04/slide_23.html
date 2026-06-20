@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>API To-Do — Endpoints e Exemplos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Code Window Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .code-area {
+            padding: 24px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #e6edf3;
+            overflow-y: auto;
+        }
+
+        /* Syntax Highlighting for HTTP/JSON */
+        .method {
+            color: #d2a8ff;
+            font-weight: bold;
+        }
+
+        /* POST, GET */
+        .url {
+            color: #a5d6ff;
+        }
+
+        /* URL paths */
+        .header-key {
+            color: #79c0ff;
+        }
+
+        /* Content-Type */
+        .json-key {
+            color: #7ee787;
+        }
+
+        /* JSON keys */
+        .json-val {
+            color: #a5d6ff;
+        }
+
+        /* JSON strings */
+        .json-bool {
+            color: #ff7b72;
+        }
+
+        /* true/false */
+        .json-num {
+            color: #79c0ff;
+        }
+
+        /* numbers */
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .status-code {
+            color: #27c93f;
+            font-weight: bold;
+        }
+
+        /* Notes Styles */
+        .note-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .note-card:hover {
+            transform: translateX(5px);
+            background-color: #1c2128;
+            border-color: #58a6ff;
+        }
+
+        .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .badge-get {
+            background-color: rgba(39, 201, 63, 0.15);
+            color: #27c93f;
+            border: 1px solid rgba(39, 201, 63, 0.3);
+        }
+
+        .badge-post {
+            background-color: rgba(210, 168, 255, 0.15);
+            color: #d2a8ff;
+            border: 1px solid rgba(210, 168, 255, 0.3);
+        }
+
+        .badge-put {
+            background-color: rgba(255, 189, 46, 0.15);
+            color: #ffbd2e;
+            border: 1px solid rgba(255, 189, 46, 0.3);
+        }
+
+        .badge-del {
+            background-color: rgba(255, 95, 86, 0.15);
+            color: #ff5f56;
+            border: 1px solid rgba(255, 95, 86, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-12">
+        <div class="flex items-center justify-between mb-6 border-b border-[#30363d] pb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center border border-green-500/30 text-green-400">
+                    <i class="fa-solid fa-server text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white tracking-tight">API To-Do — Endpoints e Exemplos</h1>
+                    <p class="text-gray-400 mt-1">Interagindo com a aplicação via HTTP</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <span class="mono-font text-xs bg-[#21262d] px-3 py-1 rounded-full text-gray-300 border border-gray-700">base_url:
+                    http://localhost:3000</span>
+            </div>
+        </div>
+        <div class="flex flex-1 gap-10 items-stretch overflow-hidden">
+            <div class="w-3/5 flex flex-col">
+                <div class="window-frame">
+                    <div class="window-header">
+                        <div class="flex gap-2">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> HTTP Request &amp; Response
+                        </div>
+                        <div class="w-10"></div>
+                    </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="comment mb-2">// 1. Requisição do Cliente (Criar Tarefa)</span>
+                        </div>
+                        <div class="flex"><span><span class="method">POST</span> <span class="url">/tasks</span>
+                                HTTP/1.1</span></div>
+                        <div class="flex"><span><span class="header-key">Host</span>: localhost:3000</span></div>
+                        <div class="flex"><span><span class="header-key">Content-Type</span>: application/json</span>
+                        </div>
+                        <div class="flex"><span></span></div>
+                        <div class="flex"><span>{</span></div>
+                        <div class="flex"><span class="ml-4"><span class="json-key">"title"</span>: <span class="json-val">"Praticar Express"</span>,</span></div>
+                        <div class="flex"><span class="ml-4"><span class="json-key">"done"</span>: <span class="json-bool">false</span></span></div>
+                        <div class="flex"><span>}</span></div>
+                        <div class="border-t border-gray-700 my-4 border-dashed"></div>
+                        <div class="flex"><span class="comment mb-2">// 2. Resposta do Servidor</span></div>
+                        <div class="flex"><span>HTTP/1.1 <span class="status-code">201 Created</span></span></div>
+                        <div class="flex"><span><span class="header-key">Content-Type</span>: application/json;
+                                charset=utf-8</span></div>
+                        <div class="flex"><span><span class="header-key">Date</span>: Wed, 11 Mar 2026 10:00:00
+                                GMT</span></div>
+                        <div class="flex"><span></span></div>
+                        <div class="flex"><span>{</span></div>
+                        <div class="flex"><span class="ml-4"><span class="json-key">"id"</span>: <span class="json-num">2</span>,</span></div>
+                        <div class="flex"><span class="ml-4"><span class="json-key">"title"</span>: <span class="json-val">"Praticar Express"</span>,</span></div>
+                        <div class="flex"><span class="ml-4"><span class="json-key">"done"</span>: <span class="json-bool">false</span></span></div>
+                        <div class="flex"><span>}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-2/5 flex flex-col">
+                <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-gray-500"></i> Rotas Disponíveis
+                </h3>
+                <div class="flex flex-col h-full overflow-y-auto pr-2">
+                    <div class="note-card">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-get">GET</span>
+                            <span class="mono-font text-sm text-gray-300">/tasks</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Listar todas</p>
+                    </div>
+                    <div class="note-card border-l-2 border-l-purple-400">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-post">POST</span>
+                            <span class="mono-font text-sm text-gray-300">/tasks</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Criar tarefa</p>
+                    </div>
+                    <div class="note-card">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-get">GET</span>
+                            <span class="mono-font text-sm text-gray-300">/tasks/:id</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Buscar por ID</p>
+                    </div>
+                    <div class="note-card">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-put">PUT</span>
+                            <span class="mono-font text-sm text-gray-300">/tasks/:id</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Atualizar</p>
+                    </div>
+                    <div class="note-card">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-del">DELETE</span>
+                            <span class="mono-font text-sm text-gray-300">/tasks/:id</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Remover</p>
+                    </div>
+                    <div class="mt-4 p-4 bg-[#161b22]/50 border border-[#30363d] rounded-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lightbulb text-yellow-500 mt-1"></i>
+                            <div>
+                                <p class="text-sm text-gray-300 font-semibold">Dica de Teste</p>
+                                <p class="text-xs text-gray-400 mt-1">Use o <strong>Postman</strong> ou
+                                    <strong>Insomnia</strong> para testar essas rotas sem precisar criar um frontend.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d] mt-2">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>23 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

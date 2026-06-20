@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação: Service Layer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+            /* Removed radial gradient to comply with constraints */
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Window / Editor Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .code-area {
+            padding: 18px;
+            font-size: 0.95rem;
+            /* Slightly smaller to fit more code */
+            line-height: 1.5;
+            color: #e6edf3;
+            overflow-y: hidden;
+            /* Hide scrollbar for cleaner look */
+        }
+
+        /* Syntax Highlighting (GitHub Dark) */
+        .kwd {
+            color: #ff7b72;
+        }
+
+        /* keywords */
+        .func {
+            color: #d2a8ff;
+        }
+
+        /* functions */
+        .str {
+            color: #a5d6ff;
+        }
+
+        /* strings */
+        .num {
+            color: #79c0ff;
+        }
+
+        /* numbers */
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .op {
+            color: #ff7b72;
+        }
+
+        /* operators */
+
+        /* Logic Box Styles (Adapted from Terminal Steps) */
+        .logic-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .logic-step:hover {
+            border-color: #58a6ff;
+            background-color: #1c2128;
+            transform: translateX(5px);
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: #1f6feb;
+            /* Blue accent */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .icon-box.db {
+            background-color: #238636;
+        }
+
+        /* Green */
+        .icon-box.logic {
+            background-color: #a371f7;
+        }
+
+        .indent-1 {
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            margin-left: 40px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-12">
+        <div class="flex items-center justify-between mb-6 border-b border-[#30363d] pb-4">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i class="fa-solid fa-layer-group text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white tracking-tight">Implementação: Service Layer</h1>
+                    <p class="text-gray-400 mt-1">Regras de negócio e persistência em memória</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-1 gap-8 items-start h-full">
+            <div class="flex-1 h-full">
+                <div class="window-frame h-full">
+                    <div class="window-header">
+                        <div class="flex gap-2 mr-4">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font flex items-center gap-2">
+                            <i class="fa-regular fa-file-code"></i> src/services/tasks.service.js
+                        </div>
+                    </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">01</span><span><span
+                                    class="kwd">let</span> tasks = [];</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">02</span><span><span
+                                    class="kwd">let</span> nextId = <span class="num">1</span>;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">03</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">04</span><span><span
+                                    class="kwd">const</span> <span class="func">list</span> = () =&gt; tasks;</span>
+                        </div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">05</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">06</span><span><span
+                                    class="kwd">const</span> <span class="func">create</span> = (data) =&gt; {</span>
+                        </div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">07</span><span> <span
+                                    class="kwd indent-1">const</span> newTask = { id: nextId++, ...data };</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">08</span><span class="indent-1"> tasks.<span
+                                    class="func">push</span>(newTask);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">09</span><span> <span
+                                    class="kwd indent-1">return</span> newTask;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">10</span><span>};</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">11</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">12</span><span><span
+                                    class="kwd">const</span> <span class="func">update</span> = (id, data) =&gt;
+                                {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">13</span><span> <span
+                                    class="kwd indent-1">const</span> index = tasks.<span class="func">findIndex</span>(t =&gt;
+                                t.id === id);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">14</span><span> <span
+                                    class="kwd indent-1">if</span> (index === <span class="op">-</span><span
+                                    class="num">1</span>) <span class="kwd">return null</span>;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">15</span><span class="indent-2"> tasks[index] = {
+                                ...tasks[index], ...data };</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">16</span><span> <span
+                                    class="kwd indent-2">return</span> tasks[index];</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">17</span><span class="indent-1">};</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">18</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">19</span><span><span
+                                    class="kwd indent-1">const</span> <span class="func">remove</span> = (id) =&gt; {</span>
+                        </div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">20</span><span> <span
+                                    class="kwd indent-1">const</span> index = tasks.<span class="func">findIndex</span>(t =&gt;
+                                t.id === id);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">21</span><span> <span
+                                    class="kwd indent-1">if</span> (index === <span class="op">-</span><span
+                                    class="num">1</span>) <span class="kwd">return false</span>;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">22</span><span class="indent-1"> tasks.<span
+                                    class="func">splice</span>(index, <span class="num">1</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">23</span><span> <span
+                                    class="kwd indent-1">return true</span>;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">24</span><span>};</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">25</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">26</span><span>module.exports = {
+                                list, create, update, remove };</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-1/3 flex flex-col gap-2">
+                <h3 class="text-lg font-semibold text-white mb-2 pl-1 border-l-4 border-purple-500">Lógica Aplicada</h3>
+                <div class="logic-step">
+                    <div class="icon-box db">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-green-400 mb-1 font-semibold uppercase">Persistência</p>
+                        <p class="text-sm text-gray-400">
+                            Usamos um <code>Array</code> simples para simular o banco de dados. O <code>nextId</code>
+                            garante chaves únicas.
+                        </p>
+                    </div>
+                </div>
+                <div class="logic-step">
+                    <div class="icon-box logic">
+                        <i class="fa-solid fa-code-branch"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-purple-400 mb-1 font-semibold uppercase">Spread Operator</p>
+                        <p class="text-sm text-gray-400">
+                            O uso de <code>...data</code> permite atualizar apenas os campos enviados, mantendo os
+                            outros inalterados (Partial Update).
+                        </p>
+                    </div>
+                </div>
+                <div class="logic-step">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-blue-400 mb-1 font-semibold uppercase">Isolamento</p>
+                        <p class="text-sm text-gray-400">
+                            Note que <strong>não existe</strong> <code>req</code> ou <code>res</code> aqui. O Service é
+                            JavaScript puro, independente do Express.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-2 p-3 border border-gray-700 bg-gray-800/50 rounded-lg">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-lightbulb text-yellow-500 text-xs"></i>
+                        <span class="text-yellow-500 font-semibold text-xs">Dica de Arquitetura</span>
+                    </div>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        Se quiséssemos trocar o banco de dados (ex: MongoDB), alteraríamos apenas este arquivo. O
+                        Controller nem saberia da mudança.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="mt-1 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d] mt-4">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>14 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

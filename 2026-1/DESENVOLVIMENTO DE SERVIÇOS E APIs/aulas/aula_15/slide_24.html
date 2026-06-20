@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 5: Ponto de Entrada (app.js)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            display: grid;
+            grid-template-rows: 100px 1fr 60px;
+            gap: 20px;
+            padding-bottom: 20px;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            padding: 0 40px;
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13.5px;
+            color: #e2e8f0;
+            flex-grow: 1;
+            margin-top: 10px;
+            border: 1px solid #334155;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .code-function {
+            color: #c084fc;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #3b82f6;
+            margin-top: 20px;
+        }
+
+        .explanation-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.55;
+        }
+
+        .highlight-box {
+            background: #fffbeb;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 5px solid #f59e0b;
+            margin-top: 15px;
+            border-top: 1px solid #fef3c7;
+            border-right: 1px solid #fef3c7;
+            border-bottom: 1px solid #fef3c7;
+        }
+
+        .highlight-text {
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            margin: 0 40px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .step-text {
+            font-size: 15px;
+            color: #1e40af;
+            font-weight: 700;
+        }
+
+        .route-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .route-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .route-url {
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 700;
+        }
+
+        .route-desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .arrow-icon {
+            color: #3b82f6;
+            font-size: 14px;
+            padding: 0 5px;
+        }
+
+        /* Responsividade para telas menores */
+        @media (max-width: 1024px) {
+            .slide-container {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: visible;
+                grid-template-rows: auto 1fr auto;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .header-right {
+                text-align: left;
+            }
+            .main-content {
+                padding: 0 20px;
+            }
+            .footer {
+                margin: 0 20px;
+                flex-wrap: wrap;
+                padding: 15px;
+                gap: 15px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div>
+                    <div class="header-title">Passo 5: Ponto de Entrada (app.js)</div>
+                    <div class="header-subtitle">Configuração das rotas versionadas e middleware de erro</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Código Principal</div>
+                                <div class="section-subtitle">src/app.js</div>
+                            </div>
+                        </div>
+                        <div class="step-indicator">
+                            <div class="step-number">5</div>
+                            <div class="step-text">Configurar rotas versionadas</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-title">app.js</div>
+                                <div style="color: #94a3b8; font-size: 12px;">JavaScript</div>
+                            </div>
+                            <div class="code-content">
+                                <span class="code-keyword">const</span> express = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'express'</span>);<br />
+                                <span class="code-keyword">const</span> rotasV1 = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'./routes/v1/livroRoutes'</span>);<br />
+                                <span class="code-keyword">const</span> rotasV2 = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'./routes/v2/livroRoutes'</span>);<br />
+                                <span class="code-keyword">const</span> errorHandler = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'./middlewares/errorHandler'</span>);<br /><br />
+                                <span class="code-keyword">const</span> app = <span
+                                    class="code-function">express</span>();<br />
+                                app.<span class="code-function">use</span>(express.<span
+                                    class="code-function">json</span>());<br /><br />
+                                <span class="code-comment">// Injeção de Rotas Versionadas</span><br />
+                                app.<span class="code-function">use</span>(<span class="code-string">'/api/v1'</span>,
+                                rotasV1); <span class="code-comment">// Bloco legado</span><br />
+                                app.<span class="code-function">use</span>(<span class="code-string">'/api/v2'</span>,
+                                rotasV2); <span class="code-comment">// Bloco novo</span><br /><br />
+                                app.<span class="code-function">use</span>(errorHandler);<br /><br />
+                                <span class="code-keyword">module.exports</span> = app;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Fluxo de Rotas</div>
+                                <div class="section-subtitle">Como as requisições são direcionadas</div>
+                            </div>
+                        </div>
+                        <div class="route-flow">
+                            <div class="route-item">
+                                <div class="route-url">/api/v1</div>
+                                <div class="route-desc">Versão 1</div>
+                            </div>
+                            <div class="arrow-icon"><i class="fas fa-arrow-right"></i></div>
+                            <div class="route-item">
+                                <div class="route-url">/api/v2</div>
+                                <div class="route-desc">Versão 2</div>
+                            </div>
+                            <div class="arrow-icon"><i class="fas fa-arrow-right"></i></div>
+                            <div class="route-item">
+                                <div class="route-url">/livros</div>
+                                <div class="route-desc">Endpoint</div>
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <div class="explanation-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Como funciona?
+                            </div>
+                            <div class="explanation-text">
+                                O <strong>app.use</strong> direciona todas as requisições que começam com
+                                <strong>/api/v1</strong> para o controlador V1 e <strong>/api/v2</strong> para o V2.
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Middleware de erro:</strong> O <strong>errorHandler</strong> captura erros de
+                                todas as rotas e retorna respostas padronizadas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>App.js configurado</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Método GET - Recuperar Recursos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            padding: 1px 0;
+        }
+
+        .line-number {
+            color: #64748b;
+            width: 24px;
+            text-align: right;
+            margin-right: 8px;
+            font-size: 10px;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .http-method {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .http-url {
+            color: #3b82f6;
+        }
+
+        .http-version {
+            color: #f59e0b;
+        }
+
+        .header-key {
+            color: #8b5cf6;
+        }
+
+        .header-value {
+            color: #e2e8f0;
+        }
+
+        .status-success {
+            color: #22c55e;
+        }
+
+        .status-error {
+            color: #ef4444;
+        }
+
+        .annotation {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #22c55e;
+            padding: 6px 10px;
+            border-radius: 0 6px 6px 0;
+            margin: 4px 0;
+        }
+
+        .component-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .highlight-box {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .curl-command {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+        }
+
+        .status-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .status-200 {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-404 {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-304 {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-8">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-xs font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-xl font-bold text-white mb-1">Método GET - Recuperar Recursos</h1>
+                    <p class="text-gray-400 text-xs">Solicitar representação de um recurso sem modificá-lo</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <div class="text-white text-xs font-semibold">GET</div>
+                        <div class="text-[10px] text-gray-400">Safe &amp; Idempotent</div>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-green-500/20 flex items-center justify-center">
+                        <i class="fas fa-download text-green-400 text-sm"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
+                <!-- Left Column - Code Examples -->
+                <div class="flex flex-col gap-3 h-full">
+                    <!-- GET Request Example -->
+                    <div class="component-card flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-sm font-semibold">Exemplo de Requisição GET</h3>
+                            <span class="text-[10px] text-green-400">curl -i https://api.example.com/users/123</span>
+                        </div>
+                        <div class="code-block flex-1 mb-2">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <div class="code-content">
+                                    <span class="http-method">GET</span> <span class="http-url">/users/123</span> <span
+                                        class="http-version">HTTP/1.1</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <div class="code-content">
+                                    <span class="header-key">Host:</span> <span
+                                        class="header-value">api.example.com</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <div class="code-content">
+                                    <span class="header-key">User-Agent:</span> <span class="header-value">Mozilla/5.0
+                                        (Windows NT 10.0; Win64; x64)</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <div class="code-content">
+                                    <span class="header-key">Accept:</span> <span
+                                        class="header-value">application/json</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <div class="code-content">
+                                    <span class="header-key">Authorization:</span> <span class="header-value">Bearer
+                                        token123</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <div class="code-content"></div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">{</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "id": 123,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">9</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "name": "João Silva",</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">10</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "email": "joao@example.com"</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">11</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- cURL Examples -->
+                        <div class="highlight-box mt-auto">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-terminal text-green-400 text-xs"></i>
+                                <span class="text-white text-[11px] font-medium">Comandos curl</span>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="curl-command">
+                                    <div class="text-[10px] text-gray-300 mb-0.5"># Buscar usuário específico</div>
+                                    <div class="text-[10px] text-green-400">curl -i https://api.example.com/users/123
+                                    </div>
+                                </div>
+                                <div class="curl-command">
+                                    <div class="text-[10px] text-gray-300 mb-0.5"># Buscar lista de usuários</div>
+                                    <div class="text-[10px] text-green-400">curl -i
+                                        https://api.example.com/users?page=1&amp;size=10</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Status Codes & URIs -->
+                <div class="flex flex-col gap-3 h-full">
+                    <!-- Status Codes -->
+                    <div class="component-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-sm font-semibold">Status Codes Típicos</h3>
+                            <span class="text-[10px] text-gray-400">Respostas GET</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-code status-200">200 OK</span>
+                                    <span class="text-[10px] text-gray-300">Sucesso - Recurso encontrado</span>
+                                </div>
+                                <span class="text-[10px] text-green-400">✓</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-code status-404">404 Not Found</span>
+                                    <span class="text-[10px] text-gray-300">Recurso não encontrado</span>
+                                </div>
+                                <span class="text-[10px] text-red-400">✗</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-code status-304">304 Not Modified</span>
+                                    <span class="text-[10px] text-gray-300">Cache válido</span>
+                                </div>
+                                <span class="text-[10px] text-blue-400">↻</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-code status-200">400 Bad Request</span>
+                                    <span class="text-[10px] text-gray-300">Requisição mal formada</span>
+                                </div>
+                                <span class="text-[10px] text-yellow-400">!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- URI Examples -->
+                    <div class="component-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-sm font-semibold">Exemplos de URIs</h3>
+                            <span class="text-[10px] text-blue-400">Padrões comuns</span>
+                        </div>
+                        <div class="space-y-1.5 text-[11px]">
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                <span class="text-gray-300">GET /users</span>
+                                <span class="text-gray-500">- Lista todos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                <span class="text-gray-300">GET /users/123</span>
+                                <span class="text-gray-500">- Usuário específico</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                                <span class="text-gray-300">GET /users?size=20&amp;page=5</span>
+                                <span class="text-gray-500">- Paginação</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
+                                <span class="text-gray-300">GET /users/123/orders</span>
+                                <span class="text-gray-500">- Recursos aninhados</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Key Points -->
+                    <div class="component-card">
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="text-white text-xs font-semibold">Pontos-Chave</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 text-[10px]">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check text-green-400"></i>
+                                <span class="text-gray-300">Safe</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check text-green-400"></i>
+                                <span class="text-gray-300">Idempotent</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check text-green-400"></i>
+                                <span class="text-gray-300">Cacheable</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check text-green-400"></i>
+                                <span class="text-gray-300">No Body</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Section -->
+            <div
+                class="mt-4 flex justify-between items-center bg-slate-800/30 p-2.5 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-clock text-green-400 text-xs"></i>
+                        <span class="text-white text-xs">Duração: 15 minutos</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-calendar text-green-400 text-xs"></i>
+                        <span class="text-white text-xs">Aula 12 de 20</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-400 text-xs">Progresso da aula:</span>
+                    <div class="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-3/5 h-full bg-gradient-to-r from-green-500 to-blue-500"></div>
+                    </div>
+                    <span class="text-white text-xs font-medium">60%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura da API da Livraria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .section-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .section-title h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .section-title p {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+
+        .architecture-container {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+            height: 440px;
+        }
+
+        .left-panel {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .layer-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 98px;
+        }
+
+        .layer-card:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .layer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .layer-icon.model {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .layer-icon.repo {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .layer-icon.service {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .layer-icon.controller {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .layer-info {
+            flex: 1;
+        }
+
+        .layer-name {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .layer-desc {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .diagram-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .diagram-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            height: 72px;
+        }
+
+        .diagram-box.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .box-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .box-icon.model {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .box-icon.repo {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .box-icon.service {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .box-icon.controller {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .box-content {
+            flex: 1;
+        }
+
+        .box-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .box-desc {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .arrow {
+            color: #3b82f6;
+            font-size: 18px;
+            margin: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flow-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .flow-text {
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .code-preview {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            line-height: 1.5;
+        }
+
+        .code-preview .keyword {
+            color: #60a5fa;
+        }
+
+        .code-preview .string {
+            color: #34d399;
+        }
+
+        .code-preview .comment {
+            color: #94a3b8;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .status-item i {
+            color: #3b82f6;
+        }
+
+        .status-item span {
+            color: white;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="section-title">
+                    <h2>Arquitetura da API da Livraria</h2>
+                    <p>Visão geral das camadas e fluxo de dados da aplicação</p>
+                </div>
+            </div>
+            <div class="architecture-container">
+                <!-- Left Panel - Layer Selection -->
+                <div class="left-panel">
+                    <div class="layer-card">
+                        <div class="layer-icon model">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="layer-info">
+                            <div class="layer-name">Modelo</div>
+                            <div class="layer-desc">Mongoose Schema</div>
+                        </div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="layer-icon repo">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="layer-info">
+                            <div class="layer-name">Repositório</div>
+                            <div class="layer-desc">Acesso a dados</div>
+                        </div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="layer-icon service">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="layer-info">
+                            <div class="layer-name">Serviço</div>
+                            <div class="layer-desc">Lógica de negócio</div>
+                        </div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="layer-icon controller">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="layer-info">
+                            <div class="layer-name">Controlador</div>
+                            <div class="layer-desc">Rotas e endpoints</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Panel - Architecture Diagram -->
+                <div class="right-panel">
+                    <div class="diagram-container">
+                        <div class="diagram-row">
+                            <div class="diagram-box active">
+                                <div class="box-icon controller">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="box-content">
+                                    <div class="box-title">Controller</div>
+                                    <div class="box-desc">Manipula requisições HTTP</div>
+                                </div>
+                            </div>
+                            <div class="arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="diagram-box">
+                                <div class="box-icon service">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="box-content">
+                                    <div class="box-title">Service</div>
+                                    <div class="box-desc">Lógica de negócio</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="diagram-row">
+                            <div class="diagram-box">
+                                <div class="box-icon repo">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="box-content">
+                                    <div class="box-title">Repository</div>
+                                    <div class="box-desc">Acesso a dados</div>
+                                </div>
+                            </div>
+                            <div class="arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="diagram-box active">
+                                <div class="box-icon model">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="box-content">
+                                    <div class="box-title">Model</div>
+                                    <div class="box-desc">Mongoose Schema</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-indicator">
+                            <span class="flow-text">Fluxo de dados: Controller → Service → Repository → Model</span>
+                        </div>
+                        <div class="code-preview">
+                            <span class="comment">// Estrutura da API da Livraria</span><br />
+                            <span class="keyword">const</span> app = <span class="keyword">express</span>();<br />
+                            <span class="keyword">app</span>.<span class="keyword">use</span>(<span
+                                class="string">'/api'</span>, livroRoutes);<br />
+                            <span class="keyword">app</span>.<span class="keyword">use</span>(<span
+                                class="string">'/api-docs'</span>, swaggerUi.serve, swaggerUi.setup(specs));
+                        </div>
+                    </div>
+                    <div class="status-bar">
+                        <div class="status-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>MongoDB</span> Conectado
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>JWT</span> Ativo
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-lock"></i>
+                            <span>RBAC</span> Configurado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

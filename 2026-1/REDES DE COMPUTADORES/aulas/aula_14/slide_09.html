@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mecanismo RTS/CTS - Redes Sem Fio</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 120px);
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* Process flow diagram */
+        .process-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diagram-title i {
+            color: #4a90d9;
+        }
+
+        /* RTS/CTS Process Steps */
+        .rts-cts-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            flex: 1;
+        }
+
+        .flow-step:nth-child(1) {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .flow-step:nth-child(2) {
+            border-left: 5px solid #2196F3;
+        }
+
+        .flow-step:nth-child(3) {
+            border-left: 5px solid #FF9800;
+        }
+
+        .flow-step:nth-child(4) {
+            border-left: 5px solid #9C27B0;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .flow-step:nth-child(1) .step-icon {
+            background: #4CAF50;
+        }
+
+        .flow-step:nth-child(2) .step-icon {
+            background: #2196F3;
+        }
+
+        .flow-step:nth-child(3) .step-icon {
+            background: #FF9800;
+        }
+
+        .flow-step:nth-child(4) .step-icon {
+            background: #9C27B0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Network diagram */
+        .network-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .diagram-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .device {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .device-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .device-label {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .connection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-line {
+            width: 120px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .connection-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Status indicators */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            font-size: 22px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(74, 144, 217, 0.1);
+            border: 1px solid rgba(74, 144, 217, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .info-title {
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-content {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 75%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-exchange-alt"></i> Mecanismo RTS/CTS
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="left-section">
+                    <div class="process-diagram">
+                        <div class="diagram-title">
+                            <i class="fas fa-project-diagram"></i>
+                            Processo RTS/CTS
+                        </div>
+                        <div class="rts-cts-flow">
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-paper-plane"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">1. Request to Send (RTS)</div>
+                                    <div class="step-description">STA envia RTS ao AP com duração prevista da
+                                        transmissão</div>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">2. Clear to Send (CTS)</div>
+                                    <div class="step-description">AP responde com CTS, reservando o canal (NAV nos
+                                        vizinhos)</div>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">3. Transmissão de Dados</div>
+                                    <div class="step-description">STA envia dados para o AP</div>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">4. ACK de Confirmação</div>
+                                    <div class="step-description">AP confirma recebimento com ACK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="process-diagram">
+                        <div class="diagram-title">
+                            <i class="fas fa-sitemap"></i>
+                            Diagrama de Rede
+                        </div>
+                        <div class="network-diagram">
+                            <div class="diagram-container">
+                                <div class="device">
+                                    <div class="device-icon">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="device-label">STA</div>
+                                </div>
+                                <div class="connection">
+                                    <div class="connection-line"></div>
+                                    <div class="connection-label">RTS/CTS</div>
+                                </div>
+                                <div class="device">
+                                    <div class="device-icon">
+                                        <i class="fas fa-wifi"></i>
+                                    </div>
+                                    <div class="device-label">AP</div>
+                                </div>
+                            </div>
+                            <div class="status-grid">
+                                <div class="status-item">
+                                    <div class="status-label">Duração RTS</div>
+                                    <div class="status-value">~20 bytes</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Duração CTS</div>
+                                    <div class="status-value">~14 bytes</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Timeout</div>
+                                    <div class="status-value">2 x SIFS</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Limite RTS</div>
+                                    <div class="status-value">2346 bytes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-title">
+                                <i class="fas fa-info-circle"></i>
+                                Por que usar RTS/CTS?
+                            </div>
+                            <div class="info-content">
+                                Útil para quadros grandes e ambientes congestionados. O overhead é compensado pela
+                                redução de colisões.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

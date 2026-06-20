@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AdoptMatch na Matriz Esforço × Valor — Priorização da Sprint 01</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%);
+            clip-path: polygon(30% 0%, 100% 0, 100% 100%, 0% 100%);
+            z-index: 0;
+        }
+
+        .decorative-dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .dot-1 {
+            width: 120px;
+            height: 120px;
+            background: #3498db;
+            top: -20px;
+            left: -20px;
+        }
+
+        .dot-2 {
+            width: 100px;
+            height: 100px;
+            background: #2ecc71;
+            bottom: -20px;
+            right: -20px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px 30px 50px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .title-sub {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            flex: 1;
+            margin-bottom: 25px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .matrix-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #3498db;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .card-icon.green {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .user-stories-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .user-stories-table th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 2px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .user-stories-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.high {
+            background: #1976d2;
+        }
+
+        .status-dot.medium {
+            background: #f57c00;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .quadrant-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quadrant-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .quadrant-icon.green {
+            background: #2ecc71;
+        }
+
+        .quadrant-icon.blue {
+            background: #3498db;
+        }
+
+        .quadrant-icon.yellow {
+            background: #f39c12;
+        }
+
+        .quadrant-icon.red {
+            background: #e74c3c;
+        }
+
+        .quadrant-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .quadrant-text {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .sprint-info {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #bae6fd;
+            margin-bottom: 20px;
+        }
+
+        .sprint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sprint-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0369a1;
+        }
+
+        .sprint-status {
+            font-size: 13px;
+            color: #0284c7;
+            font-weight: 600;
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .sprint-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sprint-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sprint-item-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sprint-item-text {
+            flex: 1;
+            font-size: 13px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .sprint-item-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status-planned {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .status-in-progress {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .summary-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            margin-top: auto;
+        }
+
+        .footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="decorative-dot dot-1"></div>
+        <div class="decorative-dot dot-2"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <div>
+                        <h1 class="title-text">AdoptMatch na Matriz Esforço × Valor</h1>
+                        <div class="title-sub">Priorização estratégica das User Stories para Sprint 01</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <span class="priority-badge priority-high">
+                        <div class="status-dot high"></div>
+                        Sprint 1
+                    </span>
+                    <span class="priority-badge priority-medium">
+                        <div class="status-dot medium"></div>
+                        3 US
+                    </span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="matrix-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <h2 class="card-title">User Stories do AdoptMatch</h2>
+                        </div>
+                        <table class="user-stories-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User Story</th>
+                                    <th>Prioridade</th>
+                                    <th>Esforço</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>US01</strong></td>
+                                    <td>Quiz para ver pets compatíveis</td>
+                                    <td>
+                                        <span class="priority-badge priority-high">
+                                            <div class="status-dot high"></div>
+                                            Altíssima
+                                        </span>
+                                    </td>
+                                    <td>5 SP</td>
+                                    <td>Alto</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>US02</strong></td>
+                                    <td>Ranking de afinidade para ONG</td>
+                                    <td>
+                                        <span class="priority-badge priority-high">
+                                            <div class="status-dot high"></div>
+                                            Alta
+                                        </span>
+                                    </td>
+                                    <td>8 SP</td>
+                                    <td>Alto</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>US03</strong></td>
+                                    <td>Mensagem para ONG após match</td>
+                                    <td>
+                                        <span class="priority-badge priority-medium">
+                                            <div class="status-dot medium"></div>
+                                            Média
+                                        </span>
+                                    </td>
+                                    <td>3 SP</td>
+                                    <td>Médio</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="matrix-grid">
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon green"><i class="fas fa-bolt"></i></div>
+                                <div>
+                                    <div class="quadrant-title">Quick Wins</div>
+                                    <div class="quadrant-text">US01 - Alto valor, baixo esforço</div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon blue"><i class="fas fa-rocket"></i></div>
+                                <div>
+                                    <div class="quadrant-title">Projetos Grandes</div>
+                                    <div class="quadrant-text">US02 - Alto valor, alto esforço</div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon yellow"><i class="fas fa-layer-group"></i></div>
+                                <div>
+                                    <div class="quadrant-title">Preencher Gaps</div>
+                                    <div class="quadrant-text">US03 - Médio valor, baixo esforço</div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon red"><i class="fas fa-times-circle"></i></div>
+                                <div>
+                                    <div class="quadrant-title">Evite/NASA</div>
+                                    <div class="quadrant-text">Itens de baixo valor</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="matrix-card" style="border-left-color: #2ecc71;">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <h2 class="card-title">Decisão da Sprint 01</h2>
+                        </div>
+                        <div class="sprint-info">
+                            <div class="sprint-header">
+                                <div class="sprint-title">Objetivo: Validar compatibilidade básica</div>
+                                <div class="sprint-status">2 US selecionadas</div>
+                            </div>
+                            <div class="sprint-items">
+                                <div class="sprint-item">
+                                    <div class="sprint-item-icon" style="background: #3498db;"><i class="fas fa-1"></i>
+                                    </div>
+                                    <div class="sprint-item-text">US01 - Quiz completo (5 SP)</div>
+                                    <div class="sprint-item-status status-planned">Planejado</div>
+                                </div>
+                                <div class="sprint-item">
+                                    <div class="sprint-item-icon" style="background: #3498db;"><i class="fas fa-2"></i>
+                                    </div>
+                                    <div class="sprint-item-text">US02 - Ranking heurístico (8 SP)</div>
+                                    <div class="sprint-item-status status-planned">Planejado</div>
+                                </div>
+                                <div class="sprint-item">
+                                    <div class="sprint-item-icon" style="background: #94a3b8;"><i
+                                            class="fas fa-clock"></i></div>
+                                    <div class="sprint-item-text">US03 - Mensagens (3 SP) - Se houver folga</div>
+                                    <div class="sprint-item-status status-in-progress">Pendente</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <div
+                                style="font-size: 14px; color: #1e293b; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                                Resumo da Priorização
+                            </div>
+                            <div style="font-size: 13px; color: #475569; line-height: 1.6;">
+                                • <strong>Total:</strong> 13 Story Points planejados<br />
+                                • <strong>Duração:</strong> 2 semanas (Sprint 01)<br />
+                                • <strong>Foco:</strong> Validação do MVP de compatibilidade<br />
+                                • <strong>Estratégia:</strong> US01 e US02 são mandatórias.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-text">
+                    <i class="fas fa-lightbulb" style="color: #f39c12;"></i>
+                    A matriz ajuda a tomar decisões informadas sobre o que priorizar na Sprint, equilibrando valor
+                    entregue e custo técnico.
+                </div>
+                <div class="footer-icons">
+                    <div class="footer-icon"><i class="fas fa-question"></i></div>
+                    <div class="footer-icon"><i class="fas fa-cog"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bibliotecas e Ferramentas - ESP32 IoT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a8a5e6;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .library-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 250px;
+        }
+
+        .library-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(120, 119, 198, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #a8a5e6, #7877c6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #4ade80;
+            margin-top: auto;
+            margin-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .code-comment {
+            color: #6b7280;
+        }
+
+        .code-keyword {
+            color: #a8a5e6;
+        }
+
+        .code-string {
+            color: #4ade80;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: auto;
+            margin-bottom: 12px;
+        }
+
+        .tool-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 14px;
+        }
+
+        .tool-info {
+            flex: 1;
+        }
+
+        .tool-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .tool-desc {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            font-size: 13px;
+            color: #4ade80;
+            align-self: flex-start;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Bibliotecas e Ferramentas</div>
+                    <div class="header-subtitle">Stack tecnológico para integração ESP32 com nuvem</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="library-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">WiFi.h</div>
+                            <div class="card-subtitle">Conectividade Wi-Fi</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        Biblioteca nativa do ESP32 para gerenciamento de conexão Wi-Fi,
+                        <span class="highlight">monitoramento de status</span> e reconexão automática.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="code-keyword">#include</span> <span class="code-string">&lt;WiFi.h&gt;</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-comment">// Inicializa WiFi</span>
+                        </div>
+                        <div class="code-line">
+                            WiFi.begin(ssid, password);
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Nativa ESP32</span>
+                    </div>
+                </div>
+                <div class="library-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">HTTPClient.h</div>
+                            <div class="card-subtitle">Cliente HTTP</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        Biblioteca para requisições HTTP/HTTPS, suporte a
+                        <span class="highlight">POST, GET, PUT</span> e manipulação de headers.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="code-keyword">#include</span> <span
+                                class="code-string">&lt;HTTPClient.h&gt;</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-comment">// Cria cliente HTTP</span>
+                        </div>
+                        <div class="code-line">
+                            HTTPClient http;
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Nativa ESP32</span>
+                    </div>
+                </div>
+                <div class="library-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">ArduinoJson</div>
+                            <div class="card-subtitle">Manipulação JSON</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        Biblioteca para serialização e desserialização de JSON,
+                        <span class="highlight">otimizada para memória</span> limitada.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="code-keyword">#include</span> <span
+                                class="code-string">&lt;ArduinoJson.h&gt;</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-comment">// Cria documento JSON</span>
+                        </div>
+                        <div class="code-line">
+                            JsonDocument doc;
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Instalar via IDE</span>
+                    </div>
+                </div>
+                <div class="library-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Wokwi</div>
+                            <div class="card-subtitle">Simulador Online</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        Simulador de hardware para ESP32,
+                        <span class="highlight">teste sem hardware físico</span> com sensores virtuais.
+                    </div>
+                    <div class="tool-grid">
+                        <div class="tool-item">
+                            <div class="tool-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">Simulação</div>
+                                <div class="tool-desc">Hardware virtual</div>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon">
+                                <i class="fas fa-sensor"></i>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">Sensores</div>
+                                <div class="tool-desc">Simulados</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-info">
+                <div class="info-item">
+                    <i class="fas fa-download icon-small"></i>
+                    <span><span class="info-label">Instalação:</span> Via Arduino IDE Library Manager</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-check-circle icon-small"></i>
+                    <span><span class="info-label">Status:</span> Todas as bibliotecas verificadas</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock icon-small"></i>
+                    <span><span class="info-label">Setup:</span> ~5 minutos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

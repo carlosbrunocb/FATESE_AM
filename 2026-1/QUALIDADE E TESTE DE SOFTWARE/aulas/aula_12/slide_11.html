@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparação Alfa vs Beta</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-cell {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-cell:first-child {
+            color: #94a3b8;
+        }
+
+        .alpha-header {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .beta-header {
+            color: #f97316;
+            font-weight: 700;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr;
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .aspect-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .aspect-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .aspect-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .aspect-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .aspect-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .aspect-icon.purple {
+            background: rgba(147, 51, 234, 0.2);
+            color: #8b5cf6;
+        }
+
+        .aspect-icon.red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .aspect-icon.cyan {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        .aspect-icon.yellow {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .cell-content {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .cell-content strong {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .alpha-cell {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid #3b82f6;
+            padding-left: 14px;
+        }
+
+        .beta-cell {
+            background: rgba(249, 115, 22, 0.05);
+            border-left: 3px solid #f97316;
+            padding-left: 14px;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.blue {
+            background: #3b82f6;
+        }
+
+        .status-dot.orange {
+            background: #f97316;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .highlight-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Comparação</span> Alfa vs Beta
+                </div>
+                <div class="subtitle">
+                    Análise detalhada das diferenças entre Teste Alfa e Teste Beta
+                </div>
+            </div>
+            <!-- Comparison Table -->
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div class="header-cell">
+                        <i class="fas fa-list"></i>
+                        Aspecto
+                    </div>
+                    <div class="header-cell alpha-header">
+                        <i class="fas fa-flask"></i>
+                        Teste Alfa
+                    </div>
+                    <div class="header-cell beta-header">
+                        <i class="fas fa-users"></i>
+                        Teste Beta
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon blue">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        Ambiente
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Interno, controlado</strong><br />
+                        Ambiente da empresa, acesso restrito, dados sintéticos
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Externo, real, não controlado</strong><br />
+                        Ambiente do usuário, dispositivos variados, dados reais
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon green">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        Quem executa
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>QA, devs, times internos</strong><br />
+                        Testadores da empresa, equipe de desenvolvimento
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Usuários finais, clientes piloto</strong><br />
+                        Grupo selecionado de usuários reais
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon orange">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        Objetivo principal
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Estabilizar e corrigir defeitos</strong><br />
+                        Identificar bugs óbvios, lapidar UX
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Validar valor em contexto real</strong><br />
+                        Coletar feedback, testar performance
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon purple">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        Controle
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Alto</strong><br />
+                        Instrumentação, dados seed, ambiente controlado
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Baixo/Moderado</strong><br />
+                        Telemetria, feedback estruturado
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon red">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        Dados
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Sintéticos/anonimizados</strong><br />
+                        Dados de teste, cenários simulados
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Reais/representativos</strong><br />
+                        Dados reais do usuário (com consentimento)
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon cyan">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        Duração
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Dias a poucas semanas</strong><br />
+                        Fase rápida de estabilização
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>1-4 semanas</strong><br />
+                        Pode variar conforme feedback
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="aspect-cell">
+                        <div class="aspect-icon yellow">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        Saídas
+                    </div>
+                    <div class="cell-content alpha-cell">
+                        <strong>Lista de defeitos, métricas</strong><br />
+                        Readiness para Beta
+                    </div>
+                    <div class="cell-content beta-cell">
+                        <strong>Feedback, métricas de uso</strong><br />
+                        Decisão de go-live
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot blue"></div>
+                    <span>Alfa: Interno/Controlado</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot orange"></div>
+                    <span>Beta: Externo/Real</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>7 aspectos comparados</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

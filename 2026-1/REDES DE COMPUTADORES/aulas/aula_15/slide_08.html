@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inspeção de Estado Stateful - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .session-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 20px;
+            margin-top: 15px;
+        }
+
+        .session-table th {
+            background-color: var(--senac-orange);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-weight: 700;
+        }
+
+        .session-table td {
+            padding: 15px;
+            border-bottom: 1px solid #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .session-table tr:nth-child(even) {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">2ª Geração: Inspeção de Estado (Stateful)</span>
+            <span class="slide-header-tag">Arquitetura</span>
+        </div>
+
+        <!-- Conteúdo Teórico (Esquerda) -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 38px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 25px;">
+                O Poder da Memória de Conexão</h2>
+            <p class="body-text" style="margin-bottom: 25px;">
+                O firewall <strong>Stateful (Com Estado)</strong> mantém uma tabela interna de sessões ativas. Ele
+                monitora o estado completo da conexão (ex: TCP Handshake de 3 vias) para validar se um pacote pertence a
+                uma via de comunicação já estabelecida.
+            </p>
+            <p class="body-text" style="margin-bottom: 30px; color: var(--text-muted);">
+                <strong>Vantagem de Retorno:</strong> Quando uma máquina interna faz uma requisição para fora, a
+                resposta externa é permitida <strong>automaticamente</strong> pois o firewall reconhece o registro
+                daquela sessão correspondente.
+            </p>
+
+            <div
+                style="background-color: rgba(247, 148, 29, 0.05); padding: 25px; border-radius: var(--border-radius); border-top: 4px solid var(--senac-orange);">
+                <h4 style="font-size: 22px; font-weight: 700; color: var(--senac-dark-blue); margin: 0 0 10px 0;">
+                    Segurança Avançada</h4>
+                <ul class="custom-list" style="margin-bottom: 0;">
+                    <li style="font-size: 18px; margin-bottom: 10px;"><strong>Impedimento de Spoofing:</strong> Pacotes
+                        falsificados de entrada que fingem ser respostas a conexões internas são sumariamente
+                        descartados.</li>
+                    <li style="font-size: 18px; margin-bottom: 0;"><strong>Mitigação de Ataques:</strong> Bloqueia scans
+                        de portas sem conexões válidas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tabela de Estado de Sessão (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 32px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 10px; text-transform: uppercase;">
+                A Tabela de Estados Dinâmica</h2>
+            <p style="font-size: 20px; color: var(--text-muted); margin-bottom: 20px;">
+                Visualização de uma tabela de conexões ativas na memória RAM do firewall:
+            </p>
+
+            <table class="session-table">
+                <thead>
+                    <tr>
+                        <th>IP Origem</th>
+                        <th>Porta Or.</th>
+                        <th>IP Destino</th>
+                        <th>Porta Des.</th>
+                        <th>Protocolo</th>
+                        <th>Estado TCP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>192.168.1.15</td>
+                        <td>49152</td>
+                        <td>8.8.8.8</td>
+                        <td>53 (DNS)</td>
+                        <td>UDP</td>
+                        <td>- (Ativo)</td>
+                    </tr>
+                    <tr>
+                        <td>192.168.1.20</td>
+                        <td>50102</td>
+                        <td>104.244.42.1</td>
+                        <td>443 (HTTPS)</td>
+                        <td>TCP</td>
+                        <td><span style="color: var(--success-color); font-weight: bold;">ESTABLISHED</span></td>
+                    </tr>
+                    <tr>
+                        <td>192.168.1.35</td>
+                        <td>51221</td>
+                        <td>192.168.2.50</td>
+                        <td>80 (HTTP)</td>
+                        <td>TCP</td>
+                        <td><span style="color: var(--warning-color); font-weight: bold;">SYN_SENT</span></td>
+                    </tr>
+                    <tr>
+                        <td>192.168.1.20</td>
+                        <td>50103</td>
+                        <td>104.244.42.1</td>
+                        <td>443 (HTTPS)</td>
+                        <td>TCP</td>
+                        <td><span style="color: var(--text-muted); font-style: italic;">TIME_WAIT</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div
+                style="margin-top: 30px; background-color: #F8FAFC; border: 1px dashed var(--senac-blue); padding: 20px; border-radius: var(--border-radius);">
+                <strong style="font-size: 20px; color: var(--senac-dark-blue);">Consequência Prática:</strong>
+                <p style="font-size: 18px; color: var(--text-main); margin: 5px 0 0 0;">
+                    Não há necessidade de liberar portas de retorno na entrada! O firewall libera dinamicamente pacotes
+                    que chegam contanto que seu par <code>IP/Porta Origem e Destino</code> coincida com uma sessão
+                    cadastrada na tabela de estados.
+                </p>
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 8/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

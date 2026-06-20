@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 11 - Modelo Livro.js com Schema Mongoose</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 130vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 50px;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 26px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-text p {
+            font-size: 15px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main content grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 560px;
+        }
+
+        /* Columns */
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-block {
+            background: #111;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 12.5px;
+            line-height: 1.45;
+            color: #d4d4d4;
+            border-left: 4px solid #00ED64;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 2px;
+        }
+
+        .code-line-number {
+            color: #555;
+            min-width: 25px;
+            text-align: right;
+            user-select: none;
+            font-size: 11px;
+        }
+
+        .code-content {
+            color: #d4d4d4;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-number {
+            color: #b5cea8;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-property {
+            color: #9cdcfe;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-function {
+            color: #dcdcaa;
+        }
+
+        .validation-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .validation-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .validation-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .validation-desc {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .index-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .index-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .index-type {
+            background: #00ED64;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 55px;
+            text-align: center;
+        }
+
+        .index-field {
+            color: #1a1a2e;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .best-practices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .practice-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .practice-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .practice-desc {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .schema-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .schema-item {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            border-radius: 8px;
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .schema-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .schema-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Modelo Livro.js - Schema Mongoose</h1>
+                    <p>Definição completa do Schema com validações, índices e timestamps</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-database"></i> MongoDB
+                </div>
+                <div class="badge">
+                    <i class="fas fa-code"></i> Mongoose
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Left column -->
+            <div class="left-column">
+                <!-- Schema definition -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div class="card-title">Definição do Schema</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-line-number">1</span><span
+                                    class="code-content"><span class="code-keyword">const</span> mongoose = <span
+                                        class="code-function">require</span>(<span
+                                        class="code-string">'mongoose'</span>);</span></div>
+                            <div class="code-line"><span class="code-line-number">2</span><span
+                                    class="code-content"></span></div>
+                            <div class="code-line"><span class="code-line-number">3</span><span
+                                    class="code-content"><span class="code-keyword">const</span> LivroSchema = <span
+                                        class="code-keyword">new</span> mongoose.<span
+                                        class="code-function">Schema</span>({</span></div>
+                            <div class="code-line"><span class="code-line-number">4</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;titulo</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">5</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: <span
+                                        class="code-string">String</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">6</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;required</span>: [<span
+                                        class="code-keyword">true</span>, <span class="code-string">'Título é
+                                        obrigatório'</span>],</span></div>
+                            <div class="code-line"><span class="code-line-number">7</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;trim</span>: <span
+                                        class="code-keyword">true</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">8</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;minlength</span>: <span
+                                        class="code-number">2</span></span></div>
+                            <div class="code-line"><span class="code-line-number">9</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">10</span><span class="code-content">
+                                    <span class="code-property">autor</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">11</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: <span
+                                        class="code-string">String</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">12</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;required</span>: [<span
+                                        class="code-keyword">true</span>, <span class="code-string">'Autor é
+                                        obrigatório'</span>],</span></div>
+                            <div class="code-line"><span class="code-line-number">13</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;trim</span>: <span
+                                        class="code-keyword">true</span></span></div>
+                            <div class="code-line"><span class="code-line-number">14</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">15</span><span class="code-content">
+                                    <span class="code-property">ano</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">16</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: <span
+                                        class="code-string">Number</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">17</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;required</span>: <span
+                                        class="code-keyword">true</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">18</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;min</span>: <span class="code-number">0</span>,</span>
+                            </div>
+                            <div class="code-line"><span class="code-line-number">19</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;max</span>: <span class="code-number">2100</span></span>
+                            </div>
+                            <div class="code-line"><span class="code-line-number">20</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">21</span><span class="code-content">
+                                    <span class="code-property">generos</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">22</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: [<span
+                                        class="code-string">String</span>],</span></div>
+                            <div class="code-line"><span class="code-line-number">23</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;default</span>: []</span></div>
+                            <div class="code-line"><span class="code-line-number">24</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">25</span><span class="code-content">
+                                    <span class="code-property">detalhes</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">26</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;paginas</span>: { <span
+                                        class="code-property">type</span>: <span class="code-string">Number</span>,
+                                    <span class="code-property">min</span>: <span class="code-number">1</span> },</span>
+                            </div>
+                            <div class="code-line"><span class="code-line-number">27</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;editora</span>: { <span
+                                        class="code-property">type</span>: <span class="code-string">String</span>,
+                                    <span class="code-property">trim</span>: <span class="code-keyword">true</span>
+                                    }</span></div>
+                            <div class="code-line"><span class="code-line-number">28</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">29</span><span class="code-content">
+                                    <span class="code-property">idioma</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">30</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: <span
+                                        class="code-string">String</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">31</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;enum</span>: [<span
+                                        class="code-string">'Português'</span>, <span
+                                        class="code-string">'Inglês'</span>, <span
+                                        class="code-string">'Espanhol'</span>],</span></div>
+                            <div class="code-line"><span class="code-line-number">32</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;default</span>: <span
+                                        class="code-string">'Português'</span></span></div>
+                            <div class="code-line"><span class="code-line-number">33</span><span class="code-content">
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">34</span><span class="code-content">
+                                    <span class="code-property">isbn</span>: {</span></div>
+                            <div class="code-line"><span class="code-line-number">35</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;type</span>: <span
+                                        class="code-string">String</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">36</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;unique</span>: <span
+                                        class="code-keyword">true</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">37</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;sparse</span>: <span
+                                        class="code-keyword">true</span></span></div>
+                            <div class="code-line"><span class="code-line-number">38</span><span class="code-content">
+                                    }</span></div>
+                            <div class="code-line"><span class="code-line-number">39</span><span class="code-content">},
+                                    {</span></div>
+                            <div class="code-line"><span class="code-line-number">40</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;timestamps</span>: <span
+                                        class="code-keyword">true</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">41</span><span class="code-content">
+                                    <span class="code-property">&ensp;&ensp;versionKey</span>: <span
+                                        class="code-keyword">false</span></span></div>
+                            <div class="code-line"><span class="code-line-number">42</span><span
+                                    class="code-content">});</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right column -->
+            <div class="right-column">
+                <!-- Schema overview -->
+                <div class="card" style="flex: 0 0 auto;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="card-title">Estrutura do Schema</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="schema-overview">
+                            <div class="schema-item">
+                                <div class="schema-label">Campos</div>
+                                <div class="schema-value">8</div>
+                            </div>
+                            <div class="schema-item">
+                                <div class="schema-label">Validações</div>
+                                <div class="schema-value">12</div>
+                            </div>
+                            <div class="schema-item">
+                                <div class="schema-label">Índices</div>
+                                <div class="schema-value">3</div>
+                            </div>
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <div class="validation-icon"><i class="fas fa-check"></i></div>
+                                <div class="validation-text">
+                                    <div class="validation-title">Required</div>
+                                    <div class="validation-desc">Campos obrigatórios</div>
+                                </div>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-icon"><i class="fas fa-text-width"></i></div>
+                                <div class="validation-text">
+                                    <div class="validation-title">Trim</div>
+                                    <div class="validation-desc">Remove espaços</div>
+                                </div>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-icon"><i class="fas fa-sort-numeric-up"></i></div>
+                                <div class="validation-text">
+                                    <div class="validation-title">Min/Max</div>
+                                    <div class="validation-desc">Limites numéricos</div>
+                                </div>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-icon"><i class="fas fa-list"></i></div>
+                                <div class="validation-text">
+                                    <div class="validation-title">Enum</div>
+                                    <div class="validation-desc">Valores permitidos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Indexes -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="card-title">Índices Configurados</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="index-list">
+                            <div class="index-item">
+                                <span class="index-type">TEXT</span>
+                                <span class="index-field">titulo</span>
+                                <span style="color: #6c757d; font-size: 12px;">Busca por texto</span>
+                            </div>
+                            <div class="index-item">
+                                <span class="index-type">COMP</span>
+                                <span class="index-field">autor + ano</span>
+                                <span style="color: #6c757d; font-size: 12px;">Ordenação</span>
+                            </div>
+                            <div class="index-item">
+                                <span class="index-type">UNIQUE</span>
+                                <span class="index-field">isbn</span>
+                                <span style="color: #6c757d; font-size: 12px;">Identificador único</span>
+                            </div>
+                        </div>
+                        <div class="best-practices" style="margin-top: 15px;">
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-lightbulb"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Validação Customizada</div>
+                                    <div class="practice-desc">Evita títulos inválidos como "sem título"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

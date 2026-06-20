@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tipos de Viés Algorítmico</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 170px);
+            padding: 30px 60px;
+            z-index: 2;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            height: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card-title-section {
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0 0 5px 0;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Card Content */
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .content-text {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .example-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid;
+        }
+
+        .example-text {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .example-text strong {
+            color: #1e3a5f;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .tips-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tips-icon {
+            color: #0369a1;
+            font-size: 14px;
+        }
+
+        .tips-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0369a1;
+            margin: 0;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-item {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .tips-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tips-item::before {
+            content: "•";
+            color: #3b82f6;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Card Colors */
+        .card:nth-child(1) .card-icon {
+            background: #ef4444;
+        }
+
+        .card:nth-child(2) .card-icon {
+            background: #f59e0b;
+        }
+
+        .card:nth-child(3) .card-icon {
+            background: #10b981;
+        }
+
+        .card:nth-child(1) .example-box {
+            border-left-color: #ef4444;
+        }
+
+        .card:nth-child(2) .example-box {
+            border-left-color: #f59e0b;
+        }
+
+        .card:nth-child(3) .example-box {
+            border-left-color: #10b981;
+        }
+
+        /* Footer */
+        .footer-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-content">
+                <div class="logo-icon">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Tipos de Viés Algorítmico</h1>
+                    <p>Identificando e mitigando preconceitos nos sistemas de IA</p>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="cards-grid">
+                <!-- Card 1: Viés de Dados -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <div class="card-title">Viés de Dados</div>
+                            <div class="card-subtitle">Amostras não representativas</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <div class="section-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Definição
+                            </div>
+                            <p class="content-text">
+                                Ocorre quando o conjunto de dados de treinamento não representa adequadamente o universo
+                                real, contendo amostras enviesadas ou rótulos imprecisos.
+                            </p>
+                        </div>
+                        <div class="example-box">
+                            <p class="example-text">
+                                <strong>Exemplo:</strong> Histórico de contratações majoritariamente masculinas leva o
+                                modelo a preferir homens em processos seletivos.
+                            </p>
+                        </div>
+                        <div class="tips-section">
+                            <div class="tips-header">
+                                <i class="fas fa-lightbulb tips-icon"></i>
+                                <div class="tips-title">Dicas Práticas</div>
+                            </div>
+                            <ul class="tips-list">
+                                <li class="tips-item">Verificar representatividade dos dados</li>
+                                <li class="tips-item">Balancear classes desproporcionais</li>
+                                <li class="tips-item">Revisar rótulos e anotações</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2: Viés de Seleção -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <div class="card-title">Viés de Seleção</div>
+                            <div class="card-subtitle">Amostragem não representativa</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <div class="section-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Definição
+                            </div>
+                            <p class="content-text">
+                                Quem entra no dataset de treino/validação não representa o universo real, criando
+                                distorções na capacidade de generalização.
+                            </p>
+                        </div>
+                        <div class="example-box">
+                            <p class="example-text">
+                                <strong>Exemplo:</strong> Coleta de dados via um único canal ou teste apenas em
+                                capitais, excluindo regiões periféricas.
+                            </p>
+                        </div>
+                        <div class="tips-section">
+                            <div class="tips-header">
+                                <i class="fas fa-lightbulb tips-icon"></i>
+                                <div class="tips-title">Dicas Práticas</div>
+                            </div>
+                            <ul class="tips-list">
+                                <li class="tips-item">Amostragem estratificada</li>
+                                <li class="tips-item">Diversificar fontes de dados</li>
+                                <li class="tips-item">Testar em diferentes regiões</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3: Viés de Confirmação -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <div class="card-title">Viés de Confirmação</div>
+                            <div class="card-subtitle">Escolhas que confirmam hipóteses</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <div class="section-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Definição
+                            </div>
+                            <p class="content-text">
+                                Escolhas de features/métricas que confirmam hipóteses do time, ignorando evidências
+                                contrárias ou subgrupos.
+                            </p>
+                        </div>
+                        <div class="example-box">
+                            <p class="example-text">
+                                <strong>Exemplo:</strong> Otimizar apenas acurácia geral, ocultando erros em minorias ou
+                                subgrupos.
+                            </p>
+                        </div>
+                        <div class="tips-section">
+                            <div class="tips-header">
+                                <i class="fas fa-lightbulb tips-icon"></i>
+                                <div class="tips-title">Dicas Práticas</div>
+                            </div>
+                            <ul class="tips-list">
+                                <li class="tips-item">Avaliar por subgrupos</li>
+                                <li class="tips-item">Métricas de justiça</li>
+                                <li class="tips-item">Revisão crítica de features</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer-section">
+            <div class="footer-text">
+                Faculdade de Tecnologia do Senac - FATESE
+            </div>
+            <div class="footer-right">
+                <div class="footer-item">
+                    <i class="fas fa-user"></i>
+                    <span>Prof. Carlos Bruno</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>carlos.lopes@am.senac.br</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

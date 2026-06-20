@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratório Prático: Escrevendo ci-testes.yml</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+</head>
+
+<body>
+    <div class="slide-container" data-screen-label="15 Escrevendo ci-testes.yml" style="overflow-y: visible;">
+
+        <!-- Header -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 120px; top: 80px; width: 1200px; height: 120px; z-index: 10;">
+            <span class="mono"
+                style="font-size: 18px; color: var(--accent-cyan-bright); font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">PASSO
+                3 DO LABORATÓRIO</span>
+            <h2 style="margin: 5px 0 0 0; font-size: 46px; font-weight: 800; color: var(--text-main);">Configuração da
+                Esteira: ci-testes.yml</h2>
+        </div>
+
+        <!-- Left side - Explanation of YAML blocks -->
+        <div class="card glow-cyan" data-object="true" data-object-type="shape"
+            style="position: absolute; left: 120px; top: 220px; width: 680px; height: 880px; background-color: rgba(30, 41, 59, 0.4); padding: 40px; z-index: 10; display: flex; flex-direction: column; justify-content: space-around;">
+            <div>
+                <h3 style="margin: 0; font-size: 24px; font-weight: 700; color: var(--text-main);" class="mono">Análise
+                    Lógica do Script</h3>
+                <p style="margin: 15px 0 0 0; font-size: 18px; color: var(--text-muted); line-height: 1.5;">
+                    O formato YAML dita os passos que o servidor do GitHub irá executar a cada modificação do código de
+                    forma transparente.
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="border-left: 3px solid var(--accent-cyan); padding-left: 15px;">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-main);" class="mono">on: push /
+                        pull_request</div>
+                    <div style="font-size: 15px; color: var(--text-muted); margin-top: 3px;">Define os gatilhos: dispara
+                        a esteira quando há push ou alteração de código na branch principal.</div>
+                </div>
+
+                <div style="border-left: 3px solid var(--accent-cyan); padding-left: 15px;">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-main);" class="mono">runs-on:
+                        ubuntu-latest</div>
+                    <div style="font-size: 15px; color: var(--text-muted); margin-top: 3px;">Determina o ambiente:
+                        inicia uma máquina virtual Linux vazia para rodar a aplicação isoladamente.</div>
+                </div>
+
+                <div style="border-left: 3px solid var(--accent-green); padding-left: 15px;">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-main);" class="mono">
+                        actions/checkout@v3</div>
+                    <div style="font-size: 15px; color: var(--text-muted); margin-top: 3px;">Baixa os códigos do
+                        repositório para o disco rígido da máquina virtual recém-criada.</div>
+                </div>
+
+                <div style="border-left: 3px solid var(--accent-green); padding-left: 15px;">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-main);" class="mono">pytest -v
+                    </div>
+                    <div style="font-size: 15px; color: var(--text-muted); margin-top: 3px;">Comando final de QA: roda
+                        toda a suíte de testes de forma verbosa (-v), exibindo sucesso ou erro detalhadamente.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Verbatim YAML Code block -->
+        <div class="card glow-green" data-object="true" data-object-type="shape"
+            style="position: absolute; left: 830px; top: 220px; width: 970px; height: auto; background-color: #090d16; border-color: #1e293b; padding: 40px; z-index: 10;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-slate); padding-bottom: 15px; margin-bottom: 20px;">
+                <span class="mono"
+                    style="font-size: 16px; color: var(--accent-green-bright); font-weight: 700;">CONTEÚDO DO ARQUIVO:
+                    .github/workflows/ci-testes.yml</span>
+                <span
+                    style="font-size: 12px; background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 4px; color: var(--accent-green-bright);"
+                    class="mono">YAML SPEC</span>
+            </div>
+
+            <pre style="font-size: 15px; line-height: 1.45;"><span style="color: #64748b;">name: Pipeline de Testes Contínuos (CI)
+
+# Gatilho: Executa sempre que houver um push ou PR na branch main</span>
+<span style="color: #f87171;">on:</span>
+  <span style="color: #f87171;">push:</span>
+    <span style="color: #f87171;">branches:</span> [ main ]
+  <span style="color: #f87171;">pull_request:</span>
+    <span style="color: #f87171;">branches:</span> [ main ]
+
+<span style="color: #60a5fa;">jobs:</span>
+  <span style="color: #60a5fa;">executar-testes:</span>
+    <span style="color: #f87171;">runs-on:</span> ubuntu-latest
+
+    <span style="color: #f87171;">steps:</span>
+    <span style="color: #64748b;"># Passo 1: Baixa o código do repositório para a máquina virtual</span>
+    - <span style="color: #34d399;">name:</span> Copiar o código do repositório
+      <span style="color: #34d399;">uses:</span> actions/checkout@v3
+
+    <span style="color: #64748b;"># Passo 2: Configura o ambiente com a linguagem Python 3</span>
+    - <span style="color: #34d399;">name:</span> Configurar o Python no ambiente
+      <span style="color: #34d399;">uses:</span> actions/setup-python@v4
+      <span style="color: #34d399;">with:</span>
+        <span style="color: #34d399;">python-version:</span> '3.10'
+
+    <span style="color: #64748b;"># Passo 3: Instala as dependências de teste (Pytest)</span>
+    - <span style="color: #34d399;">name:</span> Instalar dependências de QA
+      <span style="color: #34d399;">run:</span> |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    <span style="color: #64748b;"># Passo 4: Executa a suite de testes de forma automatizada</span>
+    - <span style="color: #34d399;">name:</span> Rodar os testes com Pytest
+      <span style="color: #34d399;">run: |</span>
+        pytest -v</pre>
+        </div>
+
+    </div>
+</body>
+
+</html>

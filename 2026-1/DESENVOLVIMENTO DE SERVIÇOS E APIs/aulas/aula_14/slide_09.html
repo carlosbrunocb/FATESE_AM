@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>OpenAPI vs Swagger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+            height: 440px;
+        }
+
+        .comparison-card {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .openapi-icon {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .swagger-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .card-title {
+            flex: 1;
+        }
+
+        .card-title h3 {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .card-title p {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-text h4 {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .feature-text p {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        .code-snippet {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            line-height: 1.4;
+        }
+
+        .code-snippet .keyword {
+            color: #60a5fa;
+        }
+
+        .code-snippet .string {
+            color: #34d399;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 4px;
+        }
+
+        .highlight-box p {
+            color: #e2e8f0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .bottom-section {
+            display: flex;
+            gap: 24px;
+            margin-top: 4px;
+        }
+
+        .info-card {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .info-text {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-title">
+                <i class="fas fa-exchange-alt"></i>
+                OpenAPI vs Swagger: Diferenças e Relação
+            </div>
+            <div class="section-subtitle">
+                Entenda a distinção entre a especificação e as ferramentas de documentação de APIs
+            </div>
+            <div class="comparison-container">
+                <!-- OpenAPI Card -->
+                <div class="comparison-card">
+                    <div class="card-header">
+                        <div class="card-icon openapi-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div class="card-title">
+                            <h3>OpenAPI Specification</h3>
+                            <p>Especificação formal</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Padrão Aberto</h4>
+                                <p>Especificação formal para descrever APIs REST em JSON ou YAML</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Independente de Linguagem</h4>
+                                <p>Agnóstica a linguagens de programação</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Descrição Completa</h4>
+                                <p>Endpoints, schemas, segurança, servers</p>
+                            </div>
+                        </div>
+                        <div class="code-snippet">
+                            <span class="keyword">"openapi"</span>: <span class="string">"3.0.0"</span>,<br />
+                            <span class="keyword">"info"</span>: {<br />
+                              <span class="keyword">"title"</span>: <span class="string">"API"</span>,<br />
+                              <span class="keyword">"version"</span>: <span class="string">"1.0.0"</span><br />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <!-- Swagger Card -->
+                <div class="comparison-card">
+                    <div class="card-header">
+                        <div class="card-icon swagger-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="card-title">
+                            <h3>Swagger</h3>
+                            <p>Ecossistema de Ferramentas</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="feature-item" style="border-left: 3px solid #10b981;">
+                            <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Swagger UI</h4>
+                                <p>Interface web interativa para testar endpoints</p>
+                            </div>
+                        </div>
+                        <div class="feature-item" style="border-left: 3px solid #10b981;">
+                            <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Swagger Editor</h4>
+                                <p>Editor no navegador para escrever specs</p>
+                            </div>
+                        </div>
+                        <div class="feature-item" style="border-left: 3px solid #10b981;">
+                            <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>swagger-jsdoc</h4>
+                                <p>Gera spec a partir de anotações JSDoc</p>
+                            </div>
+                        </div>
+                        <div class="highlight-box"
+                            style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
+                            <p><strong>Foco:</strong> Tornar a documentação executável e amigável</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-title">Relação</div>
+                        <div class="info-text">Swagger implementa a especificação OpenAPI</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-title">Uso</div>
+                        <div class="info-text">OpenAPI = Padrão | Swagger = Ferramentas</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-title">Comunidade</div>
+                        <div class="info-text">OpenAPI Initiative mantém o padrão</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

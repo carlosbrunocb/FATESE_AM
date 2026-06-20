@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Middleware de Tratamento de Erros</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            /* VS Code Dark bg */
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accent-text {
+            color: #8CC84B;
+        }
+
+        .bg-accent {
+            background-color: #8CC84B;
+        }
+
+        .border-accent {
+            border-color: #8CC84B;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 120px;
+            background-color: #8CC84B;
+            margin-bottom: 24px;
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .bullet-icon {
+            min-width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(140, 200, 75, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #8CC84B;
+            font-size: 18px;
+        }
+
+        .code-snippet {
+            font-family: 'Fira Code', monospace;
+            background-color: #141414;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #8CC84B;
+            color: #d4d4d4;
+            font-size: 13px;
+            margin-top: 15px;
+            line-height: 1.6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            white-space: pre;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 1;
+        }
+
+        .syntax-keyword {
+            color: #569cd6;
+        }
+
+        .syntax-function {
+            color: #dcdcaa;
+        }
+
+        .syntax-param {
+            color: #9cdcfe;
+        }
+
+        .syntax-comment {
+            color: #6a9955;
+        }
+
+        .syntax-string {
+            color: #ce9178;
+        }
+
+        .syntax-number {
+            color: #b5cea8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Decoration -->
+        <div class="decoration-circle" style="width: 600px; height: 600px; top: -100px; right: -200px; opacity: 0.5;">
+        </div>
+        <div class="decoration-circle" style="width: 300px; height: 300px; bottom: 50px; left: -100px; opacity: 0.3;">
+        </div>
+        <div class="content-area">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="header-bar"></div>
+                <h2 class="text-xl text-gray-400 font-medium uppercase tracking-wider mb-2">Conceitos Fundamentais</h2>
+                <h1 class="text-5xl font-bold text-white">Middleware de <span class="accent-text">Tratamento de
+                        Erros</span></h1>
+            </header>
+            <div class="flex flex-row gap-10 h-full">
+                <!-- Left Column: Bullets -->
+                <div class="w-7/12 flex flex-col justify-center">
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Assinatura Especial (4 Parâmetros)</p>
+                            <p class="text-gray-300 leading-relaxed">Diferente dos outros middlewares, este
+                                <strong>exige</strong> 4 argumentos: <code
+                                    class="bg-gray-800 px-1 rounded text-green-400">(err, req, res, next)</code>. O
+                                Express usa a contagem de argumentos para identificá-lo como um handler de erro.</p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-sort-numeric-down"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Ordem de Execução Crítica</p>
+                            <p class="text-gray-300 leading-relaxed">Deve ser definido <strong>após</strong> todas as
+                                rotas e outros middlewares. Se for definido antes, ele não conseguirá capturar erros
+                                lançados pelas rotas subsequentes.</p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-bullseye"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Centralização e Padronização</p>
+                            <p class="text-gray-300 leading-relaxed">Permite centralizar a lógica de logs e garante que
+                                o cliente receba uma resposta JSON formatada (ex: status 500) em vez de travar a
+                                requisição ou expor o stack trace.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Visual/Code -->
+                <div class="w-5/12 flex flex-col h-full">
+                    <div class="glass-panel">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-shield-alt text-6xl text-gray-600 mb-4"></i>
+                            <p class="text-gray-400 text-sm uppercase tracking-widest">Global Error Handler</p>
+                        </div>
+                        <p class="text-gray-300 mb-2 text-sm">Exemplo de implementação:</p>
+                        <div class="code-snippet"><span class="syntax-keyword">const</span> <span class="syntax-function">errorHandler</span> = (<span class="syntax-param">err</span>, <span class="syntax-param">req</span>, <span
+        class="syntax-param">res</span>, <span class="syntax-param">next</span>) =&gt; {
+    <span class="syntax-comment">// Loga o erro no servidor</span>
+    <span class="syntax-function">console</span>.<span
+        class="syntax-function">error</span>(<span class="syntax-param">err</span>.stack);
+
+    <span class="syntax-comment">// Responde ao cliente</span>
+    <span class="syntax-param">res</span>.<span class="syntax-function">status</span>(<span
+        class="syntax-number">500</span>).<span class="syntax-function">json</span>({
+        erro: <span class="syntax-string">'Erro Interno'</span>,
+        msg: <span class="syntax-string">'Tente novamente mais tarde.'</span>
+    });
+};
+
+<span class="syntax-comment">// Uso no app (SEMPRE POR ÚLTIMO)</span>
+<span class="syntax-param">app</span>.<span class="syntax-function">use</span>(<span
+    class="syntax-function">errorHandler</span>);                        </div>
+                        <div
+                            class="mt-4 flex items-center bg-yellow-900 bg-opacity-30 p-3 rounded-md border border-yellow-700 border-opacity-30">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-3 text-lg"></i>
+                            <p class="text-xs text-yellow-100">Dica: Use <code>next(err)</code> nos seus controllers
+                                para encaminhar erros para este middleware.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Info -->
+            <div class="mt-auto pt-6 flex justify-between items-center text-xs text-gray-500 border-t border-gray-800">
+                <p>Aula 06: Middlewares no Express.js</p>
+                <p>Professor Carlos Bruno Oliveira Lopes</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Switch - Tabela MAC e Aprendizado</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            padding: 40px 60px 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #e2e8f0;
+            background-color: #fff;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            color: #64748b;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Process Flow Container */
+        .process-container {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: #f1f5f9;
+        }
+
+        /* Step Card */
+        .step-card {
+            background: white;
+            width: 260px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 5;
+            transition: transform 0.3s ease;
+            height: 380px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-header {
+            height: 80px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 60px;
+            opacity: 0.2;
+            color: white;
+        }
+
+        .step-icon {
+            font-size: 32px;
+            color: white;
+            z-index: 2;
+        }
+
+        /* Content Area */
+        .step-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #334155;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Colors for steps - Adapted for Logic Flow */
+        .step-1 .step-header {
+            background-color: #3b82f6;
+        }
+
+        /* Blue - Input */
+        .step-2 .step-header {
+            background-color: #8b5cf6;
+        }
+
+        /* Purple - Learning/Memory */
+        .step-3 .step-header {
+            background-color: #f59e0b;
+        }
+
+        /* Orange - Decision */
+        .step-4 .step-header {
+            background-color: #10b981;
+        }
+
+        /* Connectors */
+        .connector {
+            flex: 1;
+            height: 4px;
+            background-color: #cbd5e1;
+            position: relative;
+            margin: 0 10px;
+            border-radius: 2px;
+        }
+
+        .connector::after {
+            content: '\f054';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 20px;
+            background-color: #f1f5f9;
+            padding: 0 5px;
+        }
+
+        /* Layer Tags */
+        .layer-tag {
+            display: inline-block;
+            margin-top: auto;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .step-1 .layer-tag {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .step-2 .layer-tag {
+            background-color: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .step-3 .layer-tag {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .step-4 .layer-tag {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 0 60px 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* Legend Box */
+        .legend-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div>
+                <p>Processo de Comutação</p>
+                <h1>Tabela MAC e Aprendizado</h1>
+            </div>
+            <div class="text-right">
+                <div
+                    class="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full text-xs font-semibold text-gray-500">
+                    <i class="fas fa-microchip mr-2"></i> Operação de Switch L2
+                </div>
+            </div>
+        </div>
+        <div class="process-container">
+            <div class="step-card step-1">
+                <div class="step-header">
+                    <span class="step-number">01</span>
+                    <i class="fas fa-arrow-right-to-bracket step-icon"></i>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Recepção do<br />Frame</h3>
+                    <p class="step-desc">
+                        O switch recebe um quadro Ethernet em uma porta física (ex: Porta 1). Ele inspeciona o cabeçalho
+                        do frame antes de decidir o que fazer.
+                    </p>
+                    <span class="layer-tag">Porta de Entrada</span>
+                </div>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card step-2">
+                <div class="step-header">
+                    <span class="step-number">02</span>
+                    <i class="fas fa-save step-icon"></i>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Aprendizado<br />(Learning)</h3>
+                    <p class="step-desc">
+                        O switch lê o <strong>MAC de Origem</strong> e o associa à Porta 1 na tabela MAC. Se já existir,
+                        apenas atualiza o timer de inatividade (aging).
+                    </p>
+                    <span class="layer-tag">Atualização da Tabela</span>
+                </div>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card step-3">
+                <div class="step-header">
+                    <span class="step-number">03</span>
+                    <i class="fas fa-search step-icon"></i>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Consulta do<br />Destino</h3>
+                    <p class="step-desc">
+                        O switch busca o <strong>MAC de Destino</strong> na tabela. Se for conhecido (Unicast), prepara
+                        para envio. Se desconhecido ou Broadcast, prepara o Flood.
+                    </p>
+                    <span class="layer-tag">Decisão de Encaminhamento</span>
+                </div>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card step-4">
+                <div class="step-header">
+                    <span class="step-number">04</span>
+                    <i class="fas fa-share step-icon"></i>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Encaminhamento<br />(Forwarding)</h3>
+                    <p class="step-desc">
+                        O quadro é enviado apenas para a porta de destino (se conhecida) ou para todas as portas (exceto
+                        a origem) se for um Flood.
+                    </p>
+                    <span class="layer-tag">Saída Física</span>
+                </div>
+            </div>
+        </div>
+        <div class="legend-box">
+            <div class="legend-item">
+                <div class="legend-dot bg-blue-500"></div>
+                <span>Entrada</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-purple-500"></div>
+                <span>Memória CAM</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-yellow-500"></div>
+                <span>Lógica</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-green-500"></div>
+                <span>Saída</span>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Camada Física e Enlace – Cabos e Switches</p>
+            <p>28/36</p>
+        </div>
+    </div>
+</body>
+</html>

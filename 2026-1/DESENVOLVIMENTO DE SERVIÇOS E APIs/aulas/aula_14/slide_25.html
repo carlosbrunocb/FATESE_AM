@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Testando com Swagger - Fluxo Guiado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 13px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 90px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 4px;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .section-title h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .section-title p {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        .test-flow {
+            display: flex;
+            gap: 20px;
+            height: auto;
+        }
+
+        .flow-steps {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .step-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .step-status.pending {
+            background: #f59e0b;
+        }
+
+        .test-area {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .test-title i {
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .test-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            color: #3b82f6;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .test-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .request-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .response-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .panel-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .panel-content {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .endpoint-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .method-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .method-get {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .method-post {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .endpoint-path {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .params-table {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .param-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .param-name {
+            width: 100px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .param-value {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .param-type {
+            color: #3b82f6;
+            font-size: 13px;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 6px;
+            padding: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            overflow: auto;
+            white-space: pre;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .line-number {
+            color: #64748b;
+            width: 24px;
+            text-align: right;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .status-code {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .test-result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        .result-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .result-text {
+            color: white;
+            font-size: 14px;
+        }
+
+        .navigation-hint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+        }
+
+        .hint-icon {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .hint-text {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .step-dot.active {
+            background: #3b82f6;
+        }
+
+        .step-dot.completed {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-vial"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Testes com Swagger UI
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="section-title">
+                    <h2>Testando com Swagger - Fluxo Guiado</h2>
+                    <p>Guia passo a passo para testar endpoints usando a interface interativa do Swagger</p>
+                </div>
+            </div>
+            <div class="test-flow">
+                <!-- Left Panel - Steps -->
+                <div class="flow-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">GET /livros (público)</div>
+                            <div class="step-desc">Teste de rota pública com filtros</div>
+                        </div>
+                        <div class="step-status"></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">POST /livros (sem token)</div>
+                            <div class="step-desc">Teste de autenticação</div>
+                        </div>
+                        <div class="step-status pending"></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Authorize com JWT</div>
+                            <div class="step-desc">Autenticação interativa</div>
+                        </div>
+                        <div class="step-status pending"></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">POST /livros (com token)</div>
+                            <div class="step-desc">Teste com autenticação</div>
+                        </div>
+                        <div class="step-status pending"></div>
+                    </div>
+                </div>
+                <!-- Right Panel - Test Area -->
+                <div class="test-area">
+                    <div class="test-header">
+                        <div class="test-title">
+                            <i class="fas fa-play-circle"></i>
+                            Teste de Endpoint: GET /livros
+                        </div>
+                        <div class="test-actions">
+                            <div class="action-btn">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </div>
+                            <div class="action-btn">
+                                <i class="fas fa-copy"></i>
+                                Copiar
+                            </div>
+                        </div>
+                    </div>
+                    <div class="test-content">
+                        <!-- Request Panel -->
+                        <div class="request-panel">
+                            <div class="panel-header">
+                                <div class="panel-icon">
+                                    <i class="fas fa-paper-plane"></i>
+                                </div>
+                                <div class="panel-title">Request</div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="endpoint-info">
+                                    <div class="method-badge method-get">GET</div>
+                                    <div class="endpoint-path">/api/livros?titulo=Node</div>
+                                </div>
+                                <div class="params-table">
+                                    <div class="param-row">
+                                        <div class="param-name">titulo</div>
+                                        <div class="param-value">Node</div>
+                                        <div class="param-type">string</div>
+                                    </div>
+                                    <div class="param-row">
+                                        <div class="param-name">pagina</div>
+                                        <div class="param-value">1</div>
+                                        <div class="param-type">integer</div>
+                                    </div>
+                                    <div class="param-row">
+                                        <div class="param-name">limite</div>
+                                        <div class="param-value">10</div>
+                                        <div class="param-type">integer</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Response Panel -->
+                        <div class="response-panel">
+                            <div class="panel-header">
+                                <div class="panel-icon">
+                                    <i class="fas fa-reply"></i>
+                                </div>
+                                <div class="panel-title">Response</div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="code-block"><div class="code-line"><div class="line-number">1</div>
+<div class="code-content">{
+    "status": "success",
+    "data": [
+        {
+            "_id":     "64f1...",
+            "titulo":  "Node.js Prático",
+            "autor":   "John Doe",
+            "ano":     2024,
+            "estoque": 15
+        }
+    ],
+    "pagination": {
+        "page":  1,
+        "limit": 10,
+        "total": 1
+    }
+}</div></div></div>
+                                <div class="test-result">
+                                    <div class="result-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="result-text">
+                                        Status: <span class="status-code status-success">200 OK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navigation-hint">
+                        <i class="fas fa-info-circle hint-icon"></i>
+                        <div class="hint-text">
+                            Clique em <strong>"Try it out"</strong> para testar o endpoint diretamente pela interface do
+                            Swagger
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

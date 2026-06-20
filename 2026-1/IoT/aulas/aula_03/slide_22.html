@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guia: Código Base (ESP32)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Roboto+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #0f172a; /* Garante fundo escuro em caso de redimensionamento rápido */
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            position: relative;
+            z-index: 2;
+            min-height: 0;
+        }
+
+        .circuit-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #60a5fa;
+            padding-bottom: 12px;
+        }
+
+        .code-section {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .code-block-container {
+            flex: 1;
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #334155;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-icon {
+            color: #60a5fa;
+            font-size: 18px;
+        }
+
+        .code-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 15px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .code-content {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 14px;
+        }
+
+        .line-number {
+            color: #475569;
+            text-align: right;
+            min-width: 28px;
+            user-select: none;
+        }
+
+        .line-code {
+            flex: 1;
+        }
+
+        .indent-1 { padding-left: 20px; }
+        .indent-2 { padding-left: 40px; }
+        .indent-3 { padding-left: 60px; }
+        .indent-4 { padding-left: 80px; }
+
+        .keyword { color: #c084fc; font-weight: 500; }
+        .type { color: #fb923c; }
+        .function { color: #60a5fa; }
+        .operator { color: #f472b6; }
+        .number { color: #34d399; }
+        .comment { color: #64748b; font-style: italic; }
+
+        .explanation-panel {
+            flex: 0;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .explanation-item {
+            background-color: rgba(30, 41, 59, 0.6);
+            padding: 14px 18px;
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+        }
+
+        .explanation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 6px;
+        }
+
+        .explanation-text {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .accent-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #60a5fa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <svg class="circuit-bg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="200" cy="150" fill="none" r="60" stroke="currentColor" stroke-width="2"></circle>
+            <circle cx="1080" cy="570" fill="none" r="80" stroke="currentColor" stroke-width="2"></circle>
+            <line stroke="currentColor" stroke-width="2" x1="100" x2="300" y1="100" y2="100"></line>
+            <line stroke="currentColor" stroke-width="2" x1="980" x2="1180" y1="620" y2="620"></line>
+        </svg>
+        <div class="content-wrapper">
+            <div>
+                <p class="slide-title">Guia: Código Base (ESP32)</p>
+            </div>
+            <div class="code-section">
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <i class="fas fa-microchip code-icon"></i>
+                        <p class="code-title">semaforo_pedestres.ino</p>
+                    </div>
+                    <div class="code-content">
+                        <div class="code-line">
+                            <p class="line-number">1</p>
+                            <p class="line-code"><span class="comment">// Pinos Semáforo Carros</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">2</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> carVerde <span class="operator">=</span> <span class="number">19</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">3</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> carAmarelo <span class="operator">=</span> <span class="number">18</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">4</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> carVermelho <span class="operator">=</span> <span class="number">5</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">5</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">6</p>
+                            <p class="line-code"><span class="comment">// Pinos Semáforo Pedestres</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">7</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> pedVerde <span class="operator">=</span> <span class="number">21</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">8</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> pedVermelho <span class="operator">=</span> <span class="number">22</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">9</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">10</p>
+                            <p class="line-code"><span class="comment">// Pino do Botão</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">11</p>
+                            <p class="line-code"><span class="keyword">const</span> <span class="type">int</span> btnPedestre <span class="operator">=</span> <span class="number">4</span>;</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">12</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">13</p>
+                            <p class="line-code"><span class="keyword">void</span> <span class="function">setup</span>() {</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">14</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(carVerde, <span class="keyword">OUTPUT</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">15</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(carAmarelo, <span class="keyword">OUTPUT</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">16</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(carVermelho, <span class="keyword">OUTPUT</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">17</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(pedVerde, <span class="keyword">OUTPUT</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">18</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(pedVermelho, <span class="keyword">OUTPUT</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">19</p>
+                            <p class="line-code indent-1"> <span class="function">pinMode</span>(btnPedestre, <span class="keyword">INPUT_PULLUP</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">20</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">21</p>
+                            <p class="line-code indent-1"> <span class="comment">// Estado Inicial Padrão</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">22</p>
+                            <p class="line-code indent-1"> <span class="function">digitalWrite</span>(carVerde, <span class="keyword">HIGH</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">23</p>
+                            <p class="line-code indent-1"> <span class="function">digitalWrite</span>(pedVermelho, <span class="keyword">HIGH</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">24</p>
+                            <p class="line-code">}</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">25</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">26</p>
+                            <p class="line-code"><span class="keyword">void</span> <span class="function">loop</span>() {</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">27</p>
+                            <p class="line-code indent-1"> <span class="keyword">if</span> (<span class="function">digitalRead</span>(btnPedestre) <span class="operator">==</span> <span class="keyword">LOW</span>) {</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">28</p>
+                            <p class="line-code indent-2">  <span class="function">delay</span>(<span class="number">50</span>); <span class="comment">// Debounce</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">29</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">30</p>
+                            <p class="line-code indent-2">  <span class="keyword">if</span> (<span class="function">digitalRead</span>(btnPedestre) <span class="operator">==</span> <span class="keyword">LOW</span>) {</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">31</p>
+                            <p class="line-code indent-3">   <span class="comment">// 1. Alerta: Piscar Verde (1s = 5x 200ms)</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">32</p>
+                            <p class="line-code indent-3">   <span class="keyword">for</span> (<span class="type">int</span> i <span class="operator">=</span> <span class="number">0</span>; i <span class="operator">&lt;</span> <span class="number">5</span>; i<span class="operator">++</span>) {</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">33</p>
+                            <p class="line-code indent-4">    <span class="function">digitalWrite</span>(carVerde, <span class="keyword">LOW</span>); <span class="function">delay</span>(<span class="number">100</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">34</p>
+                            <p class="line-code indent-4">    <span class="function">digitalWrite</span>(carVerde, <span class="keyword">HIGH</span>); <span class="function">delay</span>(<span class="number">100</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">35</p>
+                            <p class="line-code indent-3">   }</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">36</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">37</p>
+                            <p class="line-code indent-3">   <span class="comment">// 2. Transição: Amarelo (1s)</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">38</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carVerde, <span class="keyword">LOW</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">39</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carAmarelo, <span class="keyword">HIGH</span>); <span class="function">delay</span>(<span class="number">1000</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">40</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">41</p>
+                            <p class="line-code indent-3">   <span class="comment">// 3. Travessia: Vermelho + Verde Pedestre (3s)</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">42</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carAmarelo, <span class="keyword">LOW</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">43</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carVermelho, <span class="keyword">HIGH</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">44</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(pedVermelho, <span class="keyword">LOW</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">45</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(pedVerde, <span class="keyword">HIGH</span>); <span class="function">delay</span>(<span class="number">3000</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">46</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">47</p>
+                            <p class="line-code indent-3">   <span class="comment">// 4. Retorno ao Estado Inicial</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">48</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carVermelho, <span class="keyword">LOW</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">49</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(carVerde, <span class="keyword">HIGH</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">50</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(pedVerde, <span class="keyword">LOW</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">51</p>
+                            <p class="line-code indent-3">   <span class="function">digitalWrite</span>(pedVermelho, <span class="keyword">HIGH</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">52</p>
+                            <p class="line-code"> </p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">53</p>
+                            <p class="line-code indent-3">   <span class="comment">// 5. Cooldown (3s)</span></p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">54</p>
+                            <p class="line-code indent-3">   <span class="function">delay</span>(<span class="number">3000</span>);</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">55</p>
+                            <p class="line-code indent-2">  }</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">56</p>
+                            <p class="line-code indent-1"> }</p>
+                        </div>
+                        <div class="code-line">
+                            <p class="line-number">57</p>
+                            <p class="line-code">}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="explanation-panel">
+                    <div class="explanation-item">
+                        <div>
+                            <p class="explanation-title">Configuração</p>
+                        </div>
+                        <div>
+                            <p class="explanation-text">Define pinos GPIO e configura INPUT_PULLUP para o botão</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div>
+                            <p class="explanation-title">Debounce</p>
+                        </div>
+                        <div>
+                            <p class="explanation-text">Aguarda 50ms e confirma leitura para eliminar ruído</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div>
+                            <p class="explanation-title">Ciclo Completo</p>
+                        </div>
+                        <div>
+                            <p class="explanation-text">Alerta → Amarelo → Travessia → Retorno → Cooldown</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div>
+                            <p class="explanation-title">Bloqueio</p>
+                        </div>
+                        <div>
+                            <p class="explanation-text">delay() bloqueia novas leituras durante o ciclo</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div>
+                            <p class="explanation-title">Total</p>
+                        </div>
+                        <div>
+                            <p class="explanation-text">5s de ciclo + 3s de cooldown = 8s de bloqueio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accent-bar"></div>
+    </div>
+</body>
+
+</html>

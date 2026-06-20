@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Custo do Bug - Curva de Boehm</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Brand Colors */
+        .senac-blue { color: #003DA5; }
+        .bg-senac-blue { background-color: #003DA5; }
+        .senac-orange { color: #F68D2E; }
+        .bg-senac-orange { background-color: #F68D2E; }
+        .text-senac-orange { color: #F68D2E; }
+
+        /* Fonts */
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+        .font-opensans { font-family: 'Open Sans', sans-serif; }
+
+        /* Chart Container */
+        .chart-wrapper {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Callout Cards */
+        .cost-card {
+            background-color: white;
+            border-left: 6px solid #003DA5;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+
+        @media (min-width: 1280px) {
+            .cost-card {
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        .cost-card.high-impact {
+            border-left-color: #F68D2E;
+            background: linear-gradient(to right, #fff7ed, #ffffff);
+            border: 1px solid #ffedd5;
+            border-left: 6px solid #F68D2E;
+        }
+
+        .multiplier-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (min-width: 1280px) {
+            .multiplier-badge {
+                font-size: 0.85rem;
+                padding: 5px 15px;
+            }
+        }
+
+        .badge-blue { background-color: #e0e7ff; color: #003DA5; }
+        .badge-orange { background-color: #ffedd5; color: #c2410c; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="px-12 xl:px-16 pt-8 xl:pt-12 pb-2">
+            <div class="h-1 w-20 bg-senac-orange mb-4"></div>
+            <h2 class="font-opensans text-gray-500 uppercase tracking-widest text-xs xl:text-sm font-semibold mb-1">Impacto Financeiro</h2>
+            <h1 class="font-montserrat font-bold text-3xl xl:text-4xl text-gray-800">
+                O Custo do Bug: <span class="senac-blue">Curva de Boehm</span>
+            </h1>
+            <p class="font-opensans text-gray-600 mt-2 xl:mt-4 max-w-4xl text-sm xl:text-lg">
+                A relação exponencial entre o tempo de detecção de um defeito e o custo para corrigi-lo.
+            </p>
+        </div>
+
+        <div class="flex flex-1 px-8 xl:px-16 pb-8 xl:pb-12 gap-8 xl:gap-16 items-center h-full overflow-hidden">
+            
+            <div class="w-7/12 flex flex-col h-full justify-center pb-8">
+                <div class="chart-wrapper h-[60vh]">
+                    <canvas id="boehmChart"></canvas>
+                </div>
+                <div class="mt-4 flex justify-between text-xs xl:text-sm text-gray-400 font-opensans px-4">
+                    <p class="font-semibold text-senac-blue"><i class="fas fa-arrow-trend-up mr-2"></i>Custo cresce exponencialmente</p>
+                    <p>Fonte: Barry Boehm, "Software Engineering Economics" (1981)</p>
+                </div>
+            </div>
+
+            <div class="w-5/12 flex flex-col justify-center h-full pb-8">
+                
+                <div class="cost-card group hover:shadow-lg">
+                    <div class="multiplier-badge badge-blue">Fase: Requisitos / Design</div>
+                    <h3 class="font-montserrat font-bold text-lg xl:text-2xl text-gray-800 mb-2">Correção Barata (1x - 5x)</h3>
+                    <p class="font-opensans text-gray-600 text-xs xl:text-sm leading-relaxed">
+                        Alterar um documento é rápido. Nenhuma linha de código precisa ser reescrita e nenhum teste refeito.
+                    </p>
+                </div>
+
+                <div class="cost-card high-impact group hover:shadow-lg">
+                    <div class="flex justify-between items-center w-full">
+                        <div class="multiplier-badge badge-orange">Fase: Produção</div>
+                        <i class="fas fa-triangle-exclamation text-senac-orange text-lg xl:text-xl animate-pulse"></i>
+                    </div>
+                    <h3 class="font-montserrat font-bold text-lg xl:text-2xl text-gray-800 mb-2">Custo Extremo (100x+)</h3>
+                    <p class="font-opensans text-gray-600 text-xs xl:text-sm leading-relaxed mb-3">
+                        O defeito impactou o usuário. Os custos explodem devido a:
+                    </p>
+                    <ul class="font-opensans text-gray-600 text-xs xl:text-sm space-y-2 list-none pl-0">
+                        <li class="flex items-center"><i class="fas fa-rotate-left text-senac-orange mr-2"></i> Retrabalho completo (Dev + QA)</li>
+                        <li class="flex items-center"><i class="fas fa-server text-senac-orange mr-2"></i> Parada de sistema (Downtime)</li>
+                        <li class="flex items-center"><i class="fas fa-users-slash text-senac-orange mr-2"></i> Danos à reputação da marca</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 rounded-xl p-4 xl:p-5 flex items-start border border-blue-100 shadow-sm mt-2 xl:mt-4">
+                    <div class="bg-senac-blue rounded-full p-2 w-8 h-8 xl:w-10 xl:h-10 flex items-center justify-center mr-4 flex-shrink-0">
+                        <i class="fas fa-lightbulb text-white text-xs xl:text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="font-montserrat font-bold text-senac-blue text-sm xl:text-base">Objetivo do QA Moderno</p>
+                        <p class="font-opensans text-xs xl:text-sm text-gray-600 mt-1">
+                            <strong>"Shift-Left":</strong> Mover os testes para a esquerda do gráfico (início do ciclo) para achatar essa curva de custos.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="absolute bottom-6 right-8 text-right z-20">
+            <p class="font-opensans text-xs xl:text-sm font-bold text-gray-400">12</p>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('boehmChart').getContext('2d');
+
+        // Create Gradient for better visuals
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 61, 165, 0.4)'); // Blue top
+        gradient.addColorStop(1, 'rgba(0, 61, 165, 0.0)'); // Transparent bottom
+
+        // Detect if screen is large to adjust font sizes dynamically
+        const isLargeScreen = window.innerWidth > 1280;
+        const fontSizeBase = isLargeScreen ? 16 : 12;
+        const fontSizeTitle = isLargeScreen ? 14 : 12;
+
+        const boehmChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Requisitos', 'Design', 'Codificação', 'Testes', 'Produção'],
+                datasets: [{
+                    label: 'Fator de Aumento de Custo',
+                    data: [1, 5, 10, 25, 100],
+                    borderColor: '#003DA5',
+                    backgroundColor: gradient,
+                    borderWidth: 5,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: ['#003DA5', '#003DA5', '#003DA5', '#F68D2E', '#DC2626'],
+                    pointBorderWidth: 4,
+                    pointRadius: 8,
+                    pointHoverRadius: 10,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.9)',
+                        padding: 12,
+                        titleFont: { family: 'Montserrat', size: 14 },
+                        bodyFont: { family: 'Open Sans', size: 14 },
+                        callbacks: {
+                            label: function (context) {
+                                return context.raw + 'x mais caro';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Multiplicador de Custo ($)',
+                            font: { family: 'Open Sans', weight: 'bold', size: fontSizeTitle },
+                            color: '#9ca3af'
+                        },
+                        grid: {
+                            color: '#f3f4f6',
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            font: { family: 'Open Sans', size: fontSizeBase },
+                            callback: function (value) { return value + 'x'; }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: false
+                        },
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Montserrat', weight: '700', size: fontSizeBase },
+                            color: '#374151'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

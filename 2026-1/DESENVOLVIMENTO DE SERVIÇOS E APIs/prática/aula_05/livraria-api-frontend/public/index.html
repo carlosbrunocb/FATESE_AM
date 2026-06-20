@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Livros</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        form { display: flex; gap: 10px; margin-bottom: 20px; background: #f4f4f4; padding: 15px; border-radius: 5px; }
+        input, button { padding: 8px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .acoes button { margin-right: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Minha Livraria</h1>
+
+    <form id="livroForm">
+        <input type="hidden" id="livroId">
+        <input type="text" id="titulo" placeholder="Título do Livro" required>
+        <input type="text" id="autor" placeholder="Autor" required>
+        <input type="number" id="ano" placeholder="Ano" required>
+        <button type="submit" id="btnSalvar">Salvar Livro</button>
+        <button type="button" onclick="limparFormulario()">Cancelar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Ano</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaLivros">
+            </tbody>
+    </table>
+
+    <script>
+        const API_URL = '/api/livros';
+
+        // Carrega os livros ao abrir a página
+        document.addEventListener('DOMContentLoaded', carregarLivros);
+
+        // Submissão do formulário (Criar ou Atualizar)
+        document.getElementById('livroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('livroId').value;
+            const titulo = document.getElementById('titulo').value;
+            const autor = document.getElementById('autor').value;
+            const ano = parseInt(document.getElementById('ano').value);
+
+            const livro = { titulo, autor, ano };
+
+            if (id) {
+                // Se tem ID, é uma atualização (PUT)
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(livro)
+                });
+            } else {
+                // Se não tem ID, é uma criação (POST)
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(livro)
+                });
+            }
+
+            limparFormulario();
+            carregarLivros();
+        });
+
+        // Função para buscar e renderizar a lista de livros (GET)
+        async function carregarLivros() {
+            const response = await fetch(API_URL);
+            const livros = await response.json();
+            const tbody = document.getElementById('tabelaLivros');
+            
+            tbody.innerHTML = ''; // Limpa a tabela
+            
+            livros.forEach(livro => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${livro.id}</td>
+                    <td>${livro.titulo}</td>
+                    <td>${livro.autor}</td>
+                    <td>${livro.ano}</td>
+                    <td class="acoes">
+                        <button onclick="preencherFormulario(${livro.id}, '${livro.titulo}', '${livro.autor}', ${livro.ano})">Editar</button>
+                        <button onclick="deletarLivro(${livro.id})">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Função para excluir um livro (DELETE)
+        async function deletarLivro(id) {
+            if(confirm('Tem certeza que deseja excluir este livro?')) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                carregarLivros();
+            }
+        }
+
+        // Função auxiliar para jogar os dados do livro selecionado no formulário
+        function preencherFormulario(id, titulo, autor, ano) {
+            document.getElementById('livroId').value = id;
+            document.getElementById('titulo').value = titulo;
+            document.getElementById('autor').value = autor;
+            document.getElementById('ano').value = ano;
+            document.getElementById('btnSalvar').textContent = 'Atualizar Livro';
+        }
+
+        // Função auxiliar para resetar o estado do formulário
+        function limparFormulario() {
+            document.getElementById('livroForm').reset();
+            document.getElementById('livroId').value = '';
+            document.getElementById('btnSalvar').textContent = 'Salvar Livro';
+        }
+    </script>
+</body>
+</html>

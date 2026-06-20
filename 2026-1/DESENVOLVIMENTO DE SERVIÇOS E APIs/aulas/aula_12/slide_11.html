@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia do JWT - 3 Partes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .jwt-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .jwt-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .jwt-structure {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            height: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .jwt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .jwt-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .jwt-parts {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .jwt-part {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .jwt-part:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .part-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .part-number.header {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .part-number.payload {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .part-number.signature {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .part-content {
+            flex: 1;
+        }
+
+        .part-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .part-description {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .part-code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            color: #10b981;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px 14px;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        .visualization {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .viz-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .viz-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .viz-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .viz-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .viz-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .viz-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .token-structure {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.8;
+            word-break: break-all;
+        }
+
+        .token-part {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+
+        .token-part.header {
+            background: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        .token-part.payload {
+            background: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .token-part.signature {
+            background: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .legend-color.header {
+            background: #3b82f6;
+        }
+
+        .legend-color.payload {
+            background: #10b981;
+        }
+
+        .legend-color.signature {
+            background: #f59e0b;
+        }
+
+        .security-note {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-top: auto;
+        }
+
+        .note-icon {
+            color: #ef4444;
+            font-size: 22px;
+            margin-top: 2px;
+        }
+
+        .note-text {
+            font-size: 14px;
+            color: #fca5a5;
+            line-height: 1.5;
+        }
+
+        .important-list {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.8;
+            list-style: none;
+        }
+
+        .important-list li::before {
+            content: "•";
+            color: #10b981;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        .important-list li {
+            padding-left: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Anatomia do JWT</h1>
+                        <p class="subtitle">Estrutura de 3 partes: Header, Payload e Signature</p>
+                    </div>
+                </div>
+                <div class="jwt-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>JWT Token</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="jwt-container">
+                    <div class="jwt-structure">
+                        <div class="jwt-header">
+                            <div class="jwt-title">Estrutura do Token JWT</div>
+                            <div style="font-size: 15px; color: #94a3b8; font-family: monospace;">Formato:
+                                header.payload.signature</div>
+                        </div>
+                        <div class="jwt-parts">
+                            <div class="jwt-part">
+                                <div class="part-number header">1</div>
+                                <div class="part-content">
+                                    <div class="part-title">
+                                        <i class="fas fa-file-alt"></i> Header (Cabeçalho)
+                                    </div>
+                                    <div class="part-description">Contém metadados do token: tipo (JWT) e algoritmo de
+                                        assinatura (HS256)</div>
+                                    <div class="part-code">{"alg": "HS256", "typ": "JWT"}</div>
+                                </div>
+                            </div>
+                            <div class="jwt-part">
+                                <div class="part-number payload">2</div>
+                                <div class="part-content">
+                                    <div class="part-title">
+                                        <i class="fas fa-database"></i> Payload (Carga Útil)
+                                    </div>
+                                    <div class="part-description">Contém as claims: dados do usuário, expiração, emissor
+                                    </div>
+                                    <div class="part-code">{"sub": "123", "name": "João", "exp": 1234567890}</div>
+                                </div>
+                            </div>
+                            <div class="jwt-part">
+                                <div class="part-number signature">3</div>
+                                <div class="part-content">
+                                    <div class="part-title">
+                                        <i class="fas fa-lock"></i> Signature (Assinatura)
+                                    </div>
+                                    <div class="part-description">Garantia de integridade: HMAC-SHA256(header + payload
+                                        + secret)</div>
+                                    <div class="part-code">HMACSHA256(base64(header) + "." + base64(payload), secret)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="visualization">
+                    <div class="viz-card">
+                        <div class="viz-header">
+                            <div class="viz-icon blue">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="viz-title">Estrutura Visual</div>
+                        </div>
+                        <div class="token-structure">
+                            <span class="token-part header">eyJhbGciOiJIUzI1NiIs...</span><span
+                                style="color: #94a3b8;">.</span><span
+                                class="token-part payload">eyJzdWIiOiIxMjM0NTY3...</span><span
+                                style="color: #94a3b8;">.</span><span
+                                class="token-part signature">SflKxwRJSMeKKF2QT4fwpMe...</span>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color header"></div>
+                                <span>Header</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color payload"></div>
+                                <span>Payload</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color signature"></div>
+                                <span>Signature</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-header">
+                            <div class="viz-icon green">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="viz-title">Informações Importantes</div>
+                        </div>
+                        <ul class="important-list">
+                            <li>Não coloque dados sensíveis no Payload (é decodificável)</li>
+                            <li>Defina expiração adequada (exp)</li>
+                            <li>Use HTTPS para transmissão</li>
+                            <li>Valide a assinatura em todas as requisições</li>
+                        </ul>
+                    </div>
+                    <div class="security-note">
+                        <i class="fas fa-exclamation-triangle note-icon"></i>
+                        <div class="note-text">
+                            <strong>Atenção:</strong> O JWT é assinado, não criptografado. Não armazene senhas no
+                            payload.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

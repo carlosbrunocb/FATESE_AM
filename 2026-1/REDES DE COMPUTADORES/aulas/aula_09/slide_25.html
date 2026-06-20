@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparativo: netstat vs ss no Linux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 22px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-top: 3px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 50px;
+            right: 50px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: #c6f6d5;
+            color: #22543d;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #48bb78;
+            border-radius: 50%;
+        }
+
+        .command-box {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            border-left: 4px solid #2c5282;
+        }
+
+        .command-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+        }
+
+        .prompt {
+            color: #48bb78;
+        }
+
+        .command {
+            color: #e2e8f0;
+        }
+
+        .comment {
+            color: #718096;
+            margin-left: 10px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .feature-icon {
+            width: 25px;
+            height: 25px;
+            background: #edf2f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c5282;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .highlight-box {
+            background: #ebf8ff;
+            border-left: 4px solid #2c5282;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: auto;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .parameter-item {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .parameter-label {
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 3px;
+        }
+
+        .parameter-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .comparison-item {
+            flex: 1;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-label {
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .comparison-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 85%;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .code-block {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            border-left: 4px solid #2c5282;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 3px 0;
+            white-space: nowrap;
+        }
+
+        .code-comment {
+            color: #718096;
+            margin-left: 10px;
+        }
+
+        .syntax-keyword {
+            color: #ff79c6;
+        }
+
+        .syntax-string {
+            color: #f1fa8c;
+        }
+
+        .syntax-number {
+            color: #bd93f9;
+        }
+
+        .syntax-variable {
+            color: #8be9fd;
+        }
+
+        .syntax-function {
+            color: #50fa7b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <div>
+                    <div class="header-title">Comparativo: netstat vs ss no Linux</div>
+                    <div class="header-subtitle">Legacy vs Moderno: Comandos para análise de sockets e conexões</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Módulo</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">3 - Transporte</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="comparison-container">
+                <!-- Left Column: netstat (Legacy) -->
+                <div class="left-column">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-history"></i>
+                                netstat (Legacy)
+                            </div>
+                            <div class="status-badge" style="background: #feebc8; color: #744210;">
+                                <div class="status-dot" style="background: #ed8936;"></div>
+                                <span>Deprecado</span>
+                            </div>
+                        </div>
+                        <div class="card-content" style="display: flex; flex-direction: column; flex: 1;">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <strong>Sintaxe:</strong> <code>netstat [opções]</code>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-list"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <strong>Parâmetros úteis:</strong> -a (tudo), -n (numérico), -t (TCP), -u (UDP),
+                                        -p (PID)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-box">
+                                <div class="command-line">
+                                    <span class="prompt">$</span>
+                                    <span class="command">netstat -anpt</span>
+                                    <span class="comment"># Mostrar conexões TCP com processos</span>
+                                </div>
+                                <div class="command-line">
+                                    <span class="prompt">$</span>
+                                    <span class="command">netstat -anpu | grep 53</span>
+                                    <span class="comment"># Filtrar conexões UDP na porta 53</span>
+                                </div>
+                            </div>
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Status</div>
+                                    <div class="parameter-value">DEPRECATED</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Performance</div>
+                                    <div class="parameter-value">Lenta</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Informações</div>
+                                    <div class="parameter-value">Limitadas</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Portabilidade</div>
+                                    <div class="parameter-value">Universal</div>
+                                </div>
+                            </div>
+                            <div class="highlight-box">
+                                <div class="highlight-text">
+                                    <i class="fas fa-exclamation-triangle"></i> Requer sudo para ver PIDs
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: ss (Modern) -->
+                <div class="right-column">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                ss (Socket Statistics)
+                            </div>
+                            <div class="status-badge">
+                                <div class="status-dot"></div>
+                                <span>Recomendado</span>
+                            </div>
+                        </div>
+                        <div class="card-content" style="display: flex; flex-direction: column; flex: 1;">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <strong>Sintaxe:</strong> <code>ss [opções]</code>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <strong>Parâmetros úteis:</strong> -t (TCP), -u (UDP), -l (listen), -n
+                                        (numérico), -p (PID)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-box">
+                                <div class="command-line">
+                                    <span class="prompt">$</span>
+                                    <span class="command">ss -tulpn</span>
+                                    <span class="comment"># Mostrar sockets em escuta com PID</span>
+                                </div>
+                                <div class="command-line">
+                                    <span class="prompt">$</span>
+                                    <span class="command">ss -ntp state established</span>
+                                    <span class="comment"># Conexões estabelecidas</span>
+                                </div>
+                            </div>
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Status</div>
+                                    <div class="parameter-value">ATIVO</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Performance</div>
+                                    <div class="parameter-value">Rápida</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Informações</div>
+                                    <div class="parameter-value">Detalhadas</div>
+                                </div>
+                                <div class="parameter-item">
+                                    <div class="parameter-label">Portabilidade</div>
+                                    <div class="parameter-value">Linux</div>
+                                </div>
+                            </div>
+                            <div class="highlight-box">
+                                <div class="highlight-text">
+                                    <i class="fas fa-check-circle"></i> Mais rápido que netstat
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-left">
+                    <div class="status-item">
+                        <i class="fas fa-user-graduate status-icon"></i>
+                        <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-clock status-icon"></i>
+                        <span>Progresso: 85%</span>
+                    </div>
+                </div>
+                <div class="status-right">
+                    <div class="status-item">
+                        <span class="progress-text">Progresso da aula</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

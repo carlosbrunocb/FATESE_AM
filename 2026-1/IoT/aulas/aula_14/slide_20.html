@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tratamento de Respostas HTTP e Erros</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 105vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 30px 60px;
+            /* Reduced top padding */
+            z-index: 10;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            /* Reduced margin */
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a8a5e6;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            /* Reduced gap */
+            margin-top: 10px;
+        }
+
+        .response-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            /* Reduced padding */
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            /* Reduced margin */
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+            /* Reduced line height */
+            margin-bottom: 8px;
+            /* Reduced margin */
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            /* Reduced padding */
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            /* Reduced font size */
+            color: #4ade80;
+            margin-top: 8px;
+            /* Reduced margin */
+            border-left: 3px solid #4ade80;
+            white-space: pre-wrap;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+            /* Reduced margin */
+            font-size: 12px;
+            /* Reduced font size */
+            color: rgba(255, 255, 255, 0.8);
+            padding: 6px;
+            /* Reduced padding */
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .error-list li::before {
+            content: "•";
+            color: #f87171;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .status-success {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            color: #4ade80;
+        }
+
+        .status-error {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: #f87171;
+        }
+
+        .status-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+        }
+
+        .success {
+            background: rgba(74, 222, 128, 0.2);
+        }
+
+        .error {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        .warning {
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 24px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+            /* Ensure bottom info stays above cards */
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Tratamento de Respostas HTTP e Erros</div>
+                    <div class="header-subtitle">Como lidar com diferentes códigos de resposta e falhas na comunicação
+                        ESP32-Cloud</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="response-card">
+                    <div class="card-header">
+                        <div class="card-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title">Códigos 2xx - Sucesso</div>
+                    </div>
+                    <div class="card-content">
+                        Indicam que a requisição foi processada com sucesso pelo servidor.
+                    </div>
+                    <ul class="error-list">
+                        <li>
+                            <strong>200 OK:</strong> Requisição bem-sucedida, resposta normal
+                        </li>
+                        <li>
+                            <strong>201 Created:</strong> Recurso criado com sucesso
+                        </li>
+                        <li>
+                            <strong>202 Accepted:</strong> Requisição aceita, processamento pendente
+                        </li>
+                    </ul>
+                    <div class="code-block">// Exemplo de tratamento de sucesso
+if (statusCode == 200) {
+    Serial.println("Dados enviados com sucesso!");
+}</div>
+                    <div class="status-badge status-success">
+                        <i class="fas fa-check"></i>
+                        <span>Sucesso</span>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="card-header">
+                        <div class="card-icon error">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="card-title">Códigos 4xx - Erro do Cliente</div>
+                    </div>
+                    <div class="card-content">
+                        Indicam problemas na requisição enviada pelo cliente.
+                    </div>
+                    <ul class="error-list">
+                        <li>
+                            <strong>400 Bad Request:</strong> Formato JSON inválido
+                        </li>
+                        <li>
+                            <strong>401 Unauthorized:</strong> Token de autenticação inválido
+                        </li>
+                        <li>
+                            <strong>403 Forbidden:</strong> Acesso negado ao recurso
+                        </li>
+                        <li>
+                            <strong>404 Not Found:</strong> Endpoint não encontrado
+                        </li>
+                    </ul>
+                    <div class="code-block">// Verificar erros 4xx
+if (statusCode &gt;= 400 &amp;&amp; statusCode &lt; 500) {
+    Serial.println("Erro na requisição!");
+}</div>
+                    <div class="status-badge status-error">
+                        <i class="fas fa-exclamation"></i>
+                        <span>Erro Cliente</span>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="card-header">
+                        <div class="card-icon warning">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="card-title">Códigos 5xx - Erro do Servidor</div>
+                    </div>
+                    <div class="card-content">
+                        Indicam problemas internos no servidor de destino.
+                    </div>
+                    <ul class="error-list">
+                        <li>
+                            <strong>500 Internal Server Error:</strong> Erro interno do servidor
+                        </li>
+                        <li>
+                            <strong>502 Bad Gateway:</strong> Gateway inválido
+                        </li>
+                        <li>
+                            <strong>503 Service Unavailable:</strong> Serviço indisponível
+                        </li>
+                        <li>
+                            <strong>504 Gateway Timeout:</strong> Timeout na resposta
+                        </li>
+                    </ul>
+                    <div class="code-block">// Implementar retry com backoff
+if (statusCode &gt;= 500) {
+    delay(5000); // Esperar 5s antes de retry
+}</div>
+                    <div class="status-badge status-warning">
+                        <i class="fas fa-clock"></i>
+                        <span>Erro Servidor</span>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(59, 130, 246, 0.2);">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-title">Boas Práticas</div>
+                    </div>
+                    <div class="card-content">
+                        Estratégias para tratamento robusto de erros.
+                    </div>
+                    <ul class="error-list">
+                        <li>
+                            <strong>Validação:</strong> Verificar conexão WiFi antes de enviar
+                        </li>
+                        <li>
+                            <strong>Retry:</strong> Implementar tentativas com backoff exponencial
+                        </li>
+                        <li>
+                            <strong>Logging:</strong> Registrar erros para depuração
+                        </li>
+                        <li>
+                            <strong>Timeout:</strong> Definir timeouts adequados
+                        </li>
+                    </ul>
+                    <div class="code-block">// Implementação robusta
+if (WiFi.status() == WL_CONNECTED) {
+    // Enviar dados
+} else {
+    // Tentar reconectar
+}</div>
+                    <div class="status-badge status-success">
+                        <i class="fas fa-check"></i>
+                        <span>Robusto</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-info">
+            <div class="info-item">
+                <i class="fas fa-code icon-small"></i>
+                <span><span class="info-label">Status:</span> Implementação completa</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-bug icon-small"></i>
+                <span><span class="info-label">Erros:</span> Tratamento robusto</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-check-circle icon-small"></i>
+                <span><span class="info-label">Validação:</span> Em tempo real</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

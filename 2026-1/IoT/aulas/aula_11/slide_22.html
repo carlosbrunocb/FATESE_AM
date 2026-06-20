@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Análise do JSON Retornado - Open-Meteo API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+        }
+
+        /* Container principal com CSS Grid */
+        .slide-container {
+            width: 100%;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: 70px 1fr auto; /* Header, Main, Footer */
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            box-sizing: border-box;
+            padding-bottom: 25px;
+        }
+
+        /* Layout responsivo para as sessões */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-sizing: border-box;
+        }
+
+        .slide-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 5% 0 5%;
+            box-sizing: border-box;
+        }
+
+        /* Grid para as duas colunas principais */
+        .grid-columns {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 24px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5% 0 5%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Empilha as colunas em telas de tablets e celulares */
+        @media (max-width: 900px) {
+            .grid-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 18px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .syntax-key { color: #fbbf24; }
+        .syntax-string { color: #34d399; }
+        .syntax-number { color: #60a5fa; }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .field-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            width: clamp(110px, 30%, 200px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-search" style="font-size: 24px; color: #3b82f6;"></i>
+                <span style="font-size: clamp(16px, 2vw, 20px); color: #ffffff; font-weight: 600;">Análise do JSON Retornado</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                <span style="font-size: 14px; color: #94a3b8;">Aula 11</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">|</span>
+                <span style="font-size: 14px; color: #94a3b8;">Open-Meteo API</span>
+            </div>
+        </div>
+
+        <div class="slide-main">
+            
+            <div style="text-align: center;">
+                <h1 style="font-size: clamp(24px, 4vw, 36px); font-weight: 700; color: #ffffff; margin: 0 0 8px 0;">
+                    <i class="fas fa-file-code" style="color: #3b82f6; margin-right: 15px;"></i>Estrutura JSON da API Open-Meteo
+                </h1>
+                <p style="font-size: clamp(14px, 2vw, 18px); color: #94a3b8; margin: 0;">
+                    Análise detalhada dos campos e caminhos de acesso para parsing
+                </p>
+            </div>
+
+            <div class="grid-columns">
+                
+                <div class="content-card">
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                            <i class="fas fa-code" style="font-size: 20px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 18px; font-weight: 600; color: #ffffff;">JSON Completo</div>
+                            <div style="font-size: 13px; color: #94a3b8;">Resposta da API para Manaus</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        {<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"latitude"</span>: <span class="syntax-number">-3.119</span>,<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"longitude"</span>: <span class="syntax-number">-60.021</span>,<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"timezone"</span>: <span class="syntax-string">"America/Manaus"</span>,<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"timezone_abbreviation"</span>: <span class="syntax-string">"-03"</span>,<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"elevation"</span>: <span class="syntax-number">92.0</span>,<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"current_units"</span>: {<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">"temperature_2m"</span>: <span class="syntax-string">"°C"</span>,<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">"relative_humidity_2m"</span>: <span class="syntax-string">"%"</span><br />
+                        &nbsp;&nbsp;},<br />
+                        &nbsp;&nbsp;<span class="syntax-key">"current"</span>: {<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">"time"</span>: <span class="syntax-string">"2026-05-16T12:15"</span>,<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">"temperature_2m"</span>: <span class="syntax-number">28.5</span>,<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">"relative_humidity_2m"</span>: <span class="syntax-number">82</span><br />
+                        &nbsp;&nbsp;}<br />
+                        }
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div class="content-card" style="flex: 1; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669); width: 44px; height: 44px;">
+                                <i class="fas fa-database" style="font-size: 18px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Campos Raiz</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Informações básicas</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="field-badge">latitude</span>
+                                    <span style="font-size: 13px; color: #cbd5e1;">Coordenada</span>
+                                </div>
+                                <span style="font-size: 14px; color: #34d399; font-weight: 600;">-3.119</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="field-badge">longitude</span>
+                                    <span style="font-size: 13px; color: #cbd5e1;">Coordenada</span>
+                                </div>
+                                <span style="font-size: 14px; color: #34d399; font-weight: 600;">-60.021</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="field-badge">timezone</span>
+                                    <span style="font-size: 13px; color: #cbd5e1;">Fuso</span>
+                                </div>
+                                <span style="font-size: 14px; color: #34d399; font-weight: 600;">America/Manaus</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card" style="flex: 1; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706); width: 44px; height: 44px;">
+                                <i class="fas fa-thermometer-half" style="font-size: 18px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Dados Atuais</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Path: current</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="field-badge" style="width: auto; max-width: 160px;">current.temp...</span>
+                                    <span style="font-size: 13px; color: #cbd5e1;">Temp.</span>
+                                </div>
+                                <span style="font-size: 14px; color: #34d399; font-weight: 600;">28.5°C</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="field-badge" style="width: auto; max-width: 160px;">current.humidity...</span>
+                                    <span style="font-size: 13px; color: #cbd5e1;">Umid.</span>
+                                </div>
+                                <span style="font-size: 14px; color: #34d399; font-weight: 600;">82%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; padding: 12px 20px; border-radius: 6px; display: flex; align-items: center; gap: 14px;">
+                <i class="fas fa-info-circle" style="color: #f59e0b; font-size: 18px; flex-shrink: 0;"></i>
+                <div style="font-size: 15px; color: #cbd5e1; line-height: 1.4;">
+                    <strong style="color: #ffffff;">Validação:</strong> Verifique a presença de campos antes de acessar (doc.containsKey) para evitar erros de parsing.
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-check-circle" style="font-size: 14px; color: #10b981;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">JSON analisado e validado com sucesso</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-code" style="font-size: 14px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">Open-Meteo API v1</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

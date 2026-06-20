@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Por que Versionar APIs?</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            /* Alterado para Grid */
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .header {
+            /* Removido o posicionamento absoluto e largura fixa */
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            /* Removido o posicionamento absoluto e medidas fixas */
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            padding: 35px 40px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            justify-content: space-between;
+        }
+
+        .concept-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .card-content {
+            font-size: 14.5px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .card-content strong {
+            color: #1e40af;
+        }
+
+        .reasons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .reason-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .reason-number {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .reason-content {
+            flex: 1;
+        }
+
+        .reason-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .reason-description {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #3b82f6;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .highlight-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .highlight-text {
+            font-size: 14.5px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .footer {
+            /* Removido o posicionamento absoluto e medidas fixas */
+            position: relative;
+            z-index: 1;
+            margin: 0 40px 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 65px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <div>
+                    <div class="header-title">Por que Versionar APIs?</div>
+                    <div class="header-subtitle">Motivações e benefícios do versionamento de APIs</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Versionamento</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Negócio Evolui</div>
+                                <div class="card-subtitle">Novas regras e features</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            APIs precisam evoluir conforme as <strong>demandas de negócio</strong> mudam. Novas
+                            funcionalidades são adicionadas, regras de negócio são atualizadas e o sistema precisa se
+                            adaptar sem quebrar integrações existentes.
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Escala e Performance</div>
+                                <div class="card-subtitle">Novos formatos de resposta</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            À medida que o <strong>volume de dados cresce</strong>, novos formatos são necessários
+                            (paginação, cache, otimização) para manter a performance e evitar sobrecarga do sistema.
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Importância do Versionamento</span>
+                        </div>
+                        <div class="highlight-text">
+                            O versionamento permite que diferentes clientes consumam a API em seu próprio ritmo, sem
+                            forçar atualizações imediatas que poderiam quebrar suas aplicações.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="concept-card" style="height: 100%; display: flex; flex-direction: column;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Interoperabilidade</div>
+                                <div class="card-subtitle">Múltiplos clientes</div>
+                            </div>
+                        </div>
+                        <div class="reasons-list">
+                            <div class="reason-item">
+                                <div class="reason-number">1</div>
+                                <div class="reason-content">
+                                    <div class="reason-title">Web e Mobile</div>
+                                    <div class="reason-description">Diferentes plataformas com necessidades específicas
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="reason-item">
+                                <div class="reason-number">2</div>
+                                <div class="reason-content">
+                                    <div class="reason-title">Parceiros</div>
+                                    <div class="reason-description">Integrações com sistemas externos</div>
+                                </div>
+                            </div>
+                            <div class="reason-item">
+                                <div class="reason-number">3</div>
+                                <div class="reason-content">
+                                    <div class="reason-title">Legado</div>
+                                    <div class="reason-description">Sistemas antigos que precisam ser suportados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-value">95%</div>
+                            <div class="stat-label">Redução de quebras</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">3x</div>
+                            <div class="stat-label">Maior eficiência</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">50%</div>
+                            <div class="stat-label">Menos retrabalho</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Em andamento</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

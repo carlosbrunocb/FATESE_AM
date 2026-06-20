@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Esquema: Fluxo de Requisição por Versão</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estrutura em Grid */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Header, Conteúdo (expansível), Footer */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .header, .main-content, .footer {
+            z-index: 1; /* Garante que fiquem acima do background pattern */
+        }
+
+        /* Header Ajustado */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: clamp(20px, 2vw, 28px);
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Conteúdo Principal Ajustado */
+        .main-content {
+            padding: 20px 40px;
+            overflow-y: auto; /* Permite scroll se o conteúdo for maior que a tela */
+        }
+
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diagram-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .diagram-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-item i {
+            color: #3b82f6;
+        }
+
+        .diagram-content {
+            display: flex;
+            gap: 25px;
+            flex-grow: 1;
+            min-height: 0; /* Importante para flex boxes dentro de grid */
+        }
+
+        .diagram-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .diagram-right {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Flow Items */
+        .flow-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .flow-item {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .flow-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .flow-item.active {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .flow-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .flow-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .flow-subtitle {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .flow-content {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+            padding: 0 5px;
+        }
+
+        /* Panel Lateral */
+        .version-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .version-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .version-text { font-size: 13px; flex: 1; }
+        .version-value { font-size: 11px; font-weight: 600; }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            line-height: 1.25;
+        }
+
+        .code-key { color: #60a5fa; }
+        .code-number { color: #fbbf24; }
+
+        /* Footer Ajustado */
+        .footer {
+            margin: 0 40px 20px 40px; /* Margem inferior para o efeito "flutuante" do original */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i { color: #3b82f6; }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active { background: #dcfce7; color: #166534; }
+
+        /* Responsividade para Telas Menores */
+        @media (max-width: 1024px) {
+            .diagram-content { flex-direction: column; }
+            .diagram-right { width: 100%; }
+            .slide-container { overflow-y: auto; height: auto; min-height: 100vh; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div>
+                    <div class="header-title">Esquema: Fluxo de Requisição por Versão</div>
+                    <div class="header-subtitle">Como as requisições fluem através das diferentes versões da API</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Arquitetura</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="diagram-container">
+                <div class="diagram-header">
+                    <div class="diagram-title">
+                        <i class="fas fa-sitemap" style="margin-right: 8px; color: #3b82f6;"></i>
+                        Fluxo de Requisição
+                    </div>
+                    <div class="diagram-stats">
+                        <div class="stat-item"><i class="fas fa-code-branch"></i><span>2 versões</span></div>
+                        <div class="stat-item"><i class="fas fa-route"></i><span>2 caminhos</span></div>
+                        <div class="stat-item"><i class="fas fa-database"></i><span>1 repositório</span></div>
+                    </div>
+                </div>
+
+                <div class="diagram-content">
+                    <div class="diagram-left">
+                        <div class="flow-container">
+                            <div class="flow-row">
+                                <div class="flow-item active">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-user"></i></div>
+                                        <div>
+                                            <div class="flow-title">Cliente HTTP</div>
+                                            <div class="flow-subtitle">Navegador / Mobile / Postman</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Envia requisição HTTP para a API com método GET, POST, PUT, DELETE</div>
+                                </div>
+                                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-server"></i></div>
+                                        <div>
+                                            <div class="flow-title">API Gateway</div>
+                                            <div class="flow-subtitle">Roteamento por versão</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Direciona para /api/v1 ou /api/v2 baseado na URL</div>
+                                </div>
+                            </div>
+
+                            <div class="flow-row">
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-code-branch"></i></div>
+                                        <div>
+                                            <div class="flow-title">Routes V1</div>
+                                            <div class="flow-subtitle">/api/v1/*</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Roteamento para endpoints da versão 1</div>
+                                </div>
+                                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-code-branch"></i></div>
+                                        <div>
+                                            <div class="flow-title">Routes V2</div>
+                                            <div class="flow-subtitle">/api/v2/*</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Roteamento para endpoints da versão 2</div>
+                                </div>
+                            </div>
+
+                            <div class="flow-row">
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-cog"></i></div>
+                                        <div>
+                                            <div class="flow-title">Controllers V1</div>
+                                            <div class="flow-subtitle">Lógica de controle</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Processa a requisição e chama o service apropriado</div>
+                                </div>
+                                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon"><i class="fas fa-cog"></i></div>
+                                        <div>
+                                            <div class="flow-title">Controllers V2</div>
+                                            <div class="flow-subtitle">Lógica de controle</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">Processa a requisição e chama o service apropriado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="diagram-right">
+                        <div class="version-panel">
+                            <div class="panel-header">
+                                <div class="panel-icon"><i class="fas fa-info-circle"></i></div>
+                                <div class="panel-title">Comparação de Versões</div>
+                            </div>
+                            <div class="version-list">
+                                <div class="version-item">
+                                    <div class="version-dot" style="background: #3b82f6;"></div>
+                                    <div class="version-text">V1: Array simples</div>
+                                    <div class="version-value">[{}, {}]</div>
+                                </div>
+                                <div class="version-item">
+                                    <div class="version-dot" style="background: #10b981;"></div>
+                                    <div class="version-text">V2: Objeto paginado</div>
+                                    <div class="version-value">{dados: [], paginacao: {}}</div>
+                                </div>
+                                <div class="version-item">
+                                    <div class="version-dot" style="background: #f59e0b;"></div>
+                                    <div class="version-text">Repositório compartilhado</div>
+                                    <div class="version-value">MongoDB</div>
+                                </div>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-line"><span class="code-key">"dados"</span>: [</div>
+                                <div class="code-line">{"id": 1, "titulo": "Livro A"}</div>
+                                <div class="code-line">{"id": 2, "titulo": "Livro B"}</div>
+                                <div class="code-line">],</div>
+                                <div class="code-line"><span class="code-key">"paginacao"</span>: {</div>
+                                <div class="code-line"><span class="code-key">"total"</span>: <span class="code-number">100</span>,</div>
+                                <div class="code-line"><span class="code-key">"pagina"</span>: <span class="code-number">1</span></div>
+                                <div class="code-line">}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Fluxo completo</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

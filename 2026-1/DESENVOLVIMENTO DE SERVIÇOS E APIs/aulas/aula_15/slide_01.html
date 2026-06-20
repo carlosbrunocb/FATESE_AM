@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ciclo de Vida e Versionamento de APIs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+
+        /* --- Container Principal (Grid Responsivo) --- */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 4vh 5vw;
+            gap: 2rem;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60vw;
+            height: 60vw;
+            max-width: 600px;
+            max-height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        /* --- Elementos de Fundo Flutuantes --- */
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .version-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .version-indicator i {
+            margin-right: 5px;
+        }
+
+        .course-info {
+            text-align: right;
+            color: white;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .course-code {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* --- Conteúdo Central --- */
+        .main-content {
+            place-self: center; /* Centraliza no eixo vertical e horizontal do Grid */
+            width: 100%;
+            max-width: 1040px;
+            z-index: 10;
+        }
+
+        .title-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 60px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: clamp(36px, 4vw, 56px);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-title .highlight {
+            color: #fbbf24;
+            font-weight: 900;
+        }
+
+        .subtitle {
+            font-size: clamp(18px, 2vw, 22px);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+
+        .topic-tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .topic-tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Rodapé (Professor Info) --- */
+        .professor-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .professor-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .professor-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .professor-details {
+            color: white;
+        }
+
+        .professor-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .professor-role {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .contact-item i {
+            color: #fbbf24;
+        }
+
+        .duration-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .duration-badge i {
+            color: #fbbf24;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="floating-shape" style="width: 80px; height: 80px; top: 15%; left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-shape" style="width: 60px; height: 60px; top: 60%; left: 85%; animation-delay: 2s;"></div>
+        <div class="floating-shape" style="width: 40px; height: 40px; top: 25%; left: 75%; animation-delay: 4s;"></div>
+        
+        <header class="header" data-object="true" data-object-type="group">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia do Senac</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="version-indicator" data-object="true" data-object-type="textbox">
+                    <i class="fas fa-book"></i>
+                    Aula 15
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Análise e Desenvolvimento de Sistemas</div>
+                    <div class="course-code">ADS - 2026</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content" data-object="true" data-object-type="textbox">
+            <div class="title-container">
+                <div class="main-title">
+                    Ciclo de Vida e <span class="highlight">Versionamento</span> de APIs
+                </div>
+                <div class="subtitle">
+                    Estratégias de versionamento e boas práticas de manutenção
+                </div>
+                <div class="topic-tags">
+                    <div class="topic-tag">
+                        <i class="fas fa-code-branch"></i>
+                        REST APIs
+                    </div>
+                    <div class="topic-tag">
+                        <i class="fas fa-sync-alt"></i>
+                        Versionamento
+                    </div>
+                    <div class="topic-tag">
+                        <i class="fas fa-shield-alt"></i>
+                        Breaking Changes
+                    </div>
+                    <div class="topic-tag">
+                        <i class="fas fa-layer-group"></i>
+                        SemVer
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="professor-info" data-object="true" data-object-type="group">
+            <div class="professor-card" data-object="true" data-object-type="textbox">
+                <div class="professor-avatar">CB</div>
+                <div class="professor-details">
+                    <div class="professor-name">Prof. Carlos Bruno Oliveira Lopes</div>
+                    <div class="professor-role">Desenvolvimento de APIs</div>
+                </div>
+            </div>
+            
+            <div class="contact-info" data-object="true" data-object-type="textbox">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    carlos.lopes@am.senac.br
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    in/carlosbruno-lopes
+                </div>
+            </div>
+            
+            <div class="duration-badge" data-object="true" data-object-type="textbox">
+                <i class="fas fa-clock"></i>
+                3h (180 min)
+            </div>
+        </footer>
+
+    </div>
+</body>
+
+</html>

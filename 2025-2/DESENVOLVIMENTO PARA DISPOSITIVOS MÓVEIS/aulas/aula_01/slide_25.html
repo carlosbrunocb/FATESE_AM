@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gradle Scripts e Dependências</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Montserrat:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #F8F9FA;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Android Brand Colors */
+        .text-android-green { color: #3DDC84; }
+        .bg-android-green { background-color: #3DDC84; }
+        .text-android-navy { color: #073042; }
+        .bg-android-navy { background-color: #073042; }
+        .border-android-green { border-color: #3DDC84; }
+
+        /* Code Editor Theme */
+        .editor-bg { background-color: #2B2D30; }
+        .editor-sidebar { background-color: #1E1F22; border-right: 1px solid #3E4145; }
+        
+        /* Syntax Highlighting */
+        .code-keyword { color: #CC7832; }
+        .code-string { color: #6A8759; }
+        .code-number { color: #6897BB; }
+        .code-comment { color: #808080; }
+        .code-property { color: #9876AA; }
+        .code-function { color: #FFC66D; }
+        .code-section { color: #E8BF6A; font-weight: bold; }
+        .code-key { color: #9876AA; }
+        .code-text { color: #A9B7C6; }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5vh 1.5vw;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2vh;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateX(5px);
+            border-left-color: #3DDC84;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .icon-box {
+            min-width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #E8F5E9;
+            color: #3DDC84;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        .code-window {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6vh; /* Responsive font size */
+            line-height: 1.6;
+            height: 85vh; /* Occupy most of the vertical space */
+        }
+
+        .gradle-logo-bg {
+            position: absolute;
+            bottom: -30px;
+            right: -20px;
+            font-size: 30vh;
+            color: #073042;
+            opacity: 0.04;
+            transform: rotate(-10deg);
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 relative">
+    <i class="fas fa-layer-group gradle-logo-bg"></i>
+    
+    <div class="flex w-full h-full p-8 gap-10 relative z-10">
+        <div class="w-5/12 flex flex-col justify-center pl-4">
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 rounded bg-android-navy flex items-center justify-center mr-3">
+                        <i class="fas fa-file-code text-android-green text-lg"></i>
+                    </div>
+                    <span class="text-sm font-bold text-gray-500 tracking-widest uppercase">Estrutura de Build</span>
+                </div>
+                <h1 class="text-4xl font-extrabold text-android-navy font-montserrat leading-tight mb-2">
+                    Scripts &amp; Dependências
+                </h1>
+                <p class="text-xl text-gray-600 font-light">Gerenciamento moderno com Version Catalogs.</p>
+            </div>
+
+            <div class="flex flex-col">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-sitemap"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">Estrutura Hierárquica</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            <strong>settings.gradle:</strong> Define os módulos (include ':app').<br />
+                            <strong>build.gradle (Project):</strong> Configurações globais.<br />
+                            <strong>build.gradle (App):</strong> Dependências específicas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-book"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">Version Catalog (Novo)</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Arquivo <code>libs.versions.toml</code> centraliza versões de bibliotecas para todos os módulos, facilitando atualizações e evitando conflitos.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-box-open"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">BOM (Bill of Materials)</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">Plataformas como Firebase usam BOM para garantir que todas as suas bibliotecas usem versões compatíveis entre si.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p class="text-sm text-blue-800 flex items-center">
+                    <i class="fas fa-info-circle mr-2 text-blue-500 text-lg"></i>
+                    <span><strong>Nota:</strong> No <code>build.gradle.kts</code>, referenciamos como <code>libs.nome.da.lib</code>.</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="w-7/12 flex flex-col justify-center items-center pr-4">
+            <div class="code-window w-full editor-bg flex flex-col">
+                <div class="bg-[#2B2D30] px-4 py-3 flex items-center border-b border-[#1E1F22]">
+                    <div class="flex space-x-2 mr-4">
+                        <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+                    </div>
+                    <span class="text-gray-400 text-xs font-mono ml-2 flex-1">gradle/libs.versions.toml</span>
+                    <span class="text-gray-500 text-[10px] font-mono"><i class="fas fa-lock mr-1"></i>Read-only</span>
+                </div>
+
+                <div class="flex flex-1 overflow-hidden" style="font-family: 'Courier New', Courier, monospace;">
+                    <div class="editor-sidebar w-12 py-4 flex flex-col items-end pr-3 text-gray-600 select-none font-mono opacity-50" style="font-size: 14px;">
+                        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+                    </div>
+                    
+                    <div class="p-4 overflow-hidden code-text w-full">
+                        <div class="mb-4">
+                            <span class="code-comment"># Centraliza as versões para uso em todo o projeto</span><br />
+                            <span class="code-section">[versions]</span><br />
+                            <span class="code-key">agp</span> = <span class="code-string">"8.2.0"</span><br />
+                            <span class="code-key">kotlin</span> = <span class="code-string">"1.9.20"</span><br />
+                            <span class="code-key">core-ktx</span> = <span class="code-string">"1.12.0"</span><br />
+                            <span class="code-key">retrofit</span> = <span class="code-string">"2.9.0"</span><br />
+                            <span class="code-key">room</span> = <span class="code-string">"2.6.1"</span>
+                        </div>
+                        <div class="mb-4">
+                            <span class="code-section">[libraries]</span><br />
+                            <span class="code-comment"># Definição das dependências</span><br />
+                            <span class="code-key">androidx-core-ktx</span> = { <span class="code-key">group</span> = <span class="code-string">"androidx.core"</span>, <span class="code-key">name</span> = <span class="code-string">"core-ktx"</span>, <span class="code-key">version.ref</span> = <span class="code-string">"core-ktx"</span> }<br />
+                            <span class="code-key">retrofit</span> = { <span class="code-key">group</span> = <span class="code-string">"com.squareup.retrofit2"</span>, <span class="code-key">name</span> = <span class="code-string">"retrofit"</span>, <span class="code-key">version.ref</span> = <span class="code-string">"retrofit"</span> }<br />
+                            <span class="code-key">room-runtime</span> = { <span class="code-key">group</span> = <span class="code-string">"androidx.room"</span>, <span class="code-key">name</span> = <span class="code-string">"room-runtime"</span>, <span class="code-key">version.ref</span> = <span class="code-string">"room"</span> }
+                        </div>
+                        <div>
+                            <span class="code-section">[plugins]</span><br />
+                            <span class="code-key">androidApplication</span> = { <span class="code-key">id</span> = <span class="code-string">"com.android.application"</span>, <span class="code-key">version.ref</span> = <span class="code-string">"agp"</span> }<br />
+                            <span class="code-key">kotlinAndroid</span> = { <span class="code-key">id</span> = <span class="code-string">"org.jetbrains.kotlin.android"</span>, <span class="code-key">version.ref</span> = <span class="code-string">"kotlin"</span> }
+                        </div>
+                        <div class="mt-6 border-t border-gray-700 pt-4">
+                            <span class="code-comment">// Uso no build.gradle.kts (App Module):</span><br />
+                            <span class="code-text">dependencies {</span><br />
+                            <span class="code-text">    implementation(libs.androidx.core.ktx)</span><br />
+                            <span class="code-text">    implementation(libs.retrofit)</span><br />
+                            <span class="code-text">}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-[#1E1F22] px-4 py-1 flex justify-between items-center text-[10px] text-gray-500 border-t border-[#3E4145]">
+                    <div>TOML</div>
+                    <div>UTF-8</div>
+                    <div>Ln 12, Col 45</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

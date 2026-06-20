@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Introdução ao Roteamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #333; /* Fundo externo escuro para realçar o slide */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT GRID PRINCIPAL --- */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            padding: 40px 60px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        /* --- GRID DE COLUNAS --- */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: 100%;
+            align-items: start;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* --- COMPONENTES DA ESQUERDA --- */
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 18pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 14pt;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #e0e6ed;
+            font-size: 14pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .key-concepts {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .concept-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .concept-item i {
+            color: #ff6b35;
+            font-size: 20pt;
+            margin-bottom: 5px;
+        }
+
+        .concept-item span {
+            color: #e0e6ed;
+            font-size: 12pt;
+            display: block;
+        }
+
+        /* --- DIAGRAMA DE REDE (CORRIGIDO) --- */
+        .network-diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 40px 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 60px; /* Separa os nós da caixa de informação */
+        }
+
+        .diagram-nodes {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+        }
+
+        .node-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .network-node {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 24pt;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .network-node.large {
+            width: 80px;
+            height: 80px;
+        }
+
+        .network-node.large i {
+            font-size: 32pt;
+        }
+
+        .network-node i {
+            color: #ff6b35;
+        }
+
+        .node-label {
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e0e6ed;
+            font-size: 12pt;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .node-ip {
+            font-size: 10pt;
+            color: #ff6b35;
+            display: block;
+        }
+
+        .diagram-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(255, 107, 53, 0.5);
+            margin: 0 10px;
+        }
+
+        .diagram-info-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .diagram-info-title {
+            color: #ffffff;
+            font-size: 14pt;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .diagram-info-title i {
+            color: #ff6b35;
+            margin-right: 8px;
+        }
+
+        .diagram-info-text {
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        /* --- BARRA DE STATUS --- */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 30%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            
+            <div class="info-badge">
+                <i class="fas fa-book"></i> Fundamentos
+            </div>
+
+            <div class="main-title">
+                <i class="fas fa-network-wired"></i>
+                Introdução ao Roteamento
+            </div>
+
+            <div class="content-wrapper">
+                
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-question-circle"></i>
+                            O que é Roteamento?
+                        </h3>
+                        <div class="concept-text">
+                            É o <span class="highlight">processo de selecionar caminhos</span> em uma rede para enviar pacotes de dados da origem ao destino. O roteador utiliza sua <span class="highlight">Tabela de Roteamento</span> para decidir por qual interface de saída o pacote deve seguir.
+                        </div>
+                    </div>
+                    
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Camada de Rede (Camada 3)
+                        </h3>
+                        <div class="concept-text">
+                            A <span class="highlight">Camada 3</span> do Modelo OSI é responsável por:
+                        </div>
+                        <div class="bullet-point">Endereçamento lógico (IP) e roteamento</div>
+                        <div class="bullet-point">Encaminhamento de pacotes entre redes</div>
+                        <div class="bullet-point">Determinação do melhor caminho</div>
+                    </div>
+                    
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-sitemap"></i>
+                            Componentes Essenciais
+                        </h3>
+                        <div class="key-concepts">
+                            <div class="concept-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Roteadores</span>
+                            </div>
+                            <div class="concept-item">
+                                <i class="fas fa-table"></i>
+                                <span>Tabela de Rotas</span>
+                            </div>
+                            <div class="concept-item">
+                                <i class="fas fa-route"></i>
+                                <span>Métricas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="network-diagram">
+                        
+                        <div class="diagram-nodes">
+                            
+                            <div class="node-wrapper">
+                                <div class="network-node large">
+                                    <i class="fas fa-desktop"></i>
+                                </div>
+                                <div class="node-label">
+                                    PC Origem
+                                    <span class="node-ip">192.168.1.10</span>
+                                </div>
+                            </div>
+
+                            <div class="diagram-line"></div>
+
+                            <div class="node-wrapper">
+                                <div class="network-node">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="node-label">Roteador A</div>
+                            </div>
+
+                            <div class="diagram-line"></div>
+                            
+                            <div class="node-wrapper">
+                                <div class="network-node">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="node-label">Roteador B</div>
+                            </div>
+
+                            <div class="diagram-line"></div>
+
+                            <div class="node-wrapper">
+                                <div class="network-node large">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="node-label">
+                                    Servidor
+                                    <span class="node-ip">10.0.0.5</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="diagram-info-box">
+                            <div class="diagram-info-title">
+                                <i class="fas fa-info-circle"></i>
+                                Fluxo do Pacote
+                            </div>
+                            <div class="diagram-info-text">
+                                PC → Roteador A → Roteador B → Servidor
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+
+</html>

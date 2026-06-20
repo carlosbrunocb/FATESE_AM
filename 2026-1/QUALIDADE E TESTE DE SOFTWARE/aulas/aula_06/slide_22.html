@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fase REFACTOR — Melhorias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden; /* Evita rolagem na página inteira */
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            /* Slate 900 */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #10b981;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            top: -120px;
+            right: -120px;
+            border-radius: 50%;
+            background-color: rgba(16, 185, 129, 0.05);
+            z-index: 1;
+            pointer-events: none; /* Permite clicar através do círculo */
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px 60px; /* Reduzi levemente o padding para telas menores */
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            flex: 1; /* Ocupa o espaço restante vertical */
+            min-height: 0; /* Crucial para o scroll funcionar dentro do flex */
+            margin-top: 20px;
+        }
+
+        .info-pane {
+            flex: 0 0 38%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: flex-start; /* Mudado para flex-start para evitar espalhamento excessivo */
+        }
+
+        .code-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Permite encolher se necessário */
+        }
+
+        /* Info Cards */
+        .concept-card {
+            background-color: #1e293b;
+            border-left: 4px solid #10b981;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .features-list {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            color: #3b82f6;
+            margin-right: 14px;
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        /* Editor Window */
+        .editor-window {
+            background-color: #282c34;
+            border-radius: 10px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            height: 100%; /* Ocupa toda a altura do pai */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            background-color: #21252b;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #181a1f;
+            flex-shrink: 0; /* Impede o cabeçalho de encolher */
+        }
+
+        .editor-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .editor-title {
+            color: #abb2bf;
+            font-size: 0.85rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 50px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .editor-content {
+            padding: 24px;
+            color: #abb2bf;
+            font-size: 1.1rem; /* Responsivo: clamp ou vh seria ideal, mantive fixo */
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        /* Python Syntax Highlighting Mockup */
+        .py-keyword { color: #c678dd; }
+        .py-func { color: #61afef; }
+        .py-var { color: #e06c75; }
+        .py-const { color: #d19a66; }
+        .py-num { color: #d19a66; }
+        .py-op { color: #56b6c2; }
+        .py-comment { color: #7f848e; font-style: italic; }
+
+        .line-num {
+            color: #4b5263;
+            margin-right: 16px;
+            user-select: none;
+            display: inline-block;
+            width: 20px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .code-line {
+            display: block;
+            padding-left: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="content-area">
+            <div class="mb-6 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-green-500 text-3xl">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div>
+                        <h2
+                            class="text-green-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Ciclo TDD: Red — Green — Refactor</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Fase REFACTOR — Melhorias</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="main-layout">
+                <div class="info-pane">
+                    <div class="concept-card">
+                        <h3 class="text-green-400 font-bold mb-3 uppercase text-sm tracking-wide">
+                            <i class="fas fa-magic mr-2"></i> Removendo "Números Mágicos"
+                        </h3>
+                        <p class="text-gray-200 leading-relaxed text-base">
+                            Números soltos no código (como <code
+                                class="bg-slate-700 px-1 py-0.5 rounded text-orange-300">100</code> e <code
+                                class="bg-slate-700 px-1 py-0.5 rounded text-orange-300">0.9</code>) dificultam o
+                            entendimento. Transformá-los em constantes nomeadas dá significado explícito à regra de
+                            negócio.
+                        </p>
+                    </div>
+                    <div class="features-list">
+                        <h3 class="text-white font-bold mb-4 flex items-center">
+                            <i class="fas fa-arrow-up text-blue-400 mr-2 text-sm"></i> O que ganhamos?
+                        </h3>
+                        <div class="feature-item">
+                            <i class="fas fa-eye feature-icon"></i>
+                            <div>
+                                <p class="text-white font-medium mb-1">Legibilidade</p>
+                                <p class="text-sm text-slate-400">Qualquer desenvolvedor entende que estamos validando
+                                    um "Limite de Desconto".</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-wrench feature-icon"></i>
+                            <div>
+                                <p class="text-white font-medium mb-1">Manutenibilidade</p>
+                                <p class="text-sm text-slate-400">Se o desconto mudar para 15%, alteramos apenas em um
+                                    lugar.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-pane">
+                    <div class="editor-window">
+                        <div class="editor-header">
+                            <div class="editor-controls">
+                                <div class="control-dot dot-red"></div>
+                                <div class="control-dot dot-yellow"></div>
+                                <div class="control-dot dot-green"></div>
+                            </div>
+                            <div class="editor-title">src/calculadora.py</div>
+                        </div>
+                        <div class="editor-content">
+                            <div class="code-line">
+                                <span class="line-num">1</span>
+                                <span class="py-comment"># Definição de Constantes (Evita Números Mágicos)</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">2</span>
+                                <span class="py-const">LIMITE_DESCONTO</span> <span class="py-op">=</span> <span
+                                    class="py-num">100</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">3</span>
+                                <span class="py-const">PERCENTUAL_DESCONTO</span> <span class="py-op">=</span> <span
+                                    class="py-num">0.9</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">4</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">5</span>
+                                <span class="py-keyword">def</span> <span
+                                    class="py-func">calcular_preco_final</span>(<span class="py-var">valor</span>):
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">6</span>
+                                <span class="py-keyword"> if</span> <span class="py-var">valor</span> <span
+                                    class="py-op">&gt;</span> <span class="py-const">LIMITE_DESCONTO</span>:
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">7</span>
+                                <span class="py-comment"> # Regra de negócio fica clara na leitura</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">8</span>
+                                <span class="py-keyword"> return</span> <span class="py-var">valor</span> <span
+                                    class="py-op">*</span> <span class="py-const">PERCENTUAL_DESCONTO</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">9</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-num">10</span>
+                                <span class="py-keyword"> return</span> <span class="py-var">valor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-3 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Prática de TDD</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

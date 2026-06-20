@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Documentar Impedimentos e Criar Issues de Melhoria</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 3px;
+        }
+
+        .header-text p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 130px);
+        }
+
+        .left-section {
+            flex: 1.3;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-section .card:first-child {
+            flex: 1.5;
+        }
+
+        .left-section .card:last-child {
+            flex: 1;
+        }
+
+        .right-section .card:first-child {
+            flex: 1.2;
+        }
+
+        .right-section .card:last-child {
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-header i {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .impediment-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            margin-bottom: 6px;
+        }
+
+        .left-section .card:last-child .step-item {
+            margin-bottom: 4px;
+            padding: 6px 8px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .template-box {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #334155;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .template-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 11px;
+        }
+
+        .template-content {
+            background: white;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .improvement-card {
+            background: #fef3c7;
+            border-radius: 12px;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            flex: 1;
+        }
+
+        .improvement-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .improvement-header i {
+            font-size: 16px;
+            color: #f59e0b;
+            margin-right: 8px;
+        }
+
+        .improvement-title {
+            font-weight: 600;
+            color: #92400e;
+            font-size: 14px;
+        }
+
+        .improvement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #78350f;
+            line-height: 1.3;
+        }
+
+        .improvement-item i {
+            color: #f59e0b;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .github-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn i {
+            font-size: 10px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .highlight {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1e3a5f;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+        }
+
+        .code-string {
+            color: #34d399;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Documentar Impedimentos e Criar Issues de Melhoria</h1>
+                    <p>Comunicação efetiva e gestão de processos no GitHub</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-file-alt"></i>
+                            <h2>Como Documentar Impedimentos</h2>
+                        </div>
+                        <div class="impediment-steps">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-title">Descrever o Contexto</div>
+                                    <div class="step-desc">Explique o que estava sendo feito quando o problema ocorreu
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-title">Detalhar o Erro</div>
+                                    <div class="step-desc">Inclua mensagens de erro, logs ou screenshots do problema
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-title">Mencionar o Scrum Master</div>
+                                    <div class="step-desc">Use @nome-do-SM para notificar o responsável pela remoção de
+                                        impedimentos</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-box">
+                            <div class="template-header">
+                                <div class="template-title">Template de Comentário</div>
+                                <i class="fas fa-copy" style="color: #3b82f6; cursor: pointer;"></i>
+                            </div>
+                            <div class="template-content">
+                                @nome-do-SM preciso de ajuda para desbloquear esta tarefa.<br />
+                                <strong>Contexto:</strong> [breve descrição]<br />
+                                <strong>Erro/Logs:</strong> [mensagem/print]<br />
+                                <strong>Tentativas realizadas:</strong> [lista]<br />
+                                <strong>Impacto:</strong> [o que está parado]<br />
+                                <strong>Dependências:</strong> [API/acesso/terceiros]<br />
+                                <strong>Urgência:</strong> [alta/média/baixa]
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tasks"></i>
+                            <h2>Criar Issue de Melhoria de Processo</h2>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Título da Issue</div>
+                                <div class="step-desc">[Melhoria de Processo] Reduzir fila em Review/Test</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Labels</div>
+                                <div class="step-desc">process-improvement, intangible, priority-medium</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Descrição</div>
+                                <div class="step-desc">Problema observado, hipótese, ação proposta, responsável, prazo
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h2>Boas Práticas</h2>
+                        </div>
+                        <div class="improvement-card">
+                            <div class="improvement-header">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="improvement-title">Comunicação Efetiva</div>
+                            </div>
+                            <div class="improvement-list">
+                                <div class="improvement-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Seja específico sobre o problema técnico</span>
+                                </div>
+                                <div class="improvement-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Inclua informações de ambiente (OS, versão)</span>
+                                </div>
+                                <div class="improvement-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Mencione pessoas relevantes com @</span>
+                                </div>
+                                <div class="improvement-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Atualize o status regularmente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-code"></i>
+                            <h2>Exemplo de Código</h2>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="code-comment">// Criar Issue de melhoria</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="code-keyword">const</span> issue = {
+                            </div>
+                            <div class="code-line">
+                                title: <span class="code-string">"[Melhoria] Reduzir fila"</span>,
+                            </div>
+                            <div class="code-line">
+                                labels: [<span class="code-string">"process-improvement"</span>],
+                            </div>
+                            <div class="code-line">
+                                body: <span class="code-string">"## Problema..."</span>
+                            </div>
+                            <div class="code-line">
+                                };
+                            </div>
+                        </div>
+                        <div class="github-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-plus"></i>
+                                Nova Issue
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-tag"></i>
+                                Adicionar Label
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-user"></i>
+                        <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>carlos.lopes@am.senac.br</span>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Aula 03 - Gestão de Impedimentos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

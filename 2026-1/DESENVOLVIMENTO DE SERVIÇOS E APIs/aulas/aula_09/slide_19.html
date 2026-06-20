@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 19 - Boas Práticas e Padrões de Modelagem MongoDB</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 25px;
+            left: 50px;
+            width: 95%;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #6c757d;
+            margin: 2px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Card styles */
+        .card {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .embed-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .embed-card {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .embed-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .embed-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .embed-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .embed-content {
+            font-size: 11px;
+            color: #495057;
+            line-height: 1.35;
+        }
+
+        .pattern-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pattern-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 11.5px;
+            color: #495057;
+            line-height: 1.3;
+        }
+
+        .pattern-item i {
+            color: #00ED64;
+            font-size: 12px;
+            margin-top: 2px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .pattern-title {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 1px;
+        }
+
+        .pattern-desc {
+            color: #6c757d;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #495057;
+        }
+
+        .practice-item i {
+            color: #00ED64;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+            margin-bottom: 8px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 7px 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .highlight-box {
+            background: rgba(0, 237, 100, 0.08);
+            border-left: 4px solid #00ED64;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-top: auto;
+        }
+
+        .highlight-text {
+            font-size: 11.5px;
+            color: #1a1a2e;
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Boas Práticas e Padrões de Modelagem MongoDB</h1>
+                    <p>Embed vs Referência: Quando usar cada abordagem e padrões de modelagem</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-leaf"></i> MongoDB
+                </div>
+                <div class="badge">
+                    <i class="fas fa-cogs"></i> Best Practices
+                </div>
+            </div>
+        </div>
+        <!-- Left column top: Embed vs Reference -->
+        <div class="card" style="top: 110px; left: 50px; width: 48%; height: auto;">
+            <div class="card-header">
+                <div class="card-icon" style="background: linear-gradient(135deg, #00ED64, #00a854);">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div>
+                    <div class="card-title">Embed vs Referência: Quando Usar</div>
+                    <div class="card-subtitle">Escolha a abordagem correta para cada cenário</div>
+                </div>
+            </div>
+            <div class="embed-section">
+                <div class="embed-card">
+                    <div class="embed-header">
+                        <div class="embed-icon" style="background: #007bff;"><i class="fas fa-cube"></i></div>
+                        <div class="embed-title">Embed (Incorporar)</div>
+                    </div>
+                    <div class="embed-content">
+                        <strong>Quando usar:</strong><br />
+                        • 1:N pequeno<br />
+                        • Leitura conjunta frequente<br />
+                        • Alta coesão do agregado<br />
+                        • Escritas atômicas
+                    </div>
+                </div>
+                <div class="embed-card">
+                    <div class="embed-header">
+                        <div class="embed-icon" style="background: #28a745;"><i class="fas fa-link"></i></div>
+                        <div class="embed-title">Referência</div>
+                    </div>
+                    <div class="embed-content">
+                        <strong>Quando usar:</strong><br />
+                        • N grande<br />
+                        • Reuso alto<br />
+                        • Acessos independentes<br />
+                        • Dados compartilhados
+                    </div>
+                </div>
+            </div>
+            <div class="pattern-list">
+                <div class="pattern-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">One-to-Few:</div>
+                        <div class="pattern-desc">Embed avaliações curtas em livros (poucos documentos, acesso conjunto)
+                        </div>
+                    </div>
+                </div>
+                <div class="pattern-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">One-to-Many:</div>
+                        <div class="pattern-desc">Referência autorId quando autor é reutilizado em muitos livros</div>
+                    </div>
+                </div>
+                <div class="pattern-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">Many-to-Many:</div>
+                        <div class="pattern-desc">Coleção de junção ou arrays de ids com limites</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Left column bottom: Best Practices -->
+        <div class="card" style="top: 565px; left: 50px; width: 48%; height: auto;">
+            <div class="card-header" style="margin-bottom: 8px;">
+                <div class="card-icon" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div>
+                    <div class="card-title">Boas Práticas Globais</div>
+                    <div class="card-subtitle">Modelagem orientada ao acesso</div>
+                </div>
+            </div>
+            <div class="practices-grid">
+                <div class="practice-item">
+                    <i class="fas fa-check"></i>
+                    <div class="practice-text"><strong>Índices:</strong> Conforme queries (simples/compostos/texto/TTL)
+                    </div>
+                </div>
+                <div class="practice-item">
+                    <i class="fas fa-check"></i>
+                    <div class="practice-text"><strong>Arrays:</strong> Evite arrays "infinitos" (limite 1000 itens)
+                    </div>
+                </div>
+                <div class="practice-item">
+                    <i class="fas fa-check"></i>
+                    <div class="practice-text"><strong>Profundidade:</strong> Limite documentos aninhados</div>
+                </div>
+                <div class="practice-item">
+                    <i class="fas fa-check"></i>
+                    <div class="practice-text"><strong>Timestamps:</strong> Use createdAt/updatedAt</div>
+                </div>
+            </div>
+        </div>
+        <!-- Right column top: Comparison Table -->
+        <div class="card" style="top: 110px; left: 53%; width: 45%; height: auto;">
+            <div class="card-header">
+                <div class="card-icon" style="background: linear-gradient(135deg, #6f42c1, #5a32a3);">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div>
+                    <div class="card-title">Padrões de Modelagem</div>
+                    <div class="card-subtitle">Estruturas comuns e suas aplicações</div>
+                </div>
+            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Padrão</th>
+                        <th>Uso</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>One-to-Few</td>
+                        <td>Embed (avaliações, metadados)</td>
+                        <td><span class="status-badge status-success"><i class="fas fa-check"></i> Recomendado</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>One-to-Many</td>
+                        <td>Referência (autores, editoras)</td>
+                        <td><span class="status-badge status-success"><i class="fas fa-check"></i> Recomendado</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Many-to-Many</td>
+                        <td>Coleção de junção</td>
+                        <td><span class="status-badge status-warning"><i class="fas fa-exclamation"></i> Cuidado</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Árvores</td>
+                        <td>Materialized paths</td>
+                        <td><span class="status-badge status-success"><i class="fas fa-check"></i> Recomendado</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Polimorfismo</td>
+                        <td>Discriminators</td>
+                        <td><span class="status-badge status-warning"><i class="fas fa-exclamation"></i> Avaliar</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="highlight-box">
+                <div class="highlight-text">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Dica:</strong> Modele orientado ao acesso. Defina índices conforme as queries mais
+                    frequentes.
+                </div>
+            </div>
+        </div>
+        <!-- Right column bottom: Limitations -->
+        <div class="card" style="top: 475px; left: 53%; width: 45%; height: auto;">
+            <div class="card-header">
+                <div class="card-icon" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <div class="card-title">Limitações e Cuidados</div>
+                    <div class="card-subtitle">Evite problemas comuns na modelagem</div>
+                </div>
+            </div>
+            <div class="pattern-list">
+                <div class="pattern-item">
+                    <i class="fas fa-times-circle" style="color: #dc3545;"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">Arrays muito grandes:</div>
+                        <div class="pattern-desc">Documentos &gt; 16MB ou arrays &gt; 1000 itens causam problemas de
+                            performance</div>
+                    </div>
+                </div>
+                <div class="pattern-item">
+                    <i class="fas fa-times-circle" style="color: #dc3545;"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">Profundidade excessiva:</div>
+                        <div class="pattern-desc">Subdocumentos aninhados muito profundos dificultam consultas</div>
+                    </div>
+                </div>
+                <div class="pattern-item">
+                    <i class="fas fa-times-circle" style="color: #dc3545;"></i>
+                    <div class="pattern-text">
+                        <div class="pattern-title">Duplicação de dados:</div>
+                        <div class="pattern-desc">Embed quando dados mudam juntos, referencie quando reutilizados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

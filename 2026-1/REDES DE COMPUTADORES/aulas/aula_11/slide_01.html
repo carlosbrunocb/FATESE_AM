@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 11: DNS e DHCP - Redes de Computadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Background decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image:
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 41%, rgba(255, 255, 255, 0.1) 42%, transparent 43%),
+                linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.1) 41%, rgba(255, 255, 255, 0.1) 42%, transparent 43%);
+            background-size: 60px 60px;
+        }
+
+        .network-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .network-line {
+            position: absolute;
+            background: rgba(0, 255, 255, 0.1);
+            height: 1px;
+            transform-origin: left center;
+        }
+
+        .network-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Main content */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 1000px;
+            z-index: 10;
+        }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .topic-highlight {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .topic-highlight h2 {
+            font-size: 20px;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .topic-highlight p {
+            font-size: 14px;
+            color: #cccccc;
+        }
+
+        /* Professor info */
+        .professor-info {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .professor-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .professor-title {
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+
+        .contact-info {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #888888;
+        }
+
+        /* Institution info */
+        .institution-info {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            text-align: right;
+            z-index: 20;
+        }
+
+        .institution-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .institution-details {
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+
+        /* Icons */
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+            color: #00ffff;
+        }
+
+        .dns-icon {
+            position: absolute;
+            top: 100px;
+            right: 100px;
+            font-size: 60px;
+            color: rgba(0, 255, 255, 0.1);
+            animation: float 3s ease-in-out infinite;
+            z-index: 15;
+        }
+
+        .dhcp-icon {
+            position: absolute;
+            bottom: 150px;
+            left: 100px;
+            font-size: 60px;
+            color: rgba(255, 0, 255, 0.1);
+            animation: float 3s ease-in-out infinite;
+            animation-delay: 1.5s;
+            z-index: 15;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Decorative elements */
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 255, 255, 0.1);
+            animation: rotate 20s linear infinite;
+        }
+
+        .decorative-circle-1 {
+            width: 200px;
+            height: 200px;
+            top: 50px;
+            left: 50px;
+        }
+
+        .decorative-circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 50px;
+            right: 50px;
+            animation-direction: reverse;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Logo area */
+        .logo-area {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 20;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        /* Status indicators */
+        .status-bar {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background pattern -->
+        <div class="bg-pattern"></div>
+        <!-- Network lines -->
+        <div class="network-lines">
+            <div class="network-line" style="top: 200px; left: 100px; width: 300px; transform: rotate(45deg);"></div>
+            <div class="network-line" style="top: 300px; left: 200px; width: 250px; transform: rotate(-30deg);"></div>
+            <div class="network-line" style="top: 400px; left: 150px; width: 350px; transform: rotate(15deg);"></div>
+            <div class="network-dot" style="top: 220px; left: 120px;"></div>
+            <div class="network-dot" style="top: 320px; left: 220px;"></div>
+            <div class="network-dot" style="top: 420px; left: 180px;"></div>
+        </div>
+        <!-- Decorative circles -->
+        <div class="decorative-circle decorative-circle-1"></div>
+        <div class="decorative-circle decorative-circle-2"></div>
+        <!-- Logo area -->
+        <div class="logo-area">
+            <div class="logo-text">FATESE</div>
+            <div class="logo-subtext">Faculdade de Tecnologia</div>
+        </div>
+        <!-- Status bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Live</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-network-wired"></i>
+                <span>Redes</span>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="course-badge">
+                <i class="fas fa-graduation-cap"></i> Aula 11 - Redes de Computadores
+            </div>
+            <h1 class="main-title">Camada de Aplicação</h1>
+            <div class="subtitle">DNS e DHCP - Fundamentos e Configuração</div>
+            <div class="topic-highlight">
+                <h2><i class="fas fa-server"></i> DNS &amp; DHCP</h2>
+                <p>Domain Name System &amp; Dynamic Host Configuration Protocol</p>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 30px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #00ffff; margin-bottom: 5px;">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div style="font-size: 12px; color: #888;">Resolução de Nomes</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #ff00ff; margin-bottom: 5px;">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div style="font-size: 12px; color: #888;">Atribuição de IP</div>
+                </div>
+            </div>
+        </div>
+        <!-- Professor info -->
+        <div class="professor-info">
+            <div class="professor-name">
+                <i class="fas fa-user-tie"></i> Prof. Carlos Bruno Oliveira Lopes
+            </div>
+            <div class="professor-title">Redes de Computadores</div>
+            <div class="contact-info">
+                <i class="fas fa-envelope"></i> carlos.lopes@am.senac.br<br />
+                <i class="fab fa-linkedin"></i> in/carlosbruno-lopes/
+            </div>
+        </div>
+        <!-- Institution info -->
+        <div class="institution-info">
+            <div class="institution-name">Senac - FATESE</div>
+            <div class="institution-details">
+                Faculdade de Tecnologia do Senac<br />
+                Curso: Análise e Desenvolvimento de Sistemas
+            </div>
+        </div>
+        <!-- Floating icons -->
+        <div class="dns-icon">
+            <i class="fas fa-network-wired"></i>
+        </div>
+        <div class="dhcp-icon">
+            <i class="fas fa-random"></i>
+        </div>
+    </div>
+</body>
+
+</html>

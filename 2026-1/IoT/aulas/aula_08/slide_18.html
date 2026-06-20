@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Conclusão e Próximos Passos - Wi-Fi no ESP32</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 60px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            color: #00BCD4;
+            font-size: 20px;
+        }
+
+        .card-content {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .summary-icon {
+            color: #00BCD4;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .next-lesson {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(0, 188, 212, 0.2));
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 188, 212, 0.5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00BCD4;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .tip-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .tip-icon {
+            color: #FFC107;
+            font-size: 24px;
+            margin-top: 2px;
+        }
+
+        .tip-content {
+            flex: 1;
+        }
+
+        .tip-title {
+            color: #FFC107;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .tip-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            width: 93.8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .footer-icon {
+            color: #00BCD4;
+            font-size: 16px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            background: rgba(0, 188, 212, 0.2);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #00BCD4;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            border-radius: 4px;
+            width: 85%;
+        }
+
+        .highlight {
+            color: #00BCD4;
+            font-weight: 700;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .contact-icon {
+            color: #00BCD4;
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <h1 class="main-title">Conclusão e Próximos Passos</h1>
+                    <p class="subtitle">Resumo do aprendizado e próximas atividades</p>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i> Aula Concluída
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-title">
+                            <i class="fas fa-graduation-cap card-icon"></i>
+                            O que você aprendeu hoje
+                        </div>
+                        <div class="card-content">
+                            <ul class="summary-list">
+                                <li class="summary-item">
+                                    <i class="fas fa-check summary-icon"></i>
+                                    <span>Fundamentos do Wi-Fi no ESP32 (802.11 b/g/n, 2.4 GHz) e modos STA, AP e
+                                        STA+AP</span>
+                                </li>
+                                <li class="summary-item">
+                                    <i class="fas fa-check summary-icon"></i>
+                                    <span>Scanner de redes (SSID/RSSI) e conexão automática com reconexão</span>
+                                </li>
+                                <li class="summary-item">
+                                    <i class="fas fa-check summary-icon"></i>
+                                    <span>Noções de segurança (WPA2/WPA3) e princípios de código limpo</span>
+                                </li>
+                                <li class="summary-item">
+                                    <i class="fas fa-check summary-icon"></i>
+                                    <span>Implementação de algoritmos de escaneamento de redes</span>
+                                </li>
+                                <li class="summary-item">
+                                    <i class="fas fa-check summary-icon"></i>
+                                    <span>Desenvolvimento de lógica de conexão automática com tratamento de erros</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card next-lesson">
+                        <div class="card-title">
+                            <i class="fas fa-arrow-right card-icon"></i>
+                            Próxima Aula: WebServer Local
+                        </div>
+                        <div class="card-content">
+                            <p>Construção de um <span class="highlight">WebServer local</span> no ESP32 para controle
+                                via navegador do celular. Você poderá controlar dispositivos IoT remotamente através de
+                                uma interface web.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-tasks card-icon"></i>
+                            Tarefa para Casa
+                        </div>
+                        <div class="card-content">
+                            <div class="task-list">
+                                <div class="task-item">
+                                    <div class="task-checkbox"><i class="fas fa-check"></i></div>
+                                    <span>Salvar projeto no Wokwi</span>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-checkbox"><i class="fas fa-check"></i></div>
+                                    <span>Fazer commit no GitHub da disciplina</span>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-checkbox"><i class="fas fa-check"></i></div>
+                                    <span>Validar código com instrutor</span>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-checkbox"><i class="fas fa-check"></i></div>
+                                    <span>Testar conexão com diferentes redes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-address-book card-icon"></i>
+                            Contatos do Professor
+                        </div>
+                        <div class="card-content">
+                            <div class="contact-row">
+                                <i class="fas fa-user contact-icon"></i>
+                                <span>Carlos Bruno Oliveira Lopes</span>
+                            </div>
+                            <div class="contact-row">
+                                <i class="fas fa-envelope contact-icon"></i>
+                                <span>carlos.lopes@am.senac.br</span>
+                            </div>
+                            <div class="contact-row">
+                                <i class="fab fa-github contact-icon"></i>
+                                <span>github.com/carlosbrunocb</span>
+                            </div>
+                            <div class="contact-row" style="margin-bottom: 0;">
+                                <i class="fab fa-linkedin contact-icon"></i>
+                                <span>in/carlosbruno-lopes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tip-box">
+                        <div class="tip-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="tip-content">
+                            <div class="tip-title">Dica do Instrutor</div>
+                            <div class="tip-text">No Wokwi a conexão é instantânea, mas no mundo real, associação + DHCP
+                                podem levar 2-10s. Projete timeouts e reconexões adequados para evitar falhas.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-clock footer-icon"></i>
+                    <span>Duração: 1h 45min</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-wifi footer-icon"></i>
+                    <span>Wi-Fi no ESP32</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 600;">85%</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

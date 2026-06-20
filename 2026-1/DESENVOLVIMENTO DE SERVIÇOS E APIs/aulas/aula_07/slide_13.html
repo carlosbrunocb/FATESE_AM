@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O que é Content Negotiation?</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 145px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 17pt;
+            color: #1a365d;
+        }
+
+        .card-content {
+            font-size: 14pt;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .highlight {
+            color: #2c5282;
+            font-weight: 700;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12pt;
+            color: #4a5568;
+        }
+
+        .feature-item i {
+            color: #3182ce;
+            font-size: 12pt;
+            margin-top: 3px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 5px 0 15px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .flow-step i {
+            font-size: 18px;
+            color: #3182ce;
+            margin-bottom: 4px;
+        }
+
+        .flow-step .label {
+            font-size: 11pt;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .flow-step .desc {
+            font-size: 9pt;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .arrow-right {
+            color: #3182ce;
+            font-size: 16px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 22px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .code-block {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 10pt;
+            color: #2d3748;
+            margin-top: 5px;
+            flex-grow: 1;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11pt;
+            color: #718096;
+        }
+
+        .code-content {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .http-method {
+            color: #3182ce;
+            font-weight: 600;
+        }
+
+        .header-key {
+            color: #e53e3e;
+        }
+
+        .header-value {
+            color: #38a169;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-handshake"></i> O que é Content Negotiation?
+                </div>
+                <div class="page-subtitle">
+                    Mecanismo HTTP para negociação de formato de dados entre cliente e servidor
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Content Negotiation</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="card-title">Conceito e Funcionamento</div>
+                        </div>
+                        <div class="card-content">
+                            <span class="highlight">Content Negotiation</span> é o mecanismo HTTP pelo qual o cliente
+                            informa ao servidor quais formatos de dados ele aceita receber, permitindo que o servidor
+                            escolha a melhor representação disponível.
+                        </div>
+                        <div class="flow-diagram">
+                            <div class="flow-step">
+                                <i class="fas fa-desktop"></i>
+                                <div class="label">Cliente</div>
+                                <div class="desc">Envia requisição</div>
+                            </div>
+                            <div class="arrow-right">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="flow-step">
+                                <i class="fas fa-server"></i>
+                                <div class="label">Servidor</div>
+                                <div class="desc">Analisa Accept</div>
+                            </div>
+                            <div class="arrow-right">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="flow-step">
+                                <i class="fas fa-file-alt"></i>
+                                <div class="label">Resposta</div>
+                                <div class="desc">Formato negociado</div>
+                            </div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Accept Header:</strong> Cliente informa preferências (application/json,
+                                    application/xml)</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Content-Type:</strong> Servidor responde com formato escolhido</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>406 Not Acceptable:</strong> Retornado quando formato não é
+                                    suportado</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto; margin-top: 5px;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="card-title">Headers HTTP Importantes</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Exemplo de requisição</span>
+                                <span>GET /api/livros</span>
+                            </div>
+                            <div class="code-content">
+                                <div><span class="http-method">GET</span> /api/livros HTTP/1.1</div>
+                                <div><span class="header-key">Host:</span> <span
+                                        class="header-value">localhost:3000</span></div>
+                                <div><span class="header-key">Accept:</span> <span
+                                        class="header-value">application/json, application/xml</span></div>
+                                <div><span class="header-key">Accept-Language:</span> <span
+                                        class="header-value">pt-BR</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="card-title">Por que é Importante?</div>
+                        </div>
+                        <div class="card-content">
+                            Permite que APIs REST sejam <span class="highlight">flexíveis</span> e atendam a diferentes
+                            tipos de clientes.
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Flexibilidade:</strong> Suporte a múltiplos formatos</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Compatibilidade:</strong> Integração com legados</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Evolução:</strong> Mudanças sem quebrar clientes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto; margin-top: 5px;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="card-title">Boas Práticas</div>
+                        </div>
+                        <div class="feature-list" style="gap: 12px;">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Padrão JSON:</strong> Defina como formato padrão</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Documentação:</strong> Liste formatos suportados na API</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Vary Header:</strong> Inclua no cabeçalho para controle de cache</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Validação:</strong> Verifique sempre o Accept header enviado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

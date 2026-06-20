@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ciclo Red-Green-Refactor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        .slide-container {
+            /* ALTERAÇÃO: Ocupa 100% da janela */
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background-color: #f1f5f9;
+            z-index: 0;
+            border-bottom: 4px solid #e2e8f0;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        /* Cycle Diagram Styles */
+        .cycle-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        .cycle-graphic {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Central Logo/Text */
+        .center-hub {
+            width: 140px;
+            height: 140px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 20;
+            position: absolute;
+            border: 8px solid #f8fafc;
+        }
+
+        /* Phase Cards positioned around */
+        .phase-card {
+            position: absolute;
+            width: 350px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        /* Red Phase - Top Left */
+        .phase-red {
+            top: 0;
+            left: -180px;
+            border-left: 6px solid #ef4444;
+        }
+
+        /* Green Phase - Top Right */
+        .phase-green {
+            top: 0;
+            right: -180px;
+            border-left: 6px solid #22c55e;
+        }
+
+        /* Refactor Phase - Bottom Center */
+        .phase-blue {
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid #3b82f6;
+            width: 380px;
+        }
+
+        /* Arrows connecting phases */
+        .arrow-connector {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 4px dashed #cbd5e1;
+            z-index: 1;
+            transform: rotate(-30deg);
+        }
+
+        .arrow-head {
+            position: absolute;
+            font-size: 24px;
+            color: #94a3b8;
+        }
+
+        .arrow-1 {
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) rotate(90deg);
+        }
+
+        /* Red to Green */
+        .arrow-2 {
+            bottom: 120px;
+            right: 40px;
+            transform: rotate(150deg);
+        }
+
+        /* Green to Refactor */
+        .arrow-3 {
+            bottom: 120px;
+            left: 40px;
+            transform: rotate(30deg);
+        }
+
+        /* Content Typography */
+        .phase-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-desc {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .phase-step {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="content-wrapper">
+            <div>
+                <p class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-1">Metodologia TDD</p>
+                <h1 class="slide-title">O Ciclo Red-Green-Refactor</h1>
+                <p class="slide-subtitle">A essência do Test Driven Development em três passos contínuos</p>
+            </div>
+            <div class="cycle-container">
+                <div class="cycle-graphic">
+                    <div class="arrow-connector"></div>
+                    <i class="fas fa-chevron-right arrow-head arrow-1"></i>
+                    <i class="fas fa-chevron-right arrow-head arrow-2"></i>
+                    <i class="fas fa-chevron-right arrow-head arrow-3"></i>
+                    <div class="center-hub">
+                        <i class="fas fa-sync-alt text-4xl text-slate-400 mb-2"></i>
+                        <span class="font-bold text-slate-600">TDD</span>
+                    </div>
+                    <div class="phase-card phase-red">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="phase-step bg-red-100 text-red-700">Passo 1</span>
+                            <div class="step-number bg-red-500">1</div>
+                        </div>
+                        <h3 class="phase-title text-red-600">
+                            <i class="fas fa-times-circle"></i> RED (Vermelho)
+                        </h3>
+                        <p class="phase-desc">
+                            Escreva um pequeno teste para uma funcionalidade que ainda <strong>não existe</strong>.
+                            <br /><br />
+                            <span class="text-slate-500 italic text-sm"><strong>Objetivo:</strong> Ver o teste falhar (garante que o
+                                teste detecta ausência da lógica).</span>
+                        </p>
+                    </div>
+                    <div class="phase-card phase-green">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="phase-step bg-green-100 text-green-700">Passo 2</span>
+                            <div class="step-number bg-green-500">2</div>
+                        </div>
+                        <h3 class="phase-title text-green-600">
+                            <i class="fas fa-check-circle"></i> GREEN (Verde)
+                        </h3>
+                        <p class="phase-desc">
+                            Escreva o código <strong>mínimo necessário</strong> apenas para fazer o teste passar.
+                            <br /><br />
+                            <span class="text-slate-500 italic text-sm"><strong>Objetivo:</strong> Sair do estado de erro rapidamente.
+                                Não foque em perfeição agora.</span>
+                        </p>
+                    </div>
+                    <div class="phase-card phase-blue">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="phase-step bg-blue-100 text-blue-700">Passo 3</span>
+                            <div class="step-number bg-blue-500">3</div>
+                        </div>
+                        <h3 class="phase-title text-blue-600">
+                            <i class="fas fa-tools"></i> REFACTOR (Refatorar)
+                        </h3>
+                        <p class="phase-desc">
+                            Melhore o código (limpeza, padrões, remoção de duplicidade) garantindo que os <strong>testes
+                                continuem passando</strong>.
+                            <br /><br />
+                            <span class="text-slate-500 italic text-sm"><strong>Objetivo:</strong> Melhorar a qualidade do código com
+                                segurança (rede de proteção).</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center text-slate-400 text-sm mt-4">
+                <p><i class="fas fa-info-circle mr-2"></i>Repita este ciclo para cada nova pequena funcionalidade.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

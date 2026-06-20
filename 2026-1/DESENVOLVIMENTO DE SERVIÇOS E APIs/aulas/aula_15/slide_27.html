@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Laboratório Prático: Testes com Postman</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* --- CONFIGURAÇÃO DO GRID PRINCIPAL --- */
+        .slide-container {
+            display: grid;
+            /* Define 3 linhas: Cabeçalho (auto), Conteúdo (flexível), Rodapé (auto) */
+            grid-template-rows: auto 1fr auto;
+            width: 100vw;
+            height: 100vh;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* --- ÁREA DE CONTEÚDO --- */
+        .main-content {
+            padding: 30px 40px;
+            overflow-y: auto; /* Permite scroll se o conteúdo for maior que a tela em altura */
+            z-index: 5;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .test-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .test-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .test-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .test-status {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .test-content {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.3;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .test-result {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 6px 8px;
+            background: #f0f9ff;
+            border-radius: 6px;
+        }
+
+        .result-icon {
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .result-text {
+            font-size: 11px;
+            color: #475569;
+        }
+
+        /* --- RODAPÉ --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 40px 20px 40px; /* Margens para não encostar na borda da tela */
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 54px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Ajuste para telas menores/Mobile (Responsividade Extra) */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title {
+                font-size: 20px;
+            }
+            .header-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div>
+                    <div class="header-title">Laboratório Prático: Testes com Postman</div>
+                    <div class="header-subtitle">Validação das versões v1 e v2 da API da Livraria</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Teste v1: Array Simples</div>
+                                <div class="section-subtitle">GET /api/v1/livros</div>
+                            </div>
+                        </div>
+                        <div class="test-panel">
+                            <div class="test-item">
+                                <div class="test-header">
+                                    <div class="test-title">
+                                        <i class="fas fa-check-circle"></i> Requisição v1
+                                    </div>
+                                    <div class="test-status status-success">✓ Sucesso</div>
+                                </div>
+                                <div class="test-content">
+                                    <strong>URL:</strong> http://localhost:3000/api/v1/livros<br />
+                                    <strong>Método:</strong> GET<br />
+                                    <strong>Headers:</strong> Content-Type: application/json
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-content">
+                                        <span class="code-comment">// Resposta esperada (Array)</span><br />
+                                        [<br />
+                                        &nbsp;&nbsp;{<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"id"</span>: <span class="code-string">"1"</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"titulo"</span>: <span class="code-string">"A"</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"autor"</span>: <span class="code-string">"Autor A"</span><br />
+                                        &nbsp;&nbsp;},<br />
+                                        &nbsp;&nbsp;{<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"id"</span>: <span class="code-string">"2"</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"titulo"</span>: <span class="code-string">"B"</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"autor"</span>: <span class="code-string">"Autor B"</span><br />
+                                        &nbsp;&nbsp;}<br />
+                                        ]
+                                    </div>
+                                </div>
+                                <div class="test-result">
+                                    <div class="result-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="result-text">
+                                        Status: 200 OK | Content-Type: application/json
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-header">
+                                    <div class="test-title">
+                                        <i class="fas fa-exclamation-triangle"></i> Headers de Depreciação
+                                    </div>
+                                    <div class="test-status status-pending">⚠ Aviso</div>
+                                </div>
+                                <div class="test-content">
+                                    <strong>Deprecation:</strong> true<br />
+                                    <strong>Sunset:</strong> 2026-12-31<br />
+                                    <strong>Link:</strong> &lt;https://docs.exemplo.com/migracao-v2&gt;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Teste v2: Paginação</div>
+                                <div class="section-subtitle">GET /api/v2/livros?pagina=1&amp;limite=2</div>
+                            </div>
+                        </div>
+                        <div class="test-panel">
+                            <div class="test-item">
+                                <div class="test-header">
+                                    <div class="test-title">
+                                        <i class="fas fa-check-circle"></i> Requisição v2
+                                    </div>
+                                    <div class="test-status status-success">✓ Sucesso</div>
+                                </div>
+                                <div class="test-content">
+                                    <strong>URL:</strong> http://localhost:3000/api/v2/livros?pagina=1&amp;limite=2<br />
+                                    <strong>Método:</strong> GET<br />
+                                    <strong>Query Params:</strong> pagina=1, limite=2
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-content">
+                                        <span class="code-comment">// Resposta esperada (Objeto Paginado)</span><br />
+                                        {<br />
+                                        &nbsp;&nbsp;<span class="code-string">"dados"</span>: [<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="code-string">"id"</span>: <span class="code-string">"1"</span>, <span class="code-string">"titulo"</span>: <span class="code-string">"A"</span> },<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="code-string">"id"</span>: <span class="code-string">"2"</span>, <span class="code-string">"titulo"</span>: <span class="code-string">"B"</span> }<br />
+                                        &nbsp;&nbsp;],<br />
+                                        &nbsp;&nbsp;<span class="code-string">"paginacao"</span>: {<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"totalRegistros"</span>: <span class="code-string">50</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"paginaAtual"</span>: <span class="code-string">1</span>,<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"totalPaginas"</span>: <span class="code-string">25</span><br />
+                                        &nbsp;&nbsp;}<br />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="test-result">
+                                    <div class="result-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="result-text">
+                                        Status: 200 OK | Total: 50 registros
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-header">
+                                    <div class="test-title">
+                                        <i class="fas fa-filter"></i> Filtros Disponíveis
+                                    </div>
+                                </div>
+                                <div class="test-content">
+                                    <strong>titulo:</strong> busca por título (regex)<br />
+                                    <strong>pagina:</strong> número da página<br />
+                                    <strong>limite:</strong> itens por página (10, 25, 50)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>2 versões testadas</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

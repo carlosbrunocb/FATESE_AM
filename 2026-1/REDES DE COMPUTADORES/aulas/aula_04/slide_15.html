@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sub-redes e Cálculo de Máscara</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #00264d;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #00264d;
+            color: white;
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 3vw 3vw; /* Tamanho da grade proporcional à largura */
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .header {
+            padding: 3vh 5vw 1vh 5vw;
+            z-index: 10;
+            background-color: #00264d;
+            flex-shrink: 0;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.2vw;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .title-accent {
+            width: 6vw;
+            height: 0.8vh;
+            background-color: #00bceb;
+            margin-top: 1vh;
+            border-radius: 3px;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            padding: 2vh 5vw 4vh 5vw;
+            gap: 3vw;
+            position: relative;
+            z-index: 10;
+            align-items: center;
+        }
+
+        .process-column {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .process-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8vw;
+            color: #00bceb;
+            margin-bottom: 2vh;
+            padding-left: 1vw;
+            border-left: 0.3vw solid #ffffff;
+        }
+
+        .flow-container {
+            position: relative;
+            padding-left: 1vw;
+        }
+
+        .flow-line {
+            position: absolute;
+            left: 3.4vw;
+            top: 2vh;
+            bottom: 2vh;
+            width: 0.3vw;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2.5vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-icon-box {
+            width: 4.5vw;
+            height: 4.5vw;
+            background-color: #00264d;
+            border: 0.2vw solid #00bceb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00bceb;
+            font-size: 1.5vw;
+            margin-right: 2vw;
+            flex-shrink: 0;
+            box-shadow: 0 0 1vw rgba(0, 188, 235, 0.3);
+        }
+
+        .step-content {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 1.5vh 1.5vw;
+            border-radius: 0.8vw;
+            flex: 1;
+            border-left: 0.4vw solid rgba(0, 188, 235, 0.5);
+        }
+
+        .step-title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3vw;
+            color: white;
+        }
+
+        .step-desc {
+            margin: 0;
+            font-size: 1.1vw;
+            color: #cbd5e1;
+            line-height: 1.3;
+        }
+
+        .example-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+        }
+
+        .example-card {
+            background-color: #003366;
+            border-radius: 1vw;
+            padding: 2vh 2vw;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #00bceb;
+            color: #00264d;
+            font-weight: 700;
+            font-size: 0.8vw;
+            padding: 0.5vh 1vw;
+            border-bottom-left-radius: 0.8vw;
+        }
+
+        .example-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4vw;
+            margin-bottom: 1.5vh;
+        }
+
+        .code-block {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5vw;
+            padding: 1.5vh;
+            font-size: 1.1vw;
+            color: #a5f3fc;
+            border-left: 0.3vw solid #f59e0b;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8vh;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.4vh;
+        }
+        
+        .calc-visual {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 0.5vw;
+            padding: 1vh;
+            text-align: center;
+            font-size: 1.2vw;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="bg-grid"></div>
+        <header class="header">
+            <h1 class="main-title">Sub-redes e Cálculo de Máscara</h1>
+            <div class="title-accent"></div>
+        </header>
+        <main class="content-area">
+            <div class="process-column">
+                <h2 class="process-title">Fluxo de Cálculo de Subnetting</h2>
+                <div class="flow-container">
+                    <div class="flow-line"></div>
+                    <div class="flow-step">
+                        <div class="step-icon-box"><i class="fas fa-search"></i></div>
+                        <div class="step-content">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="step-title-text">Identificar Rede e Máscara</span>
+                                <span class="text-xs opacity-40 font-bold">01</span>
+                            </div>
+                            <p class="step-desc">Determine o IP e o prefixo CIDR (ex: /24).</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-icon-box"><i class="fas fa-calculator"></i></div>
+                        <div class="step-content">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="step-title-text">Calcular Tamanho do Bloco</span>
+                                <span class="text-xs opacity-40 font-bold">02</span>
+                            </div>
+                            <p class="step-desc">Use a fórmula: <strong>2<sup>(32 - prefixo)</sup></strong>.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-icon-box"><i class="fas fa-arrows-alt-h"></i></div>
+                        <div class="step-content">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="step-title-text">Definir Limites</span>
+                                <span class="text-xs opacity-40 font-bold">03</span>
+                            </div>
+                            <p class="step-desc">Primeiro IP (Rede) e Último IP (Broadcast).</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-icon-box"><i class="fas fa-users"></i></div>
+                        <div class="step-content">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="step-title-text">Definir Range de Hosts</span>
+                                <span class="text-xs opacity-40 font-bold">04</span>
+                            </div>
+                            <p class="step-desc">IPs válidos para dispositivos (entre rede e broadcast).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="example-column">
+                <div class="example-card">
+                    <div class="card-tag">BÁSICO</div>
+                    <h3 class="example-title"><i class="fas fa-laptop-code text-yellow-500 mr-2"></i> Máscara /24</h3>
+                    <div class="code-block">
+                        <div class="info-row"><span class="opacity-60">Máscara</span><span>255.255.255.0</span></div>
+                        <div class="info-row" style="border:none"><span class="opacity-60">Hosts</span><span>254</span></div>
+                    </div>
+                </div>
+                <div class="example-card">
+                    <div class="card-tag">PRÁTICA</div>
+                    <h3 class="example-title"><i class="fas fa-network-wired text-yellow-500 mr-2"></i> 192.168.10.0/24</h3>
+                    <div class="calc-visual mb-3">
+                        2<sup>(32-24)</sup> = <span class="text-blue-400 font-bold">256 IPs</span>
+                    </div>
+                    <div class="text-sm">
+                        <div class="info-row"><span class="opacity-60">Rede</span><span class="text-blue-400">.0</span></div>
+                        <div class="info-row" style="border:none"><span class="opacity-60">Broadcast</span><span class="text-yellow-500">.255</span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

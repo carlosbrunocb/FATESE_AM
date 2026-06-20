@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Limitações do HTTP para IoT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Problem List */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+            height: 125px;
+        }
+
+        .problem-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .problem-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .problem-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .problem-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .problem-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        .problem-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: auto;
+            align-self: flex-start;
+        }
+
+        /* Right Column - Visual Summary */
+        .right-column {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            height: 545px;
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Color Coding */
+        .card-1 {
+            border-left-color: #FF5252;
+        }
+
+        .card-1 .problem-icon {
+            background: #ffebee;
+            color: #FF5252;
+        }
+
+        .card-1 .problem-status {
+            background: #ffebee;
+            color: #FF5252;
+        }
+
+        .card-2 {
+            border-left-color: #FF9800;
+        }
+
+        .card-2 .problem-icon {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .card-2 .problem-status {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .card-3 {
+            border-left-color: #FFC107;
+        }
+
+        .card-3 .problem-icon {
+            background: #fff8e1;
+            color: #FFC107;
+        }
+
+        .card-3 .problem-status {
+            background: #fff8e1;
+            color: #FFC107;
+        }
+
+        .card-4 {
+            border-left-color: #4CAF50;
+        }
+
+        .card-4 .problem-icon {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .card-4 .problem-status {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 12px; color: #FF5252;"></i>
+                    Limitações do HTTP para IoT
+                </div>
+                <div class="header-subtitle">Desafios e problemas do protocolo HTTP em aplicações IoT</div>
+            </div>
+            <div class="header-right">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="progress-text">45%</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="problem-card card-1">
+                    <div class="problem-icon">
+                        <i class="fas fa-battery-half"></i>
+                    </div>
+                    <div class="problem-content">
+                        <div class="problem-title">Alto Consumo de Energia</div>
+                        <div class="problem-desc">HTTP exige abertura de conexões a cada requisição, aumentando consumo
+                            de bateria em dispositivos IoT.</div>
+                        <span class="problem-status">Crítico</span>
+                    </div>
+                </div>
+                <div class="problem-card card-2">
+                    <div class="problem-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="problem-content">
+                        <div class="problem-title">Latência Elevada</div>
+                        <div class="problem-desc">Overhead de conexão e cabeçalhos por mensagem causa maior latência em
+                            comunicação.</div>
+                        <span class="problem-status">Alto</span>
+                    </div>
+                </div>
+                <div class="problem-card card-3">
+                    <div class="problem-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="problem-content">
+                        <div class="problem-title">Dificuldade Bidirecional</div>
+                        <div class="problem-desc">Comunicação bidirecional em tempo real requer extensões como
+                            WebSocket.</div>
+                        <span class="problem-status">Médio</span>
+                    </div>
+                </div>
+                <div class="problem-card card-4">
+                    <div class="problem-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <div class="problem-content">
+                        <div class="problem-title">Escalabilidade Limitada</div>
+                        <div class="problem-desc">Menor eficiência em cenários com muitos dispositivos comunicando
+                            frequentemente.</div>
+                        <span class="problem-status">Baixo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <div class="summary-title">
+                            <i class="fas fa-chart-pie" style="margin-right: 8px;"></i>
+                            Análise de Impacto
+                        </div>
+                    </div>
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Consumo de Bateria</span>
+                            <span class="stat-value">+45%</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Latência Média</span>
+                            <span class="stat-value">+120ms</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: 70%;"></div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Uso de Memória</span>
+                            <span class="stat-value">+30%</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 16px; color: #666; margin-bottom: 12px; font-weight: 500;">
+                            <i class="fas fa-lightbulb" style="margin-right: 8px; color: #FFC107;"></i>
+                            Recomendação
+                        </div>
+                        <div style="font-size: 14px; color: #555; line-height: 1.5;">
+                            Migrar para MQTT para reduzir overhead e melhorar eficiência
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">5/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Código Completo - Parte 1: Setup e Conexão Wi-Fi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* Permite rolagem em telas menores */
+            min-height: 100vh;
+            overflow-x: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+        }
+
+        /* Container principal usando Grid */
+        .slide-container {
+            width: 100%;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: 70px 1fr auto; /* Header, Main (Conteúdo + Nota), Rodapé */
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            box-sizing: border-box;
+            padding-bottom: 25px;
+        }
+
+        /* Novas classes de layout responsivo */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-sizing: border-box;
+        }
+
+        .slide-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 5% 0 5%;
+            box-sizing: border-box;
+        }
+
+        .grid-columns {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; /* Proporção original das colunas */
+            gap: 25px;
+            flex: 1;
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5% 0 5%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Quebra as colunas em telas menores */
+        @media (max-width: 800px) {
+            .grid-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estilos originais preservados */
+        .code-container {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            overflow-y: auto;
+            max-height: 400px; /* Ajuda no controle de rolagem interna */
+        }
+
+        .syntax-key { color: #fbbf24; }
+        .syntax-string { color: #34d399; }
+        .syntax-number { color: #60a5fa; }
+        .syntax-comment { color: #94a3b8; font-style: italic; }
+        .syntax-type { color: #93c5fd; }
+        .syntax-function { color: #a78bfa; }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-code" style="font-size: 24px; color: #3b82f6;"></i>
+                <span style="font-size: clamp(16px, 2vw, 20px); color: #ffffff; font-weight: 600;">
+                    Código Completo - Parte 1: Setup e Conexão Wi-Fi
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                <span style="font-size: 14px; color: #94a3b8;">Aula 11</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">|</span>
+                <span style="font-size: 14px; color: #94a3b8;">ESP32 + HTTPClient</span>
+            </div>
+        </div>
+
+        <div class="slide-main">
+            <div style="text-align: center;">
+                <h1 style="font-size: clamp(24px, 3vw, 32px); font-weight: 700; color: #ffffff; margin: 0 0 8px 0;">
+                    <i class="fas fa-wifi" style="color: #3b82f6; margin-right: 12px;"></i>Configuração Inicial do ESP32
+                </h1>
+                <p style="font-size: clamp(14px, 1.5vw, 16px); color: #94a3b8; margin: 0;">
+                    Includes, constantes, variáveis de temporização e função setup() com conexão WiFi
+                </p>
+            </div>
+
+            <div class="grid-columns">
+                
+                <div style="display: flex; flex-direction: column; height: 100%;">
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; height: 100%; display: flex; flex-direction: column;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                <i class="fas fa-file-code" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Código Fonte</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Setup e conexão WiFi</div>
+                            </div>
+                        </div>
+                        <div class="code-container" style="flex: 1;">
+                            <div style="margin-bottom: 8px;"><span class="syntax-comment">// Aula 11 - Redes e APIs</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-comment">// App: Consulta de Clima com JSON e REST</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">#include</span> <span class="syntax-string">&lt;WiFi.h&gt;</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">#include</span> <span class="syntax-string">&lt;HTTPClient.h&gt;</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">#include</span> <span class="syntax-string">&lt;ArduinoJson.h&gt;</span></div>
+                            <div style="margin-bottom: 15px;"></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-comment">// Credenciais Wi-Fi para o ambiente simulado Wokwi</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">const char*</span> ssid = <span class="syntax-string">"Wokwi-GUEST"</span>;</div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">const char*</span> password = <span class="syntax-string">""</span>; <span class="syntax-comment">// vazio no Wokwi</span></div>
+                            <div style="margin-bottom: 15px;"></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-comment">// URL da API Open-Meteo configurada para as coordenadas de Manaus/AM</span></div>
+                            <div style="margin-bottom: 8px; word-break: break-all;"><span class="syntax-key">const char*</span> urlApi = <span class="syntax-string">"http://api.open-meteo.com/v1/forecast?latitude=-3.119&amp;longitude=-60.021&amp;current=temperature_2m,relative_humidity_2m"</span>;</div>
+                            <div style="margin-bottom: 15px;"></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-comment">// Variáveis para temporização não-bloqueante</span></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-type">unsigned long</span> tempoAnterior = <span class="syntax-number">0</span>;</div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-key">const long</span> intervaloRequisicao = <span class="syntax-number">15000</span>;</div>
+                            <div style="margin-bottom: 15px;"></div>
+                            <div style="margin-bottom: 8px;"><span class="syntax-type">void</span> <span class="syntax-function">setup</span>() {</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-function">Serial.begin</span>(<span class="syntax-number">115200</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-function">delay</span>(<span class="syntax-number">100</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-function">Serial.println</span>(<span class="syntax-string">"Conectando ao Wi-Fi..."</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-type">WiFi.mode</span>(WIFI_STA);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-type">WiFi.begin</span>(ssid, password);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-key">while</span> (<span class="syntax-type">WiFi.status</span>() != WL_CONNECTED) {</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-function">delay</span>(<span class="syntax-number">500</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-type">Serial.print</span>(<span class="syntax-string">"."</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;}</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-function">Serial.println</span>(<span class="syntax-string">"\nWi-Fi conectado!"</span>);</div>
+                            <div style="margin-bottom: 8px;">&nbsp;&nbsp;<span class="syntax-type">Serial.print</span>(<span class="syntax-string">"IP: "</span>); <span class="syntax-type">Serial.println</span>(<span class="syntax-type">WiFi.localIP</span>());</div>
+                            <div style="margin-bottom: 8px;">}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px; height: 100%;">
+                    
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <i class="fas fa-cube" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Bibliotecas</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Includes necessários</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
+                                <span style="font-size: 14px; color: #cbd5e1;"><strong>WiFi.h</strong> - Conexão WiFi</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                                <span style="font-size: 14px; color: #cbd5e1;"><strong>HTTPClient.h</strong> - Requisições HTTP</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></div>
+                                <span style="font-size: 14px; color: #cbd5e1;"><strong>ArduinoJson.h</strong> - Parsing JSON</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                <i class="fas fa-wifi" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Configuração WiFi</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Credenciais e conexão</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; color: #cbd5e1; line-height: 1.8;">
+                            <div style="margin-bottom: 4px;"><strong>SSID:</strong> Wokwi-GUEST</div>
+                            <div style="margin-bottom: 4px;"><strong>Senha:</strong> (vazio)</div>
+                            <div style="margin-bottom: 4px;"><strong>Modo:</strong> WIFI_STA</div>
+                            <div style="margin-bottom: 4px;"><strong>Timeout:</strong> Conexão automática</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 16px 20px; border-radius: 6px; display: flex; align-items: center; gap: 15px; margin-top: auto;">
+                <i class="fas fa-lightbulb" style="color: #10b981; font-size: 20px;"></i>
+                <div style="font-size: 14px; color: #cbd5e1;">
+                    <strong style="color: #ffffff;">Dica:</strong> Use <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #fbbf24;">WiFi.setSleep(false)</code> para melhorar a latência em aplicações críticas.
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-info-circle" style="font-size: 16px; color: #3b82f6;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">Parte 1: Setup e Conexão WiFi - ESP32 como Cliente HTTP</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="font-size: 16px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">16 de Maio de 2026</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

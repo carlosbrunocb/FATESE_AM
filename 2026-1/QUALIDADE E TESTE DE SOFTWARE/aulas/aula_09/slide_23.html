@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade de Laboratório - Código-alvo processar_pedido</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 25px 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 17px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+            max-width: 300px;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 10px 0;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            flex: 1.3;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .code-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10.5pt;
+            color: #e2e8f0;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            flex-grow: 1;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .line-number {
+            color: #64748b;
+            font-size: 11px;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+        }
+
+        .keyword {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #22c55e;
+        }
+
+        .comment {
+            color: #64748b;
+        }
+
+        .number {
+            color: #f59e0b;
+        }
+
+        /* Test Cases Section */
+        .test-section {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            flex: 0.7;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .test-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .test-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 12px;
+        }
+
+        .test-id {
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+
+        .test-desc {
+            color: #64748b;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+
+        .test-result {
+            font-family: monospace;
+            color: #22c55e;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* Requirements Section */
+        .requirements-section {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .requirements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .requirement-icon {
+            width: 24px;
+            height: 24px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .requirement-info {
+            flex: 1;
+        }
+
+        .requirement-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .requirement-status {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Decision Analysis */
+        .decision-section {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+
+        .decision-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .decision-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .decision-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .decision-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .decision-icon {
+            width: 24px;
+            height: 24px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .decision-info {
+            flex: 1;
+        }
+
+        .decision-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .decision-status {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 4px;
+            width: 85%;
+        }
+
+        /* Test Values */
+        .test-values {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .test-label {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .test-value {
+            font-family: monospace;
+            color: #3b82f6;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .indent {
+            display: block;
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            display: block;
+            margin-left: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Atividade de Laboratório:</span> processar_pedido()
+                    <span
+                        style="font-size: 14px; color: #64748b; font-weight: 500; margin-left: 15px; max-width: 250px; display: inline-block; vertical-align: middle;">Implementação
+                        de testes para 100% de cobertura</span>
+                </div>
+                <div class="subtitle">
+                    Função com múltiplas decisões e condições compostas
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <!-- Code Section -->
+                    <div class="code-section">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Código Python
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">def processar_pedido(valor, cupom,
+                                cliente_vip, estoque):</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <span class="code-content"><span class="keyword">def</span> <span
+                                        class="string">processar_pedido</span>(valor, cupom, cliente_vip,
+                                    estoque):</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> valor &lt;= <span
+                                        class="number">0</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <span class="code-content indent-2"> <span class="keyword">return</span> <span
+                                        class="string">"invalido"</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> estoque &lt;= <span
+                                        class="number">0</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <span class="code-content indent-2"> <span class="keyword">return</span> <span
+                                        class="string">"sem_estoque"</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <span class="code-content indent"> desconto = <span class="number">0.0</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> cupom == <span
+                                        class="string">"DESC10"</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <span class="code-content indent-2"> desconto += <span class="number">0.10</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">9</span>
+                                <span class="code-content indent"> <span class="keyword">elif</span> cupom == <span
+                                        class="string">"DESC20"</span> <span class="keyword">and</span>
+                                    cliente_vip:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">10</span>
+                                <span class="code-content indent-2"> desconto += <span class="number">0.20</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">11</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> cliente_vip <span
+                                        class="keyword">and</span> valor &gt; <span class="number">500</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">12</span>
+                                <span class="code-content indent-2"> desconto += <span class="number">0.05</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">13</span>
+                                <span class="code-content indent"> total = valor * (<span class="number">1</span> -
+                                    desconto)</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">14</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> total &lt; <span
+                                        class="number">0</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">15</span>
+                                <span class="code-content indent-2"> total = <span class="number">0</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">16</span>
+                                <span class="code-content indent"> <span class="keyword">return</span> <span
+                                        class="string">round</span>(total, <span class="number">2</span>)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Test Cases Section -->
+                    <div class="test-section">
+                        <div class="test-header">
+                            <div class="test-title">
+                                <i class="fas fa-vial"></i>
+                                Casos de Teste (CT1-CT8)
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">8 casos para cobertura completa</div>
+                        </div>
+                        <div class="test-grid">
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT1</div>
+                                <div class="test-desc">valor&lt;=0 → "invalido"</div>
+                                <div class="test-result">n=-1</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT2</div>
+                                <div class="test-desc">estoque&lt;=0 → "sem_estoque"</div>
+                                <div class="test-result">est=0</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT3</div>
+                                <div class="test-desc">cupom DESC10</div>
+                                <div class="test-result">10% off</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT4</div>
+                                <div class="test-desc">cupom DESC20 + VIP</div>
+                                <div class="test-result">20% off</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT5</div>
+                                <div class="test-desc">cupom DESC20 + !VIP</div>
+                                <div class="test-result">0% off</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT6</div>
+                                <div class="test-desc">VIP + valor&gt;500</div>
+                                <div class="test-result">+5% off</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT7</div>
+                                <div class="test-desc">!VIP + valor&gt;500</div>
+                                <div class="test-result">0% off</div>
+                            </div>
+                            <div class="test-item" style="display: flex; flex-direction: column;">
+                                <div class="test-id">CT8</div>
+                                <div class="test-desc">total&lt;0 → 0</div>
+                                <div class="test-result">n=0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <!-- Requirements Section -->
+                    <div class="requirements-section">
+                        <div class="requirements-header">
+                            <div class="requirements-title">
+                                <i class="fas fa-check-circle"></i>
+                                Requisitos de Cobertura
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">100% de decisões e condições</div>
+                        </div>
+                        <div class="requirements-grid">
+                            <div class="requirement-item">
+                                <div class="requirement-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                </div>
+                                <div class="requirement-info">
+                                    <div class="requirement-name">Decisões</div>
+                                    <div class="requirement-status">6/6 (100%)</div>
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-icon">
+                                    <i class="fas fa-equals"></i>
+                                </div>
+                                <div class="requirement-info">
+                                    <div class="requirement-name">Condições</div>
+                                    <div class="requirement-status">12/12 (100%)</div>
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <div class="requirement-info">
+                                    <div class="requirement-name">Caminhos</div>
+                                    <div class="requirement-status">8/8 (100%)</div>
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-icon">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <div class="requirement-info">
+                                    <div class="requirement-name">Erros</div>
+                                    <div class="requirement-status">0/0 (100%)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decision Analysis -->
+                    <div class="decision-section">
+                        <div class="decision-header">
+                            <div class="decision-title">
+                                <i class="fas fa-sitemap"></i>
+                                Análise de Decisões
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">6 decisões identificadas</div>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D1: valor&lt;=0</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D2: estoque&lt;=0</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D3: cupom=="DESC10"</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D4: cupom=="DESC20" and VIP</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D5: VIP and valor&gt;500</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                            <div class="decision-item">
+                                <div class="decision-icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="decision-info">
+                                    <div class="decision-name">D6: total&lt;0</div>
+                                    <div class="decision-status">T/F coberto</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="status-info">
+                    <div class="status-dot"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-text">Progresso: 85%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

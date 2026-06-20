@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Organizando a Suíte com Markers e Seleção</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* Container principal utilizando Flexbox */
+        .slide-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            flex-shrink: 0;
+        }
+
+        /* Envoltório de conteúdo utilizando CSS Grid */
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto 1fr;
+            gap: 20px 40px;
+            padding: 40px 50px;
+            min-height: 0; /* Permite que o flex child não estoure o limite da tela */
+        }
+
+        /* Ocupa as duas colunas inteiras na primeira linha */
+        .title-section {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .badge-aula {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .title-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(24px, 2.5vw, 32px);
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .title-section p {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        /* Estrutura das Colunas em Flexbox para expandir Cards */
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* Faz o card ocupar todo o espaço vertical disponível na coluna */
+            overflow-y: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-header i {
+            color: #004A8D;
+            font-size: 18px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            flex: 1; /* Faz o bloco de código expandir se houver espaço livre */
+        }
+
+        /* Cores do código */
+        .code-comment { color: #94a3b8; }
+        .code-string { color: #a5b4fc; }
+        .code-function { color: #60a5fa; }
+        .code-decorator { color: #fbbf24; }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .grid-item {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .grid-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-item h4 i {
+            color: #004A8D;
+            font-size: 14px;
+        }
+
+        .command {
+            background: #f1f5f9;
+            border-left: 3px solid #004A8D;
+            padding: 8px 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #1e293b;
+            border-radius: 0 4px 4px 0;
+            margin-top: 5px;
+        }
+
+        .footer-bar {
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            flex-shrink: 0;
+        }
+
+        .footer-text, .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        
+        <main class="content-wrapper">
+            <div class="title-section">
+                <div class="badge-aula">AULA 11</div>
+                <h1>Organizando a Suíte com Markers e Seleção</h1>
+                <p>Estruturação eficiente de testes de regressão com Pytest</p>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-tags"></i>
+                        <h3>Taxonomia de Markers</h3>
+                    </div>
+                    <p style="font-size: 14px; color: #475569; margin-bottom: 10px;">Organize seus testes por <span class="highlight">risco/objetivo</span> para facilitar a seleção:</p>
+                    <div class="code-block">
+                        <span class="code-decorator">@pytest.mark.regressao</span> <span class="code-comment"># Testes de regressão críticos</span><br />
+                        <span class="code-decorator">@pytest.mark.smoke</span> <span class="code-comment"># Verificação rápida de saúde</span><br />
+                        <span class="code-decorator">@pytest.mark.critico</span> <span class="code-comment"># Alta severidade/negócio</span><br />
+                        <span class="code-decorator">@pytest.mark.slow</span> <span class="code-comment"># Testes que demoram mais</span>
+                    </div>
+                    <p class="info-text">
+                        <i class="fas fa-info-circle" style="color: #004A8D; margin-right: 5px;"></i>
+                        Registre markers em <code>pytest.ini</code> para evitar warnings e padronizar
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-folder-tree"></i>
+                        <h3>Estrutura de Pastas</h3>
+                    </div>
+                    <div class="code-block" style="margin-bottom: 0;">
+                        tests/<br />
+                        ├── <span class="code-function">regressao/</span><br />
+                        │ └── <span class="code-function">test_calculadora.py</span><br />
+                        ├── <span class="code-function">smoke/</span><br />
+                        │ └── <span class="code-function">test_smoke.py</span><br />
+                        ├── <span class="code-function">unit/</span><br />
+                        │ └── <span class="code-function">test_unitarios.py</span><br />
+                        └── <span class="code-function">conftest.py</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-filter"></i>
+                        <h3>Filtragem e Execução</h3>
+                    </div>
+                    <div class="grid-container">
+                        <div class="grid-item">
+                            <h4><i class="fas fa-terminal"></i> Comandos de Filtro</h4>
+                            <div class="command">
+                                pytest -m "regressao and critico" -v
+                            </div>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Executa apenas testes de regressão críticos</p>
+                        </div>
+                        <div class="grid-item">
+                            <h4><i class="fas fa-search"></i> Seleção por Nome</h4>
+                            <div class="command">
+                                pytest -k "soma or divisao" -v
+                            </div>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Executa testes que contenham "soma" ou "divisao"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-cog"></i>
+                        <h3>Configuração pytest.ini</h3>
+                    </div>
+                    <div class="code-block" style="margin-bottom: 0;">
+                        [pytest]<br />
+                        markers =<br />
+                        <span class="code-string">regressao: testes de regressão críticos</span><br />
+                        <span class="code-string">smoke: verificação rápida de saúde</span><br />
+                        <span class="code-string">critico: alta severidade/negócio</span><br />
+                        <span class="code-string">slow: testes que demoram mais</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sockets: IP:Porta e Identificação de Conexões</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 50px;
+            right: 50px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-column .card:first-child {
+            flex: 2;
+        }
+
+        .left-column .card:last-child {
+            flex: 1;
+        }
+
+        .right-column .card:first-child {
+            flex: 2;
+        }
+
+        .right-column .card:last-child {
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .concept-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .concept-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 3px;
+        }
+
+        .concept-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .socket-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .socket-node {
+            text-align: center;
+            flex: 1;
+        }
+
+        .socket-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            margin: 0 auto 6px;
+        }
+
+        .socket-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .socket-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .socket-arrow {
+            color: #2c5282;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .example-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .example-icon {
+            width: 30px;
+            height: 30px;
+            background: #edf2f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c5282;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .example-content {
+            flex: 1;
+        }
+
+        .example-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .example-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: #c6f6d5;
+            color: #22543d;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #48bb78;
+            border-radius: 50%;
+        }
+
+        .highlight-box {
+            background: #ebf8ff;
+            border-left: 4px solid #2c5282;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #2c5282;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 80%;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .socket-combination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ip-part {
+            font-size: 12px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        .port-part {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .colon {
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        .protocol-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: #edf2f7;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #2c5282;
+            margin-left: auto;
+        }
+
+        .protocol-icon {
+            font-size: 10px;
+        }
+
+        .socket-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .detail-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .socket-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            flex: 1;
+        }
+
+        .visual-section {
+            text-align: center;
+            flex: 1;
+        }
+
+        .visual-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin: 0 auto 10px;
+        }
+
+        .visual-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .visual-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .visual-arrow {
+            color: #2c5282;
+            font-size: 24px;
+            margin: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .connection-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .line {
+            height: 2px;
+            background: #e2e8f0;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .connection-label {
+            font-size: 11px;
+            color: #718096;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-plug"></i>
+                </div>
+                <div>
+                    <div class="header-title">Sockets: IP:Porta e Identificação de Conexões</div>
+                    <div class="header-subtitle">Como o sistema operacional identifica e gerencia conexões de rede</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Módulo</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">3 - Transporte</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-container">
+                <!-- Left Column: Conceitos -->
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Conceitos Fundamentais
+                            </div>
+                            <div class="status-badge">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="concept-grid">
+                                <div class="concept-item">
+                                    <div class="concept-label">Definição</div>
+                                    <div class="concept-value">Socket = IP:Porta + Protocolo</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-label">Identificação</div>
+                                    <div class="concept-value">4-tuplo (IP_src, Port_src, IP_dst, Port_dst)</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-label">Servidor</div>
+                                    <div class="concept-value">Socket em escuta (listen)</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-label">Cliente</div>
+                                    <div class="concept-value">Socket conectado (accept)</div>
+                                </div>
+                            </div>
+                            <div class="socket-diagram">
+                                <div class="socket-node">
+                                    <div class="socket-icon">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="socket-label">Processo A</div>
+                                    <div class="socket-desc">Aplicação</div>
+                                </div>
+                                <div class="socket-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="socket-node">
+                                    <div class="socket-icon">
+                                        <i class="fas fa-plug"></i>
+                                    </div>
+                                    <div class="socket-label">Socket</div>
+                                    <div class="socket-desc">IP:Porta</div>
+                                </div>
+                                <div class="socket-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="socket-node">
+                                    <div class="socket-icon">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="socket-label">Processo B</div>
+                                    <div class="socket-desc">Aplicação</div>
+                                </div>
+                            </div>
+                            <div class="highlight-box">
+                                <div class="highlight-text">
+                                    <i class="fas fa-info-circle"></i> O socket é a combinação de IP e porta que
+                                    identifica unicamente um processo na rede
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Socket Details -->
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-info-circle"></i>
+                            Detalhes da Conexão
+                        </div>
+                        <div class="socket-details">
+                            <div class="detail-item">
+                                <div class="detail-label">IP Origem:</div>
+                                <div class="detail-value">192.168.1.10</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Porta Origem:</div>
+                                <div class="detail-value">51544</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">IP Destino:</div>
+                                <div class="detail-value">142.250.78.14</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Porta Destino:</div>
+                                <div class="detail-value">443</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Exemplos Práticos -->
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-code"></i>
+                                Exemplos Práticos de Sockets
+                            </div>
+                            <div class="status-badge">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="example-list">
+                                <div class="example-item">
+                                    <div class="example-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div class="example-content">
+                                        <div class="example-title">TCP (HTTPS)</div>
+                                        <div class="example-desc">192.168.1.10:51544 → 142.250.78.14:443</div>
+                                    </div>
+                                    <div class="protocol-tag">
+                                        <i class="fas fa-lock protocol-icon"></i>
+                                        <span>TLS</span>
+                                    </div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-icon">
+                                        <i class="fas fa-terminal"></i>
+                                    </div>
+                                    <div class="example-content">
+                                        <div class="example-title">TCP (SSH)</div>
+                                        <div class="example-desc">10.0.0.5:53412 → 10.0.0.20:22</div>
+                                    </div>
+                                    <div class="protocol-tag">
+                                        <i class="fas fa-shield-alt protocol-icon"></i>
+                                        <span>SSH</span>
+                                    </div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-icon">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div class="example-content">
+                                        <div class="example-title">UDP (DNS)</div>
+                                        <div class="example-desc">192.168.0.2:54023 → 8.8.8.8:53</div>
+                                    </div>
+                                    <div class="protocol-tag">
+                                        <i class="fas fa-globe protocol-icon"></i>
+                                        <span>DNS</span>
+                                    </div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-icon">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
+                                    <div class="example-content">
+                                        <div class="example-title">UDP (Jogos)</div>
+                                        <div class="example-desc">192.168.1.5:45000 → 10.0.0.1:27015</div>
+                                    </div>
+                                    <div class="protocol-tag">
+                                        <i class="fas fa-gamepad protocol-icon"></i>
+                                        <span>Game</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Socket Visual -->
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-project-diagram"></i>
+                            Visualização da Conexão
+                        </div>
+                        <div class="socket-visual">
+                            <div class="visual-section">
+                                <div class="visual-icon">
+                                    <i class="fas fa-laptop"></i>
+                                </div>
+                                <div class="visual-label">Cliente</div>
+                                <div class="visual-desc">Porta efêmera</div>
+                            </div>
+                            <div class="visual-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="visual-section">
+                                <div class="visual-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="visual-label">Servidor</div>
+                                <div class="visual-desc">Porta fixa</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Progresso: 80%</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso da aula</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

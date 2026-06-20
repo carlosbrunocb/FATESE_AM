@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Apresentação - Estação de Qualidade do Ar</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0d1117;
+            height: 100vh;
+            overflow: hidden;
+            font-family: sans-serif; /* Adicionado para fonte padrão */
+        }
+
+        /* Layout principal */
+        .layout {
+            display: grid;
+            grid-template-rows: 1fr 40px;
+            height: 100vh;
+        }
+
+        /* Área do slide */
+        .slide-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0d1117;
+            position: relative; /* Necessário para z-index */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Barra inferior */
+        .control-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: #161b22;
+            border-top: 1px solid #30363d;
+            z-index: 10;
+        }
+
+        /* Contador */
+        .counter {
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Botões */
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .controls button {
+            background: #0d1117;
+            color: #3DDC84;
+            border: 1px solid #3DDC84;
+            padding: 6px 14px;
+            font-size: 10px; /* Aumentei um pouco a fonte */
+            border-radius: 6px; /* Arredondamento mais moderno */
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .controls button:hover {
+            background: #3DDC84;
+            color: #0d1117;
+        }
+        
+        /* Remover contorno azul ao clicar */
+        button:focus { outline: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <div class="slide-area">
+            <iframe id="slideFrame"></iframe>
+        </div>
+
+        <div class="control-bar">
+            <div class="counter" id="counter"></div>
+
+            <div class="controls">
+                <button onclick="prevSlide()" title="Seta Esquerda">⟵ Anterior</button>
+                <button onclick="nextSlide()" title="Seta Direita">Próximo ⟶</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Lista de slides (Certifique-se que os arquivos existem)
+        const slides = [
+            'slide_01.html', 
+            'slide_02.html', 
+            'slide_03.html', 
+            'slide_04.html',
+            'slide_05.html', 
+            'slide_06.html', 
+            'slide_07.html', 
+            'slide_08.html',
+            'slide_09.html', 
+            'slide_10.html', 
+            'slide_11.html', 
+            'slide_12.html',
+            'slide_13.html', 
+            'slide_14.html', 
+            'slide_15.html', 
+            'slide_16.html',
+            'slide_17.html', 
+            'slide_18.html', 
+            'slide_19.html', 
+            'slide_20.html',
+            'slide_21.html', 'slide_22.html', 'slide_23.html', 'slide_24.html',
+            'slide_25.html', 'slide_26.html', 'slide_27.html', 'slide_28.html', 
+            'slide_29.html', 'slide_30.html', 'slide_31.html', 'slide_32.html'
+        ];
+
+        let current = 0;
+        const frame = document.getElementById('slideFrame');
+        const counter = document.getElementById('counter');
+
+        // Função Centralizada de Navegação por Teclado
+        function handleKeyboard(e) {
+            // Verifica seta direita ou espaço (para avançar)
+            if (e.key === 'ArrowRight') nextSlide();
+            // Verifica seta esquerda
+            if (e.key === 'ArrowLeft') prevSlide();
+        }
+
+        // 1. OUVINTE NA JANELA PRINCIPAL
+        document.addEventListener('keydown', handleKeyboard);
+
+        // 2. OUVINTE DENTRO DO IFRAME (Correção do foco)
+        frame.onload = function() {
+            try {
+                // Tenta acessar o documento interno do iframe
+                const iframeDoc = frame.contentDocument || frame.contentWindow.document;
+                
+                // Adiciona o ouvinte de teclado lá dentro também
+                iframeDoc.addEventListener('keydown', handleKeyboard);
+                
+                // Opcional: Traz o foco para o iframe automaticamente para as setas funcionarem de cara
+                frame.contentWindow.focus();
+            } catch (err) {
+                console.log('Nota: Cross-origin policy pode bloquear acesso ao iframe se não estiver rodando em servidor local/web.');
+            }
+        };
+
+        function loadSlide() {
+            frame.src = slides[current];
+            updateCounter();
+        }
+
+        function updateCounter() {
+            counter.textContent = `Slide ${current + 1} de ${slides.length}`;
+        }
+
+        function nextSlide() {
+            if (current < slides.length - 1) {
+                current++;
+                loadSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (current > 0) {
+                current--;
+                loadSlide();
+            }
+        }
+
+        // Carrega o primeiro slide
+        loadSlide();
+    </script>
+
+</body>
+</html>

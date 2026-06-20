@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia de uma Tabela de Roteamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 14px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .routing-table-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px 25px 18px 25px;
+            width: 100%;
+            /* max-width: 1100px; */
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 6px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .table-title {
+            color: #ffffff;
+            font-size: 18pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-title i {
+            color: #ff6b35;
+        }
+
+        .routing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .routing-table th {
+            background: rgba(255, 107, 53, 0.3);
+            color: #ffffff;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14pt;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .routing-table td {
+            padding: 10px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e6ed;
+            font-size: 13pt;
+        }
+
+        .routing-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .routing-table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .metric-badge {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11pt;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-active {
+            background: #4CAF50;
+        }
+
+        .status-inactive {
+            background: #f44336;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-info {
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: #ffffff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 12pt;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 107, 53, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-connected {
+            background: #4CAF50;
+        }
+
+        .legend-disconnected {
+            background: #f44336;
+        }
+
+        .legend-default {
+            background: #ff6b35;
+        }
+
+        .decorative-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="decorative-line"></div>
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-table"></i> Tabela de Roteamento
+            </div>
+            <div class="main-title" style="margin-bottom: 50px;">
+                <i class="fas fa-route"></i>
+                Anatomia de uma Tabela de Roteamento
+            </div>
+            <div class="routing-table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-network-wired"></i>
+                        Tabela de Roteamento - Roteador Principal
+                    </div>
+                    <div class="footer-info">
+                        <span class="status-indicator status-active"></span> Ativo
+                        <span class="status-indicator status-inactive" style="margin-left: 10px;"></span> Inativo
+                    </div>
+                </div>
+                <table class="routing-table">
+                    <thead>
+                        <tr>
+                            <th>Rede de Destino</th>
+                            <th>Máscara</th>
+                            <th>Próximo Salto (Next Hop)</th>
+                            <th>Interface</th>
+                            <th>Métrica</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="highlight">192.168.1.0/24</span></td>
+                            <td>255.255.255.0</td>
+                            <td>192.168.1.1</td>
+                            <td>GigabitEthernet0/1</td>
+                            <td><span class="metric-badge">1</span></td>
+                            <td><span class="status-indicator status-active"></span> Ativo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">10.0.0.0/8</span></td>
+                            <td>255.0.0.0</td>
+                            <td>10.0.0.1</td>
+                            <td>Serial0/0/0</td>
+                            <td><span class="metric-badge">10</span></td>
+                            <td><span class="status-indicator status-active"></span> Ativo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">172.16.0.0/16</span></td>
+                            <td>255.255.0.0</td>
+                            <td>172.16.0.1</td>
+                            <td>GigabitEthernet0/2</td>
+                            <td><span class="metric-badge">5</span></td>
+                            <td><span class="status-indicator status-active"></span> Ativo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">8.8.8.8/32</span></td>
+                            <td>255.255.255.255</td>
+                            <td>192.168.1.1</td>
+                            <td>GigabitEthernet0/1</td>
+                            <td><span class="metric-badge">1</span></td>
+                            <td><span class="status-indicator status-active"></span> Ativo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">0.0.0.0/0</span> (Default)</td>
+                            <td>0.0.0.0</td>
+                            <td>192.168.1.254</td>
+                            <td>Serial0/0/0</td>
+                            <td><span class="metric-badge">10</span></td>
+                            <td><span class="status-indicator status-active"></span> Ativo</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-connected"></div>
+                        <span>Conectado Diretamente</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-disconnected"></div>
+                        <span>Rota Inativa</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-default"></div>
+                        <span>Rota Padrão</span>
+                    </div>
+                </div>
+                <div class="table-footer">
+                    <div class="footer-info">
+                        <i class="fas fa-info-circle"></i> A tabela mostra as rotas configuradas no roteador
+                    </div>
+                    <div class="footer-actions">
+                        <button class="action-btn"><i class="fas fa-sync"></i> Atualizar</button>
+                        <button class="action-btn"><i class="fas fa-plus"></i> Adicionar Rota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

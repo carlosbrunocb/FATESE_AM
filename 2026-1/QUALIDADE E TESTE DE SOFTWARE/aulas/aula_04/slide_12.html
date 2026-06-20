@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ferramentas de Análise Estática</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #F5F5F5;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Styles */
+        .header-bar {
+            background-color: #0055A4;
+            padding: 25px 60px; /* Reduzi levemente para ganhar espaço vertical */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Content Styles */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: relative;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Border colors for categories */
+        .card-review { border-left-color: #8B5CF6; } /* Purple */
+        .card-linter { border-left-color: #F59E0B; } /* Amber */
+        .card-sast { border-left-color: #EF4444; }   /* Red */
+        .card-ci { border-left-color: #10B981; }     /* Green */
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .bg-review { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+        .bg-linter { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .bg-sast { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        .bg-ci { background: linear-gradient(135deg, #10B981, #059669); }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .card-desc {
+            font-family: 'Roboto', sans-serif;
+            color: #4B5563;
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .tags-container {
+            margin-top: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background-color: #F3F4F6;
+            color: #374151;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Roboto', sans-serif;
+            border: 1px solid #E5E7EB;
+        }
+
+        /* Footer / Best Practice Card */
+        .footer-card {
+            background-color: #EFF6FF; /* Light Blue */
+            border: 2px dashed #0055A4;
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-icon {
+            font-size: 28px;
+            color: #0055A4;
+            margin-right: 20px;
+        }
+
+        .footer-text h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0055A4;
+            margin-bottom: 4px;
+        }
+
+        .footer-text p {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            color: #1E3A8A;
+        }
+
+        /* Decorative Background Icon */
+        .bg-icon {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 250px;
+            color: rgba(0, 85, 164, 0.03);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <h1 class="title">Ferramentas de Análise Estática: Introdução</h1>
+            <div class="logo-container">
+                <img src="imagens/Senac_logo.svg.png" alt="Senac Logo" class="logo-img">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            
+            <div class="grid-container">
+                <div class="card card-review">
+                    <div class="card-header">
+                        <div class="icon-box bg-review">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2 class="card-title">Revisão Colaborativa</h2>
+                    </div>
+                    <p class="card-desc">Plataformas que facilitam a discussão de código entre pares antes da integração.</p>
+                    <div class="tags-container">
+                        <span class="tag">GitHub PRs</span>
+                        <span class="tag">GitLab MRs</span>
+                        <span class="tag">Azure DevOps</span>
+                    </div>
+                </div>
+
+                <div class="card card-linter">
+                    <div class="card-header">
+                        <div class="icon-box bg-linter">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h2 class="card-title">Linters & Formatadores</h2>
+                    </div>
+                    <p class="card-desc">Ferramentas para estilo de código e prevenção de erros simples de sintaxe.</p>
+                    <div class="tags-container">
+                        <span class="tag">ESLint</span>
+                        <span class="tag">Prettier</span>
+                        <span class="tag">Pylint</span>
+                        <span class="tag">Black</span>
+                        <span class="tag">Flake8</span>
+                    </div>
+                </div>
+
+                <div class="card card-sast">
+                    <div class="card-header">
+                        <div class="icon-box bg-sast">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="card-title">SAST & Qualidade</h2>
+                    </div>
+                    <p class="card-desc">Análise profunda de segurança, complexidade ciclomática e bugs potenciais.</p>
+                    <div class="tags-container">
+                        <span class="tag">SonarQube</span>
+                        <span class="tag">SonarCloud</span>
+                        <span class="tag">Semgrep</span>
+                        <span class="tag">Checkmarx</span>
+                    </div>
+                </div>
+
+                <div class="card card-ci">
+                    <div class="card-header">
+                        <div class="icon-box bg-ci">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h2 class="card-title">Integração Contínua</h2>
+                    </div>
+                    <p class="card-desc">Orquestradores que rodam essas verificações automaticamente a cada commit.</p>
+                    <div class="tags-container">
+                        <span class="tag">GitHub Actions</span>
+                        <span class="tag">GitLab CI</span>
+                        <span class="tag">Jenkins</span>
+                        <span class="tag">CircleCI</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-card">
+                <i class="fas fa-lightbulb footer-icon"></i>
+                <div class="footer-text">
+                    <h3>Prática Recomendada</h3>
+                    <p>O objetivo é <strong>automatizar</strong> a detecção de erros sem <strong>bloquear</strong> excessivamente a colaboração e criatividade do time.</p>
+                </div>
+            </div>
+
+            <i class="fas fa-laptop-code bg-icon"></i>
+
+        </div>
+    </div>
+</body>
+
+</html>

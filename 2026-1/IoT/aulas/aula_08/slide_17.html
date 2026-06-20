@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Discussão: Problemas Comuns</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .problem-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .problem-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .problem-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .problem-icon {
+            color: #00BCD4;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .problem-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .solution-box {
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: auto;
+        }
+
+        .solution-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            z-index: 10;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .success-icon {
+            color: #4caf50;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1 class="main-title">Discussão: Problemas Comuns</h1>
+                <p class="subtitle">Troubleshooting de conectividade Wi-Fi no ESP32</p>
+            </div>
+            <div class="content-grid">
+                <!-- Row 1 Left -->
+                <div class="problem-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+                        <div>
+                            <div class="card-title">Por que o IP 0.0.0.0 aparece?</div>
+                            <div class="card-subtitle">Falha na atribuição via DHCP</div>
+                        </div>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <i class="fas fa-circle problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Causa:</span> O ESP32 não conseguiu obter um IP válido do
+                                roteador via DHCP. Pode ser falta de lease ou timeout.
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-circle problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Solução:</span> Verificar DHCP do roteador, aguardar mais tempo,
+                                tentar WiFi.reconnect()
+                            </div>
+                        </div>
+                    </div>
+                    <div class="solution-box">
+                        <div class="solution-text">
+                            <i class="fas fa-lightbulb success-icon"></i>
+                            <strong>Dica:</strong> Configure IP estático temporariamente para diagnóstico: <span
+                                style="color: #00BCD4; font-family: monospace;">WiFi.config(local_IP, gateway,
+                                subnet)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 1 Right -->
+                <div class="problem-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <div class="card-title">Problemas Recorrentes</div>
+                            <div class="card-subtitle">Erros comuns na conexão Wi-Fi</div>
+                        </div>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <i class="fas fa-clock problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Timeout:</span> Ajuste timeout para 2-10s, verifique SSID/senha
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-signal problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">RSSI baixo:</span> Reposicionar antena, reduzir obstáculos
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-key problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Credenciais:</span> Validar antes de salvar em NVS
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2 Left -->
+                <div class="problem-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-tools"></i></div>
+                        <div>
+                            <div class="card-title">Dicas de Troubleshooting</div>
+                            <div class="card-subtitle">Diagnóstico e resolução</div>
+                        </div>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <i class="fas fa-check-circle problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Logar eventos:</span> Use WiFi.onEvent() para diagnosticar
+                                desconexões
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-check-circle problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Medir tempo:</span> Associação + DHCP podem levar 2-10s
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-check-circle problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Backoff:</span> Aplique delays em reconexões
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2 Right -->
+                <div class="problem-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-broadcast-tower"></i></div>
+                        <div>
+                            <div class="card-title">Interferência 2.4GHz</div>
+                            <div class="card-subtitle">Coexistência com Bluetooth/ZigBee</div>
+                        </div>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <i class="fas fa-wifi problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Canais:</span> Escolha canais 1, 6 ou 11 para evitar
+                                sobreposição
+                            </div>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-map-marker-alt problem-icon"></i>
+                            <div class="problem-text">
+                                <span class="highlight">Distância:</span> Mantenha distância de micro-ondas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <span>Próximo: Código Limpo</span>
+            </div>
+            <div class="status-item">
+                <span>Duração: 1h 45min</span>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>

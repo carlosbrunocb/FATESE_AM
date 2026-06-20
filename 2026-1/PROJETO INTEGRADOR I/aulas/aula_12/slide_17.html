@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo 2: Delimitação de Escopo - ANTES (Efeito NASA)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2d5a87 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon i {
+            color: #ff6b35;
+            font-size: 24px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            bottom: 30px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-subtitle {
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .rascunho-box {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .rascunho-label {
+            position: absolute;
+            top: -12px;
+            left: 16px;
+            background: #fef2f2;
+            padding: 0 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #991b1b;
+        }
+
+        .rascunho-text {
+            font-size: 16px;
+            color: #374151;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .problema-box {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .problema-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #c2410c;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .problema-text {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .efeito-nasa {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .efeito-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #991b1b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .efeito-text {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .riscos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .risco-item {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .risco-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .risco-text {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .highlight {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #ff6b35;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-erro {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .status-sucesso {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe4b5 100%);
+            border: 1px solid #ffcc80;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .warning-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #c2410c;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-text {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .check-icon.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .check-icon.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .check-text {
+            font-size: 15px;
+            color: #374151;
+        }
+
+        .check-text.error {
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div>
+                <div class="header-title">Exemplo 2: Delimitação de Escopo - ANTES (Efeito NASA)</div>
+                <div class="header-subtitle">Identificando e corrigindo escopo inflado em projetos acadêmicos</div>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Rascunho Inicial -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Texto Original (Seção 1.3 - Delimitação)</div>
+                            <div class="card-subtitle">Rascunho inicial da equipe AdoptMatch</div>
+                        </div>
+                    </div>
+                    <div class="rascunho-box">
+                        <div class="rascunho-label">RASCUNHO INICIAL</div>
+                        <div class="rascunho-text">
+                            "O sistema vai resolver o problema de <span class="highlight">todas as ONGs de
+                                Manaus</span>. Vai ter <span class="highlight">cadastro de pets</span>, <span
+                                class="highlight">match</span>, <span class="highlight">histórico de vacinas
+                                completo</span>, <span class="highlight">venda de ração integrada por e-commerce</span>,
+                            <span class="highlight">telemedicina para veterinários conveniados</span> e <span
+                                class="highlight">um fórum para os donos conversarem</span>."
+                        </div>
+                    </div>
+                    <div class="problema-box" style="margin-bottom: 0;">
+                        <div class="problema-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Sinais do Efeito NASA</span>
+                        </div>
+                        <div class="problema-text">
+                            <strong>Escopo inflado:</strong> Múltiplos domínios (saúde, comércio, social)<br />
+                            <strong>Integrações complexas:</strong> E-commerce, telemedicina, fórum<br />
+                            <strong>Ausência de corte:</strong> Não há definição clara de In/Out
+                        </div>
+                    </div>
+                </div>
+                <!-- Efeito NASA -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(255, 107, 53, 0.1); color: #ff6b35;">
+                            <i class="fas fa-bomb"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Efeito NASA</div>
+                            <div class="card-subtitle">Consequências do escopo inflado</div>
+                        </div>
+                    </div>
+                    <div class="efeito-nasa">
+                        <div class="efeito-title">
+                            <i class="fas fa-rocket"></i>
+                            <span>Problema de Viabilidade</span>
+                        </div>
+                        <div class="efeito-text">
+                            Escopo incompatível com tempo/recursos do semestre. Promessas que não podem ser entregues
+                            dentro do prazo acadêmico.
+                        </div>
+                    </div>
+                    <div class="riscos-grid">
+                        <div class="risco-item">
+                            <div class="risco-title">
+                                <i class="fas fa-clock"></i>
+                                <span>Atraso Crônico</span>
+                            </div>
+                            <div class="risco-text">Implementação impossível no prazo</div>
+                        </div>
+                        <div class="risco-item">
+                            <div class="risco-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Baixa Qualidade</span>
+                            </div>
+                            <div class="risco-text">Recursos espalhados</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Análise de Problemas -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(255, 193, 7, 0.1); color: #f59e0b;">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Análise de Problemas</div>
+                            <div class="card-subtitle">Identificação de riscos</div>
+                        </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="check-icon error">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="check-text error">
+                            <strong>Escopo inflado:</strong> Múltiplos domínios em um semestre
+                        </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="check-icon error">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="check-text error">
+                            <strong>Integrações complexas:</strong> E-commerce + telemedicina
+                        </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="check-icon error">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="check-text error">
+                            <strong>Ausência de MVP:</strong> Não há foco no core
+                        </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="check-icon error">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="check-text error">
+                            <strong>Dependências externas:</strong> Veterinários, ONGs
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <div class="warning-title">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Atenção!</span>
+                        </div>
+                        <div class="warning-text">
+                            Este escopo é inviável para um semestre. É necessário fazer um corte drástico e focar no
+                            core do MVP.
+                        </div>
+                    </div>
+                </div>
+                <!-- Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Status da Revisão</div>
+                            <div class="card-subtitle">Próximo passo: feedback</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 15px; color: #64748b;">Impessoalidade</span>
+                            <span class="status-badge status-erro">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Ajustar</span>
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 15px; color: #64748b;">Escopo definido</span>
+                            <span class="status-badge status-erro">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Revisar</span>
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 15px; color: #64748b;">Justificativa</span>
+                            <span class="status-badge status-erro">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Completar</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

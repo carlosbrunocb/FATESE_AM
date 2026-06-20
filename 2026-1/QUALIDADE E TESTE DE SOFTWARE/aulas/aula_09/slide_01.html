@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 09 - Técnicas de Caixa-Branca</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 600px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        .header-pattern::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 100%);
+            border-bottom-left-radius: 100%;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 60px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 18px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin: 30px 0 40px 0;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 22px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 0 0 40px 0;
+            flex-grow: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Info Cards */
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-column .info-card {
+            flex: 1;
+        }
+
+        .right-column .professor-info {
+            flex: 1;
+        }
+
+        .right-column .info-card {
+            flex: 1;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card-icon {
+            width: 44px;
+            height: 44px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .info-card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .info-card-content {
+            font-size: 16px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Professor Info */
+        .professor-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .professor-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .professor-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .professor-details {
+            flex: 1;
+        }
+
+        .professor-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .professor-role {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .contact-item i {
+            color: #3b82f6;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .date-info {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .date-info strong {
+            color: #1e293b;
+        }
+
+        .institution-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .institution-logo {
+            width: 48px;
+            height: 48px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 22px;
+        }
+
+        .institution-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .institution-dept {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Topic Tags */
+        .topic-tags {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .topic-tag {
+            background: #f0f7ff;
+            color: #3b82f6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .key-point-icon {
+            width: 28px;
+            height: 28px;
+            background: #f0f7ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .key-point-text {
+            font-size: 16px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Aula 09:</span> Técnicas de Caixa-Branca
+                </div>
+                <div class="subtitle">
+                    Cobertura de caminhos, condições e decisões no ciclo de vida de desenvolvimento
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <!-- Objectives Card -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="info-card-title">Objetivos da Aula</div>
+                        </div>
+                        <div class="info-card-content">
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <div class="key-point-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="key-point-text">Compreender teste de Caixa-Branca</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="key-point-text">Diferenciar métricas de cobertura</div>
+                                </div>
+                            </div>
+                            <div class="key-points" style="margin-top: 20px;">
+                                <div class="key-point">
+                                    <div class="key-point-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="key-point-text">Praticar casos de teste</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="key-point-text">Garantir execução de fluxos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Key Topics -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="info-card-title">Tópicos Principais</div>
+                        </div>
+                        <div class="topic-tags">
+                            <span class="topic-tag">Cobertura de Decisão</span>
+                            <span class="topic-tag">Cobertura de Condição</span>
+                            <span class="topic-tag">Cobertura de Caminho</span>
+                            <span class="topic-tag">Teste Estrutural</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <!-- Professor Info -->
+                    <div class="professor-info">
+                        <div class="professor-header">
+                            <div class="professor-avatar">
+                                CB
+                            </div>
+                            <div class="professor-details">
+                                <div class="professor-name">Prof. Carlos Bruno Oliveira Lopes</div>
+                                <div class="professor-role">Análise e Desenvolvimento de Sistemas</div>
+                            </div>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>carlos.lopes@am.senac.br</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fab fa-github"></i>
+                                <span>github.com/carlosbrunocb</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Duration Info -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="info-card-title">Duração e Estrutura</div>
+                        </div>
+                        <div class="info-card-content">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; font-size: 18px;">
+                                <span>Total: 170 minutos</span>
+                                <span style="color: #3b82f6; font-weight: 600;">2h 50min</span>
+                            </div>
+                            <div
+                                style="margin-top: 15px; font-size: 16px; color: #64748b; display: flex; align-items: center;">
+                                <i class="fas fa-info-circle"
+                                    style="margin-right: 10px; color: #3b82f6; font-size: 18px;"></i>
+                                Teoria + Prática + Laboratório
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="date-info">
+                    <strong>Data:</strong> 28 de Abril, 2026
+                </div>
+                <div class="institution-info">
+                    <div class="institution-logo">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div>
+                        <div class="institution-name">FATESE - Senac</div>
+                        <div class="institution-dept">Curso: ADS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

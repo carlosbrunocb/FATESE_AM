@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Execução Seletiva com Markers</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 60px;
+            padding: 15px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #F7931E;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 6px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .code-section {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #004A8D;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .code-keyword {
+            color: #f472b6;
+            font-weight: bold;
+        }
+
+        .code-string {
+            color: #a5b4fc;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-variable {
+            color: #fbbf24;
+        }
+
+        .code-number {
+            color: #a78bfa;
+        }
+
+        .command-block {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 12pt;
+            color: #475569;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .command-block i {
+            color: #004A8D;
+            font-size: 10pt;
+        }
+
+        .command-text {
+            flex: 1;
+        }
+
+        .note-box {
+            background: #fef3c7;
+            border-left: 4px solid #F7931E;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+
+        .note-text {
+            font-size: 11pt;
+            color: #92400e;
+            line-height: 1.3;
+        }
+
+        .tips-section {
+            background: #f0fdf4;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #dcfce7;
+        }
+
+        .tips-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12pt;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tips-list {
+            list-style: none;
+            font-size: 11pt;
+            color: #475569;
+        }
+
+        .tips-list li {
+            padding: 2px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .tips-list li:before {
+            content: "•";
+            color: #22c55e;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .highlight-box {
+            background: #eff6ff;
+            border-radius: 6px;
+            padding: 8px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .highlight-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12pt;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .highlight-text {
+            font-size: 11pt;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #dcfce7;
+            border-radius: 14px;
+            font-size: 11pt;
+            color: #166534;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-orange {
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Execução Seletiva com Markers</div>
+                    <div class="aula-subtitle">Filtrando e executando testes de regressão de forma inteligente</div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>Em prática</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="main-layout">
+                    <div class="left-column">
+                        <div class="code-section" style="flex: 0 0 auto;">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <i class="fas fa-code"></i>
+                                    <span>Exemplo de Marcação de Testes</span>
+                                </div>
+                                <div class="badge badge-green">Python</div>
+                            </div>
+                            <div class="code-block">
+                                <span class="code-keyword">import</span> pytest<br />
+                                <span class="code-keyword">from</span> src.calculadora <span
+                                    class="code-keyword">import</span> somar, dividir, multiplicar<br /><br />
+                                <span class="code-comment"># Marcadores de regressão</span><br />
+                                <span class="code-keyword">@pytest.mark.regressao</span><br />
+                                <span class="code-keyword">@pytest.mark.critico</span><br />
+                                <span class="code-keyword">def</span> <span
+                                    class="code-function">test_soma_positiva</span>():<br />
+                                    <span class="code-keyword">assert</span> <span
+                                    class="code-function">somar</span>(<span class="code-number">2</span>, <span
+                                    class="code-number">3</span>) == <span class="code-number">5</span><br /><br />
+                                <span class="code-keyword">@pytest.mark.regressao</span><br />
+                                <span class="code-keyword">def</span> <span
+                                    class="code-function">test_multiplicacao</span>():<br />
+                                    <span class="code-keyword">assert</span> <span
+                                    class="code-function">multiplicar</span>(<span class="code-number">10</span>, <span
+                                    class="code-number">5</span>) == <span class="code-number">50</span><br /><br />
+                                <span class="code-keyword">@pytest.mark.slow</span><br />
+                                <span class="code-keyword">def</span> <span
+                                    class="code-function">test_calculo_complexo</span>():<br />
+                                    <span class="code-comment"># Teste que leva mais tempo</span>
+                            </div>
+                            <div class="note-box">
+                                <div class="note-text">
+                                    <i class="fas fa-info-circle" style="color: #F7931E; margin-right: 6px;"></i>
+                                    <strong>Dica:</strong> Use <code>@pytest.mark</code> para categorizar testes por
+                                    tipo, criticidade ou tempo de execução.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="code-section" style="flex: 0 0 auto;">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <i class="fas fa-terminal"></i>
+                                    <span>Comandos de Filtragem</span>
+                                </div>
+                                <div class="badge badge-blue">CLI</div>
+                            </div>
+                            <div class="command-block">
+                                <i class="fas fa-terminal"></i>
+                                <div class="command-text">pytest -m regressao -v</div>
+                                <span class="badge badge-green">Executa apenas regressão</span>
+                            </div>
+                            <div class="command-block">
+                                <i class="fas fa-terminal"></i>
+                                <div class="command-text">pytest -m "regressao and critico" -v</div>
+                                <span class="badge badge-blue">Combina marcadores</span>
+                            </div>
+                            <div class="command-block">
+                                <i class="fas fa-terminal"></i>
+                                <div class="command-text">pytest -k "soma or divisao" -v</div>
+                                <span class="badge badge-orange">Filtro por nome</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right-column">
+                        <div class="code-section" style="flex: 0 0 auto;">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Configuração pytest.ini</span>
+                                </div>
+                                <div class="badge badge-green">Config</div>
+                            </div>
+                            <div class="code-block">
+                                <span class="code-comment"># pytest.ini</span><br />
+                                [<span class="code-variable">pytest</span>]<br />
+                                <span class="code-keyword">markers</span> =<br />
+                                    <span class="code-string">regressao: testes de regressão críticos</span><br />
+                                    <span class="code-string">critico: alta severidade/negócio</span><br />
+                                    <span class="code-string">smoke: verificação rápida de saúde</span><br />
+                                    <span class="code-string">slow: testes que levam mais tempo</span><br /><br />
+                                <span class="code-keyword">filterwarnings</span> =<br />
+                                    <span class="code-string">ignore::DeprecationWarning</span>
+                            </div>
+                            <div class="highlight-box">
+                                <div class="highlight-title">Boas Práticas</div>
+                                <div class="highlight-text">
+                                    • Registre markers no pytest.ini para evitar warnings<br />
+                                    • Use execução seletiva em PRs<br />
+                                    • Rode suíte completa em releases importantes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tips-section" style="flex: 0 0 auto;">
+                            <div class="tips-title">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Recomendações</span>
+                            </div>
+                            <ul class="tips-list">
+                                <li>Use <strong>-m</strong> para filtrar por marcadores</li>
+                                <li>Combine marcadores com <strong>and/or</strong></li>
+                                <li>Use <strong>-k</strong> para filtrar por nome de função</li>
+                                <li>Priorize testes críticos em CI/CD</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="footer-bar">
+                <div class="footer-left">
+                    <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                    <span style="font-size: 13px; color: #64748b;">|</span>
+                    <span class="footer-text">21 de 30 slides</span>
+                </div>
+                <div class="footer-right">
+                    <span class="date-info">28/04/2026</span>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

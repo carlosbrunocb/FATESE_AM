@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Casos de Uso: Quando usar TCP e Quando usar UDP</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            right: 50px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex: 1;
+            margin-bottom: 15px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .use-case-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .use-case-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #2c5282;
+        }
+
+        .use-case-icon {
+            color: #2c5282;
+            font-size: 16px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            width: 20px;
+            text-align: center;
+        }
+
+        .use-case-content {
+            flex: 1;
+        }
+
+        .use-case-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+        }
+
+        .use-case-desc {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+
+        .port-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #edf2f7;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #2c5282;
+            margin-left: 5px;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #2c5282;
+        }
+
+        .rec-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+        }
+
+        .rec-text {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .bottom-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .practical-guide {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .guide-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .guide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .guide-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .guide-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .guide-icon {
+            color: #2c5282;
+            font-size: 14px;
+        }
+
+        .guide-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 65%;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .tcp-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #c6f6d5;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #22543d;
+            margin-left: 5px;
+        }
+
+        .udp-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #fed7d7;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #742a2a;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div>
+                    <div class="header-title">Casos de Uso: Quando usar TCP e Quando usar UDP</div>
+                    <div class="header-subtitle">Aplicações práticas e orientações para desenvolvedores</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Total</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">12 casos de uso</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-list-check"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">TCP - Use quando precisar de:</div>
+                                <div class="section-subtitle">Confiabilidade, ordem e controle de fluxo</div>
+                            </div>
+                        </div>
+                        <div class="use-case-list">
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-globe"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">Navegação Web <span class="port-tag">80/443</span></div>
+                                    <div class="use-case-desc">HTTP/HTTPS - Sites, APIs REST, aplicações web</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-envelope"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">Email <span class="port-tag">25/587/465</span></div>
+                                    <div class="use-case-desc">SMTP, IMAP, POP3 - Comunicação segura</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-file-export"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">Transferência de Arquivos <span
+                                            class="port-tag">21/22</span></div>
+                                    <div class="use-case-desc">FTP, SFTP - Downloads seguros</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-terminal"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">SSH/Terminal <span class="port-tag">22</span></div>
+                                    <div class="use-case-desc">Acesso remoto, banco de dados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-box">
+                        <div class="rec-title">✅ Recomendação TCP</div>
+                        <div class="rec-text">Use quando a entrega perfeita e ordenação são essenciais. Ex: transações
+                            financeiras, transferência de arquivos importantes.</div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">UDP - Use quando precisar de:</div>
+                                <div class="section-subtitle">Velocidade, baixa latência, broadcast</div>
+                            </div>
+                        </div>
+                        <div class="use-case-list">
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-video"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">Streaming Ao Vivo <span class="port-tag">Var</span>
+                                    </div>
+                                    <div class="use-case-desc">Netflix, YouTube, Twitch - Vídeo em tempo real</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-gamepad"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">Jogos Online <span class="port-tag">Var</span></div>
+                                    <div class="use-case-desc">FPS, MOBA - Latência crítica</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-phone"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">VoIP/RTC <span class="port-tag">5060</span></div>
+                                    <div class="use-case-desc">Chamadas, videoconferências</div>
+                                </div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-icon"><i class="fas fa-search"></i></div>
+                                <div class="use-case-content">
+                                    <div class="use-case-title">DNS <span class="port-tag">53</span></div>
+                                    <div class="use-case-desc">Resolução de nomes, consultas rápidas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-box">
+                        <div class="rec-title">✅ Recomendação UDP</div>
+                        <div class="rec-text">Use quando a velocidade é prioritária e alguma perda é aceitável. Ex:
+                            streaming, jogos, VoIP.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="practical-guide">
+                <div class="guide-header">
+                    <i class="fas fa-lightbulb" style="color: #2c5282; font-size: 18px;"></i>
+                    <div class="guide-title">Orientações Práticas para Desenvolvedores</div>
+                </div>
+                <div class="guide-content">
+                    <div class="guide-item">
+                        <i class="fas fa-check-double guide-icon"></i>
+                        <div class="guide-text">Requisitos de entrega perfeita → <strong>TCP</strong></div>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-clock guide-icon"></i>
+                        <div class="guide-text">Requisitos de tempo real → <strong>UDP</strong></div>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-shield-alt guide-icon"></i>
+                        <div class="guide-text">Segurança: TCP (TLS) vs UDP (DTLS)</div>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-firewall guide-icon"></i>
+                        <div class="guide-text">Firewall: TCP atravessa melhor NAT</div>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-balance-scale guide-icon"></i>
+                        <div class="guide-text">Equilíbrio: QUIC/HTTP3 sobre UDP</div>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-code-branch guide-icon"></i>
+                        <div class="guide-text">Fallback: Implementar retry se UDP</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Duração: 45 min</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso: 70%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

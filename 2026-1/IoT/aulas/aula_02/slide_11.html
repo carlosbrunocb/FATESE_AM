@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Máquina de Estados: Conceito Básico</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px;
+            box-sizing: border-box;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 35px 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            padding: 20px 24px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .info-icon {
+            min-width: 38px;
+            width: 38px;
+            height: 38px;
+            background-color: #1e40af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+            font-size: 18px;
+        }
+
+        .info-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 17px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding-top: 4px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .diagram-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin: 0 0 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .state-machine-diagram {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .state-circle {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid;
+            background-color: #0f172a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .state-verde {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-color: #22c55e;
+        }
+
+        .state-amarelo {
+            bottom: 20px;
+            left: 20px;
+            border-color: #eab308;
+        }
+
+        .state-vermelho {
+            bottom: 20px;
+            right: 20px;
+            border-color: #ef4444;
+        }
+
+        .state-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .state-verde .state-icon {
+            color: #22c55e;
+        }
+
+        .state-amarelo .state-icon {
+            color: #eab308;
+        }
+
+        .state-vermelho .state-icon {
+            color: #ef4444;
+        }
+
+        .state-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        .arrow-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .arrow {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow-line {
+            height: 3px;
+            background-color: #60a5fa;
+            position: relative;
+        }
+
+        .arrow-head {
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #60a5fa;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .arrow-down {
+            position: absolute;
+            top: -4px;
+            right: 97%;
+            width: 0;
+            height: 0;
+            border-right: 10px solid #60a5fa;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .arrow-1 {
+            top: 160px;
+            left: 56%;
+            width: 120px;
+            transform: rotate(45deg);
+        }
+
+        .arrow-2 {
+            bottom: 75px;
+            left: 50%;
+            width: 180px;
+            transform: translateX(-50%);
+        }
+
+        .arrow-3 {
+            top: 160px;
+            right: 56%;
+            width: 120px;
+            transform: rotate(-45deg);
+        }
+
+        .transition-label {
+            position: absolute;
+            background-color: #1e40af;
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+        }
+
+        .label-1 {
+            top: 110px;
+            right: 80px;
+        }
+
+        .label-2 {
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .label-3 {
+            top: 110px;
+            left: 80px;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Máquina de Estados: Conceito Básico</p>
+            </h1>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <p class="info-text">Descreve o sistema por estados e transições entre eles</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-traffic-light"></i>
+                        </div>
+                        <p class="info-text">Para semáforo: Estados {Verde, Amarelo, Vermelho}</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <p class="info-text">Transições temporizadas controladas por millis()</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <p class="info-text">Facilita leitura, manutenção e adição de novas regras</p>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <p class="diagram-title">Diagrama de Estados do Semáforo</p>
+                    <div class="state-machine-diagram">
+                        <div class="arrow-container">
+                            <div class="arrow arrow-1">
+                                <div class="arrow-line" style="width: 100%;">
+                                    <div class="arrow-down"></div>
+                                </div>
+                            </div>
+                            <div class="arrow arrow-2">
+                                <div class="arrow-line" style="width: 100%;">
+                                    <div class="arrow-head"></div>
+                                </div>
+                            </div>
+                            <div class="arrow arrow-3">
+                                <div class="arrow-line" style="width: 100%;">
+                                    <div class="arrow-down"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="state-circle state-verde">
+                            <i class="fas fa-circle state-icon"></i>
+                            <p class="state-label">VERDE</p>
+                        </div>
+                        <div class="state-circle state-amarelo">
+                            <i class="fas fa-circle state-icon"></i>
+                            <p class="state-label">AMARELO</p>
+                        </div>
+                        <div class="state-circle state-vermelho">
+                            <i class="fas fa-circle state-icon"></i>
+                            <p class="state-label">VERMELHO</p>
+                        </div>
+                        <div class="transition-label label-1">
+                            <p>3000ms</p>
+                        </div>
+                        <div class="transition-label label-2">
+                            <p>1000ms</p>
+                        </div>
+                        <div class="transition-label label-3">
+                            <p>3000ms</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

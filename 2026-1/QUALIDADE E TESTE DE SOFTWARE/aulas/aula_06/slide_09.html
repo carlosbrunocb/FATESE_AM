@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Python 3 — Fundamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 35vw;
+            height: 35vw;
+            top: -10vh;
+            right: -5vw;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 4vh 5vw;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+        }
+
+        /* Two Column Layout */
+        .columns-container {
+            display: flex;
+            gap: 4vw;
+            flex: 1; /* Ocupa todo o espaço vertical disponível */
+            min-height: 0; /* Evita overflow */
+            margin-top: 2vh;
+            padding-bottom: 4vh;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Text Styles */
+        .info-box {
+            background-color: rgba(30, 41, 59, 0.4);
+            border-left: 4px solid #3b82f6;
+            padding: 2.5vh 2vw;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 3vh;
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #60a5fa;
+            font-size: 1.3rem;
+            margin-bottom: 1vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-text {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        /* Code Terminal Styles */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Cresce para ocupar altura total */
+            max-height: 80vh; /* Limite de segurança */
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 16px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 40px;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .code-line {
+            margin-bottom: 1.5vh;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .prompt {
+            color: #10b981;
+            margin-right: 10px;
+            user-select: none;
+            font-weight: bold;
+        }
+
+        .command { color: #e2e8f0; }
+        .comment {
+            color: #64748b;
+            font-style: italic;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .output {
+            color: #94a3b8;
+            margin-bottom: 2vh;
+            display: block;
+            padding-left: 0;
+            white-space: pre-wrap;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: #cbd5e1;
+            margin-left: 4px;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+
+        <div class="content-area">
+            <div class="mb-4 border-b border-slate-700 pb-2 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Ferramentas Base</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Python 3 — Fundamento</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns-container">
+                <div class="left-column">
+                    <div class="info-box">
+                        <div class="info-title">
+                            <i class="fas fa-cube mr-2 text-sm"></i> O que é?
+                        </div>
+                        <p class="info-text">
+                            Linguagem de programação interpretada, de alto nível e propósito geral. É a base tecnológica
+                            do nosso projeto de QA e automação.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-color: #10b981;">
+                        <div class="info-title" style="color: #34d399;">
+                            <i class="fas fa-wrench mr-2 text-sm"></i> Para que serve?
+                        </div>
+                        <p class="info-text">
+                            Utilizada para implementar a lógica de negócio (o software em si) e escrever os scripts de
+                            teste que validarão essa lógica.
+                        </p>
+                    </div>
+                    <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 mt-4 shadow-lg">
+                        <h3 class="text-white font-bold mb-3 flex items-center">
+                            <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i> Pontos de Atenção
+                        </h3>
+                        <ul class="text-slate-300 text-sm space-y-2 list-disc pl-5">
+                            <li><p>Certifique-se de usar a <strong>versão 3.8+</strong></p></li>
+                            <li><p>No Windows, o comando pode ser <code>py</code> ou <code>python</code></p></li>
+                            <li><p>No Linux/Mac, frequentemente é <code>python3</code></p></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <div class="dot dot-red"></div>
+                                <div class="dot dot-yellow"></div>
+                                <div class="dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">bash — 80x24</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="code-line">
+                                <span class="comment"># 1. Verificar instalação e versão</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="prompt">$</span>
+                                <span class="command">python --version</span>
+                            </div>
+                            <div class="output">Python 3.10.6</div>
+
+                            <div class="code-line">
+                                <span class="comment"># 2. Entrar no modo interativo (REPL)</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="prompt">$</span>
+                                <span class="command">python</span>
+                            </div>
+                            <div class="output">Python 3.10.6 (main, Nov 14 2022, 16:10:14)
+[GCC 11.3.0] on linux
+Type "help", "copyright", "credits" or "license" ...
+&gt;&gt;&gt; print("Olá, QA!")
+Olá, QA!
+&gt;&gt;&gt; exit()</div>
+
+                            <div class="code-line">
+                                <span class="comment"># 3. Executar um arquivo de script</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="prompt">$</span>
+                                <span class="command">python app.py</span><span class="cursor"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-4 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Python</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

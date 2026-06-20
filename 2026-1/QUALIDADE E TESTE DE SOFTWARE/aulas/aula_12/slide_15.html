@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User Story e Critérios de Aceite - Pagamento PIX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        /* Content grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Card styles */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            /* Reduced from 20px to prevent overflow */
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .card-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .card-icon.purple {
+            background: rgba(147, 51, 234, 0.2);
+            color: #a855f7;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* User Story box */
+        .user-story-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .user-story-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .user-story-highlight {
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        /* Acceptance Criteria */
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .criteria-number {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #3b82f6;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .criteria-text {
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.3;
+        }
+
+        .criteria-metric {
+            color: #22c55e;
+            font-weight: 500;
+        }
+
+        /* BDD Example */
+        .bdd-example {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            margin-top: 8px;
+        }
+
+        .bdd-line {
+            margin-bottom: 6px;
+            padding-left: 8px;
+            display: flex;
+            align-items: flex-start;
+            /* Changed to flex-start for wrapping text */
+            gap: 8px;
+        }
+
+        .bdd-keyword {
+            color: #3b82f6;
+            font-weight: 600;
+            min-width: 50px;
+            padding-top: 2px;
+            /* Align with wrapped text */
+        }
+
+        .bdd-text {
+            color: #e2e8f0;
+            white-space: normal;
+            /* Allow wrapping */
+            line-height: 1.3;
+        }
+
+        .bdd-string {
+            color: #22c55e;
+        }
+
+        /* Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #e2e8f0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        /* Rules section */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .rule-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #e2e8f0;
+        }
+
+        .rule-condition {
+            color: #3b82f6;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .rule-action {
+            color: #22c55e;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .highlight-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Priority tags */
+        .priority-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .priority-medium {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>User Story</span> e Critérios de Aceite
+                </div>
+                <div class="subtitle">
+                    Pagamento via PIX - Validação de requisitos funcionais e não funcionais
+                </div>
+            </div>
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- User Story -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="card-title">User Story</div>
+                        </div>
+                        <div class="user-story-box">
+                            <div class="user-story-text">
+                                <span class="user-story-highlight">Como</span> cliente,<br />
+                                <span class="user-story-highlight">quero</span> pagar com PIX para que o pedido seja
+                                aprovado instantaneamente,<br />
+                                <span class="user-story-highlight">para que</span> eu possa receber meu produto mais
+                                rápido.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Acceptance Criteria -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Critérios de Aceite (CA)</div>
+                        </div>
+                        <div class="criteria-list">
+                            <div class="criteria-item">
+                                <div class="criteria-number">1</div>
+                                <div class="criteria-text">
+                                    O QR Code deve ser gerado em até <span class="criteria-metric">2 segundos</span> em
+                                    95% das tentativas
+                                    <span class="priority-tag priority-high">Alta</span>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-number">2</div>
+                                <div class="criteria-text">
+                                    Status do pedido deve mudar para "Pago" imediatamente após confirmação do banco
+                                    <span class="priority-tag priority-high">Alta</span>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-number">3</div>
+                                <div class="criteria-text">
+                                    Exibir mensagem clara se banco não responder em <span
+                                        class="criteria-metric">60s</span>
+                                    <span class="priority-tag priority-medium">Média</span>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-number">4</div>
+                                <div class="criteria-text">
+                                    Registrar no log ID da transação do PSP e timestamp
+                                    <span class="priority-tag priority-medium">Média</span>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-number">5</div>
+                                <div class="criteria-text">
+                                    Tela de pagamento deve atender acessibilidade (contraste AA)
+                                    <span class="priority-tag priority-low">Baixa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- BDD Format -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon purple">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="card-title">Formato BDD (Given/When/Then)</div>
+                        </div>
+                        <div class="bdd-example">
+                            <div class="bdd-line">
+                                <span class="bdd-keyword">Dado</span>
+                                <span class="bdd-text">que estou na tela de pagamento de um pedido de <span
+                                        class="bdd-string">R$ 50,00</span></span>
+                            </div>
+                            <div class="bdd-line">
+                                <span class="bdd-keyword">E</span>
+                                <span class="bdd-text">possuo uma conta PIX válida cadastrada</span>
+                            </div>
+                            <div class="bdd-line">
+                                <span class="bdd-keyword">Quando</span>
+                                <span class="bdd-text">seleciono PIX e confirmo o pagamento</span>
+                            </div>
+                            <div class="bdd-line">
+                                <span class="bdd-keyword">Então</span>
+                                <span class="bdd-text">o QR Code deve ser exibido em até <span class="bdd-string">2
+                                        segundos</span></span>
+                            </div>
+                            <div class="bdd-line">
+                                <span class="bdd-keyword">E</span>
+                                <span class="bdd-text">o status do pedido deve ser atualizado para <span
+                                        class="bdd-string">"Pago"</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Business Rules -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-random"></i>
+                            </div>
+                            <div class="card-title">Regras de Negócio</div>
+                        </div>
+                        <div class="rules-grid">
+                            <div class="rule-item">
+                                <div class="rule-condition">Se valor = R$ 0,00</div>
+                                <div class="rule-action">→ Ocultar opção PIX</div>
+                            </div>
+                            <div class="rule-item">
+                                <div class="rule-condition">Se 3 falhas consecutivas</div>
+                                <div class="rule-action">→ Marcar como pendente</div>
+                            </div>
+                            <div class="rule-item">
+                                <div class="rule-condition">Se pagamento cancelado</div>
+                                <div class="rule-action">→ Invalidar QR Code</div>
+                            </div>
+                            <div class="rule-item">
+                                <div class="rule-condition">Se banco não responde</div>
+                                <div class="rule-action">→ Timeout em 60s</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>5 critérios de aceite</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Formato BDD</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Regras de negócio</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

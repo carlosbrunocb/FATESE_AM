@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Métodos CRUD do Sequelize</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 24px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-section {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .code-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .line-number {
+            color: #64748b;
+            min-width: 25px;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-param {
+            color: #fbbf24;
+        }
+
+        .code-type {
+            color: #f472b6;
+        }
+
+        .tips-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .tips-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+        }
+
+        .tip-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .tip-icon i {
+            font-size: 12px;
+            color: #3b82f6;
+        }
+
+        .tip-text {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Métodos CRUD do Sequelize</div>
+                    <div class="header-subtitle">Operações essenciais: findAll, create, findByPk, update, destroy</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-check-circle" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">5 operações</div>
+                    <div class="header-subtitle">CRUD completo</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="code-card">
+                    <div class="code-header">
+                        <div>
+                            <div class="code-title">Exemplos Práticos de CRUD</div>
+                            <div class="code-subtitle">Métodos do Sequelize para manipulação de dados</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <span class="code-content"><span class="code-comment">// 1. Listar com filtros, ordenação e paginação</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <span class="code-content"><span class="code-keyword">const</span> livros = <span
+                                    class="code-keyword">await</span> Livro.findAll({</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <span class="code-content"> where: { autor: <span class="code-string">'George Orwell'</span> },</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <span class="code-content"> order: [[<span class="code-string">'createdAt'</span>, <span
+                                    class="code-string">'DESC'</span>]],</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <span class="code-content"> limit: 10, offset: 0</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <span class="code-content">});</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <span class="code-content"><span class="code-comment">// 2. Criar novo registro</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <span class="code-content"><span class="code-keyword">const</span> novo = <span
+                                    class="code-keyword">await</span> Livro.create({</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <span class="code-content"> titulo: <span class="code-string">'Fundação'</span>, autor: <span class="code-string">'Isaac Asimov'</span>, ano: 1951</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <span class="code-content">});</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            <span class="code-content"><span class="code-comment">// 3. Buscar por PK</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            <span class="code-content"><span class="code-keyword">const</span> livro = <span
+                                    class="code-keyword">await</span> Livro.findByPk(1);</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">16</span>
+                            <span class="code-content"><span class="code-comment">// 4. Atualizar (via instância)</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">17</span>
+                            <span class="code-content"><span class="code-keyword">if</span> (livro) <span
+                                    class="code-keyword">await</span> livro.update({ ano: 1952 });</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">18</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">19</span>
+                            <span class="code-content"><span class="code-comment">// 5. Deletar (por condição)</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">20</span>
+                            <span class="code-content"><span class="code-keyword">await</span> Livro.destroy({ where: { id: 3 } });</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="tips-card">
+                    <div class="tips-title">
+                        <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 8px;"></i>
+                        Dicas Práticas
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <div class="tip-text">
+                            <strong>Filtragem:</strong> Use where com operadores (Op.like, Op.gt) para consultas
+                            complexas
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-sort"></i>
+                        </div>
+                        <div class="tip-text">
+                            <strong>Ordenação:</strong> Combine order com limit/offset para paginação
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="tip-text">
+                            <strong>Update:</strong> Prefira update via instância quando já tiver o registro
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div class="tip-text">
+                            <strong>Delete:</strong> Use destroy com where para deletar múltiplos registros
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

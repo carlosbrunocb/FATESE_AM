@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8fafc;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .slide-container {
+            position: relative; /* Mantido apenas para o ::before absoluto funcionar corretamente */
+            display: grid;
+            grid-template-columns: 35px 96% 1fr; /* 30px de recuo esquerdo, 1220px de largura principal */
+            grid-template-rows: 60px 20px 700px 1fr; /* 60px do header, 20px de espaço para somar os 80px do topo, 610px de altura principal */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23e0f2fe" stroke-width="0.5"/></svg>') repeat;
+            background-size: 100px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            grid-row: 1 / 2;
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a8a;
+            font-size: 18pt;
+            font-weight: 700;
+        }
+
+        .logo-text {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18pt;
+            font-weight: 700;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: white;
+            font-size: 13pt;
+        }
+
+        .header-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-content {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+            display: flex;
+            gap: 25px;
+        }
+
+        .left-panel {
+            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 14pt;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .card-content {
+            font-size: 14pt;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .stat-value {
+            font-size: 24pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .problem-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .problem-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #fef2f2;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        .problem-icon {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            font-size: 11pt;
+            flex-shrink: 0;
+        }
+
+        .problem-text {
+            flex: 1;
+        }
+
+        .problem-title {
+            font-weight: 700;
+            color: #991b1b;
+            font-size: 13pt;
+        }
+
+        .problem-desc {
+            font-size: 12pt;
+            color: #7f1d1d;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .highlight-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .highlight-text {
+            font-size: 12pt;
+            color: #78350f;
+            line-height: 1.4;
+        }
+
+        .evidence-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .evidence-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13pt;
+            color: #475569;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .evidence-icon {
+            color: #10b981;
+            font-size: 14pt;
+        }
+
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px 12px 30px 12px;
+            margin-top: 12px;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .chart-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 80px;
+            padding: 0 10px;
+        }
+
+        .bar {
+            flex: 1;
+            background: #2563eb;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10pt;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10pt;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .impact-item {
+            text-align: center;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .impact-value {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .impact-label {
+            font-size: 10pt;
+            color: #64748b;
+            display: block;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FATESE</div>
+            </div>
+            <div class="header-info">
+                <div class="header-info-item"><i class="fas fa-graduation-cap"></i><span>ADS</span></div>
+                <div class="header-info-item"><i class="fas fa-calendar-alt"></i><span>2026.1</span></div>
+                <div class="header-info-item"><i class="fas fa-clock"></i><span>60 min</span></div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-paw"></i></div>
+                        <div class="card-title">AdoptMatch - Contexto do Problema</div>
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 20px;">Abrigos de animais sofrem com <span
+                                style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: 700; color: #92400e;">altas
+                                taxas de devolução</span> de pets porque a adoção é feita por impulso visual, sem
+                            considerar o estilo de vida do adotante.</p>
+                        <div class="problem-list">
+                            <div class="problem-item">
+                                <div class="problem-icon"><i class="fas fa-home"></i></div>
+                                <div class="problem-text">
+                                    <div class="problem-title">ONGs e Abrigos</div>
+                                    <div class="problem-desc">Custo com reacolhimento, lotação, desgaste da equipe</div>
+                                </div>
+                            </div>
+                            <div class="problem-item">
+                                <div class="problem-icon"><i class="fas fa-heart"></i></div>
+                                <div class="problem-text">
+                                    <div class="problem-title">Pets</div>
+                                    <div class="problem-desc">Estresse, regressão comportamental, perda de vínculos
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="problem-item">
+                                <div class="problem-icon"><i class="fas fa-users"></i></div>
+                                <div class="problem-text">
+                                    <div class="problem-title">Adotantes</div>
+                                    <div class="problem-desc">Frustração, sensação de escolha equivocada</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: auto;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="card-title">Evidências Iniciais</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="evidence-list">
+                            <div class="evidence-item">
+                                <i class="fas fa-check-circle evidence-icon"></i>
+                                <span>Entrevistas com ONGs: relatos de devoluções recorrentes por incompatibilidade de
+                                    rotina</span>
+                            </div>
+                            <div class="evidence-item">
+                                <i class="fas fa-check-circle evidence-icon"></i>
+                                <span>Observação: processos de triagem frágeis e pouco padronizados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="card-title">Causa-Raiz</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="highlight-box">
+                            <div class="highlight-title"><i class="fas fa-eye"></i>Adoção por Impulso Visual</div>
+                            <div class="highlight-text">A adoção é baseada apenas em <strong>estética</strong>, sem
+                                considerar rotina e temperamento.</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">80%</div>
+                                <div class="stat-label">Taxa de devolução</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">40%</div>
+                                <div class="stat-label">Incompatibilidade</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: auto;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+                        <div class="card-title">Impacto</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="impact-grid">
+                            <div class="impact-item"><span class="impact-value">↑</span><span class="impact-label">Custo
+                                    OP</span></div>
+                            <div class="impact-item"><span class="impact-value">↓</span><span
+                                    class="impact-label">Bem-estar</span></div>
+                            <div class="impact-item"><span class="impact-value">↓</span><span
+                                    class="impact-label">Confiança</span></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-chart-pie"></i>Devoluções por Categoria</div>
+                            <div class="bar-chart">
+                                <div class="bar" style="height: 80%;">
+                                    <div class="bar-value">80%</div>
+                                    <div class="bar-label">Estética</div>
+                                </div>
+                                <div class="bar" style="height: 60%;">
+                                    <div class="bar-value">60%</div>
+                                    <div class="bar-label">Rotina</div>
+                                </div>
+                                <div class="bar" style="height: 40%;">
+                                    <div class="bar-value">40%</div>
+                                    <div class="bar-label">Tempo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

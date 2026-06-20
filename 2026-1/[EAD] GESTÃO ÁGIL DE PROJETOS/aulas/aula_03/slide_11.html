@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Cycle Time - Conceito e Cálculo</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 130px);
+        }
+
+        .left-section {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-header i {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .concept-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .concept-title i {
+            color: #3b82f6;
+        }
+
+        .concept-desc {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .formula-box {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #22c55e;
+            text-align: center;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #166534;
+            margin: 10px 0;
+        }
+
+        .formula-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .comparison-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .comparison-label {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .comparison-value {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .github-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .github-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Cycle Time - Conceito e Cálculo</h1>
+                    <p>Medindo o tempo efetivo de trabalho no fluxo de desenvolvimento</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i>
+                            <h2>Definição de Cycle Time</h2>
+                        </div>
+                        <div class="concept-box">
+                            <div class="concept-title">
+                                <i class="fas fa-info-circle"></i>
+                                <span>O que é Cycle Time?</span>
+                            </div>
+                            <div class="concept-desc">
+                                Tempo efetivo de trabalho desde o início da execução até a conclusão (In Progress →
+                                Done).
+                                Diferente do Lead Time, o Cycle Time mede apenas o período de trabalho ativo, excluindo
+                                esperas e filas.
+                            </div>
+                        </div>
+                        <div class="formula-box">
+                            <div class="formula-label">Fórmula de Cálculo</div>
+                            <div class="formula">Cycle Time = Data de Conclusão − Data de Início (In Progress)</div>
+                            <div class="formula-label">Exemplo: Início em 05/05 e conclusão em 08/05 = 3 dias</div>
+                        </div>
+                        <div class="comparison-grid">
+                            <div class="comparison-item">
+                                <div class="comparison-label">Lead Time</div>
+                                <div class="comparison-value">Tempo total desde solicitação até entrega (inclui esperas)
+                                </div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="comparison-label">Cycle Time</div>
+                                <div class="comparison-value">Tempo de trabalho ativo (exclui esperas)</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="comparison-label">Quando usar Lead Time</div>
+                                <div class="comparison-value">Para promessas de entrega ao cliente</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="comparison-label">Quando usar Cycle Time</div>
+                                <div class="comparison-value">Para medir eficiência interna</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fab fa-github"></i>
+                            <h2>Como medir no GitHub Projects</h2>
+                        </div>
+                        <div class="github-steps">
+                            <div class="github-step">
+                                <div class="step-icon">1</div>
+                                <div class="step-content">
+                                    <div class="step-title">Capturar Início</div>
+                                    <div class="step-desc">Registrar quando o card entra em In Progress</div>
+                                </div>
+                            </div>
+                            <div class="github-step">
+                                <div class="step-icon">2</div>
+                                <div class="step-content">
+                                    <div class="step-title">Automação</div>
+                                    <div class="step-desc">Status muda para In Progress → preencher "Iniciado em"</div>
+                                </div>
+                            </div>
+                            <div class="github-step">
+                                <div class="step-icon">3</div>
+                                <div class="step-content">
+                                    <div class="step-title">Registrar Conclusão</div>
+                                    <div class="step-desc">Quando Done, preencher "Concluído em"</div>
+                                </div>
+                            </div>
+                            <div class="github-step">
+                                <div class="step-icon">4</div>
+                                <div class="step-content">
+                                    <div class="step-title">Calcular</div>
+                                    <div class="step-desc">Cycle Time = Concluído em − Iniciado em</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Dica:</strong> Use campos customizados no GitHub Projects para registrar datas
+                                de início e fim, depois exporte para calcular automaticamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-user"></i>
+                        <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>carlos.lopes@am.senac.br</span>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Aula 03 - Métricas de Fluxo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

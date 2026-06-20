@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>MVP e Backlog - AdoptMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #333; /* Fundo externo escuro para destacar o slide */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT GRID PRINCIPAL --- */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: grid;
+            grid-template-rows: 90px 1fr;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #0066CC 0%, #004080 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon i {
+            font-size: 24pt;
+            color: white;
+        }
+
+        .header-text {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text .title {
+            font-size: 24pt;
+            font-weight: 700;
+        }
+
+        .header-text .subtitle {
+            font-size: 13pt;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-right .title {
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .header-right .subtitle {
+            font-size: 11pt;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        /* --- KANBAN GRID --- */
+        .kanban-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1; /* Preenche o espaço disponível verticalmente */
+        }
+
+        .kanban-column {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .col-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .col-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .col-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .col-icon i { font-size: 14pt; }
+        
+        .col-icon.todo { background: #fef3c7; color: #92400e; }
+        .col-icon.progress { background: #dbeafe; color: #1e40af; }
+        .col-icon.done { background: #d1fae5; color: #065f46; }
+
+        .col-title { font-size: 14pt; font-weight: 700; color: #1e293b; }
+        .col-subtitle { font-size: 11pt; color: #64748b; }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10pt;
+            font-weight: 600;
+        }
+
+        .status-todo { background: #fef3c7; color: #92400e; }
+        .status-progress { background: #dbeafe; color: #1e40af; }
+        .status-done { background: #d1fae5; color: #065f46; }
+
+        /* Task Cards */
+        .task-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            border-left: 3px solid #0066CC;
+        }
+
+        .task-card.todo { background: #f8fafc; }
+        .task-card.progress { background: #fef2f2; }
+        .task-card.done { background: #f0fdf4; }
+
+        .priority-high { border-left-color: #EF4444; }
+        .priority-medium { border-left-color: #F59E0B; }
+        .priority-low { border-left-color: #10B981; }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            gap: 8px;
+        }
+
+        .task-title { font-size: 12pt; font-weight: 600; color: #1e293b; }
+        .task-desc { font-size: 10pt; color: #64748b; }
+
+        /* Progress Bar na Task */
+        .task-progress-wrap {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .task-progress-bg {
+            flex: 1;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        .task-progress-fill {
+            width: 70%;
+            height: 100%;
+            background: #0066CC;
+            border-radius: 2px;
+        }
+        .task-progress-text { font-size: 10pt; color: #64748b; }
+
+        /* --- BOTTOM SECTION (MATRIZ E RISCOS) --- */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .bottom-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bc-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bc-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0066CC, #004080);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bc-icon.orange { background: linear-gradient(135deg, #FF6600, #FF8C00); }
+        .bc-icon i { font-size: 14pt; color: white; }
+
+        .bc-title { font-size: 14pt; font-weight: 700; color: #1e293b; }
+        .bc-subtitle { font-size: 11pt; color: #64748b; }
+
+        .bc-inner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .inner-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .inner-box.yellow { background: #fef3c7; }
+        .inner-box.blue { background: #dbeafe; }
+
+        .ib-header { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+        .ib-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .ib-dot.green { background: #10B981; }
+        .ib-dot.orange { background: #F59E0B; }
+        
+        .ib-icon { font-size: 10pt; }
+        .ib-icon.orange { color: #f59e0b; }
+        .ib-icon.blue { color: #0066CC; }
+
+        .ib-title { font-size: 11pt; font-weight: 600; color: #1e293b; }
+        .ib-desc { font-size: 10pt; color: #64748b; }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="header-text">
+                    <p class="title">MVP E BACKLOG</p>
+                    <p class="subtitle">Kanban de Desenvolvimento - AdoptMatch</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <p class="title">AdoptMatch</p>
+                <p class="subtitle">Adoção por Afinidade</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="kanban-grid">
+                
+                <div class="kanban-column">
+                    <div class="col-header">
+                        <div class="col-title-wrap">
+                            <div class="col-icon todo">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <p class="col-title">To Do</p>
+                                <p class="col-subtitle">3 tarefas</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-todo">3</span>
+                    </div>
+
+                    <div class="task-card todo priority-medium">
+                        <div class="task-header">
+                            <span class="task-title">RF02 - Chat Interno</span>
+                            <span class="status-badge status-todo">Média</span>
+                        </div>
+                        <p class="task-desc">Validar visita após match</p>
+                    </div>
+
+                    <div class="task-card todo priority-low">
+                        <div class="task-header">
+                            <span class="task-title">Notificações</span>
+                            <span class="status-badge status-todo">Baixa</span>
+                        </div>
+                        <p class="task-desc">Alertas de match</p>
+                    </div>
+
+                    <div class="task-card todo priority-low">
+                        <div class="task-header">
+                            <span class="task-title">Termo LGPD</span>
+                            <span class="status-badge status-todo">Baixa</span>
+                        </div>
+                        <p class="task-desc">Consentimento</p>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="col-header">
+                        <div class="col-title-wrap">
+                            <div class="col-icon progress">
+                                <i class="fas fa-spinner"></i>
+                            </div>
+                            <div>
+                                <p class="col-title">In Progress</p>
+                                <p class="col-subtitle">1 tarefa</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-progress">1</span>
+                    </div>
+
+                    <div class="task-card progress priority-high">
+                        <div class="task-header">
+                            <span class="task-title">RF01 - Quiz Afinidade</span>
+                            <span class="status-badge status-progress">Alta</span>
+                        </div>
+                        <p class="task-desc">Killer Feature - 10 perguntas</p>
+                        <div class="task-progress-wrap">
+                            <div class="task-progress-bg">
+                                <div class="task-progress-fill"></div>
+                            </div>
+                            <span class="task-progress-text">70%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="col-header">
+                        <div class="col-title-wrap">
+                            <div class="col-icon done">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <p class="col-title">Done</p>
+                                <p class="col-subtitle">2 tarefas</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-done">2</span>
+                    </div>
+
+                    <div class="task-card done priority-low">
+                        <div class="task-header">
+                            <span class="task-title">Cadastro Simplificado</span>
+                            <span class="status-badge status-done">Concluído</span>
+                        </div>
+                        <p class="task-desc">Adotante e pet</p>
+                    </div>
+
+                    <div class="task-card done priority-low">
+                        <div class="task-header">
+                            <span class="task-title">Listagem Básica</span>
+                            <span class="status-badge status-done">Concluído</span>
+                        </div>
+                        <p class="task-desc">Visualização de pets</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bottom-grid">
+                
+                <div class="bottom-card">
+                    <div class="bc-header">
+                        <div class="bc-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <p class="bc-title">Matriz de Priorização</p>
+                            <p class="bc-subtitle">Esforço x Valor</p>
+                        </div>
+                    </div>
+                    <div class="bc-inner-grid">
+                        <div class="inner-box">
+                            <div class="ib-header">
+                                <div class="ib-dot green"></div>
+                                <span class="ib-title">Alta Prioridade</span>
+                            </div>
+                            <p class="ib-desc">Quiz de Afinidade</p>
+                        </div>
+                        <div class="inner-box">
+                            <div class="ib-header">
+                                <div class="ib-dot orange"></div>
+                                <span class="ib-title">Média Prioridade</span>
+                            </div>
+                            <p class="ib-desc">Chat Interno</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-card">
+                    <div class="bc-header">
+                        <div class="bc-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <p class="bc-title">Riscos e Próximos Passos</p>
+                            <p class="bc-subtitle">Mitigação e incrementos</p>
+                        </div>
+                    </div>
+                    <div class="bc-inner-grid">
+                        <div class="inner-box yellow">
+                            <div class="ib-header">
+                                <i class="fas fa-shield-alt ib-icon orange"></i>
+                                <span class="ib-title">Risco</span>
+                            </div>
+                            <p class="ib-desc">Dados inconsistentes</p>
+                        </div>
+                        <div class="inner-box blue">
+                            <div class="ib-header">
+                                <i class="fas fa-forward ib-icon blue"></i>
+                                <span class="ib-title">Próximo</span>
+                            </div>
+                            <p class="ib-desc">PWA offline</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

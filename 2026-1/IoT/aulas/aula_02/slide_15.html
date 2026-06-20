@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Circuito no Wokwi (Visão Geral)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Evita barras de rolagem indesejadas */
+        }
+
+        .slide-container {
+            width: 100vw; /* 100% da largura da tela */
+            height: 100vh; /* 100% da altura da tela */
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 35px 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            padding: 18px 22px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .info-icon {
+            min-width: 40px;
+            width: 40px;
+            height: 40px;
+            background-color: #1e40af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+            font-size: 18px;
+        }
+
+        .info-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding-top: 4px;
+        }
+
+        .info-highlight {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .tip-card {
+            background-color: #1e40af;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 2px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .tip-icon {
+            min-width: 36px;
+            width: 36px;
+            height: 36px;
+            background-color: #60a5fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            font-size: 18px;
+        }
+
+        .tip-text {
+            flex: 1;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            border: 2px solid #334155;
+        }
+
+        .diagram-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin: 0 0 24px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .circuit-diagram {
+            position: relative;
+            width: 520px; /* Fixado para manter o diagrama coeso em telas maiores */
+            height: 360px;
+            margin: 0 auto;
+        }
+
+        .esp32-board {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 200px;
+            background-color: #1e40af;
+            border-radius: 8px;
+            border: 3px solid #3b82f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .board-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-align: center;
+        }
+
+        .board-icon {
+            font-size: 32px;
+            color: #60a5fa;
+        }
+
+        .gpio-pin {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #fbbf24;
+            border-radius: 50%;
+            border: 2px solid #f59e0b;
+        }
+
+        .pin-19 { left: 130px; top: 100px; }
+        .pin-18 { left: 130px; top: 180px; }
+        .pin-5 { left: 130px; top: 260px; }
+
+        .wire {
+            position: absolute;
+            height: 3px;
+            background-color: #60a5fa;
+        }
+
+        .wire-19 { left: 142px; top: 106px; width: 120px; }
+        .wire-18 { left: 142px; top: 186px; width: 120px; }
+        .wire-5 { left: 142px; top: 266px; width: 120px; }
+
+        .led-component {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .led-verde { left: 270px; top: 75px; }
+        .led-amarelo { left: 270px; top: 155px; }
+        .led-vermelho { left: 270px; top: 235px; }
+
+        .led-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .led-verde .led-circle { border-color: #22c55e; background-color: #15803d; color: #22c55e; }
+        .led-amarelo .led-circle { border-color: #eab308; background-color: #a16207; color: #eab308; }
+        .led-vermelho .led-circle { border-color: #ef4444; background-color: #991b1b; color: #ef4444; }
+
+        .led-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .resistor {
+            position: absolute;
+            width: 50px;
+            height: 16px;
+            background-color: #d4a574;
+            border: 2px solid #b8905a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resistor-line {
+            width: 100%;
+            height: 3px;
+            background-color: #8b6f47;
+            display: flex;
+            gap: 4px;
+            padding: 0 6px;
+        }
+
+        .resistor-band {
+            width: 2px;
+            height: 100%;
+            background-color: #334155;
+        }
+
+        .resistor-19 { left: 340px; top: 98px; }
+        .resistor-18 { left: 340px; top: 178px; }
+        .resistor-5 { left: 340px; top: 258px; }
+
+        .wire-to-gnd {
+            position: absolute;
+            height: 3px;
+            background-color: #64748b;
+        }
+
+        .gnd-wire-19 { left: 390px; top: 106px; width: 60px; }
+        .gnd-wire-18 { left: 390px; top: 186px; width: 60px; }
+        .gnd-wire-5 { left: 390px; top: 266px; width: 60px; }
+
+        .gnd-connector {
+            position: absolute;
+            left: 450px; /* Ajustado para colar perfeitamente nos fios de GND */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 120px;
+            background-color: #334155;
+            border-radius: 8px;
+            border: 2px solid #475569;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gnd-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .gnd-icon {
+            font-size: 24px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+        }
+
+        .circle-1 { width: 280px; height: 280px; top: -100px; right: -100px; }
+        .circle-2 { width: 200px; height: 200px; bottom: -60px; left: -80px; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Circuito no Wokwi (Visão Geral)</p>
+            </h1>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <p class="info-text"><span class="info-highlight">Placa:</span> ESP32 DevKit</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <p class="info-text"><span class="info-highlight">GPIOs:</span> Verde=19, Amarelo=18, Vermelho=5 (ajustável conforme seu projeto)</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <p class="info-text">Cada LED em série com resistor 220–330 Ω para GND</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <p class="tip-text">Dica: rotule fios e valide polaridade antes de simular</p>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <p class="diagram-title">Esquema de Conexões</p>
+                    <div class="circuit-diagram">
+                        <div class="esp32-board">
+                            <i class="fas fa-microchip board-icon"></i>
+                            <p class="board-label">ESP32<br />DevKit</p>
+                        </div>
+                        <div class="gpio-pin pin-19"></div>
+                        <div class="gpio-pin pin-18"></div>
+                        <div class="gpio-pin pin-5"></div>
+                        <div class="wire wire-19"></div>
+                        <div class="wire wire-18"></div>
+                        <div class="wire wire-5"></div>
+                        <div class="led-component led-verde">
+                            <div class="led-circle">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <p class="led-label">GPIO 19</p>
+                        </div>
+                        <div class="led-component led-amarelo">
+                            <div class="led-circle">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <p class="led-label">GPIO 18</p>
+                        </div>
+                        <div class="led-component led-vermelho">
+                            <div class="led-circle">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <p class="led-label">GPIO 5</p>
+                        </div>
+                        <div class="resistor resistor-19">
+                            <div class="resistor-line">
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                            </div>
+                        </div>
+                        <div class="resistor resistor-18">
+                            <div class="resistor-line">
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                            </div>
+                        </div>
+                        <div class="resistor resistor-5">
+                            <div class="resistor-line">
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                                <div class="resistor-band"></div>
+                            </div>
+                        </div>
+                        <div class="wire-to-gnd gnd-wire-19"></div>
+                        <div class="wire-to-gnd gnd-wire-18"></div>
+                        <div class="wire-to-gnd gnd-wire-5"></div>
+                        <div class="gnd-connector">
+                            <p class="gnd-label">GND</p>
+                            <i class="fas fa-minus gnd-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

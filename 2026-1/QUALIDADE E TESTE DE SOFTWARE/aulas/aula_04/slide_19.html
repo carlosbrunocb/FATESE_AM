@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Checklist de Revisão de Código</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #F5F5F5;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Consistent */
+        .header-bar {
+            background-color: #0055A4;
+            padding: 25px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 32px;
+            color: white;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 8px;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Content Layout */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .intro-text {
+            color: #4B5563;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        /* Columns Grid */
+        .columns-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+
+        /* Category Cards */
+        .category-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .header-icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        /* Colors for Categories */
+        .cat-logic .header-icon-box { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+        .cat-logic { border-top: 5px solid #2563EB; }
+
+        .cat-style .header-icon-box { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+        .cat-style { border-top: 5px solid #7C3AED; }
+
+        .cat-ops .header-icon-box { background: linear-gradient(135deg, #10B981, #059669); }
+        .cat-ops { border-top: 5px solid #059669; }
+
+        /* Checklist Items inside Cards */
+        .checklist {
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .checkbox {
+            min-width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .cat-logic .checkbox { background-color: #DBEAFE; color: #2563EB; }
+        .cat-style .checkbox { background-color: #EDE9FE; color: #7C3AED; }
+        .cat-ops .checkbox { background-color: #D1FAE5; color: #059669; }
+
+        .item-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            color: #4B5563;
+            line-height: 1.4;
+        }
+
+        .item-text strong {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        /* Bottom Status Bar */
+        .status-bar {
+            background-color: #1F2937;
+            border-radius: 12px;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .status-text {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div class="header-left">
+                <i class="fas fa-tasks header-icon"></i>
+                <h1 class="title">Checklist de Revisão</h1>
+            </div>
+            <div class="logo-container">
+                <img src="imagens/Senac_logo.svg.png" alt="Senac Logo" class="logo-img">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <p class="intro-text">Ao revisar um Pull Request, divida sua atenção nestas três áreas fundamentais:</p>
+
+            <div class="columns-container">
+                
+                <div class="category-card cat-logic">
+                    <div class="card-header">
+                        <div class="header-icon-box">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h2 class="card-title">Lógica & Funcionalidade</h2>
+                    </div>
+                    <div class="checklist">
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>O código funciona?</strong> Atende aos requisitos propostos?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Casos de Borda:</strong> O código lida com inputs nulos, vazios ou inválidos?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Complexidade:</strong> As funções são curtas e fazem apenas uma coisa?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Testes:</strong> Existem testes unitários cobrindo as mudanças?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card cat-style">
+                    <div class="card-header">
+                        <div class="header-icon-box">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h2 class="card-title">Qualidade & Estilo</h2>
+                    </div>
+                    <div class="checklist">
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Nomenclatura:</strong> Variáveis e funções têm nomes que revelam a intenção?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>DRY (Don't Repeat Yourself):</strong> Existe código duplicado desnecessário?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Padrões:</strong> Segue o guia de estilo (PEP8, ESLint, etc.) do projeto?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Legibilidade:</strong> O código é fácil de entender para um novo dev?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card cat-ops">
+                    <div class="card-header">
+                        <div class="header-icon-box">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="card-title">Segurança & Ops</h2>
+                    </div>
+                    <div class="checklist">
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Segurança:</strong> Há validação de entrada? Senhas expostas?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Observabilidade:</strong> Logs de erro são claros e úteis?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Documentação:</strong> README ou Docstrings foram atualizados?</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="checkbox"><i class="fas fa-check"></i></div>
+                            <div class="item-text"><strong>Performance:</strong> Loops desnecessários ou queries pesadas?</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="status-bar">
+                <div class="status-text">
+                    <i class="fas fa-info-circle" style="color: #60A5FA;"></i>
+                    <span>Lembre-se: Você está criticando o <strong>código</strong>, não a <strong>pessoa</strong>.</span>
+                </div>
+                <div class="status-text">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Use sugestões construtivas</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

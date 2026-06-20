@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>WiFi Scanner - Análise do Código</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 93.8%;
+            height: 600px;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            height: auto;
+        }
+
+        .left-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 11pt;
+            line-height: 1.4;
+        }
+
+        .line-number {
+            color: #00BCD4;
+            width: 25px;
+            text-align: right;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        .code-text {
+            color: #ffffff;
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        .code-comment {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #8be9fd;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .info-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13pt;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rssi-scale {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .rssi-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rssi-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .rssi-excellent {
+            background: #4caf50;
+            width: 100%;
+        }
+
+        .rssi-good {
+            background: #ffeb3b;
+            width: 75%;
+        }
+
+        .rssi-fair {
+            background: #ff9800;
+            width: 50%;
+        }
+
+        .rssi-poor {
+            background: #f44336;
+            width: 25%;
+        }
+
+        .rssi-label {
+            width: 140px;
+            text-align: right;
+            font-size: 10pt;
+            white-space: nowrap;
+        }
+
+        .optimization-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .optimization-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 11.5pt;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .optimization-icon {
+            color: #00BCD4;
+            margin-top: 2px;
+            font-size: 12px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 80px;
+            right: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .badge {
+            background: rgba(33, 150, 243, 0.2);
+            color: #00BCD4;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <h1 class="main-title">WiFi Scanner - Análise do Código</h1>
+                    <p class="subtitle">Explicação detalhada das funções e otimização de performance</p>
+                </div>
+                <div class="status-item">
+                    <div class="badge">Parte 1</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="code-section">
+                        <div class="code-line">
+                            <div class="line-number">1</div>
+                            <div class="code-text"><span class="keyword">#include</span> <span
+                                    class="string">"WiFi.h"</span> <span class="code-comment">// Biblioteca WiFi para
+                                    ESP32</span></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">2</div>
+                            <div class="code-text"></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">3</div>
+                            <div class="code-text"><span class="function">void</span> <span
+                                    class="keyword">setup</span>() {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">4</div>
+                            <div class="code-text">  Serial.<span class="function">begin</span>(<span
+                                    class="number">115200</span>); <span class="code-comment">// Inicializa
+                                    serial</span></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">5</div>
+                            <div class="code-text">  WiFi.<span class="function">mode</span>(WIFI_STA); <span
+                                    class="code-comment">// Modo Station</span></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">6</div>
+                            <div class="code-text">  WiFi.<span class="function">disconnect</span>(); <span
+                                    class="code-comment">// Garante desconexão</span></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">7</div>
+                            <div class="code-text">  <span class="function">delay</span>(<span
+                                    class="number">100</span>); <span class="code-comment">// Estabilizar rádio</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">8</div>
+                            <div class="code-text">}</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">9</div>
+                            <div class="code-text"></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">10</div>
+                            <div class="code-text"><span class="function">void</span> <span
+                                    class="keyword">loop</span>() {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">11</div>
+                            <div class="code-text">  Serial.<span class="function">println</span>(<span
+                                    class="string">"Escaneando..."</span>);</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">12</div>
+                            <div class="code-text">  <span class="keyword">int</span> n = WiFi.<span
+                                    class="function">scanNetworks</span>();</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">13</div>
+                            <div class="code-text">  </div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">14</div>
+                            <div class="code-text">  <span class="keyword">if</span> (n == <span
+                                    class="number">0</span>) {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">15</div>
+                            <div class="code-text">    Serial.<span class="function">println</span>(<span
+                                    class="string">"Nada encontrado."</span>);</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">16</div>
+                            <div class="code-text">  } <span class="keyword">else</span> {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">17</div>
+                            <div class="code-text">    Serial.<span class="function">printf</span>(<span
+                                    class="string">"%d redes:\n"</span>, n);</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">18</div>
+                            <div class="code-text">    <span class="keyword">for</span> (<span
+                                    class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">19</div>
+                            <div class="code-text">      Serial.<span class="function">printf</span>(<span
+                                    class="string">"%d: %s (%d dBm)\n"</span>, i+1, WiFi.<span
+                                    class="function">SSID</span>(i).<span class="function">c_str</span>(), WiFi.<span
+                                    class="function">RSSI</span>(i));</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">20</div>
+                            <div class="code-text">    }</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">21</div>
+                            <div class="code-text">  }</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">22</div>
+                            <div class="code-text">  <span class="function">delay</span>(<span
+                                    class="number">5000</span>); <span class="code-comment">// Aguarda 5 segundos</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-number">23</div>
+                            <div class="code-text">}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="info-card">
+                        <div class="info-title">
+                            <i class="fas fa-signal" style="color: #00BCD4;"></i>
+                            Interpretação de RSSI
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-excellent"></div>
+                            </div>
+                            <span class="rssi-label" style="color: #4caf50;">-30 dBm (Excelente)</span>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-good"></div>
+                            </div>
+                            <span class="rssi-label" style="color: #ffeb3b;">-50 a -67 dBm (Bom)</span>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-fair"></div>
+                            </div>
+                            <span class="rssi-label" style="color: #ff9800;">-70 a -80 dBm (Fraco)</span>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-poor"></div>
+                            </div>
+                            <span class="rssi-label" style="color: #f44336;">&lt; -85 dBm (Limite)</span>
+                        </div>
+                    </div>
+                    <div class="info-card" style="flex-grow: 1;">
+                        <div class="info-title">
+                            <i class="fas fa-battery-half" style="color: #00BCD4;"></i>
+                            Otimização de Consumo
+                        </div>
+                        <div class="optimization-list">
+                            <div class="optimization-item">
+                                <i class="fas fa-check optimization-icon"></i>
+                                <span>Defina intervalo adequado (5s no laboratório)</span>
+                            </div>
+                            <div class="optimization-item">
+                                <i class="fas fa-check optimization-icon"></i>
+                                <span>Prefira varreduras menos frequentes</span>
+                            </div>
+                            <div class="optimization-item">
+                                <i class="fas fa-check optimization-icon"></i>
+                                <span>Evite escanear durante transmissões</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Análise em andamento</span>
+            </div>
+            <div class="status-item">
+                <span>Próximo: Conexão Automática</span>
+            </div>
+            <div class="status-item">
+                <span>Slide 12 de 15</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

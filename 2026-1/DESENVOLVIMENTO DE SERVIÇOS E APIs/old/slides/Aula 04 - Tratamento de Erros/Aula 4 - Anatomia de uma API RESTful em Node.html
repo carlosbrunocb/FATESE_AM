@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula: Anatomia de uma API RESTful</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Configuração Geral --- */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            overflow: hidden;
+            /* Previne scroll da página inteira */
+        }
+
+        /* --- Contêiner Principal dos Slides --- */
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Estrutura do Slide Individual --- */
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            max-height: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            /* Permite scroll *dentro* do slide */
+            padding: 40px 60px;
+            box-sizing: border-box;
+            display: none;
+            /* Começa escondido */
+            flex-direction: column;
+            position: absolute;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Slide ativo */
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+
+        /* --- Cabeçalho e Rodapé (Branding) --- */
+        .slide-header,
+        .slide-footer {
+            flex-shrink: 0;
+            width: 100%;
+            color: #555;
+        }
+
+        .slide-header {
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .slide-header span {
+            color: #0056b3;
+            font-weight: 700;
+        }
+
+        .slide-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* --- Conteúdo do Slide --- */
+        .slide-content {
+            flex-grow: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+            /* Garante que o conteúdo role se for maior */
+        }
+
+        /* --- Slide de Título --- */
+        .slide.title-slide {
+            text-align: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            color: #0056b3;
+            margin-bottom: 15px;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8em;
+            font-weight: 400;
+            color: #333;
+            margin-top: 0;
+        }
+
+        .title-slide .course-info {
+            margin-top: 50px;
+            font-size: 1.2em;
+            color: #444;
+        }
+
+        /* --- Navegação --- */
+        .nav-button {
+            position: fixed;
+            z-index: 20;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 86, 179, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        #prev-slide {
+            left: 20px;
+        }
+
+        #next-slide {
+            right: 20px;
+        }
+
+        .nav-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* --- Elementos de Conteúdo Padrão --- */
+        h1,
+        h2,
+        h3 {
+            color: #004a99;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+        }
+
+        p,
+        li {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        ul {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong,
+        code {
+            color: #d9534f;
+            /* Destaque */
+            font-weight: 600;
+        }
+
+        /* --- Blocos de Código --- */
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.95em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            /* Quebra linha se necessário */
+        }
+
+        pre code {
+            color: #f8f8f2;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-weight: 400;
+        }
+
+        .code-comment {
+            color: #75715e;
+            font-style: italic;
+        }
+
+        .code-keyword {
+            color: #f92672;
+        }
+
+        .code-const {
+            color: #66d9ef;
+        }
+
+        .code-fn {
+            color: #a6e22e;
+        }
+
+        .code-string {
+            color: #e6db74;
+        }
+
+        .code-param {
+            color: #fd971f;
+        }
+
+        .code-class {
+            color: #66d9ef;
+            font-style: italic;
+        }
+
+
+        /* --- Layouts de Colunas --- */
+        .col-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        /* --- Fluxograma --- */
+        .flow-diagram {
+            list-style: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .flow-step {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .flow-step strong {
+            display: block;
+            font-size: 1.1em;
+            color: #0056b3;
+            margin-bottom: 5px;
+        }
+
+        .flow-step span {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #c7254e;
+            background-color: #f9f2f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .flow-step::after {
+            content: '⬇️';
+            position: absolute;
+            left: 50%;
+            bottom: -22px;
+            transform: translateX(-50%);
+            font-size: 1.5em;
+        }
+
+        .flow-step:last-child::after {
+            content: '';
+        }
+
+        /* --- Responsividade --- */
+        @media (max-width: 900px) {
+            .slide {
+                padding: 30px 40px;
+                width: 95%;
+                height: 95%;
+            }
+
+            .title-slide h1 {
+                font-size: 2.5em;
+            }
+
+            .title-slide h2 {
+                font-size: 1.5em;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            p,
+            li {
+                font-size: 1em;
+                line-height: 1.6;
+            }
+
+            .col-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .slide {
+                padding: 20px 25px;
+            }
+
+            pre {
+                padding: 15px;
+            }
+
+            .nav-button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            #prev-slide {
+                left: 10px;
+            }
+
+            #next-slide {
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="slide-container">
+
+        <!-- Slide 1: Título -->
+        <div class="slide title-slide active" id="slide1">
+            <div class="slide-header" style="border-bottom: none; text-align: left;">
+                <img src="https://portoalegre.wordcamp.org/2017/files/2017/03/senac-logo.png" alt="Logo SENAC"
+                    style="height: 40px;">
+            </div>
+
+            <div class="slide-content">
+                <h1>Anatomia de uma API RESTful em Node.js</h1>
+                <h2>Aula Prática: Do Zero ao CRUD com Express.js</h2>
+
+                <div class="course-info">
+                    <p><strong>FACULDADE DE TECNOLOGIA SENAC - FATESE</strong></p>
+                    <p>Curso de Análise e Desenvolvimento de Sistemas</p>
+                    <p><strong>Disciplina:</strong> Desenvolvimento de Serviços e APIs</p>
+                    <p><strong>Professor:</strong> Carlos Bruno Oliveira Lopes</p>
+                </div>
+            </div>
+
+            <div class="slide-footer" style="border-top: none; justify-content: center;">
+                Pressione as setas para navegar
+            </div>
+        </div>
+
+        <!-- Slide 2: Índice -->
+        <div class="slide" id="slide2">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h1>Tópicos da Aula</h1>
+                <p>Nesta aula, vamos dissecar o projeto que construímos, entendendo a função de cada arquivo e a
+                    arquitetura por trás de uma API profissional.</p>
+                <ul>
+                    <li>O que é uma API RESTful? (Revisão)</li>
+                    <li>A Arquitetura: Separando Responsabilidades</li>
+                    <li><strong>Rotas</strong> (`user.routes.js`) - O "GPS" da API</li>
+                    <li><strong>Controladores</strong> (`user.controller.js`) - O "Gerente"</li>
+                    <li><strong>Serviços</strong> (`user.service.js`) - O "Cérebro"</li>
+                    <li><strong>Middleware</strong> (`logger`, `validation`) - Os "Porteiros"</li>
+                    <li><strong>Tratamento de Erros</strong> (`errorHandler`, `AppError`) - A "Rede de Segurança"</li>
+                    <li>O Fluxo Completo de uma Requisição (POST e GET)</li>
+                </ul>
+            </div>
+
+            <div class="slide-footer">
+                <div>Professor: Carlos Bruno Oliveira Lopes</div>
+                <div class="slide-number">2</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: O que é RESTful? -->
+        <div class="slide" id="slide3">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h1>O que é uma API RESTful? (Revisão)</h1>
+                <p>REST (REpresentational State Transfer) é um estilo de arquitetura que define como serviços web devem
+                    se comunicar. Ele usa os verbos HTTP padrões que já conhecemos:</p>
+
+                <ul>
+                    <li><code>GET</code>: Para <strong>ler</strong> dados.</li>
+                    <li><code>POST</code>: Para <strong>criar</strong> um novo dado.</li>
+                    <li><code>PUT</code> / <code>PATCH</code>: Para <strong>atualizar</strong> um dado existente.</li>
+                    <li><code>DELETE</code>: Para <strong>remover</strong> um dado.</li>
+                </ul>
+
+                <p>Nossa API é "RESTful" porque mapeia esses verbos a ações claras sobre o recurso <code>/users</code>:
+                </p>
+
+                <pre><code><span class="code-comment">// Em user.routes.js</span>
+<span class="code-keyword">router.get</span>(<span class="code-string">'/users'</span>, <span class="code-fn">userController.getAll</span>);        <span class="code-comment">// Lê todos</span>
+<span class="code-keyword">router.get</span>(<span class="code-string">'/users/:id'</span>, <span class="code-fn">userController.getById</span>);      <span class="code-comment">// Lê um</span>
+<span class="code-keyword">router.post</span>(<span class="code-string">'/users'</span>, <span class="code-fn">userController.create</span>);       <span class="code-comment">// Cria um</span></code></pre>
+            </div>
+
+            <div class="slide-footer">
+                <div>Conceito: RESTful API</div>
+                <div class="slide-number">3</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: A Arquitetura -->
+        <div class="slide" id="slide4">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h1>A Arquitetura: Separando Responsabilidades</h1>
+                <p>Não colocamos todo o código em um arquivo só. Nós separamos a API em camadas, cada uma com uma única
+                    responsabilidade. Isso é <strong>essencial</strong> para manutenção e testabilidade.</p>
+
+                <div class="col-container">
+                    <div class="col">
+                        <h3>1. Camada de Roteamento</h3>
+                        <p><strong>Arquivo:</strong> <code>user.routes.js</code></p>
+                        <p>Define as URLs e os verbos HTTP. É o "GPS" da aplicação.</p>
+                    </div>
+                    <div class="col">
+                        <h3>2. Camada de Controle</h3>
+                        <p><strong>Arquivo:</strong> <code>user.controller.js</code></p>
+                        <p>Recebe a requisição (<code>req</code>) e envia a resposta (<code>res</code>). É o "Gerente"
+                            que delega tarefas.</p>
+                    </div>
+                    <div class="col">
+                        <h3>3. Camada de Serviço</h3>
+                        <p><strong>Arquivo:</strong> <code>user.service.js</code></p>
+                        <p>Contém a <strong>Lógica de Negócio</strong>. É o "Cérebro" que executa as tarefas.</p>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 1.5em; margin-top: 30px;">
+                    <strong>Fluxo:</strong> Rota ➡️ Controlador ➡️ Serviço ➡️ Controlador ➡️ Resposta
+                </p>
+            </div>
+
+            <div class="slide-footer">
+                <div>Arquitetura em Camadas</div>
+                <div class="slide-number">4</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Camada de Roteamento -->
+        <div class="slide" id="slide5">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>1. Camada de Roteamento (O "GPS")</h2>
+                <p><strong>Arquivo:</strong> <code>src/routes/user.routes.js</code></p>
+                <p>A responsabilidade desta camada é simples: ela diz ao Express "Quando uma requisição X chegar nesta
+                    URL, execute a função Y".</p>
+                <p>Note que ela não sabe <strong>como</strong> criar um usuário, apenas <strong>quem</strong> chamar (o
+                    <code>userController</code>).</p>
+
+                <pre><code><span class="code-const">const</span> { <span class="code-class">Router</span> } = <span class="code-fn">require</span>(<span class="code-string">'express'</span>);
+<span class="code-const">const</span> <span class="code-const">userController</span> = <span class="code-fn">require</span>(<span class="code-string">'../controllers/user.controller'</span>);
+<span class="code-const">const</span> { <span class="code-const">validateUserCreation</span> } = <span class="code-fn">require</span>(<span class="code-string">'../middlewares/validation.middleware'</span>);
+
+<span class="code-const">const</span> <span class="code-const">router</span> = <span class="code-fn">Router</span>();
+
+<span class="code-comment">// Rota para listar todos os usuários</span>
+<span class="code-keyword">router.get</span>(<span class="code-string">'/users'</span>, <span class="code-param">userController.getAll</span>);
+
+<span class="code-comment">// Rota para criar um usuário</span>
+<span class="code-comment">// Note a cadeia: primeiro valida, DEPOIS cria</span>
+<span class="code-keyword">router.post</span>(
+    <span class="code-string">'/users'</span>,
+    <span class="code-param">validateUserCreation</span>, <span class="code-comment">// <- Middleware de Validação</span>
+    <span class="code-param">userController.create</span>   <span class="code-comment">// <- Controlador</span>
+);
+
+<span class="code-keyword">module.exports</span> = router;</code></pre>
+            </div>
+
+            <div class="slide-footer">
+                <div>Camada de Roteamento</div>
+                <div class="slide-number">5</div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Camada de Controle -->
+        <div class="slide" id="slide6">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>2. Camada de Controle (O "Gerente")</h2>
+                <p><strong>Arquivo:</strong> <code>src/controllers/user.controller.js</code></p>
+                <p>O Controlador é o "gerente" da requisição. Ele é o único que fala com <code>req</code> (requisição) e
+                    <code>res</code> (resposta). Ele recebe o pedido, chama o Serviço para fazer o trabalho pesado, e
+                    depois envia a resposta ao cliente.</p>
+
+                <pre><code><span class="code-const">const</span> <span class="code-const">userService</span> = <span class="code-fn">require</span>(<span class="code-string">'../services/user.service'</span>);
+
+<span class="code-class">class</span> <span class="code-class">UserController</span> {
+    
+    <span class="code-fn">async</span> <span class="code-fn">create</span>(<span class="code-param">req</span>, <span class="code-param">res</span>, <span class="code-param">next</span>) {
+        <span class="code-keyword">try</span> {
+            <span class="code-comment">// 1. Pega os dados do corpo da requisição</span>
+            <span class="code-const">const</span> <span class="code-const">userData</span> = <span class="code-param">req.body</span>;
+
+            <span class="code-comment">// 2. DELEGA o trabalho para o Serviço</span>
+            <span class="code-const">const</span> <span class="code-const">newUser</span> = <span class="code-const">userService.create</span>(userData);
+
+            <span class="code-comment">// 3. ENVIA a resposta de sucesso</span>
+            <span class="code-param">res.status</span>(<span class="code-string">201</span>).<span class="code-fn">json</span>({ <span class="code-const">success</span>: <span class="code-keyword">true</span>, <span class="code-const">data</span>: newUser });
+
+        } <span class="code-keyword">catch</span> (error) {
+            <span class="code-comment">// 4. Se o Serviço falhar, DELEGA o erro</span>
+            <span class="code-fn">next</span>(error);
+        }
+    }
+}</code></pre>
+            </div>
+
+            <div class="slide-footer">
+                <div>Camada de Controle</div>
+                <div class="slide-number">6</div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Camada de Serviço -->
+        <div class="slide" id="slide7">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>3. Camada de Serviço (O "Cérebro")</h2>
+                <p><strong>Arquivo:</strong> <code>src/services/user.service.js</code></p>
+                <p>Esta é a camada mais importante: a <strong>Lógica de Negócio</strong>. O Serviço executa a tarefa.
+                    Ele não sabe o que é <code>req</code> ou <code>res</code>. Ele apenas recebe dados
+                    (<code>userData</code>), faz seu trabalho (salva no banco, cria ID) e retorna um resultado ou lança
+                    um erro.</p>
+
+                <pre><code><span class="code-const">const</span> <span class="code-const">db</span> = <span class="code-fn">require</span>(<span class="code-string">'../utils/database.util'</span>); <span class="code-comment">// Nosso "Banco"</span>
+<span class="code-const">const</span> <span class="code-const">AppError</span> = <span class="code-fn">require</span>(<span class="code-string">'../errors/AppError'</span>);
+<span class="code-const">const</span> <span class="code-const">DB_KEY</span> = <span class="code-string">'users'</span>;
+
+<span class="code-class">class</span> <span class="code-class">UserService</span> {
+    
+    <span class="code-fn">create</span>(<span class="code-param">userData</span>) {
+        <span class="code-comment">// REGRA DE NEGÓCIO 1: Validar email</span>
+        <span class="code-keyword">if</span> (!<span class="code-param">userData.email</span>) {
+            <span class="code-keyword">throw</span> <span class="code-keyword">new</span> <span class="code-fn">AppError</span>(<span class="code-string">'O campo e-mail é obrigatório.'</span>, <span class="code-string">400</span>);
+        }
+
+        <span class="code-const">const</span> <span class="code-const">users</span> = <span class="code-const">db.getData</span>(DB_KEY);
+
+        <span class="code-comment">// REGRA DE NEGÓCIO 2: Gerar um ID</span>
+        <span class="code-const">const</span> <span class="code-const">lastId</span> = users.length > <span class="code-string">0</span> ? users[users.length - <span class="code-string">1</span>].id : <span class="code-string">0</span>;
+        <span class="code-const">const</span> <span class="code-const">newUser</span> = { <span class="code-const">id</span>: lastId + <span class="code-string">1</span>, ...userData };
+
+        users.<span class="code-fn">push</span>(newUser);
+        <span class="code-const">db.saveData</span>(DB_KEY, users); <span class="code-comment">// Ação de persistência</span>
+        
+        <span class="code-keyword">return</span> newUser;
+    }
+}</code></pre>
+            </div>
+
+            <div class="slide-footer">
+                <div>Camada de Serviço</div>
+                <div class="slide-number">7</div>
+            </div>
+        </div>
+
+        <!-- Slide 8: O que é Middleware? -->
+        <div class="slide" id="slide8">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>O que é Middleware? (Os "Porteiros")</h2>
+                <p>Middleware são <strong>funções que rodam no meio</strong> do ciclo da requisição (Requisição ➡️
+                    ...Middleware... ➡️ Resposta).</p>
+                <p>Pense neles como "porteiros" ou "checkpoints" que uma requisição deve passar.</p>
+
+                <h3>A Anatomia de um Middleware</h3>
+                <p>Ele sempre recebe 3 argumentos (ou 4, se for de erro):</p>
+                <pre><code><span class="code-keyword">function</span> <span class="code-fn">meuMiddleware</span>(<span class="code-param">req</span>, <span class="code-param">res</span>, <span class="code-param">next</span>) {
+    <span class="code-comment">// ... faz alguma coisa (ex: logar, checar algo) ...</span>
+
+    <span class="code-comment">// REGRA DE OURO:</span>
+    <span class="code-comment">// Ou você BARRA a requisição...</span>
+    <span class="code-comment">// return res.status(401).json({ message: 'Não autorizado' });</span>
+
+    <span class="code-comment">// ...Ou você DEIXA PASSAR para o próximo.</span>
+    <span class="code-fn">next</span>();
+}</code></pre>
+                <p>Se você não enviar uma resposta e nem chamar <code>next()</code>, a requisição fica "travada"
+                    (timeout).</p>
+            </div>
+
+            <div class="slide-footer">
+                <div>Conceito: Middleware</div>
+                <div class="slide-number">8</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Tipos de Middleware -->
+        <div class="slide" id="slide9">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>Middleware em Ação (Nosso Projeto)</h2>
+                <p>Nós usamos 2 tipos principais de middleware:</p>
+
+                <div class="col-container">
+                    <div class="col">
+                        <h3>1. Middleware Global (Logger)</h3>
+                        <p><strong>Arquivo:</strong> <code>logger.middleware.js</code></p>
+                        <p>É registrado no <code>server.js</code> com <code>app.use(logger)</code>. Ele roda em
+                            <strong>todas</strong> as requisições que chegam na API, sem exceção.</p>
+                        <pre><code><span class="code-keyword">function</span> <span class="code-fn">logger</span>(<span class="code-param">req</span>, <span class="code-param">res</span>, <span class="code-param">next</span>) {
+  <span class="code-const">console.log</span>(
+    <span class="code-string">`[${new Date().toISOString()}] ${<span class="code-param">req.method</span>} ${<span class="code-param">req.url</span>}`</span>
+  );
+  <span class="code-fn">next</span>(); <span class="code-comment">// Deixa passar</span>
+}</code></pre>
+                    </div>
+                    <div class="col">
+                        <h3>2. Middleware Específico (Validação)</h3>
+                        <p><strong>Arquivo:</strong> <code>validation.middleware.js</code></p>
+                        <p>É registrado no <code>user.routes.js</code> apenas para a rota <code>POST /users</code>. Ele
+                            atua como um "segurança" que barra dados inválidos.</p>
+                        <pre><code><span class="code-keyword">function</span> <span class="code-fn">validateUserCreation</span>(<span class="code-param">req</span>, <span class="code-param">res</span>, <span class="code-param">next</span>) {
+  <span class="code-const">const</span> { <span class="code-const">name</span>, <span class="code-const">email</span> } = <span class="code-param">req.body</span>;
+
+  <span class="code-keyword">if</span> (!name || !email) {
+    <span class="code-comment">// BARRA a requisição</span>
+    <span class="code-keyword">return</span> <span class="code-param">res.status</span>(<span class="code-string">400</span>).<span class="code-fn">json</span>({ ... });
+  }
+  
+  <span class="code-fn">next</span>(); <span class="code-comment">// Deixa passar</span>
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-footer">
+                <div>Tipos de Middleware</div>
+                <div class="slide-number">9</div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Tratamento de Erros -->
+        <div class="slide" id="slide10">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>Tratamento de Erros (A "Rede de Segurança")</h2>
+                <p>O que acontece quando o <code>userService</code> lança um erro? O servidor quebra?
+                    <strong>Não!</strong> Graças à nossa arquitetura.</p>
+
+                <h3>1. O Erro Customizado: <code>AppError.js</code></h3>
+                <p>Criamos uma classe de Erro que nos permite definir uma mensagem E um <code>statusCode</code>. Isso é
+                    crucial para o REST (ex: 404 Not Found, 400 Bad Request).</p>
+                <pre><code><span class="code-comment">// Em user.service.js</span>
+<span class="code-keyword">throw</span> <span class="code-keyword">new</span> <span class="code-fn">AppError</span>(<span class="code-string">'Usuário não encontrado.'</span>, <span class="code-string">404</span>);</code></pre>
+
+                <h3>2. O Middleware de Erro: <code>errorHandler.middleware.js</code></h3>
+                <p>Este é um middleware especial com 4 argumentos (<code>err, req, res, next</code>). Ele é registrado
+                    <strong>por último</strong> no <code>server.js</code>.</p>
+                <pre><code><span class="code-keyword">function</span> <span class="code-fn">errorHandler</span>(<span class="code-param">err</span>, <span class="code-param">req</span>, <span class="code-param">res</span>, <span class="code-param">next</span>) {
+  <span class="code-comment">// Pega o statusCode do AppError, ou 500 (Erro Genérico)</span>
+  <span class="code-const">const</span> <span class="code-const">statusCode</span> = <span class="code-param">err.statusCode</span> || <span class="code-string">500</span>;
+  
+  <span class="code-param">res.status</span>(statusCode).<span class="code-fn">json</span>({
+      <span class="code-const">success</span>: <span class="code-keyword">false</span>,
+      <span class="code-const">message</span>: <span class="code-param">err.message</span>
+  });
+}</code></pre>
+                <p>O <code>try...catch(next)</code> no Controlador é o que joga o erro do Serviço para este "hospital"
+                    centralizado.</p>
+            </div>
+
+            <div class="slide-footer">
+                <div>Tratamento de Erros</div>
+                <div class="slide-number">10</div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Fluxo Completo (Sucesso) -->
+        <div class="slide" id="slide11">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>Fluxo Completo: <code>POST /api/users</code> (Sucesso)</h2>
+                <p>Vamos seguir uma requisição pela nossa API:</p>
+
+                <ul class="flow-diagram">
+                    <li class="flow-step">
+                        <strong>1. Requisição</strong>
+                        Cliente envia <code>POST /api/users</code> com
+                        <code>{ "name": "Ana", "email": "ana@senac.com" }</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>2. Middlewares Globais (em <code>server.js</code>)</strong>
+                        <span>express.json()</span> lê o corpo. <span>logger()</span> imprime no console e chama
+                        <code>next()</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>3. Rota (em <code>user.routes.js</code>)</strong>
+                        Express encontra <code>router.post('/users', ...)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>4. Middleware Específico (em <code>validation.middleware.js</code>)</strong>
+                        <code>validateUserCreation</code> checa: <code>name</code> existe? Sim. <code>email</code>
+                        existe? Sim. Chama <code>next()</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>5. Controlador (em <code>user.controller.js</code>)</strong>
+                        <code>userController.create</code> é chamado. Entra no <code>try</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>6. Serviço (em <code>user.service.js</code>)</strong>
+                        <code>userService.create(...)</code> é chamado. Valida o email (ok), lê o DB, cria o ID (ex: 1),
+                        salva no DB. Retorna <code>{ id: 1, ... }</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>7. Resposta (de volta ao <code>user.controller.js</code>)</strong>
+                        <code>res.status(201).json(...)</code> é executado.
+                    </li>
+                    <li class="flow-step">
+                        <strong>8. FIM</strong>
+                        Cliente recebe a resposta <code>201 Created</code> com os dados do usuário.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="slide-footer">
+                <div>O Fluxo Completo (Sucesso)</div>
+                <div class="slide-number">11</div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Fluxo Completo (Erro) -->
+        <div class="slide" id="slide12">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>Fluxo Completo: <code>POST /api/users</code> (Erro de Validação)</h2>
+                <p>Agora, o que acontece se o cliente errar?</p>
+
+                <ul class="flow-diagram">
+                    <li class="flow-step">
+                        <strong>1. Requisição</strong>
+                        Cliente envia <code>POST /api/users</code> com <code>{ "name": "Ana" }</code> (esqueceu o
+                        email!).
+                    </li>
+                    <li class="flow-step">
+                        <strong>2. Middlewares Globais (em <code>server.js</code>)</strong>
+                        <span>express.json()</span> e <span>logger()</span> rodam normalmente e chamam
+                        <code>next()</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>3. Rota (em <code>user.routes.js</code>)</strong>
+                        Express encontra <code>router.post('/users', ...)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>4. Middleware Específico (em <code>validation.middleware.js</code>)</strong>
+                        <code>validateUserCreation</code> checa: <code>name</code> existe? Sim. <code>email</code>
+                        existe? <strong>Não.</strong>
+                    </li>
+                    <li class="flow-step">
+                        <strong>5. Resposta (Erro)</strong>
+                        O middleware <strong>BARRA</strong> a requisição. Ele executa
+                        <code>return res.status(400).json(...)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>6. FIM</strong>
+                        O <code>userController</code> <strong>nunca é executado</strong>. O cliente recebe
+                        <code>400 Bad Request</code>.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="slide-footer">
+                <div>O Fluxo Completo (Erro de Validação)</div>
+                <div class="slide-number">12</div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Fluxo Completo (Erro de Serviço) -->
+        <div class="slide" id="slide13">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content">
+                <h2>Fluxo Completo: <code>GET /api/users/99</code> (Erro de Serviço)</h2>
+                <p>E se o erro acontecer na lógica de negócio?</p>
+
+                <ul class="flow-diagram">
+                    <li class="flow-step">
+                        <strong>1. Requisição</strong>
+                        Cliente envia <code>GET /api/users/99</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>2. Rota e Controlador</strong>
+                        <code>logger()</code> roda. <code>user.routes.js</code> chama
+                        <code>userController.getById</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>3. Serviço (em <code>user.service.js</code>)</strong>
+                        <code>userService.getById(99)</code> é chamado. Ele procura no DB e não encontra.
+                    </li>
+                    <li class="flow-step">
+                        <strong>4. O Erro é Lançado (<code>throw</code>)</strong>
+                        O Serviço executa: <code>throw new AppError('Usuário não encontrado.', 404)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>5. O Controlador Pega (<code>catch</code>)</strong>
+                        O <code>try...catch</code> do <code>userController</code> captura o erro.
+                    </li>
+                    <li class="flow-step">
+                        <strong>6. Delegação (<code>next</code>)</strong>
+                        O Controlador executa <code>next(error)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>7. O "Hospital" (em <code>server.js</code>)</strong>
+                        O Express pula tudo e entrega o <code>error</code> para o
+                        <code>errorHandler(err, req, res, next)</code>.
+                    </li>
+                    <li class="flow-step">
+                        <strong>8. FIM</strong>
+                        O <code>errorHandler</code> envia a resposta: <code>404 Not Found</code>.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="slide-footer">
+                <div>O Fluxo Completo (Erro de Serviço)</div>
+                <div class="slide-number">13</div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Encerramento -->
+        <div class="slide" id="slide14">
+            <div class="slide-header"><span>FATESE</span> | Desenvolvimento de Serviços e APIs</div>
+
+            <div class="slide-content"
+                style="text-align: center; justify-content: center; display: flex; flex-direction: column;">
+                <h1 style="font-size: 3.5em; color: #0056b3;">Dúvidas?</h1>
+
+                <h2 style="font-size: 1.8em; font-weight: 400; color: #333; margin-top: 20px;">
+                    Obrigado!
+                </h2>
+
+                <p style="font-size: 1.3em; max-width: 800px; margin: 30px auto;">
+                    <strong>Resumo:</strong> Separar responsabilidades (Rotas, Controles, Serviços) e usar Middlewares
+                    (Globais, Específicos, Erros) cria um código limpo, profissional e fácil de manter.
+                </p>
+            </div>
+
+            <div class="slide-footer">
+                <div>Professor: Carlos Bruno Oliveira Lopes</div>
+                <div class="slide-number">14</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Botões de Navegação -->
+    <button id="prev-slide" class="nav-button" title="Slide Anterior">◄</button>
+    <button id="next-slide" class="nav-button" title="Próximo Slide">►</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev-slide');
+            const nextButton = document.getElementById('next-slide');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                // Esconde o slide atual
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+
+                // Define o novo slide
+                currentSlide = index;
+
+                // Mostra o novo slide
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                    // Foca no slide para scroll interno (se houver)
+                    slides[currentSlide].focus();
+                }
+
+                // Atualiza os botões
+                prevButton.disabled = currentSlide === 0;
+                nextButton.disabled = currentSlide === slides.length - 1;
+
+                // Atualiza o número do slide (se existir)
+                const slideNumberEl = slides[currentSlide].querySelector('.slide-number');
+                if (slideNumberEl) {
+                    slideNumberEl.textContent = `${currentSlide + 1} / ${slides.length}`;
+                }
+            }
+
+            // Event Listeners para botões
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Event Listeners para setas do teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextButton.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevButton.click();
+                }
+            });
+
+            // Inicializa a apresentação
+            showSlide(0);
+        });
+    </script>
+
+</body>
+
+</html>

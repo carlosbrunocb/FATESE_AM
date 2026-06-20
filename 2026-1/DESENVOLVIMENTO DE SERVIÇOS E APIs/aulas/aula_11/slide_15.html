@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação - Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            position: absolute;
+            top: 105px;
+            left: 40px;
+            width: 95%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .code-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Grid Layout */
+        .code-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .code-panel {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11.5pt;
+            color: #e2e8f0;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .code-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .code-panel-title {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #63b3ed;
+        }
+
+        .code-panel-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .code-comment {
+            color: #718096;
+        }
+
+        .code-keyword {
+            color: #63b3ed;
+        }
+
+        .code-string {
+            color: #48bb78;
+        }
+
+        .code-variable {
+            color: #fc8181;
+        }
+
+        .code-function {
+            color: #ed8936;
+        }
+
+        .code-number {
+            color: #f6ad55;
+        }
+
+        /* Responsibility Box */
+        .responsibility-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-radius: 8px;
+            padding: 16px 20px;
+            border: 1px solid #fc8181;
+        }
+
+        .responsibility-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .responsibility-text {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 40px;
+            right: 40px;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            z-index: 20;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .status-warning {
+            background: #fed7d7;
+            color: #c53030;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-code header-icon"></i>
+                <span>Implementação - Service</span>
+            </div>
+            <div class="header-subtitle">Refatoração: Service não importa mais o Model diretamente</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <div class="code-section">
+                <div class="code-header">
+                    <div class="code-title">
+                        <i class="fas fa-file-code" style="color: #63b3ed;"></i>
+                        <span>src/services/livroService.js</span>
+                    </div>
+                    <div style="font-size: 13px; color: #718096;">Padrão Service - Regras de Negócio</div>
+                </div>
+                <div class="code-grid">
+                    <!-- Left Panel -->
+                    <div class="code-panel">
+                        <div class="code-panel-header">
+                            <i class="fas fa-cogs" style="color: #63b3ed;"></i>
+                            <div class="code-panel-title">Implementação do Service</div>
+                        </div>
+                        <div class="code-panel-content">
+                            <div class="code-line"><span class="code-comment">// Arquivo:
+                                    src/services/livroService.js</span></div>
+                            <div class="code-line"><span class="code-comment">// O Service NÃO importa mais o
+                                    Model!</span></div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">livroRepository</span> = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'../repositories/livroRepository'</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment">// Listar todos os livros</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">listarTodos</span> = <span class="code-keyword">async</span>
+                                () =&gt; {</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">return</span>
+                                <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">buscarTodos</span>();</div>
+                            <div class="code-line">};</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment">// Criar novo livro</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">criar</span> = <span class="code-keyword">async</span> (<span
+                                    class="code-variable">dadosLivro</span>) =&gt; {</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-comment">// REGRA DE
+                                    NEGÓCIO: Ano não pode ser futuro</span></div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">anoAtual</span> = <span class="code-keyword">new</span>
+                                <span class="code-function">Date</span>().<span
+                                    class="code-function">getFullYear</span>();</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">if</span>
+                                (<span class="code-variable">dadosLivro</span>.<span class="code-variable">ano</span>
+                                &gt; <span class="code-variable">anoAtual</span>) {</div>
+                            <div class="code-line" style="margin-left: 40px;"><span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"O ano não pode ser futuro."</span>);</div>
+                            <div class="code-line" style="margin-left: 20px;">}</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">return</span>
+                                <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">salvar</span>(<span class="code-variable">dadosLivro</span>);
+                            </div>
+                            <div class="code-line">};</div>
+                        </div>
+                    </div>
+                    <!-- Right Panel -->
+                    <div class="code-panel">
+                        <div class="code-panel-header">
+                            <i class="fas fa-shopping-cart" style="color: #63b3ed;"></i>
+                            <div class="code-panel-title">Regra de Negócio - Venda</div>
+                        </div>
+                        <div class="code-panel-content">
+                            <div class="code-line"><span class="code-comment">// Realizar venda de livro</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">realizarVenda</span> = <span class="code-keyword">async</span>
+                                (<span class="code-variable">idLivro</span>) =&gt; {</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">livro</span> = <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">buscarPorId</span>(<span
+                                    class="code-variable">idLivro</span>);</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">if</span>
+                                (!<span class="code-variable">livro</span>) {</div>
+                            <div class="code-line" style="margin-left: 40px;"><span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Livro não encontrado."</span>);</div>
+                            <div class="code-line" style="margin-left: 20px;">}</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">if</span>
+                                (<span class="code-variable">livro</span>.<span class="code-variable">estoque</span>
+                                &lt;= <span class="code-number">0</span>) {</div>
+                            <div class="code-line" style="margin-left: 40px;"><span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Livro fora de estoque."</span>);</div>
+                            <div class="code-line" style="margin-left: 20px;">}</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">novoEstoque</span> = <span
+                                    class="code-variable">livro</span>.<span class="code-variable">estoque</span> -
+                                <span class="code-number">1</span>;</div>
+                            <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">return</span>
+                                <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">atualizarEstoque</span>(<span
+                                    class="code-variable">idLivro</span>, <span
+                                    class="code-variable">novoEstoque</span>);</div>
+                            <div class="code-line">};</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-variable">module</span>.<span
+                                    class="code-variable">exports</span> = { <span
+                                    class="code-function">listarTodos</span>, <span class="code-function">criar</span>,
+                                <span class="code-function">realizarVenda</span> };</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="responsibility-box">
+                    <div class="responsibility-title">
+                        <i class="fas fa-exclamation-triangle" style="color: #fc8181;"></i>
+                        <span>Regra de Negócio Centralizada</span>
+                    </div>
+                    <div class="responsibility-text">
+                        O Service contém <strong>apenas regras de negócio</strong>. Não sabe de onde vem a requisição
+                        (HTTP) nem como os dados são salvos (SQL/NoSQL).
+                        Se a regra mudar, apenas o Service precisa ser modificado.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Controller e Rotas (inalterados!)</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Service Refatorado</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-code" style="margin-right: 8px;"></i>
+                    <span>3 Funções</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparativo: Meios Guiados</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100vw;
+            min-height: 100vh; /* Tela cheia e adaptável */
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+            overflow-x: hidden; /* Previne scroll horizontal acidental */
+        }
+
+        /* Decorative Elements */
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background-color: #1e3a8a;
+            z-index: 0;
+        }
+
+        .header-curve {
+            position: absolute;
+            top: 140px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #ffffff;
+            border-top-left-radius: 50% 100%;
+            border-top-right-radius: 50% 100%;
+            z-index: 1;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            flex: 1; /* Ocupa todo o espaço vertical nobre entre o header e o visual-area */
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            height: 100%; /* Estica a tabela para preencher o contêiner */
+        }
+
+        .custom-table th {
+            background-color: #f1f5f9;
+            color: #1e3a8a;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-align: left;
+            padding: 18px 24px;
+            border-bottom: 2px solid #3b82f6;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .custom-table td {
+            padding: 14px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .custom-table tr:hover {
+            background-color: #eff6ff;
+        }
+
+        /* Specific Column Styles */
+        .col-media {
+            width: 25%;
+            font-weight: 700;
+            color: #1e40af !important;
+        }
+
+        .col-cost {
+            width: 15%;
+        }
+
+        .col-band {
+            width: 20%;
+        }
+
+        .col-emi {
+            width: 20%;
+        }
+
+        .col-dist {
+            width: 20%;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Cost Badges */
+        .badge-cost-low {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-cost-med {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-cost-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* EMI Badges */
+        .badge-emi-low {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-emi-med {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-emi-good {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-emi-total {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Visual Area (Bottom) */
+        .visual-area {
+            min-height: 80px; /* Alterado de fixed height para min-height para acomodar crescimentos */
+            margin-top: 10px;
+            margin-bottom: 20px; /* Espaço pro footer */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #64748b;
+            margin-right: 15px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+
+        .icon-header {
+            position: absolute;
+            top: 30px;
+            right: 60px;
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+
+        .icon-col {
+            margin-right: 8px;
+            color: #64748b;
+            width: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-curve"></div>
+        
+        <i class="fas fa-balance-scale icon-header"></i>
+        
+        <div class="content-wrapper">
+            <div class="header">
+                <p>Seleção de Infraestrutura</p>
+                <h1>Comparativo: Meios Guiados</h1>
+            </div>
+            
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th class="col-media">Meio de Transmissão</th>
+                            <th class="col-cost">Custo Relativo</th>
+                            <th class="col-band">Largura de Banda</th>
+                            <th class="col-emi">Imunidade a Ruído</th>
+                            <th class="col-dist">Alcance Típico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-media"><i class="fas fa-network-wired icon-col"></i> Par Trançado (UTP)</td>
+                            <td class="col-cost"><span class="badge badge-cost-low">Baixo</span></td>
+                            <td class="col-band">10 Mbps - 10 Gbps</td>
+                            <td class="col-emi"><span class="badge badge-emi-low">Baixa</span></td>
+                            <td class="col-dist">~100 metros</td>
+                        </tr>
+                        <tr>
+                            <td class="col-media"><i class="fas fa-shield-alt icon-col"></i> Par Trançado (STP)</td>
+                            <td class="col-cost"><span class="badge badge-cost-med">Médio</span></td>
+                            <td class="col-band">10 Mbps - 10 Gbps</td>
+                            <td class="col-emi"><span class="badge badge-emi-med">Média/Alta</span></td>
+                            <td class="col-dist">~100 metros</td>
+                        </tr>
+                        <tr>
+                            <td class="col-media"><i class="fas fa-circle-notch icon-col"></i> Cabo Coaxial</td>
+                            <td class="col-cost"><span class="badge badge-cost-med">Médio</span></td>
+                            <td class="col-band">Moderada</td>
+                            <td class="col-emi"><span class="badge badge-emi-good">Alta</span></td>
+                            <td class="col-dist">200m - 500m</td>
+                        </tr>
+                        <tr>
+                            <td class="col-media"><i class="fas fa-project-diagram icon-col"></i> Fibra Multimodo</td>
+                            <td class="col-cost"><span class="badge badge-cost-high">Alto</span></td>
+                            <td class="col-band">10 Gbps - 100 Gbps</td>
+                            <td class="col-emi"><span class="badge badge-emi-total">Total</span></td>
+                            <td class="col-dist">~2 km (Campus)</td>
+                        </tr>
+                        <tr>
+                            <td class="col-media"><i class="fas fa-globe icon-col"></i> Fibra Monomodo</td>
+                            <td class="col-cost"><span class="badge badge-cost-high">Muito Alto</span></td>
+                            <td class="col-band">&gt; 100 Gbps</td>
+                            <td class="col-emi"><span class="badge badge-emi-total">Total</span></td>
+                            <td class="col-dist">20 km - 100 km+</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="visual-area">
+                <div class="flex items-center text-gray-600 text-sm w-full flex-wrap gap-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2 text-xl"></i>
+                        <div>
+                            <p class="font-bold text-gray-800 m-0">Melhor Custo-Benefício</p>
+                            <p class="m-0 text-xs">UTP CAT5e/6 para redes locais (LAN)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-tachometer-alt text-blue-500 mr-2 text-xl"></i>
+                        <div>
+                            <p class="font-bold text-gray-800 m-0">Alta Performance</p>
+                            <p class="m-0 text-xs">Fibra Óptica para Backbones e distâncias longas</p>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right text-xs text-gray-400 italic">
+                        <p class="m-0">* Custos incluem cabos e equipamentos (transceptores/switches)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>Camada Física e Enlace – Cabos e Switches</span>
+            <span>13/36</span>
+        </div>
+    </div>
+</body>
+
+</html>

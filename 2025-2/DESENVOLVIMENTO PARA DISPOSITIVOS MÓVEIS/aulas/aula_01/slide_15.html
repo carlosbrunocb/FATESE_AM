@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ciclo de Vida da Activity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Montserrat:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #F5F7F9;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .text-android-navy { color: #073042; }
+        .text-android-green { color: #3DDC84; }
+        .bg-android-green { background-color: #3DDC84; }
+        .bg-android-navy { background-color: #073042; }
+
+        .diagram-container {
+            position: relative;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 90%; /* Ocupa altura disponível */
+            justify-content: space-evenly; /* Espaçamento igual entre nós */
+        }
+
+        .lifecycle-node {
+            width: 350px;
+            padding: 1.5vh 0; /* Padding responsivo */
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            font-family: 'Montserrat', sans-serif;
+            z-index: 10;
+        }
+
+        .lifecycle-node:hover { transform: scale(1.02); }
+
+        .node-create { background-color: #4285F4; color: white; border: 2px solid white; }
+        .node-start { background-color: #4285F4; color: white; border: 2px solid white; opacity: 0.9; }
+        
+        .node-resume {
+            background-color: #3DDC84;
+            color: #073042;
+            border: 2px solid #073042;
+            font-size: 1.1rem;
+            padding: 2vh 0;
+            box-shadow: 0 0 15px rgba(61, 220, 132, 0.4);
+        }
+
+        .node-pause { background-color: #FBBC04; color: #444; border: 2px solid white; }
+        .node-stop { background-color: #EA4335; color: white; border: 2px solid white; opacity: 0.9; }
+        .node-destroy { background-color: #EA4335; color: white; border: 2px solid white; }
+
+        .flow-arrow {
+            font-size: 1rem;
+            color: #90A4AE;
+            margin: 0; /* Margem controlada pelo flex gap ou justify */
+        }
+
+        .tech-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: radial-gradient(#073042 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 0;
+        }
+
+        .state-label {
+            position: absolute;
+            right: -130px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            color: #546E7A;
+            width: 120px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .state-label::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 8px;
+            height: 1px;
+            background-color: #CFD8DC;
+        }
+    </style>
+</head>
+
+<body class="flex">
+    <div class="w-1/2 h-full p-4 flex flex-col justify-center bg-white relative shadow-lg z-10">
+        <div class="tech-bg"></div>
+        <h2 class="text-2xl font-bold font-montserrat text-android-navy text-center z-10 uppercase tracking-widest text-sm text-gray-400 mt-4">
+            Fluxo de Estados
+        </h2>
+        
+        <div class="diagram-container z-10">
+            <div class="lifecycle-node node-create">
+                onCreate()
+                <div class="state-label">Criação da tela</div>
+            </div>
+            <i class="fas fa-arrow-down flow-arrow"></i>
+            <div class="lifecycle-node node-start">
+                onStart()
+                <div class="state-label">Visível ao usuário</div>
+            </div>
+            <i class="fas fa-arrow-down flow-arrow"></i>
+            
+            <div class="relative">
+                <div class="lifecycle-node node-resume">
+                    <i class="fas fa-play-circle mr-2"></i>onResume()
+                    <div class="state-label text-android-navy font-bold">Interativo (Running)</div>
+                </div>
+            </div>
+            
+            <i class="fas fa-arrow-down flow-arrow"></i>
+            <div class="lifecycle-node node-pause">
+                onPause()
+                <div class="state-label">Perde o foco</div>
+            </div>
+            <i class="fas fa-arrow-down flow-arrow"></i>
+            <div class="lifecycle-node node-stop">
+                onStop()
+                <div class="state-label">Invisível (Background)</div>
+            </div>
+            <i class="fas fa-arrow-down flow-arrow"></i>
+            <div class="lifecycle-node node-destroy">
+                onDestroy()
+                <div class="state-label">Limpeza final</div>
+            </div>
+        </div>
+
+        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center">
+            <div class="h-32 w-1 bg-gradient-to-b from-transparent via-green-400 to-transparent"></div>
+            <span class="text-xs font-bold text-green-600 mt-2 -rotate-90 whitespace-nowrap">Activity Ativa</span>
+        </div>
+    </div>
+
+    <div class="w-1/2 h-full p-8 lg:p-12 bg-slate-50 flex flex-col justify-center">
+        <div class="mb-8 flex-shrink-0">
+            <div class="flex items-center mb-2">
+                <i class="fas fa-sync-alt text-3xl text-android-navy mr-3"></i>
+                <h1 class="text-4xl font-extrabold font-montserrat text-android-navy">Ciclo de Vida</h1>
+            </div>
+            <div class="w-24 h-2 bg-android-green rounded-full"></div>
+        </div>
+
+        <div class="flex flex-col justify-evenly flex-grow max-h-[70vh]">
+            <div class="flex items-start p-4 bg-white rounded-xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition-shadow">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 mr-4">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg">Fluxo Principal (Happy Path)</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mt-1">
+                        Ao abrir o app: <span class="font-mono text-xs bg-gray-100 px-1 rounded text-blue-600">onCreate</span> (configura layout) → <span class="font-mono text-xs bg-gray-100 px-1 rounded text-blue-600">onStart</span> (torna visível) → <span class="font-mono text-xs bg-gray-100 px-1 rounded text-green-600 font-bold">onResume</span> (usuário interage).
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-start p-4 bg-white rounded-xl shadow-sm border-l-4 border-amber-400 hover:shadow-md transition-shadow">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 mr-4">
+                    <i class="fas fa-pause"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg">Interrupções e Background</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mt-1">
+                        Se receber uma chamada ou trocar de app, a Activity entra em <span class="font-mono text-xs bg-gray-100 px-1 rounded text-amber-600">onPause</span> e depois <span class="font-mono text-xs bg-gray-100 px-1 rounded text-red-500">onStop</span>. O sistema salva o estado.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-start p-4 bg-white rounded-xl shadow-sm border-l-4 border-red-500 hover:shadow-md transition-shadow">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 mr-4">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg">Destruição e Rotação</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mt-1">
+                        Ao girar a tela, a Activity é destruída (<span class="font-mono text-xs bg-gray-100 px-1 rounded text-red-600">onDestroy</span>) e recriada imediatamente.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center flex-shrink-0">
+            <i class="fas fa-lightbulb text-yellow-500 mr-3 text-xl"></i>
+            <p class="text-xs text-blue-800 italic">
+                <strong>Dica:</strong> Nunca realize operações longas (como acesso a banco de dados) na Thread Principal durante esses métodos.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

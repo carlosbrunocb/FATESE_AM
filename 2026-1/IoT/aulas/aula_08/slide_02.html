@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Objetivos da Aula - Wi-Fi no ESP32</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 50px;
+            width: 93.8%;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 56px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 26px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        .objective-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 180px;
+        }
+
+        .objective-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(33, 150, 243, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .objective-number {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .objective-content {
+            flex: 1;
+        }
+
+        .objective-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 19px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objective-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .objective-icon {
+            color: #00BCD4;
+            font-size: 16px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            right: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 25px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .progress-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            border-radius: 3px;
+            width: 75%;
+        }
+
+        .check-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 24px;
+        }
+
+        .objective-card:hover .check-icon {
+            color: #00BCD4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <h1 class="main-title">Objetivos da Aula</h1>
+                    <p class="subtitle">Wi-Fi no ESP32: Modos STA e AP</p>
+                </div>
+                <div class="progress-indicator">
+                    <span class="progress-text">Progresso: 75%</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="objective-number">1</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-microchip objective-icon"></i>
+                            Compreender a pilha de protocolos Wi-Fi
+                        </div>
+                        <div class="objective-desc">
+                            Entender como a pilha de protocolos Wi-Fi está integrada ao SoC ESP32, incluindo a
+                            arquitetura de rede e camadas de comunicação.
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">2</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-exchange-alt objective-icon"></i>
+                            Diferenciar modos de operação
+                        </div>
+                        <div class="objective-desc">
+                            Diferenciar entre os modos Station (STA) e Access Point (AP), compreendendo suas aplicações
+                            e cenários de uso.
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">3</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-search objective-icon"></i>
+                            Implementar escaneamento de redes
+                        </div>
+                        <div class="objective-desc">
+                            Desenvolver algoritmos para escaneamento de redes Wi-Fi disponíveis, identificando SSID e
+                            intensidade do sinal.
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">4</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-sync-alt objective-icon"></i>
+                            Conexão automática com resiliência
+                        </div>
+                        <div class="objective-desc">
+                            Desenvolver lógica de conexão automática com tratamento de erros e mecanismos de reconexão
+                            para projetos de campo.
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

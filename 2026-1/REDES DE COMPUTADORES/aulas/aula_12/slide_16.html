@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Método PATCH - Atualização Parcial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            padding: 1px 0;
+        }
+
+        .line-number {
+            color: #64748b;
+            width: 30px;
+            text-align: right;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .http-method {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .http-url {
+            color: #3b82f6;
+        }
+
+        .http-version {
+            color: #f59e0b;
+        }
+
+        .header-key {
+            color: #8b5cf6;
+        }
+
+        .header-value {
+            color: #e2e8f0;
+        }
+
+        .json-key {
+            color: #22c55e;
+        }
+
+        .json-string {
+            color: #3b82f6;
+        }
+
+        .json-number {
+            color: #f59e0b;
+        }
+
+        .annotation {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            margin: 4px 0;
+        }
+
+        .section-title {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .component-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .operation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .operation-replace {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .operation-add {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .operation-remove {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-10">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-sm font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Método PATCH - Atualização Parcial</h1>
+                    <p class="text-gray-400 text-base">Atualização parcial de recursos com JSON Patch</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-base font-semibold">PATCH</div>
+                        <div class="text-sm text-gray-400">Atualização Parcial</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-pen-to-square text-blue-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-2 gap-6 flex-1">
+                <!-- Left Column - Code Example -->
+                <div class="flex flex-col gap-4">
+                    <!-- Request Example -->
+                    <div class="component-card flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-white text-lg font-semibold">Exemplo de Requisição PATCH</h3>
+                            <span class="text-sm text-blue-400 font-medium">JSON Patch</span>
+                        </div>
+                        <div class="code-block mb-4 flex-1">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <div class="code-content">
+                                    <span class="http-method">PATCH</span> <span class="http-url">/users/1</span> <span
+                                        class="http-version">HTTP/1.1</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <div class="code-content">
+                                    <span class="header-key">Host:</span> <span
+                                        class="header-value">api.example.com</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <div class="code-content">
+                                    <span class="header-key">Content-Type:</span> <span
+                                        class="header-value">application/json-patch+json</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <div class="code-content"></div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">[</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> {</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"op"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"replace"</span><span
+                                        class="text-gray-400">,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"path"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"/email"</span><span
+                                        class="text-gray-400">,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">9</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"value"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"novo@email.com"</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">10</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> },</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">11</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> {</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">12</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"op"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"add"</span><span
+                                        class="text-gray-400">,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">13</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"path"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"/phone"</span><span
+                                        class="text-gray-400">,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">14</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 40px;"> </span><span class="json-key">"value"</span><span
+                                        class="text-gray-400">: </span><span class="json-string">"+5511999999999"</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">15</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> }</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">16</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Annotations -->
+                        <div class="highlight-box">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i class="fas fa-info-circle text-blue-400 text-sm"></i>
+                                <span class="text-white text-sm font-medium">Operações JSON Patch</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                                    <span class="text-gray-300">replace: substituir</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                                    <span class="text-gray-300">add: adicionar</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                                    <span class="text-gray-300">remove: remover</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Explanation -->
+                <div class="flex flex-col gap-4">
+                    <!-- PATCH vs PUT Comparison -->
+                    <div class="component-card flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-white text-lg font-semibold">PATCH vs PUT</h3>
+                            <span class="text-sm text-gray-400 font-medium">Diferenças</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-5">
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-green-400 font-mono text-sm font-bold">PATCH</span>
+                                    <span class="text-xs text-gray-400">Atualização Parcial</span>
+                                </div>
+                                <div class="text-xs text-gray-300 leading-relaxed">
+                                    • Atualiza apenas campos especificados<br />
+                                    • Envia apenas dados modificados<br />
+                                    • Mais eficiente em banda<br />
+                                    • Não idempotente
+                                </div>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-blue-400 font-mono text-sm font-bold">PUT</span>
+                                    <span class="text-xs text-gray-400">Substituição Completa</span>
+                                </div>
+                                <div class="text-xs text-gray-300 leading-relaxed">
+                                    • Substitui todo o recurso<br />
+                                    • Envia dados completos<br />
+                                    • Menos eficiente<br />
+                                    • Idempotente
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Status Codes -->
+                        <div class="mb-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-white text-sm font-medium">Status Codes Comuns</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div
+                                    class="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <span class="text-xs text-gray-300 font-mono">200 OK</span>
+                                    <span class="text-xs text-green-400 font-medium">Sucesso</span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <span class="text-xs text-gray-300 font-mono">204 No Content</span>
+                                    <span class="text-xs text-blue-400 font-medium">Sem corpo</span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <span class="text-xs text-gray-300 font-mono">400 Bad Request</span>
+                                    <span class="text-xs text-red-400 font-medium">Erro</span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <span class="text-xs text-gray-300 font-mono">404 Not Found</span>
+                                    <span class="text-xs text-red-400 font-medium">Não encontrado</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Use Cases -->
+                        <div class="mt-auto">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-white text-sm font-medium">Casos de Uso</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                    <span class="text-xs text-gray-300">Atualizar perfil</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                    <span class="text-xs text-gray-300">Modificar configurações</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                    <span class="text-xs text-gray-300">Corrigir dados</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                    <span class="text-xs text-gray-300">Adicionar campos</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Section -->
+            <div
+                class="mt-6 flex justify-between items-center bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-clock text-blue-400 text-base"></i>
+                        <span class="text-white text-sm font-medium">Duração: 45 minutos</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar text-blue-400 text-base"></i>
+                        <span class="text-white text-sm font-medium">Aula 12 de 20</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 text-sm">Progresso da aula:</span>
+                    <div class="w-32 h-2.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-3/5 h-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <span class="text-white text-sm font-bold">60%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

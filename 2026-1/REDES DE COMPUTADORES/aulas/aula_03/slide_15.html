@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Padrões IEEE 802.11 (Wi-Fi)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Decorative Elements */
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background-color: #1e3a8a;
+            z-index: 0;
+        }
+
+        .header-curve {
+            position: absolute;
+            top: 140px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #ffffff;
+            border-top-left-radius: 50% 100%;
+            border-top-right-radius: 50% 100%;
+            z-index: 1;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            margin-top: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .custom-table th {
+            background-color: #f1f5f9;
+            color: #1e3a8a;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-align: left;
+            padding: 18px 24px;
+            border-bottom: 2px solid #3b82f6;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .custom-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .custom-table tr:hover {
+            background-color: #eff6ff;
+        }
+
+        /* Specific Column Styles */
+        .col-std {
+            width: 18%;
+            font-weight: 700;
+            color: #2563eb !important;
+        }
+
+        .col-freq {
+            width: 15%;
+            color: #64748b;
+        }
+
+        .col-speed {
+            width: 20%;
+            font-weight: 600;
+        }
+
+        .col-tech {
+            width: 22%;
+            font-size: 13px;
+        }
+
+        .col-app {
+            width: 25%;
+            font-size: 13px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-wifi4 {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+
+        .badge-wifi5 {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-wifi6 {
+            background-color: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-wifi7 {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Speed Bars */
+        .speed-indicator {
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 6px;
+            width: 100%;
+            position: relative;
+        }
+
+        .speed-fill {
+            height: 100%;
+            border-radius: 3px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Chart/Visual Area (Bottom) */
+        .visual-area {
+            height: 100px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #64748b;
+            margin-right: 15px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+
+        .icon-header {
+            position: absolute;
+            top: 30px;
+            right: 60px;
+            font-size: 70px;
+            color: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-curve"></div>
+        <i class="fas fa-wifi icon-header"></i>
+        <div class="content-wrapper">
+            <div class="header">
+                <p>Meios Não Guiados</p>
+                <h1>Padrões IEEE 802.11 (Wi-Fi)</h1>
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th class="col-std">Padrão / Geração</th>
+                            <th class="col-freq">Frequência</th>
+                            <th class="col-speed">Taxa Máx. Teórica</th>
+                            <th class="col-tech">Tecnologias Chave</th>
+                            <th class="col-app">Cenário de Uso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-std">
+                                <div class="mb-1">802.11n</div>
+                                <span class="badge badge-wifi4">Wi-Fi 4</span>
+                            </td>
+                            <td class="col-freq">2.4 / 5 GHz</td>
+                            <td class="col-speed">
+                                600 Mbps
+                                <div class="speed-indicator">
+                                    <div class="speed-fill bg-gray-400" style="width: 15%"></div>
+                                </div>
+                            </td>
+                            <td class="col-tech">MIMO (Multiple Input Multiple Output)<br />Agregação de canais</td>
+                            <td class="col-app">Redes legadas, dispositivos básicos de IoT, compatibilidade antiga.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-std">
+                                <div class="mb-1">802.11ac</div>
+                                <span class="badge badge-wifi5">Wi-Fi 5</span>
+                            </td>
+                            <td class="col-freq">5 GHz</td>
+                            <td class="col-speed">
+                                3.5 - 6.9 Gbps
+                                <div class="speed-indicator">
+                                    <div class="speed-fill bg-blue-500" style="width: 40%"></div>
+                                </div>
+                            </td>
+                            <td class="col-tech">MU-MIMO (Downlink),<br />Beamforming, Canais de 160MHz</td>
+                            <td class="col-app">Streaming de vídeo HD/4K, jogos online, maioria dos dispositivos atuais.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-std">
+                                <div class="mb-1">802.11ax</div>
+                                <span class="badge badge-wifi6">Wi-Fi 6 / 6E</span>
+                            </td>
+                            <td class="col-freq">2.4 / 5 / 6 GHz</td>
+                            <td class="col-speed">
+                                9.6 Gbps
+                                <div class="speed-indicator">
+                                    <div class="speed-fill bg-purple-600" style="width: 65%"></div>
+                                </div>
+                            </td>
+                            <td class="col-tech">OFDMA (Eficiência),<br />TWT (Bateria), BSS Color</td>
+                            <td class="col-app">Alta densidade (estádios, escritórios), IoT massivo, Realidade Virtual.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-std">
+                                <div class="mb-1">802.11be</div>
+                                <span class="badge badge-wifi7">Wi-Fi 7</span>
+                            </td>
+                            <td class="col-freq">2.4 / 5 / 6 GHz</td>
+                            <td class="col-speed">
+                                ~46 Gbps
+                                <div class="speed-indicator">
+                                    <div class="speed-fill bg-red-600" style="width: 100%"></div>
+                                </div>
+                            </td>
+                            <td class="col-tech">MLO (Multi-Link Operation),<br />4096-QAM, Canais de 320MHz</td>
+                            <td class="col-app">Aplicações futuras de latência ultrabaixa, Metaverso, 8K sem compressão.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="visual-area">
+                <div class="flex items-start text-gray-500 text-sm max-w-2xl">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-3 text-lg mt-1"></i>
+                    <div>
+                        <p class="m-0 font-bold text-gray-700">Importante:</p>
+                        <p class="m-0 text-xs">A velocidade real é sempre inferior à teórica devido ao "overhead" de
+                            protocolo, interferências físicas e congestionamento do espectro. O Wi-Fi opera em meio
+                            <strong>Half-Duplex</strong>.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <div class="legend-item mb-1">
+                        <div class="legend-color bg-purple-600"></div>
+                        <span>Alta Eficiência (HE)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color bg-red-600"></div>
+                        <span>Extrema Taxa de Transferência (EHT)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>Camada Física e Enlace – Cabos e Switches</span>
+            <span>15/36</span>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Controllers: Antes vs Depois</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Elements */
+        .bg-element {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.05;
+        }
+
+        .bg-lines {
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%);
+            background-size: 20px 20px;
+            opacity: 0.02;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Comparison Layout */
+        .comparison-container {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Columns */
+        .col-before,
+        .col-after {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .col-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-before {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: #ff8a80;
+            border-bottom: 2px solid #EA4335;
+        }
+
+        .header-after {
+            background-color: rgba(140, 200, 75, 0.2);
+            color: #bbf7d0;
+            border-bottom: 2px solid #8CC84B;
+        }
+
+        .code-window {
+            flex: 1;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-top: none;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .code-content {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #d4d4d4;
+            overflow: hidden;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #569cd6;
+            font-weight: bold;
+        }
+
+        /* keyword */
+        .func {
+            color: #dcdcaa;
+        }
+
+        /* function */
+        .str {
+            color: #ce9178;
+        }
+
+        /* string */
+        .var {
+            color: #9cdcfe;
+        }
+
+        /* variable */
+        .cmt {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* comment */
+        .num {
+            color: #b5cea8;
+        }
+
+        /* number */
+        .op {
+            color: #d4d4d4;
+        }
+
+        /* operator */
+        .prop {
+            color: #9cdcfe;
+        }
+
+        /* property */
+
+        /* Highlights */
+        .highlight-bad {
+            background-color: rgba(234, 67, 53, 0.15);
+            border-left: 3px solid #EA4335;
+            margin: 0 -20px;
+            padding: 2px 20px;
+            display: block;
+        }
+
+        .highlight-good {
+            background-color: rgba(140, 200, 75, 0.15);
+            border-left: 3px solid #8CC84B;
+            margin: 0 -20px;
+            padding: 2px 20px;
+            display: block;
+        }
+
+        /* Analysis Box */
+        .analysis-box {
+            padding: 15px 20px;
+            background-color: #252526;
+            border-top: 1px solid #333;
+            min-height: 100px;
+        }
+
+        .analysis-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .analysis-text {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        /* Arrow Divider */
+        .arrow-divider {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            border: 2px solid #555;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-bad {
+            background-color: #EA4335;
+            color: white;
+        }
+
+        .badge-good {
+            background-color: #8CC84B;
+            color: black;
+        }
+
+        .line-marker {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            color: #555;
+            user-select: none;
+            margin-right: 10px;
+        }
+
+        .indent-1 {
+            padding-left: 20px;
+        }
+
+        .indent-2 {
+            padding-left: 40px;
+        }
+
+        .indent-3 {
+            padding-left: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-element bg-lines"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <div class="title-group">
+                    <p class="subtitle">Refatoração</p>
+                    <h1 class="title">Antes vs Depois dos <span style="color: #8CC84B;">Middlewares</span></h1>
+                </div>
+                <div style="text-align: right;">
+                    <p style="color: #aaa; font-size: 14px;">Comparação do arquivo <code
+                            style="background: #333; padding: 2px 5px; border-radius: 4px;">livroController.js</code>
+                    </p>
+                </div>
+            </header>
+            <div class="comparison-container">
+                <!-- Arrow Center -->
+                <div class="arrow-divider">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <!-- Column Before -->
+                <div class="col-before">
+                    <div class="col-header header-before">
+                        <span><i class="fas fa-times-circle mr-2"></i> Sem Middleware</span>
+                        <span class="badge badge-bad">Acoplado</span>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-content">
+                            <div><span class="line-marker">1</span><span class="kwd">const</span> <span
+                                    class="func">criarLivro</span> <span class="op">=</span> <span
+                                    class="op">(</span><span class="var">req</span>, <span class="var">res</span><span
+                                    class="op">)</span> <span class="kwd">=&gt;</span> <span class="op">{</span></div>
+                            <div><span class="line-marker">2</span> <span class="kwd">const</span> <span
+                                    class="op">{</span> <span class="var">titulo</span>, <span class="var">autor</span>
+                                <span class="op">}</span> <span class="op">=</span> <span class="var">req</span>.<span
+                                    class="prop">body</span>;
+                            </div>
+                            <div><span class="line-marker">3</span></div>
+                            <div class="highlight-bad">
+                                <div><span class="line-marker">4</span> <span class="cmt">// ⚠️ Validação mistura com
+                                        regra de negócio</span></div>
+                                <div><span class="line-marker">5</span> <span class="kwd">if</span> <span
+                                        class="op">(!</span><span class="var">titulo</span> <span class="op">||
+                                        !</span><span class="var">autor</span><span class="op">)</span> <span
+                                        class="op">{</span></div>
+                                <div><span class="line-marker">6</span> <span class="kwd pl-2">return</span> <span
+                                        class="var">res</span>.<span class="func">status</span>(400).<span
+                                        class="func">json</span>(<span class="op">{</span></div>
+                                <div><span class="line-marker">7</span> <span class="prop pl-4">erro</span>: <span
+                                        class="str">"Dados Inválidos"</span></div>
+                                <div><span class="line-marker">8</span> <span class="op pl-2">}</span>);</div>
+                                <div><span class="line-marker">9</span> <span class="op">}</span></div>
+                            </div>
+                            <div><span class="line-marker">10</span></div>
+                            <div><span class="line-marker">11</span> <span class="cmt">// Lógica de criação...</span>
+                            </div>
+                            <div><span class="line-marker">12</span> <span class="var">db</span>.<span
+                                    class="func">save</span>(<span class="op">{</span> <span class="var">titulo</span>,
+                                <span class="var">autor</span> <span class="op">}</span>);
+                            </div>
+                            <div><span class="line-marker">13</span> <span class="var">res</span>.<span
+                                    class="func">status</span>(201).<span class="func">send</span>();</div>
+                            <div><span class="line-marker">14</span><span class="op">};</span></div>
+                        </div>
+                    </div>
+                    <div class="analysis-box">
+                        <p class="analysis-title" style="color: #ff8a80;"><i
+                                class="fas fa-exclamation-triangle mr-2"></i> Problemas</p>
+                        <p class="analysis-text">
+                            O Controller viola o princípio da responsabilidade única. Se a regra de validação mudar,
+                            você precisa editar o Controller. O código fica "sujo" e repetitivo em cada método.
+                        </p>
+                    </div>
+                </div>
+                <!-- Column After -->
+                <div class="col-after">
+                    <div class="col-header header-after">
+                        <span><i class="fas fa-check-circle mr-2"></i> Com Middleware</span>
+                        <span class="badge badge-good">Limpo</span>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-content">
+                            <div><span class="line-marker">1</span><span class="kwd">const</span> <span
+                                    class="func">criarLivro</span> <span class="op">=</span> <span
+                                    class="op">(</span><span class="var">req</span>, <span class="var">res</span><span
+                                    class="op">)</span> <span class="kwd">=&gt;</span> <span class="op">{</span></div>
+                            <div class="highlight-good">
+                                <div><span class="line-marker">2</span> <span class="cmt">// ✅ Validação já ocorreu
+                                        antes!</span></div>
+                                <div><span class="line-marker">3</span> <span class="cmt">// O req.body chega aqui 100%
+                                        confiável</span></div>
+                            </div>
+                            <div><span class="line-marker">4</span> <span class="kwd">const</span> <span
+                                    class="op">{</span> <span class="var">titulo</span>, <span class="var">autor</span>
+                                <span class="op">}</span> <span class="op">=</span> <span class="var">req</span>.<span
+                                    class="prop">body</span>;
+                            </div>
+                            <div><span class="line-marker">5</span></div>
+                            <div><span class="line-marker">6</span> <span class="cmt">// Foco total na Regra de
+                                    Negócio</span></div>
+                            <div><span class="line-marker">7</span> <span class="var">db</span>.<span
+                                    class="func">save</span>(<span class="op">{</span> <span class="var">titulo</span>,
+                                <span class="var">autor</span> <span class="op">}</span>);
+                            </div>
+                            <div><span class="line-marker">8</span></div>
+                            <div><span class="line-marker">9</span> <span class="var">res</span>.<span
+                                    class="func">status</span>(201).<span class="func">send</span>();</div>
+                            <div><span class="line-marker">10</span><span class="op">};</span></div>
+                            <div><span class="line-marker">11</span></div>
+                            <div><span class="line-marker">12</span><span class="cmt">// O erro, se houver, nem chega
+                                    aqui.</span></div>
+                            <div><span class="line-marker">13</span><span class="cmt">// Foi barrado pelo middleware
+                                    anterior.</span></div>
+                        </div>
+                    </div>
+                    <div class="analysis-box">
+                        <p class="analysis-title" style="color: #bbf7d0;"><i class="fas fa-magic mr-2"></i> Benefícios
+                        </p>
+                        <p class="analysis-text">
+                            O Controller fica focado apenas em "O que fazer com os dados". A lógica de "Se os dados
+                            estão certos" é delegada, tornando o código mais legível e fácil de testar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Legend -->
+            <div class="flex justify-center mt-4 gap-6 text-xs text-gray-500">
+                <div class="flex items-center">
+                    <div style="width: 10px; height: 10px; background: #EA4335; margin-right: 5px; border-radius: 2px;">
+                    </div> Código Bloqueante (Validations)
+                </div>
+                <div class="flex items-center">
+                    <div style="width: 10px; height: 10px; background: #8CC84B; margin-right: 5px; border-radius: 2px;">
+                    </div> Fluxo Limpo (Happy Path)
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

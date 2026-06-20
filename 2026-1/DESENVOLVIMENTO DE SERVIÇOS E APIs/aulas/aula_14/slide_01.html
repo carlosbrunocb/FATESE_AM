@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Documentação Interativa com Swagger/OpenAPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .left-section {
+            flex: 1;
+            max-width: auto;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #3b82f6;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .badge i {
+            font-size: 12px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title .highlight {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .features {
+            display: flex;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .right-section {
+            flex: 0 0 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-preview {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red {
+            background: #ef4444;
+        }
+
+        .code-dot.yellow {
+            background: #f59e0b;
+        }
+
+        .code-dot.green {
+            background: #10b981;
+        }
+
+        .code-content {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .code-content .keyword {
+            color: #60a5fa;
+        }
+
+        .code-content .string {
+            color: #34d399;
+        }
+
+        .code-content .comment {
+            color: #94a3b8;
+        }
+
+        .professor-info {
+            position: absolute;
+            bottom: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .professor-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .professor-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .professor-details h4 {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .professor-details p {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .professor-right {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .contact-item i {
+            color: #3b82f6;
+        }
+
+        .decorative-element {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+        }
+
+        .api-badge {
+            position: absolute;
+            top: 100px;
+            right: 60px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #3b82f6;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .api-badge i {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="left-section">
+                <div class="badge">
+                    <i class="fas fa-code"></i>
+                    Documentação de APIs
+                </div>
+                <h1 class="title">
+                    Documentação <span class="highlight">Interativa</span><br />
+                    com Swagger/OpenAPI
+                </h1>
+                <p class="subtitle">
+                    Aprenda a criar documentação interativa para APIs RESTful,
+                    implementando busca parametrizada e configurando autenticação JWT.
+                </p>
+                <div class="features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <span>OpenAPI Spec</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span>JWT Auth</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <span>Query Params</span>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="code-preview">
+                    <div class="code-header">
+                        <div class="code-dot red"></div>
+                        <div class="code-dot yellow"></div>
+                        <div class="code-dot green"></div>
+                        <span style="color: #94a3b8; font-size: 12px; margin-left: 8px;">swagger.json</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="comment">// OpenAPI 3.0 Specification</span><br />
+                        <span class="keyword">"openapi"</span>: <span class="string">"3.0.0"</span>,<br />
+                        <span class="keyword">"info"</span>: {<br />
+                          <span class="keyword">"title"</span>: <span class="string">"Livraria API"</span>,<br />
+                          <span class="keyword">"version"</span>: <span class="string">"1.0.0"</span><br />
+                        }
+                    </div>
+                </div>
+                <div class="code-preview" style="margin-top: 16px;">
+                    <div class="code-header">
+                        <div class="code-dot red"></div>
+                        <div class="code-dot yellow"></div>
+                        <div class="code-dot green"></div>
+                        <span style="color: #94a3b8; font-size: 12px; margin-left: 8px;">routes.js</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="comment">// Documentação com JSDoc</span><br />
+                        <span class="keyword">@openapi</span><br />
+                        <span class="keyword">/livros</span>:<br />
+                          <span class="keyword">get</span>:<br />
+                            <span class="keyword">summary</span>: <span class="string">"Listar livros"</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Professor Info -->
+        <div class="professor-info">
+            <div class="professor-left">
+                <div class="professor-avatar">CB</div>
+                <div class="professor-details">
+                    <h4>Carlos Bruno Oliveira Lopes</h4>
+                    <p>Professor de Desenvolvimento de Software</p>
+                </div>
+            </div>
+            <div class="professor-right">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    carlos.lopes@am.senac.br
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    in/carlosbruno-lopes/
+                </div>
+            </div>
+        </div>
+        <div class="decorative-element"></div>
+        <div class="api-badge">
+            <i class="fas fa-rocket"></i>
+            API RESTful
+        </div>
+    </div>
+</body>
+
+</html>

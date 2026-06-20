@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Middlewares no Express</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Code Window Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .code-area {
+            padding: 24px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #e6edf3;
+            overflow-y: auto;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #ff7b72;
+        }
+
+        /* const, return, if */
+        .func {
+            color: #d2a8ff;
+        }
+
+        /* require, express(), methods */
+        .str {
+            color: #a5d6ff;
+        }
+
+        /* strings */
+        .obj {
+            color: #79c0ff;
+        }
+
+        /* variables/objects */
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .num {
+            color: #79c0ff;
+        }
+
+        /* Notes Styles */
+        .note-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-left-width: 4px;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+
+        .note-card:hover {
+            transform: translateX(5px);
+            background-color: #1c2128;
+        }
+
+        .note-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+        }
+
+        .indent-1 {
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            margin-left: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-12">
+        <div class="flex items-center justify-between mb-8 border-b border-[#30363d] pb-6">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i class="fa-solid fa-layer-group text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white tracking-tight">Middlewares no Express</h1>
+                    <p class="text-gray-400 mt-1">Funções que interceptam e processam requisições</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <span
+                    class="mono-font text-xs bg-[#21262d] px-3 py-1 rounded-full text-purple-300 border border-purple-900">app.use()</span>
+            </div>
+        </div>
+        <div class="flex flex-1 gap-10 items-stretch overflow-hidden">
+            <div class="w-3/5 flex flex-col">
+                <div class="window-frame">
+                    <div class="window-header">
+                        <div class="flex gap-2">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font flex items-center gap-2">
+                            <i class="fa-brands fa-js"></i> app.js
+                        </div>
+                        <div class="w-10"></div> </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">01</span><span><span
+                                    class="kwd">const</span> express = <span class="func">require</span>(<span
+                                    class="str">'express'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">02</span><span><span
+                                    class="kwd">const</span> morgan = <span class="func">require</span>(<span
+                                    class="str">'morgan'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">03</span><span><span
+                                    class="kwd">const</span> app = <span class="func">express</span>();</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">04</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">05</span><span><span
+                                    class="comment">// 1. Built-in Middleware (Parser de JSON)</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">06</span><span>app.<span
+                                    class="func">use</span>(express.<span class="func">json</span>());</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">07</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">08</span><span><span
+                                    class="comment">// 2. Third-party Middleware (Logger de requisições)</span></span>
+                        </div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">09</span><span>app.<span
+                                    class="func">use</span>(<span class="func">morgan</span>(<span
+                                    class="str">'dev'</span>));</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">10</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">11</span><span><span
+                                    class="comment">// 3. Custom Middleware (Global)</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">12</span><span>app.<span
+                                    class="func">use</span>((req, res, next) => {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">13</span><span> <span
+                                    class="func indent-1">console</span>.<span class="func">log</span>(<span
+                                    class="str">`Acessou: ${req.method} ${req.url}`</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">14</span><span> <span
+                                    class="func indent-1">next</span>(); <span class="comment">// Importante: passa a
+                                    vez!</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">15</span><span>});</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">16</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">17</span><span><span
+                                    class="comment">// Rota (Middleware Final)</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">18</span><span>app.<span
+                                    class="func">get</span>(<span class="str">'/'</span>, (req, res) => {</span>
+                        </div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">19</span><span class="indent-1"> res.<span
+                                    class="func">send</span>(<span class="str">'Hello Middleware!'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">20</span><span>});</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-2/5 flex flex-col justify-center gap-2">
+                <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-gray-500"></i> Conceitos Chave
+                </h3>
+                <div class="note-card border-l-purple-500">
+                    <div class="flex items-start gap-4">
+                        <div class="note-icon text-purple-400">
+                            <i class="fa-solid fa-filter"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold text-sm mb-1">O que são?</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">Funções que interceptam a requisição
+                                <strong>antes</strong> dela chegar na rota final ou resposta. Podem alterar <span
+                                    class="mono-font text-xs bg-gray-700 px-1 rounded">req</span> e <span
+                                    class="mono-font text-xs bg-gray-700 px-1 rounded">res</span>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="note-card border-l-green-500">
+                    <div class="flex items-start gap-4">
+                        <div class="note-icon text-green-400">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold text-sm mb-1">Tipos Comuns</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">
+                                <strong class="text-gray-300">Built-in:</strong> <span
+                                    class="mono-font text-xs">express.json()</span> (essencial para APIs).<br />
+                                <strong class="text-gray-300">Terceiros:</strong> <span
+                                    class="mono-font text-xs">morgan</span> (logs), <span
+                                    class="mono-font text-xs">cors</span>, <span
+                                    class="mono-font text-xs">helmet</span>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="note-card border-l-yellow-500">
+                    <div class="flex items-start gap-4">
+                        <div class="note-icon text-yellow-400">
+                            <i class="fa-solid fa-forward"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold text-sm mb-1">A função next()</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">Fundamental em middlewares customizados. Se
+                                não chamar <span class="mono-font text-xs text-yellow-300">next()</span> (ou responder),
+                                a requisição fica "pendurada" e trava.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="mt-2 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d] mt-8">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>20 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

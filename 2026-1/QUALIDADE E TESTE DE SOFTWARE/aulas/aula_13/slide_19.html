@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo Prático: Busca no Google</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8f9fa;
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100% - 115px);
+        }
+
+        .code-section {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-title i {
+            color: #1a5fb4;
+        }
+
+        .code-language {
+            background: #1a5fb4;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .code-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .code-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .code-right {
+            width: 400px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11.5px;
+            color: #e9ecef;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+            flex: 1;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-function {
+            color: #dcdcaa;
+        }
+
+        .code-variable {
+            color: #9cdcfe;
+        }
+
+        .code-number {
+            color: #b5cea8;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px 12px;
+            border-left: 4px solid #1a5fb4;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #1a5fb4;
+            color: white;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+
+        .step-description {
+            font-size: 11px;
+            color: #495057;
+            line-height: 1.3;
+        }
+
+        .explanation-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .explanation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation-title i {
+            color: #1a5fb4;
+        }
+
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .explanation-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid #1a5fb4;
+        }
+
+        .explanation-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .explanation-text {
+            font-size: 13px;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .line-numbers {
+            display: inline-block;
+            width: 40px;
+            text-align: right;
+            padding-right: 10px;
+            color: #858585;
+            user-select: none;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .code-content-inner {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fab fa-google"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Exemplo Prático: Busca no Google</h1>
+                    <p>Script completo de automação com Python e Selenium</p>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Prática</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="code-section">
+                <div class="code-header">
+                    <div class="code-title">
+                        <i class="fas fa-file-code"></i>
+                        Script de Automação - Busca Google
+                    </div>
+                    <div class="code-language">Python</div>
+                </div>
+                <div class="code-content">
+                    <div class="code-left">
+                        <div class="code-block"><span class="code-comment"># 1. Importar bibliotecas necessárias</span>
+<span class="code-keyword">from</span> selenium <span class="code-keyword">import</span> webdriver
+<span class="code-keyword">from</span> selenium.webdriver.common.by <span
+class="code-keyword">import</span> By
+<span class="code-keyword">from</span> selenium.webdriver.common.keys <span
+class="code-keyword">import</span> Keys
+<span class="code-keyword">from</span> selenium.webdriver.support.ui <span
+class="code-keyword">import</span> WebDriverWait
+<span class="code-keyword">from</span> selenium.webdriver.support <span
+class="code-keyword">import</span> expected_conditions <span
+class="code-keyword">as</span> EC
+
+<span class="code-comment"># 2. Configurar o driver (certifique-se que está no PATH)</span>
+driver = webdriver.Chrome()
+
+<span class="code-keyword">try</span>:
+    <span class="code-comment"># 3. Abrir o Google</span>
+    driver.get(<span class="code-string">"https://www.google.com"</span>)
+
+    <span class="code-comment"># 4. Localizar o campo de busca pelo Nome</span>
+    campo_busca = driver.find_element(By.NAME, <span class="code-string">"q"</span>)
+
+    <span class="code-comment"># 5. Interagir com o elemento</span>
+    campo_busca.send_keys(<span class="code-string">"Qualidade de Software"</span> + Keys.RETURN)
+
+    <span class="code-comment"># 6. Validar se o título da página mudou (Assertiva)</span>
+    <span class="code-keyword">assert</span> <span class="code-string">"Qualidade de Software"</span> <span 
+    class="code-keyword">in</span> driver.title
+    <span class="code-function">print</span>(<span class="code-string">"Teste passou com sucesso!"</span>)
+
+<span class="code-keyword">finally</span>:
+    <span class="code-comment"># 7. Fechar o navegador</span>
+    driver.quit() </div>                    </div>
+                    <div class="code-right">
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">1</span>
+                                Imports
+                            </div>
+                            <div class="step-description">
+                                Importar bibliotecas do Selenium e módulos necessários
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">2</span>
+                                Configuração
+                            </div>
+                            <div class="step-description">
+                                Inicializar o WebDriver (Chrome, Firefox, etc.)
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">3</span>
+                                Navegação
+                            </div>
+                            <div class="step-description">
+                                Abrir o Google no navegador
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">4</span>
+                                Localização
+                            </div>
+                            <div class="step-description">
+                                Encontrar o campo de busca pelo atributo NAME
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">5</span>
+                                Interação
+                            </div>
+                            <div class="step-description">
+                                Digitar o termo de busca e pressionar Enter
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">6</span>
+                                Validação
+                            </div>
+                            <div class="step-description">
+                                Verificar se o título contém o termo buscado
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">
+                                <span class="step-number">7</span>
+                                Finalização
+                            </div>
+                            <div class="step-description">
+                                Fechar o navegador e liberar recursos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation-section">
+                <div class="explanation-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Conceitos Importantes
+                </div>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <div class="explanation-label">WebDriver</div>
+                        <div class="explanation-text">Ponte entre código e navegador</div>
+                    </div>
+                    <div class="explanation-item">
+                        <div class="explanation-label">Locators</div>
+                        <div class="explanation-text">Estratégias para encontrar elementos</div>
+                    </div>
+                    <div class="explanation-item">
+                        <div class="explanation-label">Assertions</div>
+                        <div class="explanation-text">Validações de resultados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-user" style="margin-right: 5px;"></i> Prof. Carlos Bruno Oliveira Lopes</span>
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+            </div>
+            <div class="footer-right">
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

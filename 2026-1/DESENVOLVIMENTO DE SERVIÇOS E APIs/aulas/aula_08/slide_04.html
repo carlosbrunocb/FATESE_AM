@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O que é ORM?</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .concept-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            font-size: 20px;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .card-content {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .diagram-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .diagram-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .db-side,
+        .js-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .db-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .db-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .db-box-content {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 80px;
+        }
+
+        .arrow {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            position: relative;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #8b5cf6;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-label {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .mapping-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mapping-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .mapping-key {
+            font-size: 13px;
+            color: #3b82f6;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .mapping-arrow {
+            color: #8b5cf6;
+            font-size: 12px;
+        }
+
+        .mapping-value {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">O que é ORM (Object-Relational Mapping)?</div>
+                    <div class="header-subtitle">Conceito e funcionamento do mapeamento objeto-relacional</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-info-circle" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">Aula 08</div>
+                    <div class="header-subtitle">Persistência SQL</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="card-title">Definição de ORM</div>
+                    </div>
+                    <div class="card-content">
+                        ORM (Object-Relational Mapping) é uma <strong style="color: #3b82f6;">técnica de
+                            programação</strong> que permite mapear as tabelas de um banco de dados relacional para
+                        <strong style="color: #8b5cf6;">objetos na linguagem de programação</strong>. No nosso caso,
+                        mapeia tabelas do PostgreSQL/MySQL para objetos JavaScript.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="card-title">Como Funciona</div>
+                    </div>
+                    <div class="card-content">
+                        Cada <strong style="color: #3b82f6;">tabela</strong> vira uma <strong
+                            style="color: #8b5cf6;">classe (Model)</strong>, cada <strong
+                            style="color: #3b82f6;">linha</strong> vira uma <strong
+                            style="color: #8b5cf6;">instância</strong>, e as <strong
+                            style="color: #3b82f6;">colunas</strong> viram <strong
+                            style="color: #8b5cf6;">propriedades</strong> do objeto.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-title">Benefício Central</div>
+                    </div>
+                    <div class="card-content">
+                        Abstrai o acesso a dados, padroniza operações CRUD e reduz código repetitivo. O desenvolvedor
+                        interage com objetos em vez de escrever SQL diretamente.
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="diagram-container">
+                    <div class="diagram-title">Mapeamento ORM Visual</div>
+                    <div class="diagram-visual">
+                        <div class="db-side">
+                            <div class="db-box">
+                                <div class="db-box-title">Tabela: livros</div>
+                                <div class="db-box-content">id, titulo, autor, ano</div>
+                            </div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="arrow-label">mapeia para</div>
+                        </div>
+                        <div class="js-side">
+                            <div class="db-box">
+                                <div class="db-box-title">Classe: Livro</div>
+                                <div class="db-box-content">id, titulo, autor, ano</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mapping-list">
+                        <div class="mapping-item">
+                            <div class="mapping-key">Tabela</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Model/Classe</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-key">Linha</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Instância/Objeto</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-key">Coluna</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Propriedade/Atributo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

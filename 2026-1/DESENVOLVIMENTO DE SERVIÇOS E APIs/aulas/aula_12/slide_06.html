@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Autenticação vs Autorização</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-column {
+            width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .concept-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .concept-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .concept-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .concept-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .concept-subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        .concept-description {
+            font-size: 16px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .feature-icon {
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(59, 130, 246, 0.15);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-header-cell {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .table-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            font-size: 15px;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .table-cell:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .highlight-text {
+            font-size: 16px;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .highlight-text strong {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-user-lock"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Autenticação vs Autorização</h1>
+                        <p class="subtitle">Compreendendo as diferenças fundamentais</p>
+                    </div>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Conceitos de Segurança</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon blue">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <div class="concept-title">Autenticação</div>
+                                <div class="concept-subtitle">"Quem você é?"</div>
+                            </div>
+                        </div>
+                        <div class="concept-description">
+                            Processo de verificar a identidade do usuário, confirmando que a pessoa é quem afirma ser.
+                            Valida credenciais como e-mail, senha, tokens ou certificados.
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Verifica identidade do usuário</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Valida credenciais (e-mail/senha)</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Gera tokens de acesso</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon green">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div>
+                                <div class="concept-title">Autorização</div>
+                                <div class="concept-subtitle">"O que você pode fazer?"</div>
+                            </div>
+                        </div>
+                        <div class="concept-description">
+                            Processo de verificar as permissões do usuário autenticado, determinando
+                            quais recursos e ações ele pode acessar no sistema.
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Verifica permissões de acesso</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Define níveis de privilégio</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle feature-icon"></i>
+                                <span>Controla acesso a recursos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="comparison-table">
+                        <div class="table-header">
+                            <div class="table-header-cell">Autenticação</div>
+                            <div class="table-header-cell">Autorização</div>
+                        </div>
+                        <div class="table-body">
+                            <div class="table-row">
+                                <div class="table-cell">Verifica identidade</div>
+                                <div class="table-cell">Verifica permissões</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">Responde "Quem é você?"</div>
+                                <div class="table-cell">Responde "O que pode fazer?"</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">Usa credenciais</div>
+                                <div class="table-cell">Usa roles/permissions</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">Geralmente primeiro</div>
+                                <div class="table-cell">Sempre após autenticação</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">Ex: Login com senha</div>
+                                <div class="table-cell">Ex: Acesso a admin</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-text">
+                            <strong>💡 Dica:</strong> Na API da Livraria, implementamos primeiro a
+                            <strong>autenticação</strong> (verificar quem é o usuário) e depois a
+                            <strong>autorização</strong> (verificar se pode criar/editar livros).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

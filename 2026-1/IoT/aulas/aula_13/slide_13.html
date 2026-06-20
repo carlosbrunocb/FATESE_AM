@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Código ESP32</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=IBM+Plex+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="slide-container" style="background-color: var(--bg-light); padding: 80px;"
+        data-screen-label="13 Código Firmware">
+
+        <!-- Header -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 60px; width: 1760px; height: 100px;">
+            <span class="caption">Laboratório Prático - Parte 3</span>
+            <h2 class="title-lg" style="color: var(--text-dark); margin-top: 5px;">Firmware de Controle do ESP32 (Wokwi)
+            </h2>
+        </div>
+
+        <!-- Grid do código e destaques explicativos -->
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 190px; width: 1760px; height: 750px;">
+            <div class="grid-2" style="height: 100%; gap: 40px;">
+
+                <!-- Esquerda: Bloco de Código com Scroll Fictício e formatação Premium -->
+                <div class="card-dark"
+                    style="padding: 20px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div
+                        style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden;">
+                        <span
+                            style="font-family: var(--font-mono); font-size: 14pt; color: var(--accent-light); font-weight: bold; display: block; margin-bottom: 10px;">📄
+                            firmware_mqtt.ino (Trecho Principal)</span>
+                        <pre style="font-size: 14pt; line-height: 1.35; color: #E2E8F0; font-family: var(--font-mono);">
+<span style="color: #7DD3FC;">void callback</span>(<span style="color: #F87171;">char*</span> topic, <span style="color: #F87171;">byte*</span> payload, <span style="color: #F87171;">unsigned int</span> length) {
+  <span style="color: #38BDF8;">String</span> mensagem = <span style="color: #FBBF24;">""</span>;
+  <span style="color: #FB7185;">for</span> (<span style="color: #F87171;">int</span> i = 0; i &lt; length; i++) {
+    mensagem += (<span style="color: #F87171;">char</span>)payload[i];
+  }
+
+  <span style="color: #34D399;">// Executa o acionamento físico</span>
+  <span style="color: #FB7185;">if</span> (mensagem == <span style="color: #FBBF24;">"1"</span>) {
+    <span style="color: #7DD3FC;">digitalWrite</span>(pinoRele, <span style="color: #FBBF24;">HIGH</span>);
+    client.<span style="color: #7DD3FC;">publish</span>(topico_estado, <span style="color: #FBBF24;">"LIGADO"</span>); 
+  } 
+  <span style="color: #FB7185;">else if</span> (mensagem == <span style="color: #FBBF24;">"0"</span>) {
+    <span style="color: #7DD3FC;">digitalWrite</span>(pinoRele, <span style="color: #FBBF24;">LOW</span>);
+    client.<span style="color: #7DD3FC;">publish</span>(topico_estado, <span style="color: #FBBF24;">"DESLIGADO"</span>);
+  }
+}
+            </pre>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); font-family: var(--font-mono); margin: 0;">
+                        Nota: O loop principal deve processar client.loop() constantemente.</p>
+                </div>
+
+                <!-- Direita: Explicações Detalhadas de Componentes do Código -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <!-- Ponto 1: Função Callback -->
+                    <div class="card-glass"
+                        style="border-left: 6px solid var(--accent); padding: 25px; margin-bottom: 20px;">
+                        <h4 style="font-size: 22px; font-weight: 800; color: var(--text-dark); margin: 0 0 10px 0;">O
+                            papel da Função Callback</h4>
+                        <p style="font-size: 18px; color: var(--text-muted); margin: 0;">
+                            É o gerenciador de eventos do MQTT. Quando uma nova mensagem de comando chega do tópico
+                            assinado (<code
+                                style="font-family: var(--font-mono); color: var(--accent); font-weight: bold;">/set</code>),
+                            esta função é disparada automaticamente de modo assíncrono.
+                        </p>
+                    </div>
+
+                    <!-- Ponto 2: digitalWrite -->
+                    <div class="card-glass"
+                        style="border-left: 6px solid var(--accent-success); padding: 25px; margin-bottom: 20px;">
+                        <h4 style="font-size: 22px; font-weight: 800; color: var(--text-dark); margin: 0 0 10px 0;">
+                            Acionamento Físico Real</h4>
+                        <p style="font-size: 18px; color: var(--text-muted); margin: 0;">
+                            O comando <code
+                                style="font-family: var(--font-mono); color: var(--accent-success); font-weight: bold;">digitalWrite(pinoRele, HIGH)</code>
+                            altera a saída física de tensão do chip ESP32 para energizar o LED ou fechar o Relé de
+                            acionamento.
+                        </p>
+                    </div>
+
+                    <!-- Ponto 3: Confirmação de Estado -->
+                    <div class="card-glass" style="border-left: 6px solid var(--accent-warning); padding: 25px;">
+                        <h4 style="font-size: 22px; font-weight: 800; color: var(--text-dark); margin: 0 0 10px 0;">
+                            Publicação de Confirmação</h4>
+                        <p style="font-size: 18px; color: var(--text-muted); margin: 0;">
+                            Após a alteração do pino físico, o código imediatamente publica de volta o estado real de
+                            sucesso para <code
+                                style="font-family: var(--font-mono); color: var(--accent-warning); font-weight: bold;">/state</code>.
+                            Isso garante que a interface do usuário se atualize apenas em caso de operação bem sucedida.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 980px; width: 1760px; height: 40px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+            <span style="font-size: 16px; color: var(--text-muted);">Internet das Coisas (IoT) - Firmware</span>
+            <span style="font-size: 16px; color: var(--text-muted); font-weight: bold;">Pág. 13 / 15</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

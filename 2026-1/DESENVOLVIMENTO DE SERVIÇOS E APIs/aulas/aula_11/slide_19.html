@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercício - Solução Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            position: absolute;
+            top: 105px;
+            left: 40px;
+            width: 95%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid Layout */
+        .code-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .code-panel {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10.5pt;
+            color: #e2e8f0;
+            line-height: 1.35;
+            overflow: hidden;
+        }
+
+        .code-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .code-panel-title {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #63b3ed;
+        }
+
+        .code-panel-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .code-comment {
+            color: #718096;
+        }
+
+        .code-keyword {
+            color: #63b3ed;
+        }
+
+        .code-string {
+            color: #48bb78;
+        }
+
+        .code-variable {
+            color: #fc8181;
+        }
+
+        .code-function {
+            color: #ed8936;
+        }
+
+        .code-number {
+            color: #f6ad55;
+        }
+
+        /* Responsibility Box */
+        .responsibility-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-radius: 8px;
+            padding: 10px 18px;
+            border: 1px solid #fc8181;
+        }
+
+        .responsibility-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .responsibility-text {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+            gap: 10px;
+        }
+
+        .flow-step {
+            background: #edf2f7;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .flow-step.active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .flow-arrow {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 40px;
+            right: 40px;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            z-index: 20;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-shopping-cart header-icon"></i>
+                <span>Exercício - Solução Service</span>
+            </div>
+            <div class="header-subtitle">Implementação da função realizarVenda com regras de negócio</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <div class="code-section">
+                <div class="code-header">
+                    <div class="code-title">
+                        <i class="fas fa-file-code" style="color: #63b3ed;"></i>
+                        <span>src/services/livroService.js - Função realizarVenda</span>
+                    </div>
+                    <div style="font-size: 13px; color: #718096;">Regras de negócio: buscar, verificar, vender,
+                        atualizar</div>
+                </div>
+                <div class="code-grid">
+                    <!-- Left Panel - Main Implementation -->
+                    <div class="code-panel">
+                        <div class="code-panel-header">
+                            <i class="fas fa-shopping-basket" style="color: #63b3ed;"></i>
+                            <div class="code-panel-title">Implementação do Service</div>
+                        </div>
+                        <div class="code-panel-content">
+                            <div class="code-line"><span class="code-comment">// Arquivo:
+                                    src/services/livroService.js</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">livroRepository</span> = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'../repositories/livroRepository'</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">realizarVenda</span> = <span class="code-keyword">async</span>
+                                (<span class="code-variable">idLivro</span>) =&gt; {</div>
+                            <div class="code-line" style="margin-left: 15px;"><span class="code-keyword">try</span> {
+                            </div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-comment">// 1. Busca o
+                                    livro pelo ID</span></div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">livro</span> = <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">buscarPorId</span>(<span
+                                    class="code-variable">idLivro</span>);</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">if</span>
+                                (!<span class="code-variable">livro</span>) {</div>
+                            <div class="code-line" style="margin-left: 45px;"><span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Livro não encontrado."</span>);</div>
+                            <div class="code-line" style="margin-left: 30px;">}</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-comment">// 2. Verifica
+                                    o estoque</span></div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">if</span>
+                                (<span class="code-variable">livro</span>.<span class="code-variable">estoque</span>
+                                &lt;= <span class="code-number">0</span>) {</div>
+                            <div class="code-line" style="margin-left: 45px;"><span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Operação negada: Livro fora de estoque."</span>);</div>
+                            <div class="code-line" style="margin-left: 30px;">}</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-comment">// 3. Aplica a
+                                    lógica da venda</span></div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">novoEstoque</span> = <span
+                                    class="code-variable">livro</span>.<span class="code-variable">estoque</span> -
+                                <span class="code-number">1</span>;</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-comment">// 4. Atualiza
+                                    no repositório</span></div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">livroAtualizado</span> = <span
+                                    class="code-keyword">await</span> <span
+                                    class="code-variable">livroRepository</span>.<span
+                                    class="code-function">atualizarEstoque</span>(</div>
+                            <div class="code-line" style="margin-left: 45px;"><span
+                                    class="code-variable">idLivro</span>, <span class="code-variable">novoEstoque</span>
+                            </div>
+                            <div class="code-line" style="margin-left: 30px;">);</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">return</span>
+                                <span class="code-variable">livroAtualizado</span>;</div>
+                            <div class="code-line" style="margin-left: 15px;">} <span class="code-keyword">catch</span>
+                                (<span class="code-variable">error</span>) {</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">throw</span>
+                                <span class="code-variable">error</span>;</div>
+                            <div class="code-line" style="margin-left: 15px;">}</div>
+                            <div class="code-line">};</div>
+                        </div>
+                    </div>
+                    <!-- Right Panel - Controller Integration -->
+                    <div class="code-panel">
+                        <div class="code-panel-header">
+                            <i class="fas fa-plug" style="color: #63b3ed;"></i>
+                            <div class="code-panel-title">Controller Integration</div>
+                        </div>
+                        <div class="code-panel-content">
+                            <div class="code-line"><span class="code-comment">// Controller usa o Service</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">comprarLivro</span> = <span class="code-keyword">async</span>
+                                (<span class="code-variable">req</span>, <span class="code-variable">res</span>, <span
+                                    class="code-variable">next</span>) =&gt; {</div>
+                            <div class="code-line" style="margin-left: 15px;"><span class="code-keyword">try</span> {
+                            </div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">id</span> = <span class="code-variable">req</span>.<span
+                                    class="code-variable">params</span>.<span class="code-variable">id</span>;</div>
+                            <div class="code-line" style="margin-left: 30px;"><span class="code-keyword">const</span>
+                                <span class="code-variable">livroComprado</span> = <span
+                                    class="code-keyword">await</span> <span
+                                    class="code-variable">livroService</span>.<span
+                                    class="code-function">realizarVenda</span>(<span class="code-variable">id</span>);
+                            </div>
+                            <div class="code-line" style="margin-left: 30px;"><span
+                                    class="code-variable">res</span>.<span class="code-function">status</span>(<span
+                                    class="code-number">200</span>).<span class="code-function">json</span>({</div>
+                            <div class="code-line" style="margin-left: 45px;"><span
+                                    class="code-variable">mensagem</span>: <span class="code-string">"Venda realizada
+                                    com sucesso!"</span>,</div>
+                            <div class="code-line" style="margin-left: 45px;"><span
+                                    class="code-variable">estoqueRestante</span>: <span
+                                    class="code-variable">livroComprado</span>.<span
+                                    class="code-variable">estoque</span>,</div>
+                            <div class="code-line" style="margin-left: 45px;"><span class="code-variable">livro</span>:
+                                <span class="code-variable">livroComprado</span>.<span
+                                    class="code-variable">titulo</span></div>
+                            <div class="code-line" style="margin-left: 30px;">});</div>
+                            <div class="code-line" style="margin-left: 15px;">} <span class="code-keyword">catch</span>
+                                (<span class="code-variable">error</span>) {</div>
+                            <div class="code-line" style="margin-left: 30px;"><span
+                                    class="code-variable">res</span>.<span class="code-function">status</span>(<span
+                                    class="code-number">400</span>).<span class="code-function">json</span>({ <span
+                                    class="code-variable">erro</span>: <span class="code-variable">error</span>.<span
+                                    class="code-variable">message</span> });</div>
+                            <div class="code-line" style="margin-left: 15px;">}</div>
+                            <div class="code-line">};</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="responsibility-box">
+                    <div class="responsibility-title">
+                        <i class="fas fa-info-circle" style="color: #fc8181;"></i>
+                        <span>Fluxo Completo da Venda</span>
+                    </div>
+                    <div class="responsibility-text">
+                        <div class="flow-steps">
+                            <div class="flow-step active">
+                                <i class="fas fa-search"></i>
+                                <span>1. Buscar</span>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step active">
+                                <i class="fas fa-check"></i>
+                                <span>2. Verificar</span>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step active">
+                                <i class="fas fa-minus"></i>
+                                <span>3. Subtrair</span>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step active">
+                                <i class="fas fa-save"></i>
+                                <span>4. Atualizar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-check-circle"></i>
+                <span>Exercício completado - Sistema de Vendas implementado</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Regras de Negócio OK</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-code" style="margin-right: 8px;"></i>
+                    <span>4 Passos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

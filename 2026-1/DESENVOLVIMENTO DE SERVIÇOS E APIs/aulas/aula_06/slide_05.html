@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia de um Middleware</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            /* VS Code Dark bg */
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accent-text {
+            color: #8CC84B;
+        }
+
+        .bg-accent {
+            background-color: #8CC84B;
+        }
+
+        .border-accent {
+            border-color: #8CC84B;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 120px;
+            background-color: #8CC84B;
+            margin-bottom: 24px;
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .bullet-icon {
+            min-width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background-color: rgba(140, 200, 75, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #8CC84B;
+            font-size: 20px;
+            border: 1px solid rgba(140, 200, 75, 0.3);
+        }
+
+        .code-snippet {
+            font-family: 'Fira Code', monospace;
+            background-color: #141414;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #8CC84B;
+            color: #d4d4d4;
+            font-size: 16px;
+            line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            white-space: pre;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 1;
+        }
+
+        .param-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .param-req {
+            background-color: rgba(79, 193, 255, 0.2);
+            color: #9cdcfe;
+        }
+
+        .param-res {
+            background-color: rgba(206, 145, 120, 0.2);
+            color: #ce9178;
+        }
+
+        .param-next {
+            background-color: rgba(220, 220, 170, 0.2);
+            color: #dcdcaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Decoration -->
+        <div class="decoration-circle"
+            style="width: 500px; height: 500px; top: -150px; right: -100px; opacity: 0.4; border-color: rgba(140, 200, 75, 0.1);">
+        </div>
+        <div class="decoration-circle" style="width: 250px; height: 250px; bottom: 80px; left: -80px; opacity: 0.2;">
+        </div>
+        <div class="content-area">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="header-bar"></div>
+                <h2 class="text-xl text-gray-400 font-medium uppercase tracking-wider mb-2">Conceitos Fundamentais</h2>
+                <h1 class="text-5xl font-bold text-white">Anatomia de um <span class="accent-text">Middleware</span>
+                </h1>
+            </header>
+            <div class="flex flex-row gap-12 h-full">
+                <!-- Left Column: Bullets -->
+                <div class="w-7/12 flex flex-col justify-center">
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-arrow-right"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2"><span class="param-tag param-req">req</span>
+                                (Objeto de Requisição)</p>
+                            <p class="text-gray-300 leading-relaxed">Representa a solicitação HTTP. Contém propriedades
+                                essenciais como parâmetros de rota, query strings, cabeçalhos (headers) e o corpo da
+                                requisição (body).</p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-arrow-left"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2"><span class="param-tag param-res">res</span>
+                                (Objeto de Resposta)</p>
+                            <p class="text-gray-300 leading-relaxed">Representa a resposta HTTP que será enviada.
+                                Fornece métodos para definir status codes (404, 200), enviar JSON ou renderizar views.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-forward"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2"><span class="param-tag param-next">next</span>
+                                (Função de Controle)</p>
+                            <p class="text-gray-300 leading-relaxed">Função de callback que passa o controle para o
+                                próximo middleware da pilha. Se não for chamada, a requisição ficará "pendurada" sem
+                                resposta.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Visual/Code -->
+                <div class="w-5/12 flex flex-col h-full pb-8">
+                    <div class="glass-panel">
+                        <div class="flex items-center justify-center mb-6">
+                            <i class="fas fa-code text-5xl text-gray-600"></i>
+                        </div>
+                        <p class="text-gray-400 text-sm uppercase tracking-widest text-center mb-4">Assinatura da Função
+                        </p>
+                        <div class="code-snippet"><span style="color: #c586c0;">const</span> <span
+    style="color: #dcdcaa;">meuMiddleware</span> = (
+    <span style="color: #9cdcfe;">req</span>, <span style="color: #6a9955;">// Request Object</span>
+    <span style="color: #9cdcfe;">res</span>, <span style="color: #6a9955;">// Response Object</span>
+    <span style="color: #dcdcaa;">next</span> <span style="color: #6a9955;">// Next Function</span>
+) <span style="color: #c586c0;">=&gt;</span> {
+
+    <span style="color: #6a9955;">// 1. Processa req/res</span>
+    <span style="color: #dcdcaa;">console</span>.<span style="color: #dcdcaa;">log</span>(<span
+        style="color: #9cdcfe;">req</span>.<span style="color: #9cdcfe;">method</span>);
+
+    <span style="color: #6a9955;">// 2. Passa adiante</span>
+    <span style="color: #dcdcaa;">next</span>();
+};                        </div>
+                        <div class="mt-6 flex justify-center gap-4 text-xs text-gray-500">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-blue-400 opacity-50 mr-2"></div>Entrada
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-red-400 opacity-50 mr-2"></div>Saída
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-yellow-400 opacity-50 mr-2"></div>Fluxo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Info -->
+            <div class="mt-auto pt-6 flex justify-between items-center text-xs text-gray-500 border-t border-gray-800">
+                <p>Aula 06: Middlewares no Express.js</p>
+                <p>Professor Carlos Bruno Oliveira Lopes</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

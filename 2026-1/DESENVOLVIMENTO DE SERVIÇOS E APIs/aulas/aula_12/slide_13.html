@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>JWT: Payload (Carga Útil)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 44px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .jwt-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .left-column {
+            flex: 1.4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .jwt-structure {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .structure-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .structure-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 20px;
+        }
+
+        .structure-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            padding: 24px;
+            font-family: 'Courier New', monospace;
+            color: #e2e8f0;
+            margin-bottom: 24px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .code-header {
+            margin-bottom: 12px;
+        }
+
+        .code-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .code-content {
+            color: #10b981;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .claims-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .claim-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .claim-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .claim-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .claim-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .claim-icon.orange {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .claim-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .claim-content {
+            flex: 1;
+        }
+
+        .claim-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .claim-description {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .warning-icon {
+            color: #f59e0b;
+            font-size: 28px;
+        }
+
+        .warning-text {
+            font-size: 16px;
+            color: #fbbf24;
+            line-height: 1.5;
+        }
+
+        .claim-types {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .claim-type {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">JWT: Payload (Carga Útil)</h1>
+                        <p class="subtitle">Claims registradas, públicas e customizadas</p>
+                    </div>
+                </div>
+                <div class="jwt-badge">
+                    <i class="fas fa-key"></i>
+                    <span>JWT Structure</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="jwt-structure">
+                        <div class="structure-header">
+                            <div class="structure-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="structure-title">Estrutura do Payload</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-label">Exemplo de Payload JWT</div>
+                            </div>
+                            <div class="code-content">
+                                {<br />
+                                  "sub": "usuario123",<br />
+                                  "name": "João Silva",<br />
+                                  "email": "joao@email.com",<br />
+                                  "iat": 1516239022,<br />
+                                  "exp": 1516242622,<br />
+                                  "role": "user"<br />
+                                }
+                            </div>
+                        </div>
+                        <div class="claims-grid">
+                            <div class="claim-card">
+                                <div class="claim-icon blue">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">sub (Subject)</div>
+                                    <div class="claim-description">Identificador único do usuário</div>
+                                </div>
+                            </div>
+                            <div class="claim-card">
+                                <div class="claim-icon green">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">iat (Issued At)</div>
+                                    <div class="claim-description">Timestamp de emissão do token</div>
+                                </div>
+                            </div>
+                            <div class="claim-card">
+                                <div class="claim-icon orange">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">exp (Expiration)</div>
+                                    <div class="claim-description">Timestamp de expiração</div>
+                                </div>
+                            </div>
+                            <div class="claim-card">
+                                <div class="claim-icon purple">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">iss (Issuer)</div>
+                                    <div class="claim-description">Emissor do token</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="jwt-structure">
+                        <div class="structure-header">
+                            <div class="structure-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="structure-title">Tipos de Claims</div>
+                        </div>
+                        <div
+                            style="display: flex; flex-direction: column; gap: 16px; flex: 1; justify-content: space-around;">
+                            <div class="claim-card">
+                                <div class="claim-icon blue">
+                                    <i class="fas fa-registered"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">Claims Registradas</div>
+                                    <div class="claim-description">Padrão RFC 7519 (sub, iat, exp, iss, aud)</div>
+                                    <div class="claim-types">
+                                        <span class="claim-type">RFC 7519</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="claim-card">
+                                <div class="claim-icon green">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">Claims Públicas</div>
+                                    <div class="claim-description">Definidas em registro público (name, email)</div>
+                                    <div class="claim-types">
+                                        <span class="claim-type">Públicas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="claim-card">
+                                <div class="claim-icon orange">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="claim-content">
+                                    <div class="claim-name">Claims Customizadas</div>
+                                    <div class="claim-description">Definidas pela aplicação (role, permissions)</div>
+                                    <div class="claim-types">
+                                        <span class="claim-type">Custom</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-triangle warning-icon"></i>
+                        <div class="warning-text">
+                            <strong>Atenção:</strong> Não coloque dados sensíveis no payload - qualquer pessoa pode
+                            decodificar Base64.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

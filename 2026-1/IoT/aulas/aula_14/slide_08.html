@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Formato JSON TagoIO - Estrutura de Variáveis</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a8a5e6;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+            height: 450px;
+        }
+
+        .code-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #e0e0e0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: calc(100% - 85px);
+        }
+
+        .code-line {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .line-number {
+            color: #6b7280;
+            margin-right: 16px;
+            min-width: 28px;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .json-key {
+            color: #a8a5e6;
+        }
+
+        .json-string {
+            color: #4ade80;
+        }
+
+        .json-number {
+            color: #fbbf24;
+        }
+
+        .json-boolean {
+            color: #f472b6;
+        }
+
+        .json-bracket {
+            color: #9ca3af;
+        }
+
+        .variable-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .variable-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .variable-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            height: 110px;
+        }
+
+        .variable-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(120, 119, 198, 0.3);
+        }
+
+        .variable-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .variable-type {
+            font-size: 12px;
+            color: #a8a5e6;
+            background: rgba(120, 119, 198, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .variable-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .required {
+            color: #f87171;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .optional {
+            color: #4ade80;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 32px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .status-required {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+
+        .status-optional {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Formato JSON - Estrutura de Variáveis TagoIO</div>
+                    <div class="header-subtitle">Estrutura de dados esperada pela API para envio de telemetria</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="code-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div class="section-title">Exemplo de Payload JSON</div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <div class="code-content">
+                                <span class="json-bracket">[</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <div class="code-content">
+                                <span class="json-bracket">&nbsp;&nbsp;{</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"variable"</span><span class="json-bracket">:</span> <span
+                                    class="json-string">"temperatura"</span><span class="json-bracket">,</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"value"</span><span class="json-bracket">:</span> <span
+                                    class="json-number">25.5</span><span class="json-bracket">,</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"unit"</span><span class="json-bracket">:</span> <span
+                                    class="json-string">"C"</span><span class="json-bracket">,</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"time"</span><span class="json-bracket">:</span> <span
+                                    class="json-string">"2024-01-15T10:30:00Z"</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <div class="code-content">
+                                <span class="json-bracket">&nbsp;&nbsp;}</span><span class="json-bracket">,</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <div class="code-content">
+                                <span class="json-bracket">&nbsp;&nbsp;{</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"variable"</span><span class="json-bracket">:</span> <span
+                                    class="json-string">"umidade"</span><span class="json-bracket">,</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <div class="code-content">
+                                <span class="json-key">&nbsp;&nbsp;&nbsp;&nbsp;"value"</span><span class="json-bracket">:</span> <span
+                                    class="json-number">65</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <div class="code-content">
+                                <span class="json-bracket">&nbsp;&nbsp;}</span>
+                            </div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            <div class="code-content">
+                                <span class="json-bracket">]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.7);">
+                        <i class="fas fa-info-circle" style="color: #a8a5e6; margin-right: 6px;"></i>
+                        Array de objetos JSON, cada um representando uma variável de telemetria
+                    </div>
+                </div>
+                <div class="variable-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="section-title">Campos da Estrutura</div>
+                    </div>
+                    <div class="variable-grid">
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">variable</span>
+                                <span class="required">*</span>
+                                <span class="variable-type">string</span>
+                            </div>
+                            <div class="variable-desc">Nome da variável (ex: temperatura, umidade)</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">value</span>
+                                <span class="required">*</span>
+                                <span class="variable-type">number/string</span>
+                            </div>
+                            <div class="variable-desc">Valor da medida (pode ser numérico ou texto)</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">unit</span>
+                                <span class="optional">opcional</span>
+                                <span class="variable-type">string</span>
+                            </div>
+                            <div class="variable-desc">Unidade de medida (ex: °C, %)</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">time</span>
+                                <span class="optional">opcional</span>
+                                <span class="variable-type">ISO8601</span>
+                            </div>
+                            <div class="variable-desc">Timestamp do dado (se não enviado, usa hora do servidor)</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">metadata</span>
+                                <span class="optional">opcional</span>
+                                <span class="variable-type">object</span>
+                            </div>
+                            <div class="variable-desc">Informações adicionais sobre o dado</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="variable-name">
+                                <span class="json-key">location</span>
+                                <span class="optional">opcional</span>
+                                <span class="variable-type">object</span>
+                            </div>
+                            <div class="variable-desc">Coordenadas geográficas (lat, lng)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-info">
+                <div class="info-item">
+                    <i class="fas fa-check-circle" style="color: #4ade80; margin-right: 8px;"></i>
+                    <span><span class="info-label">Obrigatórios:</span> variable, value</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-info-circle" style="color: #a8a5e6; margin-right: 8px;"></i>
+                    <span><span class="info-label">Formato:</span> Array de objetos JSON</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock" style="color: #a8a5e6; margin-right: 8px;"></i>
+                    <span><span class="info-label">Timestamp:</span> UTC ISO8601</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

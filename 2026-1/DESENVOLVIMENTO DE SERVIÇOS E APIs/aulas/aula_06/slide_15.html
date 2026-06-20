@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estrutura de Pastas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Tree View Container (Left) */
+        .tree-container {
+            flex: 0 0 450px;
+            background-color: #252526;
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tree-header {
+            background-color: #333;
+            padding: 10px 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #ccc;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tree-content {
+            padding: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            color: #ccc;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .tree-item:hover {
+            background-color: #2a2d2e;
+        }
+
+        .tree-item.highlight {
+            background-color: rgba(140, 200, 75, 0.15);
+            border-left: 3px solid #8CC84B;
+        }
+
+        .tree-item.highlight .file-name {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .indent-1 {
+            padding-left: 15px;
+        }
+
+        .indent-2 {
+            padding-left: 35px;
+        }
+
+        .indent-3 {
+            padding-left: 55px;
+        }
+
+        .icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .icon-folder {
+            color: #dcb67a;
+        }
+
+        /* VS Code yellowish folder */
+        .icon-folder-open {
+            color: #dcb67a;
+        }
+
+        .icon-js {
+            color: #f1e05a;
+        }
+
+        .icon-json {
+            color: #cbcb41;
+        }
+
+        /* Specific folder colors */
+        .folder-src {
+            color: #8CC84B;
+        }
+
+        .folder-mw {
+            color: #4285F4;
+        }
+
+        .folder-ctrl {
+            color: #EA4335;
+        }
+
+        .folder-routes {
+            color: #A855F7;
+        }
+
+        /* Info Panel (Right) */
+        .info-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #555;
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateX(10px);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .card-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-text {
+            color: #aaa;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            margin-right: 5px;
+            background-color: #111;
+            border: 1px solid #444;
+        }
+
+        /* Decoration */
+        .bg-dots {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 200px;
+            background-image: radial-gradient(#444 1px, transparent 1px);
+            background-size: 10px 10px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .arrow-indicator {
+            position: absolute;
+            left: -20px;
+            color: #8CC84B;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-dots"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <div>
+                    <p class="subtitle">Organização do Projeto</p>
+                    <h1 class="title">Estrutura de Pastas</h1>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-400 text-sm">Padrão MVC + Middlewares</p>
+                </div>
+            </header>
+            <div class="main-layout">
+                <!-- Left: Tree View -->
+                <div class="tree-container">
+                    <div class="tree-header">
+                        <span>Explorer</span>
+                        <span>...</span>
+                    </div>
+                    <div class="tree-content">
+                        <!-- Root -->
+                        <div class="tree-item indent-1">
+                            <i class="fas fa-chevron-down icon text-gray-500 text-xs"></i>
+                            <i class="fas fa-folder-open icon folder-src"></i>
+                            <span class="file-name">src</span>
+                        </div>
+                        <!-- Controllers -->
+                        <div class="tree-item indent-2">
+                            <i class="fas fa-chevron-right icon text-gray-500 text-xs"></i>
+                            <i class="fas fa-folder icon folder-ctrl"></i>
+                            <span class="file-name">controllers</span>
+                        </div>
+                        <div class="tree-item indent-3" style="opacity: 0.6;">
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">livroController.js</span>
+                        </div>
+                        <!-- Middlewares Folder (Highlighted) -->
+                        <div class="tree-item indent-2 highlight">
+                            <i class="fas fa-chevron-down icon text-white text-xs"></i>
+                            <i class="fas fa-folder-open icon folder-mw"></i>
+                            <span class="file-name">middlewares</span>
+                        </div>
+                        <!-- Middleware Files -->
+                        <div class="tree-item indent-3 highlight">
+                            <i class="fas fa-long-arrow-alt-right arrow-indicator"></i>
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">errorHandler.js</span>
+                        </div>
+                        <div class="tree-item indent-3 highlight">
+                            <i class="fas fa-long-arrow-alt-right arrow-indicator"></i>
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">logger.js</span>
+                        </div>
+                        <div class="tree-item indent-3 highlight">
+                            <i class="fas fa-long-arrow-alt-right arrow-indicator"></i>
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">validaLivro.js</span>
+                        </div>
+                        <!-- Routes -->
+                        <div class="tree-item indent-2">
+                            <i class="fas fa-chevron-right icon text-gray-500 text-xs"></i>
+                            <i class="fas fa-folder icon folder-routes"></i>
+                            <span class="file-name">routes</span>
+                        </div>
+                        <div class="tree-item indent-3" style="opacity: 0.6;">
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">livroRoutes.js</span>
+                        </div>
+                        <!-- Server.js -->
+                        <div class="tree-item indent-2">
+                            <i class="fab fa-js icon icon-js"></i>
+                            <span class="file-name">server.js</span>
+                        </div>
+                        <!-- Other files -->
+                        <div class="tree-item indent-1" style="opacity: 0.5; margin-top: 10px;">
+                            <i class="fas fa-file-code icon text-yellow-600"></i>
+                            <span class="file-name">package.json</span>
+                        </div>
+                        <div class="tree-item indent-1" style="opacity: 0.5;">
+                            <i class="fas fa-file-alt icon text-gray-500"></i>
+                            <span class="file-name">README.md</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Info Panel -->
+                <div class="info-panel">
+                    <div class="info-card" style="border-color: #4285F4;">
+                        <div class="card-title">
+                            <i class="fas fa-layer-group mr-2 text-blue-500"></i>
+                            <p class="m-0">Centralização (src/middlewares)</p>
+                        </div>
+                        <div class="card-text">
+                            <p>Ao invés de espalhar validações dentro dos <i>controllers</i> ou no arquivo principal,
+                                criamos uma pasta dedicada. Isso facilita a reutilização e manutenção.</p>
+                        </div>
+                    </div>
+                    <div class="info-card" style="border-color: #8CC84B;">
+                        <div class="card-title">
+                            <i class="fas fa-puzzle-piece mr-2 text-green-500"></i>
+                            <p class="m-0">Modularidade</p>
+                        </div>
+                        <div class="card-text">
+                            <p>Cada arquivo tem uma responsabilidade única:</p>
+                            <div class="mt-2">
+                                <p class="mb-1"><span class="tag text-yellow-300">logger.js</span> Registro de acessos.
+                                </p>
+                                <p class="mb-1"><span class="tag text-yellow-300">validaLivro.js</span> Regras de
+                                    negócio de entrada.</p>
+                                <p class="mb-1"><span class="tag text-yellow-300">errorHandler.js</span> Tratamento
+                                    global de falhas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="border-color: #A855F7;">
+                        <div class="card-title">
+                            <i class="fas fa-plug mr-2 text-purple-500"></i>
+                            <p class="m-0">Integração (server.js)</p>
+                        </div>
+                        <div class="card-text">
+                            <p>O arquivo <span class="tag">server.js</span> atua como o ponto de montagem, importando e
+                                conectando ("plugando") esses middlewares na aplicação Express.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

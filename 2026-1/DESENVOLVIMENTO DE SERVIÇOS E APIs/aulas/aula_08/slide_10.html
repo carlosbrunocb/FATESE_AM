@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura com Sequelize</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: 480px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .architecture-diagram {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .diagram-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .diagram-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex: 1;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            overflow-x: hidden;
+        }
+
+        .layer-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .layer-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .layer-icon i {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .layer-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .layer-desc {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .arrow-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            max-width: 25px;
+        }
+
+        .arrow-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 0;
+            height: 0;
+            border-left: 8px solid #8b5cf6;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-head {
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid #8b5cf6;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            position: absolute;
+        }
+
+        .arrow-label {
+            font-size: 9px;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .benefit-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .benefit-icon i {
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .benefit-content {
+            flex: 1;
+        }
+
+        .benefit-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 4px;
+        }
+
+        .benefit-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Arquitetura com Sequelize</div>
+                    <div class="header-subtitle">Visão em camadas da aplicação Node.js</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-server" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">Aula 08</div>
+                    <div class="header-subtitle">Persistência SQL</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="architecture-diagram">
+                <div class="diagram-header">
+                    <div>
+                        <div class="diagram-title">Fluxo da Requisição</div>
+                        <div class="diagram-subtitle">Cliente HTTP → Router → Controller → Service → Sequelize Model →
+                            Dialect → BD → Resposta JSON</div>
+                    </div>
+                </div>
+                <div class="flow-container">
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="layer-name">Cliente</div>
+                        <div class="layer-desc">HTTP Request</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="layer-name">Rotas</div>
+                        <div class="layer-desc">Express Router</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                        
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="layer-name">Middlewares</div>
+                        <div class="layer-desc">Validação/Auth</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                        
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="layer-name">Controllers</div>
+                        <div class="layer-desc">Orquestração</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                        
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="layer-name">Services</div>
+                        <div class="layer-desc">Regras de Negócio</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                        
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="layer-name">Sequelize</div>
+                        <div class="layer-desc">ORM Layer</div>
+                    </div>
+                    <div class="arrow-box">
+                        <div class="arrow-line"></div>
+                        
+                    </div>
+                    <div class="layer-box">
+                        <div class="layer-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="layer-name">Banco</div>
+                        <div class="layer-desc">PostgreSQL/MySQL</div>
+                    </div>
+                </div>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <div class="benefit-title">Baixo Acoplamento</div>
+                            <div class="benefit-desc">Trocar persistência sem alterar rotas/controllers</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <div class="benefit-title">Reuso e Testes</div>
+                            <div class="benefit-desc">Services isolam a lógica de negócio</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <div class="benefit-title">Observabilidade</div>
+                            <div class="benefit-desc">Logging de queries e métricas de pool</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <div class="benefit-title">Escalabilidade</div>
+                            <div class="benefit-desc">Pool de conexões e transações gerenciadas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

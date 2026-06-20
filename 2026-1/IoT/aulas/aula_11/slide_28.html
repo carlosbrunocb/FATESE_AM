@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Próxima Aula - Introdução ao MQTT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Estrutura Principal em Grid */
+        .slide-container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        /* Cabeçalho */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 4vw;
+            min-height: 70px;
+            box-sizing: border-box;
+        }
+
+        /* Área de Conteúdo Central */
+        .main-content {
+            max-width: auto;
+            width: 90%;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 24px;
+        }
+
+        /* Grid Responsivo das Colunas */
+        .grid-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Rodapé */
+        .slide-footer {
+            max-width: auto;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+        }
+
+        /* Elementos Visuais (Cards, Ícones, Badges) - Mantidos do original */
+        .content-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* Faz os cards preencherem a altura da coluna uniformemente */
+        }
+
+        .mqtt-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 12px;
+            padding: 12px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .limitation-item {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-note {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 18px 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Responsividade extra para telas menores */
+        @media (max-width: auto) {
+            .slide-header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 1.5rem 1rem;
+            }
+            .slide-footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <header class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-exchange-alt" style="font-size: 24px; color: #10b981;"></i>
+                <span style="font-size: 20px; font-weight: 600;">Próxima Aula — Introdução ao MQTT</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px; color: #94a3b8; font-size: 14px;">
+                <span>Aula 12</span>
+                <span>|</span>
+                <span>Protocolo MQTT</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div style="text-align: center;">
+                <h1 style="font-size: 36px; font-weight: 700; margin: 0 0 10px 0;">
+                    <i class="fas fa-broadcast-tower" style="color: #10b981; margin-right: 16px;"></i>MQTT: Mensageria Leve para IoT
+                </h1>
+                <p style="font-size: 18px; color: #94a3b8; margin: 0;">
+                    Superando as limitações do HTTP para comunicação em tempo real
+                </p>
+            </div>
+
+            <div class="grid-columns">
+                
+                <div class="column">
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+                            <div class="mqtt-icon">
+                                <i class="fas fa-times-circle" style="font-size: 22px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">Limitações do HTTP</div>
+                                <div style="font-size: 14px; color: #94a3b8;">Por que precisamos de MQTT?</div>
+                            </div>
+                        </div>
+                        
+                        <div class="limitation-item">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 13px;"></i>
+                                <span style="font-size: 14px; font-weight: 600;">Overhead de Cabeçalhos</span>
+                            </div>
+                            <div style="font-size: 12px; color: #94a3b8;">HTTP é verboso, consome mais banda e energia</div>
+                        </div>
+                        
+                        <div class="limitation-item">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                <i class="fas fa-clock" style="color: #ef4444; font-size: 13px;"></i>
+                                <span style="font-size: 14px; font-weight: 600;">Polling Constante</span>
+                            </div>
+                            <div style="font-size: 12px; color: #94a3b8;">Latência alta em dispositivos a bateria</div>
+                        </div>
+                        
+                        <div class="limitation-item" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                <i class="fas fa-arrow-right" style="color: #ef4444; font-size: 13px;"></i>
+                                <span style="font-size: 14px; font-weight: 600;">Comunicação Unidirecional</span>
+                            </div>
+                            <div style="font-size: 12px; color: #94a3b8;">Dificulta push do servidor</div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+                            <div class="mqtt-icon">
+                                <i class="fas fa-broadcast-tower" style="font-size: 22px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">O que é MQTT?</div>
+                                <div style="font-size: 14px; color: #94a3b8;">Protocolo de mensageria</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">Protocolo leve pub/sub sobre TCP</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">Elementos: Broker, Tópicos, Clientes</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">QoS 0/1/2, Retained Messages</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+                            <div class="mqtt-icon">
+                                <i class="fas fa-balance-scale" style="font-size: 22px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">HTTP vs MQTT</div>
+                                <div style="font-size: 14px; color: #94a3b8;">Comparação de protocolos</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div class="comparison-row">
+                                <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; font-weight: 600;">HTTP</span>
+                                </div>
+                                <div style="flex: 1.2; text-align: center;">
+                                    <span style="font-size: 12px; color: #94a3b8;">Request/Response</span>
+                                </div>
+                                <div style="flex: 1; text-align: right;">
+                                    <span class="status-badge status-info">Consultas</span>
+                                </div>
+                            </div>
+                            
+                            <div class="comparison-row">
+                                <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; font-weight: 600;">MQTT</span>
+                                </div>
+                                <div style="flex: 1.2; text-align: center;">
+                                    <span style="font-size: 12px; color: #94a3b8;">Pub/Sub</span>
+                                </div>
+                                <div style="flex: 1; text-align: right;">
+                                    <span class="status-badge status-success">Tempo Real</span>
+                                </div>
+                            </div>
+                            
+                            <div class="comparison-row" style="background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; font-weight: 600;">Vencedor</span>
+                                </div>
+                                <div style="flex: 1.2; text-align: center;">
+                                    <span style="font-size: 12px; color: #10b981; font-weight: 600;">MQTT</span>
+                                </div>
+                                <div style="flex: 1; text-align: right;">
+                                    <span class="status-badge status-success">IoT</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+                            <div class="mqtt-icon">
+                                <i class="fas fa-forward" style="font-size: 22px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">Prévia da Aula 12</div>
+                                <div style="font-size: 14px; color: #94a3b8;">O que vem por aí</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div class="feature-item">
+                                <i class="fas fa-plug" style="color: #3b82f6; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">Conectar ESP32 a broker MQTT</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-paper-plane" style="color: #3b82f6; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">Assinar/publicar em tópicos</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-sync" style="color: #3b82f6; font-size: 14px;"></i>
+                                <span style="font-size: 14px; color: #cbd5e1;">Trocar payloads JSON leves</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestion-note">
+                <i class="fas fa-lightbulb" style="color: #10b981; font-size: 22px;"></i>
+                <div style="font-size: 15px; color: #cbd5e1; line-height: 1.5;">
+                    <strong style="color: #ffffff;">Preparação sugerida:</strong> Instalar biblioteca PubSubClient e revisar conceitos de QoS e tópicos hierárquicos
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-broadcast-tower" style="font-size: 14px; color: #10b981;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">Próxima Aula - MQTT para IoT</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="font-size: 14px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">16 de Maio de 2026</span>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Query Parameter Versioning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* Transformado em Grid para estruturar o layout */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Removido o absolute e larguras fixas */
+        .header {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Removido o absolute, top, left e larguras/alturas fixas */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            height: 100%;
+        }
+
+        /* Adicionado responsividade para telas menores */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .concept-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .example-box {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .example-url {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #1e40af;
+            background: #eff6ff;
+            padding: 8px;
+            border-radius: 4px;
+            display: block;
+            margin-top: 8px;
+            word-break: break-all;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .pros-item,
+        .cons-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .pros-item {
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+
+        .cons-item {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .item-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pros-item .item-icon i {
+            color: #10b981;
+        }
+
+        .cons-item .item-icon i {
+            color: #ef4444;
+        }
+
+        .item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .item-description {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+
+        .code-block .keyword {
+            color: #3b82f6;
+        }
+
+        .code-block .string {
+            color: #10b981;
+        }
+
+        .code-block .comment {
+            color: #64748b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #3b82f6;
+        }
+
+        .highlight-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Removido absolute. Adaptação com margens para manter a posição */
+        .footer {
+            position: relative;
+            z-index: 1;
+            margin: 0 40px 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 65px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 10px;
+            }
+            .header {
+                height: auto;
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .header-right {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon"><i class="fas fa-filter"></i></div>
+                <div>
+                    <div class="header-title">Query Parameter Versioning</div>
+                    <div class="header-subtitle">Estratégia de versionamento via parâmetros de URL</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Versionamento</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+                            <div>
+                                <div class="card-title">O que é Query Parameter Versioning?</div>
+                                <div class="card-subtitle">Versão passada como parâmetro na URL</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            A versão da API é especificada como um parâmetro de consulta na URL, permitindo que
+                            diferentes clientes escolham a versão desejada através de um parâmetro opcional.
+                            <div class="example-box">
+                                <strong>Exemplo:</strong>
+                                <div class="example-url">https://api.livraria.com/livros?version=1</div>
+                                <div class="example-url">https://api.livraria.com/livros?version=2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-code"></i></div>
+                            <div>
+                                <div class="card-title">Implementação em Express</div>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <span class="keyword">const</span> express = <span class="keyword">require</span>(<span class="string">'express'</span>);
+                            <br>
+                            <span class="keyword">const</span> app = express();
+                            <br>
+                            app.get(<span class="string">'/livros'</span>, (req, res) =&gt; {
+                            <br>
+                            &nbsp;&nbsp;<span class="keyword">const</span> version = req.query.version || <span class="string">'1'</span>;
+                            <br>
+                            &nbsp;&nbsp;<span class="keyword">if</span> (version === <span class="string">'2'</span>) {
+                            <br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;res.json({ version: <span class="string">'v2'</span>, data: [] });
+                            <br>
+                            &nbsp;&nbsp;} <span class="keyword">else</span> {
+                            <br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;res.json({ version: <span class="string">'v1'</span>, data: [] });
+                            <br>
+                            &nbsp;&nbsp;}
+                            <br>
+                            });
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+                            <div>
+                                <div class="card-title">Prós e Contras</div>
+                            </div>
+                        </div>
+                        <div class="pros-cons">
+                            <div class="pros-item">
+                                <div class="item-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="item-content">
+                                    <div class="item-title">Flexível</div>
+                                    <div class="item-description">Fácil de alternar entre versões</div>
+                                </div>
+                            </div>
+                            <div class="pros-item">
+                                <div class="item-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="item-content">
+                                    <div class="item-title">Simples</div>
+                                    <div class="item-description">Fácil de implementar</div>
+                                </div>
+                            </div>
+                            <div class="cons-item">
+                                <div class="item-icon"><i class="fas fa-times-circle"></i></div>
+                                <div class="item-content">
+                                    <div class="item-title">Cache</div>
+                                    <div class="item-description">Pode afetar cacheabilidade</div>
+                                </div>
+                            </div>
+                            <div class="cons-item">
+                                <div class="item-icon"><i class="fas fa-times-circle"></i></div>
+                                <div class="item-content">
+                                    <div class="item-title">URL</div>
+                                    <div class="item-description">Menos explícita que URI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Quando usar?</span>
+                        </div>
+                        <div class="card-content" style="font-size: 14px;">
+                            Ideal para APIs internas, protótipos e cenários onde a URL não pode mudar. Também útil para
+                            testes A/B.
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-list-check"></i></div>
+                            <div>
+                                <div class="card-title">Boas Práticas</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <ul style="margin-left: 18px;">
+                                <li style="margin-bottom: 4px;">Sempre forneça uma versão padrão</li>
+                                <li style="margin-bottom: 4px;">Documente os parâmetros aceitos</li>
+                                <li style="margin-bottom: 4px;">Valide a versão recebida</li>
+                                <li>Erro 400 para versões inválidas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-item"><i class="fas fa-clock"></i><span>Duração: 3h (180 min)</span></div>
+            <div class="footer-item"><i class="fas fa-calendar-alt"></i><span>Data: 22/05/2026</span></div>
+            <div class="footer-item"><i class="fas fa-user"></i><span>Prof. Carlos Bruno</span></div>
+            <div class="status-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Em andamento</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

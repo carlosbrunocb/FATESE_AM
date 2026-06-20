@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dinâmica do Workshop - Passo a Passo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2d5a87 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon i {
+            color: #ff6b35;
+            font-size: 24px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 60px;
+            right: 60px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .process-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            height: 160px;
+            /* Reduced to avoid overlapping details section */
+        }
+
+        .process-step {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            /* Changed to start */
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .step-description {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .step-time {
+            position: absolute;
+            top: 16px;
+            /* Adjusted to align with step number better */
+            right: 12px;
+            font-size: 10px;
+            color: #ff6b35;
+            font-weight: 600;
+            text-align: right;
+            width: 50px;
+            /* added width to prevent overlap */
+        }
+
+        .step-icon {
+            font-size: 16px;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .details-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow-y: hidden;
+            /* Changed to hidden to prevent scrollbars */
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .detail-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .step-detail {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .step-detail-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-detail-text {
+            font-size: 12px;
+            /* Reduced font size to fit content better */
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .action-icon {
+            color: #4CAF50;
+            margin-top: 2px;
+            font-size: 12px;
+        }
+
+        .action-text {
+            flex: 1;
+            color: #1e293b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 1px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .highlight-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-green {
+            background: #4CAF50;
+        }
+
+        .status-yellow {
+            background: #FFC107;
+        }
+
+        .status-red {
+            background: #f44336;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header Section -->
+        <div class="header-section" data-object="true" data-object-type="header">
+            <div>
+                <div class="header-title">Dinâmica do Workshop — Passo a Passo</div>
+                <div class="header-subtitle">Processo completo de revisão e refinamento do Capítulo 1</div>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-cogs"></i>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Process Steps -->
+            <div class="process-container">
+                <div class="process-step">
+                    <div class="step-time">2 min</div>
+                    <div class="step-number">1</div>
+                    <div class="step-icon"><i class="fas fa-user-cog"></i></div>
+                    <div class="step-title">Preparação</div>
+                    <div class="step-description">Definir papéis e ativar Controle de Alterações</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">8 min</div>
+                    <div class="step-number">2</div>
+                    <div class="step-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="step-title">Troca e Leitura</div>
+                    <div class="step-description">Trocar arquivos e ler criticamente</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">10 min</div>
+                    <div class="step-number">3</div>
+                    <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="step-title">Aplicar Checklist</div>
+                    <div class="step-description">Preencher itens de validação</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">5 min</div>
+                    <div class="step-number">4</div>
+                    <div class="step-icon"><i class="fas fa-filter"></i></div>
+                    <div class="step-title">Síntese</div>
+                    <div class="step-description">Classificar achados por prioridade</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">Contínuo</div>
+                    <div class="step-number">5</div>
+                    <div class="step-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="step-title">Mentoria</div>
+                    <div class="step-description">Professor atua como consultor</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">20 min</div>
+                    <div class="step-number">6</div>
+                    <div class="step-icon"><i class="fas fa-edit"></i></div>
+                    <div class="step-title">Refatoração</div>
+                    <div class="step-description">Reescrever trechos críticos</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-time">5 min</div>
+                    <div class="step-number">7</div>
+                    <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="step-title">Congelamento</div>
+                    <div class="step-description">Exportar PDF e versionar</div>
+                </div>
+            </div>
+            <!-- Details Section -->
+            <div class="details-section">
+                <!-- Left Column -->
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <div class="detail-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div>
+                            <div class="detail-title">Detalhamento das Etapas</div>
+                            <div class="detail-subtitle">Instruções operacionais por fase</div>
+                        </div>
+                    </div>
+                    <div class="step-detail">
+                        <div class="step-detail-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span>1. Preparação (2 min)</span>
+                        </div>
+                        <div class="step-detail-text">
+                            • Definir papéis: Revisor A/B, Dono do Documento<br />
+                            • Abrir Word com Controle de Alterações<br />
+                            • Criar backup do arquivo e checklist
+                        </div>
+                    </div>
+                    <div class="step-detail">
+                        <div class="step-detail-title">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>2. Troca e Leitura Crítica (8 min)</span>
+                        </div>
+                        <div class="step-detail-text">
+                            • Trocar Cap. 1 (1.1–1.5) entre equipes<br />
+                            • Ler focando: impessoalidade, tríade, escopo In/Out<br />
+                            • Destacar trechos críticos com tags [Bloq]/[Maj]/[Min]
+                        </div>
+                    </div>
+                    <div class="step-detail">
+                        <div class="step-detail-title">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>3. Aplicar Checklist (10 min)</span>
+                        </div>
+                        <div class="step-detail-text">
+                            • Preencher itens 1–8 do checklist<br />
+                            • Registrar exemplos "antes" e rascunho "depois"<br />
+                            • Priorizar ações imediatas
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <div class="detail-icon" style="background: rgba(76, 175, 80, 0.1); color: #4CAF50;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div>
+                            <div class="detail-title">Ações e Validação</div>
+                            <div class="detail-subtitle">Próximos passos e verificação</div>
+                        </div>
+                    </div>
+                    <div class="action-list">
+                        <div class="action-item">
+                            <i class="fas fa-check-circle action-icon"></i>
+                            <div class="action-text">
+                                <strong>Validação Cruzada (5 min):</strong> Revisor oposto confere mudanças e
+                                alinhamento 1.2⇄1.5
+                            </div>
+                        </div>
+                        <div class="action-item">
+                            <i class="fas fa-check-circle action-icon"></i>
+                            <div class="action-text">
+                                <strong>Refatoração Textual (20 min):</strong> Reescrever 1.1–1.5, inserir dados/ABNT
+                            </div>
+                        </div>
+                        <div class="action-item">
+                            <i class="fas fa-check-circle action-icon"></i>
+                            <div class="action-text">
+                                <strong>Congelamento (5 min):</strong> Aceitar alterações, exportar PDF, salvar DOCX
+                            </div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Dica de Mentoria</span>
+                        </div>
+                        <div class="highlight-text">
+                            Professor atua como consultor sênior, decidindo cortes de escopo e alinhamento da tríade.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

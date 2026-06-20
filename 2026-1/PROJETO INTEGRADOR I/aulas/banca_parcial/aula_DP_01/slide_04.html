@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Matriz Esforço x Valor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            overflow: hidden;
+        }
+
+        .header-bar {
+            background: linear-gradient(90deg, #0066CC 0%, #FF6600 100%);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28pt;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 14pt;
+            color: rgba(255, 255, 255, 0.9);
+            margin-left: 20px;
+        }
+
+        .content-area {
+            padding: 20px 40px;
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 70px);
+            box-sizing: border-box;
+        }
+
+        .left-panel {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: #0066CC;
+        }
+
+        /* --- Início do Container em Grid --- */
+        .matrix-wrapper {
+            display: grid;
+            grid-template-areas: 'overlap';
+            width: 100%;
+            height: 300px;
+        }
+
+        .matrix-container {
+            grid-area: overlap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px; /* O gap funciona como as linhas divisórias */
+            background: #94a3b8; /* Cor das linhas */
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            box-sizing: border-box;
+            overflow: hidden; /* Mantém as bordas arredondadas intactas */
+        }
+
+        .quadrant {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .quadrant-top-left { background: #fef3c7; }
+        .quadrant-top-right { background: #dcfce7; }
+        .quadrant-bottom-left { background: #fee2e2; }
+        .quadrant-bottom-right { background: #f1f5f9; }
+
+        /* Posicionando os Labels com Grid */
+        .label-y {
+            grid-area: overlap;
+            justify-self: start;
+            align-self: start;
+            margin: 10px;
+            font-size: 11pt;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .label-x {
+            grid-area: overlap;
+            justify-self: end;
+            align-self: end;
+            margin: 10px;
+            font-size: 11pt;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 5;
+        }
+        /* --- Fim do Container em Grid --- */
+
+        .quadrant-title {
+            font-size: 12pt;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .quadrant-desc {
+            font-size: 10pt;
+            color: #64748b;
+        }
+
+        .priority-high { color: #059669; }
+        .priority-medium { color: #d97706; }
+        .priority-low { color: #dc2626; }
+        .priority-nasa { color: #6b7280; }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13pt;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .rules-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13pt;
+            color: #475569;
+        }
+
+        .rules-list li i {
+            color: #0066CC;
+            margin-top: 3px;
+        }
+
+        .example-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #0066CC;
+            font-size: 13pt;
+            margin-bottom: 8px;
+        }
+
+        .example-content {
+            font-size: 12pt;
+            color: #475569;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11pt;
+            font-weight: 500;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #059669;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-gray {
+            background: #f1f5f9;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div style="display: flex; align-items: center;">
+                <span class="header-title">Matriz Esforço x Valor</span>
+                <span class="header-subtitle">Ferramenta de priorização para MVP</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: white; font-size: 14pt;"><i class="fas fa-user"></i> Prof. Carlos Bruno</span>
+                <span style="color: white; font-size: 14pt;"><i class="fas fa-calendar"></i> 12/04/2026</span>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="left-panel">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-th"></i>
+                        Diagrama 2x2 - Priorização
+                    </div>
+                    
+                    <div class="matrix-wrapper">
+                        <div class="matrix-container">
+                            <div class="quadrant quadrant-top-left">
+                                <div class="quadrant-title priority-medium">AVALIAR/SEQUENCIAR</div>
+                                <div class="quadrant-desc">Alto valor, Alto esforço</div>
+                                <div style="margin-top: 8px; font-size: 10pt; color: #64748b;">
+                                    • ML avançado<br />
+                                    • Integração ERP
+                                </div>
+                            </div>
+                            <div class="quadrant quadrant-top-right">
+                                <div class="quadrant-title priority-high">ALTA PRIORIDADE</div>
+                                <div class="quadrant-desc">Alto valor, Baixo esforço</div>
+                                <div style="margin-top: 8px; font-size: 10pt; color: #64748b;">
+                                    • Quiz de Afinidade<br />
+                                    • Cadastro Simplificado
+                                </div>
+                            </div>
+                            <div class="quadrant quadrant-bottom-left">
+                                <div class="quadrant-title priority-low">DESCARTADO/NASA</div>
+                                <div class="quadrant-desc">Baixo valor, Alto esforço</div>
+                                <div style="margin-top: 8px; font-size: 10pt; color: #64748b;">
+                                    • Reconhecimento facial<br />
+                                    • Features complexas
+                                </div>
+                            </div>
+                            <div class="quadrant quadrant-bottom-right">
+                                <div class="quadrant-title priority-nasa">GANHOS RÁPIDOS</div>
+                                <div class="quadrant-desc">Baixo valor, Baixo esforço</div>
+                                <div style="margin-top: 8px; font-size: 10pt; color: #64748b;">
+                                    • Tema escuro<br />
+                                    • Badges de perfil
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="label-y">Valor ↑</div>
+                        <div class="label-x">Esforço →</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-list-check"></i>
+                        Regras de Decisão
+                    </div>
+                    <ul class="rules-list">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>MVP:</strong> Somente itens de Alta Prioridade + suporte mínimo à Killer
+                                Feature</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-times-circle"></i>
+                            <span><strong>NASA:</strong> Alto esforço/baixo valor fica fora do MVP</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right"></i>
+                            <span><strong>Foco:</strong> Entregar Killer Feature e medir Resultado</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-filter"></i>
+                        Classificação das Features - AdoptMatch
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <div style="font-size: 13pt; font-weight: 600; margin-bottom: 8px; color: #1e293b;">
+                                <span class="badge badge-green">Alta Prioridade</span>
+                            </div>
+                            <div
+                                style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px; margin-bottom: 8px;">
+                                <div style="font-size: 12pt; font-weight: 500; color: #166534;">Quiz de Afinidade (RF01)
+                                </div>
+                                <div style="font-size: 11pt; color: #64748b;">10 perguntas, if/else simples</div>
+                            </div>
+                            <div
+                                style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px;">
+                                <div style="font-size: 12pt; font-weight: 500; color: #166534;">Chat Interno (RF02)
+                                </div>
+                                <div style="font-size: 11pt; color: #64748b;">Validar visita pós-match</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 13pt; font-weight: 600; margin-bottom: 8px; color: #1e293b;">
+                                <span class="badge badge-yellow">Avaliar</span>
+                            </div>
+                            <div
+                                style="background: #fef9c3; border: 1px solid #fde68a; border-radius: 6px; padding: 8px; margin-bottom: 8px;">
+                                <div style="font-size: 12pt; font-weight: 500; color: #92400e;">ML Avançado</div>
+                                <div style="font-size: 11pt; color: #64748b;">Match inteligente (complexo)</div>
+                            </div>
+                            <div
+                                style="background: #fef9c3; border: 1px solid #fde68a; border-radius: 6px; padding: 8px;">
+                                <div style="font-size: 12pt; font-weight: 500; color: #92400e;">Integração ERP</div>
+                                <div style="font-size: 11pt; color: #64748b;">Sistema de ONGs</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="font-size: 12pt; font-weight: 600; color: #1e293b;">Descartado/NASA:</span>
+                                <span style="font-size: 11pt; color: #64748b; margin-left: 5px;">Reconhecimento facial
+                                    do pet</span>
+                            </div>
+                            <span class="badge badge-red">Alto Esforço</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-box">
+                    <div class="example-title">
+                        <i class="fas fa-lightbulb"></i> Exemplo Prático - AdoptMatch
+                    </div>
+                    <div class="example-content">
+                        <p style="margin: 0 0 8px 0;"><strong>Prioridade:</strong> Quiz de Afinidade + Chat para validar
+                            visita</p>
+                        <p style="margin: 0 0 8px 0;"><strong>Valor Esperado:</strong> Redução de 40% na taxa de
+                            devolução</p>
+                        <p style="margin: 0;"><strong>Justificativa:</strong> Foco na compatibilidade comportamental,
+                            não apenas estética</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

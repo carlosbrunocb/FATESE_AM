@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Rotas de Livros Protegidas - livroRoutes.js</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .header-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+        }
+
+        .file-path {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .file-path i {
+            color: #3b82f6;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            align-items: stretch;
+            margin-bottom: 20px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .code-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .code-action {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.55;
+            color: #e2e8f0;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .code-content pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .info-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .info-text {
+            font-size: 17px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            font-size: 17px;
+            color: #e2e8f0;
+        }
+
+        .info-list li i {
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .schema-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .schema-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .schema-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .schema-item:last-child {
+            border-bottom: none;
+        }
+
+        .schema-field {
+            font-family: 'Courier New', monospace;
+            font-size: 17px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .schema-type {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+
+        .keyword {
+            color: #c678dd;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .function {
+            color: #61afef;
+        }
+
+        .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div>
+                        <div class="header-title">Rotas de Livros Protegidas</div>
+                        <div class="header-subtitle">Configuração de rotas com autenticação JWT</div>
+                    </div>
+                </div>
+                <div class="file-path">
+                    <i class="fas fa-folder"></i>
+                    <span>src/routes/livroRoutes.js</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Código das Rotas
+                            </div>
+                            <div class="code-actions">
+                                <div class="code-action"><i class="fas fa-copy"></i></div>
+                                <div class="code-action"><i class="fas fa-download"></i></div>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code class="language-javascript"><span class="comment">// src/routes/livroRoutes.js</span>
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> router = express.Router();
+<span class="keyword">const</span> controller = <span class="function">require</span>(<span class="string">'../controllers/livroController'</span>);
+<span class="keyword">const</span> validaLivro = <span class="function">require</span>(<span class="string">'../middlewares/validaLivro'</span>);
+<span class="keyword">const</span> autenticaJWT = <span class="function">require</span>(<span class="string">'../middlewares/autenticaJWT'</span>);
+
+<span class="comment">// Rotas públicas</span>
+router.get(<span class="string">'/livros'</span>, controller.listarLivros);
+router.get(<span class="string">'/livros/:id'</span>, controller.buscarLivro);
+
+<span class="comment">// ROTAS PROTEGIDAS</span>
+<span class="comment">// Apenas autenticados via JWT</span>
+router.post(<span class="string">'/livros'</span>, autenticaJWT, validaLivro, controller.criarLivro);
+router.put(<span class="string">'/livros/:id'</span>, autenticaJWT, validaLivro, controller.atualizarLivro);
+router.delete(<span class="string">'/livros/:id'</span>, autenticaJWT, controller.deletarLivro);
+
+<span class="keyword">module.exports</span> = router;</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <div class="info-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="info-title">Proteção de Rotas</div>
+                        </div>
+                        <div class="info-text">
+                            Configuração de rotas protegidas com middleware de autenticação JWT
+                        </div>
+                        <ul class="info-list">
+                            <li><i class="fas fa-check"></i>
+                                <div><strong>GET /livros:</strong> Pública</div>
+                            </li>
+                            <li><i class="fas fa-check"></i>
+                                <div><strong>POST /livros:</strong> Protegida</div>
+                            </li>
+                            <li><i class="fas fa-check"></i>
+                                <div><strong>PUT /livros/:id:</strong> Protegida</div>
+                            </li>
+                            <li><i class="fas fa-check"></i>
+                                <div><strong>DELETE /livros/:id:</strong> Protegida</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="schema-container">
+                        <div class="schema-title">
+                            <i class="fas fa-key"></i>
+                            Middlewares
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">autenticaJWT</span>
+                            </div>
+                            <div class="schema-type">Validação Token</div>
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">validaLivro</span>
+                            </div>
+                            <div class="schema-type">Validação Dados</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

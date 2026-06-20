@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comandos Úteis para Análise de Redes Wi-Fi</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* Commands container */
+        .commands-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .commands-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .commands-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .commands-title i {
+            color: #4a90d9;
+        }
+
+        .commands-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* OS tabs */
+        .os-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .os-tab {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .os-tab:hover {
+            background: rgba(74, 144, 217, 0.2);
+            color: white;
+        }
+
+        .os-tab.active {
+            background: rgba(74, 144, 217, 0.3);
+            color: white;
+            border-color: #4a90d9;
+        }
+
+        .os-tab i {
+            font-size: 14px;
+        }
+
+        /* Commands grid */
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            flex: 1;
+            overflow: visible;
+        }
+
+        .command-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .command-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .command-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(74, 144, 217, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 13px;
+        }
+
+        .command-title {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .command-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .command-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #6bff6b;
+            border-left: 3px solid #4a90d9;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .command-output {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2px;
+            border-left: 3px solid #6bff6b;
+        }
+
+        .command-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .command-tag {
+            background: rgba(74, 144, 217, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 90%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* Tips section */
+        .tips-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tips-title {
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tips-title i {
+            color: #4a90d9;
+        }
+
+        .tips-content {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .tip-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .tip-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        .tip-value {
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-terminal"></i> Comandos para Análise de Redes Wi-Fi
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="commands-container">
+                    <div class="commands-header">
+                        <div>
+                            <div class="commands-title">
+                                <i class="fas fa-code"></i>
+                                Comandos Úteis por Sistema Operacional
+                            </div>
+                            <div class="commands-subtitle">
+                                Ferramentas e comandos para análise de redes Wi-Fi em diferentes plataformas
+                            </div>
+                        </div>
+                        <div class="os-tabs">
+                            <div class="os-tab active">
+                                <i class="fab fa-windows"></i>
+                                Windows
+                            </div>
+                            <div class="os-tab">
+                                <i class="fab fa-linux"></i>
+                                Linux
+                            </div>
+                            <div class="os-tab">
+                                <i class="fab fa-apple"></i>
+                                macOS
+                            </div>
+                            <div class="os-tab">
+                                <i class="fab fa-android"></i>
+                                Android
+                            </div>
+                        </div>
+                    </div>
+                    <div class="commands-grid">
+                        <div class="command-card">
+                            <div class="command-header">
+                                <div class="command-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="command-title">Listar Redes Disponíveis</div>
+                            </div>
+                            <div class="command-description">
+                                Exibe todas as redes Wi-Fi disponíveis com detalhes como SSID, BSSID, canal e nível de
+                                sinal.
+                            </div>
+                            <div class="command-block">
+                                netsh wlan show networks mode=bssid
+                            </div>
+                            <div class="command-output">
+                                SSID: MinhaRede | BSSID: 00:11:22:33:44:55 | Sinal: -65dBm | Canal: 6
+                            </div>
+                            <div class="command-tags">
+                                <span class="command-tag">Windows</span>
+                                <span class="command-tag">CLI</span>
+                                <span class="command-tag">Scan</span>
+                            </div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-header">
+                                <div class="command-icon">
+                                    <i class="fas fa-signal"></i>
+                                </div>
+                                <div class="command-title">Verificar Interfaces</div>
+                            </div>
+                            <div class="command-description">
+                                Mostra informações detalhadas sobre as interfaces de rede Wi-Fi disponíveis.
+                            </div>
+                            <div class="command-block">
+                                netsh wlan show interfaces
+                            </div>
+                            <div class="command-output">
+                                Nome: Wi-Fi | Estado: conectado | SSID: MinhaRede | Velocidade: 54 Mbps
+                            </div>
+                            <div class="command-tags">
+                                <span class="command-tag">Windows</span>
+                                <span class="command-tag">Status</span>
+                                <span class="command-tag">Interface</span>
+                            </div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-header">
+                                <div class="command-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="command-title">Verificar Segurança</div>
+                            </div>
+                            <div class="command-description">
+                                Analisa o tipo de segurança e criptografia das redes Wi-Fi disponíveis.
+                            </div>
+                            <div class="command-block">
+                                netsh wlan show networks mode=bssid | findstr "SSID|Autenticação"
+                            </div>
+                            <div class="command-output">
+                                Autenticação: WPA2-Personal | Criptografia: AES
+                            </div>
+                            <div class="command-tags">
+                                <span class="command-tag">Segurança</span>
+                                <span class="command-tag">WPA2</span>
+                                <span class="command-tag">Análise</span>
+                            </div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-header">
+                                <div class="command-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="command-title">Monitorar Sinal</div>
+                            </div>
+                            <div class="command-description">
+                                Monitora continuamente o nível de sinal e qualidade da conexão Wi-Fi.
+                            </div>
+                            <div class="command-block">
+                                netsh wlan show interfaces | findstr "Sinal|Qualidade"
+                            </div>
+                            <div class="command-output">
+                                Sinal: 85% | Qualidade: Excelente | RSSI: -65dBm
+                            </div>
+                            <div class="command-tags">
+                                <span class="command-tag">Monitoramento</span>
+                                <span class="command-tag">Sinal</span>
+                                <span class="command-tag">Qualidade</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tips-section">
+                        <div class="tips-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Dicas de Uso
+                        </div>
+                        <div class="tips-content">
+                            Use esses comandos para diagnosticar problemas de conectividade, identificar interferências
+                            e otimizar a configuração da rede.
+                        </div>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <div class="tip-label">Canais</div>
+                                <div class="tip-value">1, 6, 11</div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-label">Largura</div>
+                                <div class="tip-value">20MHz</div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-label">Potência</div>
+                                <div class="tip-value">100%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

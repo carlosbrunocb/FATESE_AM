@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ESP32 WROOM — Especificações Técnicas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-section {
+            background-color: #1e3a5f;
+            padding: 3% 6% 2.5% 6%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .title-accent {
+            color: #ff9933;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 4% 6%;
+            display: flex;
+            gap: clamp(30px, 4vw, 50px);
+            overflow: hidden;
+        }
+
+        .image-section {
+            flex: 0 0 clamp(300px, 35vw, 450px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .board-image {
+            width: 100%;
+            height: auto;
+            max-height: 50vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .board-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 1.8vw, 20px);
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-top: clamp(15px, 2vh, 20px);
+            text-align: center;
+        }
+
+        .specs-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 1.5vh, 15px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Estilizando a barra de rolagem caso a tela seja muito pequena */
+        .specs-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        .specs-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .specs-section::-webkit-scrollbar-thumb {
+            background: #1e3a5f;
+            border-radius: 4px;
+        }
+
+        .spec-category {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: clamp(12px, 2vh, 15px) clamp(15px, 2vw, 20px);
+            border-left: 4px solid #ff9933;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: clamp(6px, 1vh, 8px);
+        }
+
+        .category-icon {
+            width: clamp(28px, 3vw, 36px);
+            height: clamp(28px, 3vw, 36px);
+            background-color: #1e3a5f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .category-icon i {
+            color: #ff9933;
+            font-size: clamp(14px, 1.5vw, 18px);
+        }
+
+        .category-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 1.8vw, 18px);
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .category-content {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(13px, 1.3vw, 14px);
+            font-weight: 400;
+            color: #555555;
+            margin: 0;
+            line-height: 1.5;
+            padding-left: clamp(40px, 4vw, 48px);
+        }
+
+        .note-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9933;
+            border-radius: 8px;
+            padding: clamp(12px, 2vh, 15px) clamp(15px, 2vw, 20px);
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .note-icon {
+            color: #ff9933;
+            font-size: clamp(14px, 1.5vw, 16px);
+            margin-right: 8px;
+        }
+
+        .note-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(13px, 1.3vw, 14px);
+            font-weight: 500;
+            color: #1e3a5f;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            width: clamp(80px, 10vw, 120px);
+            height: clamp(80px, 10vw, 120px);
+            border: 3px solid rgba(255, 153, 51, 0.3);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                <p><span class="title-accent">ESP32 WROOM</span> — Especificações Técnicas</p>
+            </h1>
+            <div class="decoration-circle"></div>
+        </div>
+        <div class="content-wrapper">
+            <div class="image-section">
+                <img alt="ESP32 WROOM Development Board" class="board-image"
+                    src="https://page.gensparksite.com/slides_images/9021f53f3faecdcb16698a80b932695c.webp" />
+                <p class="board-label">ESP32 WROOM-32 Development Board</p>
+            </div>
+            <div class="specs-section">
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>SoC (System on Chip)</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">Espressif ESP32 (Xtensa LX6) dual-core até 240 MHz; ULP co-processor para baixo consumo</p>
+                </div>
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>Memória</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">~520 KB SRAM interna; Flash externa típica 4 MB (módulo WROOM-32)</p>
+                </div>
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>Conectividade</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">Wi-Fi 802.11 b/g/n (2.4 GHz); Bluetooth v4.2 BR/EDR + BLE (Bluetooth Low Energy)</p>
+                </div>
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>Periféricos</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">ADC 12 bits (até 18 canais), DAC 2x, touch capacitivo, PWM (LEDc), RTC, SPI/I2C/UART, CAN (via TWAI)</p>
+                </div>
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>GPIOs</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">Pinos 0–39; pinos 34–39 apenas entrada (input-only); atenção a funções especiais (boot/strapping)</p>
+                </div>
+                <div class="spec-category">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3 class="category-title">
+                            <p>Características Elétricas</p>
+                        </h3>
+                    </div>
+                    <p class="category-content">I/O 3.3V (não tolerante a 5V); Alimentação: 3.0–3.6V; Consumo variável conforme modo de operação</p>
+                </div>
+                <div class="note-box">
+                    <p class="note-text"><i class="fas fa-info-circle note-icon"></i><strong>Observação:</strong> Consulte o datasheet/guia de hardware do seu módulo/placa para pinout exato e características específicas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

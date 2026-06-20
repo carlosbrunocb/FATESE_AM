@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Como o WebDriver Funciona - Fluxo em 5 Passos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8f9fa;
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100% - 130px);
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 4px solid #1a5fb4;
+            transition: transform 0.2s ease;
+        }
+
+        .step-card:hover {
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-title i {
+            color: #1a5fb4;
+            font-size: 14px;
+        }
+
+        .step-description {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.3;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-badge {
+            background: #e7f3ff;
+            color: #1a5fb4;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Como o WebDriver Funciona</h1>
+                    <p>Fluxo de funcionamento em 5 passos sequenciais</p>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Em execução</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-play-circle"></i>
+                            Criar Sessão de Navegador
+                        </div>
+                        <div class="step-description">
+                            O script inicializa uma nova instância do navegador, estabelecendo uma sessão de comunicação
+                            entre o código e o WebDriver.
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div class="action-badge">webdriver.Chrome()</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar Comandos HTTP
+                        </div>
+                        <div class="step-description">
+                            O script envia comandos via protocolo HTTP/bi-direcional para o driver, especificando ações
+                            como clique, digitação ou navegação.
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div class="action-badge">HTTP/JSON</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-cogs"></i>
+                            Driver Aciona Engine do Navegador
+                        </div>
+                        <div class="step-description">
+                            O WebDriver interpreta os comandos e os traduz para ações nativas do navegador, acionando a
+                            engine de renderização.
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div class="action-badge">ChromeDriver</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-code"></i>
+                            DOM é Manipulado e Renderizado
+                        </div>
+                        <div class="step-description">
+                            O navegador executa as ações no DOM, atualizando a interface e renderizando as mudanças
+                            visuais na página web.
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div class="action-badge">DOM Update</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-reply"></i>
+                            Respostas Retornam ao Script
+                        </div>
+                        <div class="step-description">
+                            O navegador retorna estados, resultados e dados para o script, permitindo validações e
+                            assertions.
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div class="action-badge">driver.title</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-user" style="margin-right: 5px;"></i> Prof. Carlos Bruno Oliveira Lopes</span>
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+            </div>
+            <div class="footer-right">
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

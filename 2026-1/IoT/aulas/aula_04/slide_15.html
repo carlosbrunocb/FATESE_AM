@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+    <title>Aula 04 - LDR: Funcionamento e Curva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow-y: auto; /* Permite scroll vertical se o conteúdo ultrapassar a tela */
+            overflow-x: hidden; /* Esconde a barra horizontal */
+            background-color: #f5f5f5; 
+        }
+
+        .slide-wrapper {
+            width: 100%;
+            overflow: hidden; 
+        }
+
+        .slide-container { 
+            position: relative; 
+            width: 1280px; /* Mantém a largura original exata */
+            height: 720px; /* Mantém a altura original exata */
+            background-color: #ffffff; 
+            transform-origin: top left; /* Ponto de partida para o zoom */
+        }
+
+        p { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="slide-wrapper">
+        <div class="slide-container">
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 40px; top: 40px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;"></div>
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 40px; top: 680px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;"></div>
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 0; top: 40px; width: 150px; height: 4px; background-color: #004080; z-index: 2;"></div>
+
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 1200px; top: 640px; width: 40px; height: 30px; z-index: 10; text-align: right;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 14px; color: #999;">15</p>
+            </div>
+
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 100px; top: 80px; width: 1000px; height: 80px; z-index: 10;">
+                <p style="font-family: 'Roboto', sans-serif; font-size: 48px; color: #004080; font-weight: 700;">
+                    LDR: Funcionamento e Curva
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 100px; top: 160px; width: 1000px; height: 40px; z-index: 10;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 20px; color: #555; font-weight: 400;">
+                    Entendendo a resposta não-linear da resistência em função da luminosidade (Lux).
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 100px; top: 220px; width: 700px; height: 400px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 1;"></div>
+
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 120px; top: 230px; width: 660px; height: 30px; z-index: 10; text-align: center;">
+                <p style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #666; font-weight: 500;">
+                    Curva Característica Típica (Escala Log-Log)
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="chart" style="position: absolute; left: 120px; top: 260px; width: 660px; height: 340px; z-index: 5;">
+                <canvas id="ldrChart"></canvas>
+            </div>
+
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 840px; top: 220px; width: 340px; height: 120px; background-color: #fff8e1; border-left: 5px solid #ffb300; border-radius: 4px; z-index: 2;"></div>
+            <div data-object="true" data-object-type="icon" style="position: absolute; left: 860px; top: 240px; width: 40px; height: 40px; z-index: 10; color: #ffb300;">
+                <i class="fa-solid fa-lightbulb" style="font-size: 30px;"></i>
+            </div>
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 910px; top: 235px; width: 250px; height: 105px; z-index: 10;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #e65100; font-weight: 700; margin-bottom: 5px;">Relação Inversa</p>
+                <p style="font-family: 'Roboto', sans-serif; font-size: 15px; color: #333;">
+                    Quanto <strong>maior</strong> a incidência de luz, <strong>menor</strong> é a resistência elétrica do componente.
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 840px; top: 360px; width: 340px; height: 120px; background-color: #e3f2fd; border-left: 5px solid #1976d2; border-radius: 4px; z-index: 2;"></div>
+            <div data-object="true" data-object-type="icon" style="position: absolute; left: 860px; top: 380px; width: 40px; height: 40px; z-index: 10; color: #1976d2;">
+                <i class="fa-solid fa-square-root-variable" style="font-size: 30px;"></i>
+            </div>
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 910px; top: 375px; width: 250px; height: 105px; z-index: 10;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #0d47a1; font-weight: 700; margin-bottom: 5px;">Não-Linearidade</p>
+                <p style="font-family: 'Roboto', sans-serif; font-size: 15px; color: #333;">
+                    A curva segue aproximadamente:<br>
+                    <span style="font-family: 'Courier New', monospace; background-color: #fff; padding: 2px;">R ≈ A · Lux<sup>-α</sup></span><br>
+                    <span style="font-size: 13px; color: #555;">(Reta em gráfico log-log)</span>
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="shape" style="position: absolute; left: 840px; top: 500px; width: 340px; height: 120px; background-color: #ffebee; border-left: 5px solid #d32f2f; border-radius: 4px; z-index: 2;"></div>
+            <div data-object="true" data-object-type="icon" style="position: absolute; left: 860px; top: 520px; width: 40px; height: 40px; z-index: 10; color: #d32f2f;">
+                <i class="fa-solid fa-wrench" style="font-size: 30px;"></i>
+            </div>
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 910px; top: 515px; width: 250px; height: 105px; z-index: 10;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #b71c1c; font-weight: 700; margin-bottom: 5px;">Calibração Necessária</p>
+                <p style="font-family: 'Roboto', sans-serif; font-size: 15px; color: #333;">
+                    LDRs têm alta tolerância (±30%). Para medir Lux exato, é preciso calibrar individualmente.
+                </p>
+            </div>
+
+            <div data-object="true" data-object-type="textbox" style="position: absolute; left: 100px; top: 630px; width: 700px; height: 40px; z-index: 10; text-align: center;">
+                <p style="font-family: 'Roboto', sans-serif; font-size: 14px; color: #777; font-style: italic;">
+                    * Gráfico ilustrativo baseado em dados típicos de um sensor LDR GL5528.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('ldrChart').getContext('2d');
+
+        // Data points approximating a GL5528 LDR
+        // Lux: 1, 10, 100, 1000, 10000
+        // Resistance (Ohms): ~50k, ~10k, ~2k, ~400, ~80
+        const luxData = [1, 10, 100, 1000, 10000];
+        const resistanceData = [50000, 10000, 2000, 400, 80];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: luxData, // These will be used for x-axis ticks roughly
+                datasets: [{
+                    label: 'Resistência (Ω)',
+                    data: resistanceData.map((val, index) => ({x: luxData[index], y: val})),
+                    borderColor: '#d32f2f',
+                    backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#d32f2f',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { family: 'Roboto', size: 14 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.parsed.y} Ω @ ${context.parsed.x} Lux`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'logarithmic',
+                        title: {
+                            display: true,
+                            text: 'Luminosidade (Lux)',
+                            font: { family: 'Open Sans', size: 14, weight: 'bold' },
+                            color: '#555'
+                        },
+                        min: 1,
+                        max: 10000,
+                        grid: { color: '#f0f0f0' }
+                    },
+                    y: {
+                        type: 'logarithmic',
+                        title: {
+                            display: true,
+                            text: 'Resistência (Ω)',
+                            font: { family: 'Open Sans', size: 14, weight: 'bold' },
+                            color: '#555'
+                        },
+                        min: 10,
+                        max: 100000,
+                        grid: { color: '#f0f0f0' },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                if (value === 10 || value === 100 || value === 1000 || value === 10000 || value === 100000) {
+                                    return value + 'Ω';
+                                }
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        function redimensionarSlide() {
+            const slide = document.querySelector('.slide-container');
+            const wrapper = document.querySelector('.slide-wrapper');
+            const scale = window.innerWidth / 1280; 
+            slide.style.transform = `scale(${scale})`;
+            wrapper.style.height = `${720 * scale}px`;
+        }
+        window.addEventListener('resize', redimensionarSlide);
+        window.addEventListener('DOMContentLoaded', redimensionarSlide);
+    </script>
+</body>
+</html>

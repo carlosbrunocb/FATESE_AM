@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Criação do Banco de Dados - PostgreSQL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .slide-container {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+        }
+
+        .code-block {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .sql-keyword {
+            color: #c678dd;
+            font-weight: bold;
+        }
+
+        .sql-string {
+            color: #98c379;
+        }
+
+        .sql-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .title-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #22c55e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container grid grid-rows-[auto_1fr_auto] gap-8 min-h-screen w-full p-8 md:p-10 box-border">
+
+        <div class="flex flex-col md:flex-row items-center justify-between w-full gap-6">
+            <div>
+                <h1 class="text-4xl font-bold title-gradient mb-2">
+                    <i class="fas fa-database mr-3 text-blue-400"></i>
+                    Criando o Banco de Dados no PostgreSQL
+                </h1>
+                <p class="text-slate-400 text-lg">Um passo essencial antes de conectar a aplicação via Sequelize</p>
+            </div>
+            <div class="glass-card w-full md:w-56 p-4 text-center flex-shrink-0">
+                <div class="text-sm font-semibold text-blue-400 mb-1">Status SGBD</div>
+                <div class="flex items-center justify-center gap-2">
+                    <div class="status-dot"></div>
+                    <div class="text-lg font-bold text-slate-100">PostgreSQL Ativo</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full h-full">
+
+            <div class="flex flex-col gap-6 h-full">
+
+                <div class="glass-card flex-1">
+                    <div class="text-xl font-semibold text-blue-300 mb-4 border-b border-slate-700 pb-2">
+                        <i class="fas fa-exclamation-circle mr-2 text-amber-400"></i>
+                        Atenção
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-4">
+                        O Sequelize é um ORM excelente para criar <strong class="text-blue-400">tabelas</strong> e
+                        gerenciar dados, mas ele <strong>NÃO cria o banco de dados (database)</strong> automaticamente
+                        por padrão.
+                    </p>
+                    <p class="text-slate-300 leading-relaxed">
+                        Você precisa criar o contêiner do banco manualmente no seu SGBD antes de rodar a aplicação
+                        Node.js.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="text-xl font-semibold text-blue-300 mb-4 border-b border-slate-700 pb-2">
+                        <i class="fas fa-tools mr-2"></i>
+                        Ferramentas para executar o SQL
+                    </div>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-blue-900 flex items-center justify-center text-blue-300">
+                                <img width="24" height="24" src="https://img.icons8.com/material/24/postgreesql.png" alt="postgreesql"/>
+                                </div>
+                            <div>
+                                <span class="font-bold text-slate-100">pgAdmin 4</span> <br>
+                                <span class="text-sm text-slate-400">Interface gráfica oficial do PostgreSQL. (Query
+                                    Tool)</span>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-slate-300"><i
+                                    class="fas fa-terminal"></i></div>
+                            <div>
+                                <span class="font-bold text-slate-100">psql</span> <br>
+                                <span class="text-sm text-slate-400">Ferramenta de linha de comando.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-indigo-900 flex items-center justify-center text-indigo-300">
+                                <i class="fas fa-table"></i></div>
+                            <div>
+                                <span class="font-bold text-slate-100">DBeaver / DataGrip</span> <br>
+                                <span class="text-sm text-slate-400">Clientes universais de banco de dados.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6 h-full">
+
+                <div class="glass-card">
+                    <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
+                        <div class="text-xl font-semibold text-blue-300">
+                            <i class="fas fa-code mr-2"></i>
+                            Script DDL (Data Definition Language)
+                        </div>
+                        <div class="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">SQL</div>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="sql-comment">-- 1. Conecte-se ao seu servidor PostgreSQL</span><br>
+                        <span class="sql-comment">-- 2. Abra uma nova janela de Query</span><br>
+                        <span class="sql-comment">-- 3. Execute o comando abaixo:</span><br>
+                        <br>
+                        <span class="sql-keyword">CREATE DATABASE</span> livraria_db<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="sql-keyword">WITH</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="sql-keyword">OWNER</span> = postgres<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="sql-keyword">ENCODING</span> = <span
+                            class="sql-string">'UTF8'</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="sql-keyword">CONNECTION LIMIT</span> = -1;<br>
+                        <br>
+                        <span class="sql-comment">-- Se quiser apenas o comando mais simples:</span><br>
+                        <span class="sql-keyword">CREATE DATABASE</span> livraria_db;
+                    </div>
+                </div>
+
+                <div class="glass-card bg-blue-900 bg-opacity-20 border-blue-500 border-opacity-30 mt-auto">
+                    <div class="flex items-start gap-4">
+                        <div class="text-3xl text-blue-400 mt-1">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-blue-300 mb-1">Atenção ao arquivo .env</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                O nome que você colocar no comando <code
+                                    class="bg-slate-800 px-1 py-0.5 rounded text-blue-300">CREATE DATABASE</code>
+                                <strong>deve ser exatamente o mesmo</strong> que você configurou na variável <code
+                                    class="bg-slate-800 px-1 py-0.5 rounded text-blue-300">DB_NAME</code> no arquivo
+                                <code class="bg-slate-800 px-1 py-0.5 rounded text-green-300">.env</code> na etapa
+                                anterior.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-center w-full pt-4 border-t border-slate-700 mt-2">
+            <div class="text-sm text-blue-400 font-medium">
+                <i class="fas fa-info-circle mr-2"></i>Aula 08: Persistência SQL com Sequelize
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                <span class="text-sm text-slate-400">Progresso da aula</span>
+                <div class="w-48 h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-blue-500 rounded-full" style="width: 35%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

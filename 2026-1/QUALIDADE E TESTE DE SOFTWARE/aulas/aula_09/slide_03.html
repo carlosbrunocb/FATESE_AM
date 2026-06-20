@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Teste de Caixa-Branca vs Caixa-Preta</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 50px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 20px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 10px 0 20px 0;
+            flex-grow: 1;
+        }
+
+        /* Comparison Card */
+        .comparison-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .caixa-preta .card-icon {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .caixa-branca .card-icon {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .diagram-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .diagram-box {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .diagram-box h4 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .diagram-box p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 50px;
+        }
+
+        .arrow i {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .arrow span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Features List */
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .feature-item i {
+            color: #3b82f6;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            margin-top: 10px;
+            padding: 20px 25px;
+            background: #f0f7ff;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .benefits-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #475569;
+        }
+
+        .benefit-item i {
+            color: #22c55e;
+            font-size: 16px;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 4px;
+            width: 60%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Teste de Caixa-Branca</span> vs Caixa-Preta
+                </div>
+                <div class="subtitle">
+                    Comparação entre abordagens de teste: funcional vs estrutural
+                </div>
+            </div>
+            <!-- Comparison Grid -->
+            <div class="comparison-grid">
+                <!-- Caixa-Preta -->
+                <div class="comparison-card caixa-preta">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Caixa-Preta (Funcional)</div>
+                            <div class="card-subtitle">Teste baseado em requisitos</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="diagram-section">
+                            <div class="diagram-container">
+                                <div class="diagram-box">
+                                    <h4>Entradas</h4>
+                                    <p>Inputs do usuário</p>
+                                </div>
+                                <div class="arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Testa</span>
+                                </div>
+                                <div class="diagram-box" style="background: #fef3c7; border-color: #f59e0b;">
+                                    <h4>Caixa Preta</h4>
+                                    <p>Lógica interna oculta</p>
+                                </div>
+                                <div class="arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Verifica</span>
+                                </div>
+                                <div class="diagram-box">
+                                    <h4>Saídas</h4>
+                                    <p>Resultados esperados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Foco:</strong> Comportamento externo e requisitos funcionais</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Visibilidade:</strong> Sem acesso ao código-fonte</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Objetivo:</strong> Validar entradas e saídas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Caixa-Branca -->
+                <div class="comparison-card caixa-branca">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Caixa-Branca (Estrutural)</div>
+                            <div class="card-subtitle">Teste baseado em código</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="diagram-section">
+                            <div class="diagram-container">
+                                <div class="diagram-box">
+                                    <h4>Código Fonte</h4>
+                                    <p>Visível e acessível</p>
+                                </div>
+                                <div class="arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Analisa</span>
+                                </div>
+                                <div class="diagram-box" style="background: #dbeafe; border-color: #3b82f6;">
+                                    <h4>Fluxo Interno</h4>
+                                    <p>Estrutura lógica</p>
+                                </div>
+                                <div class="arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Testa</span>
+                                </div>
+                                <div class="diagram-box">
+                                    <h4>Cobertura</h4>
+                                    <p>100% dos caminhos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Foco:</strong> Lógica interna e estruturas de controle</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Visibilidade:</strong> Acesso total ao código-fonte</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Objetivo:</strong> Validar fluxos e caminhos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Benefits Section -->
+            <div class="benefits-section">
+                <div class="benefits-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Por que usar Caixa-Branca?
+                </div>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Garantir execução de todas as instruções</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Validar fluxos de tratamento de erros</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Detectar código morto ou inalcançável</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="status-info">
+                    <div class="status-dot"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-text">Progresso: 60%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

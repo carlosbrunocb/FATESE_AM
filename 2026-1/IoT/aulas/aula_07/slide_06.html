@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>FreeRTOS no ESP32 e Atividade Prática</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 50%, #10b981 100%);
+        }
+
+        .main-content {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 40px;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .course-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .course-code {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 5px 0;
+            line-height: 1.1;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: fit-content;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-height: fit-content;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .esp32-diagram {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .core-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .core-item {
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .core-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .core-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: #e0f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 10px;
+        }
+
+        .core-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .core-tasks {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .task-priority {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .task-text {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .practical-section {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #f59e0b;
+        }
+
+        .practical-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .practical-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #92400e;
+        }
+
+        .practical-desc {
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        .circuit-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+
+        .circuit-components {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .component-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .component-icon {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+
+        .component-text {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.2;
+        }
+
+        .arrow {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #059669;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="top-section">
+                <div class="title-section">
+                    <div class="course-info">
+                        <div class="course-badge">IoT - Internet das Coisas</div>
+                        <div class="course-code">ADS-2026 | Aula 07</div>
+                    </div>
+                    <h1 class="main-title">
+                        <span class="highlight">FreeRTOS</span> no ESP32 + Atividade Prática
+                    </h1>
+                    <p class="subtitle">Arquitetura dual-core, conceitos de kernel e implementação de alarme</p>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="card-title">O que é FreeRTOS?</div>
+                        </div>
+                        <p class="practical-desc" style="color: #475569;">
+                            É um <b>Sistema Operacional de Tempo Real</b> (RTOS) que permite ao ESP32 gerenciar múltiplas tarefas simultaneamente. Ele oferece um escalonador que decide qual <i>task</i> deve rodar com base em prioridades, garantindo previsibilidade.
+                        </p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="card-title">ESP32 Dual-Core</div>
+                        </div>
+                        <div class="esp32-diagram">
+                            <div class="core-grid">
+                                <div class="core-item">
+                                    <div class="core-header">
+                                        <div class="core-icon">
+                                            <i class="fas fa-microchip"></i>
+                                        </div>
+                                        <div class="core-name">Core 0</div>
+                                    </div>
+                                    <div class="core-tasks">WiFi/BT, Tasks do sistema</div>
+                                </div>
+                                <div class="core-item">
+                                    <div class="core-header">
+                                        <div class="core-icon">
+                                            <i class="fas fa-microchip"></i>
+                                        </div>
+                                        <div class="core-name">Core 1</div>
+                                    </div>
+                                    <div class="core-tasks">loop() Arduino, Tasks</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-priority" style="background: #ef4444;"></div>
+                                <div class="task-text"><strong>Task 1:</strong> Leitura de sensores</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-priority" style="background: #f59e0b;"></div>
+                                <div class="task-text"><strong>Task 2:</strong> Atualização display</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-priority" style="background: #10b981;"></div>
+                                <div class="task-text"><strong>Task 3:</strong> Controle de sirene</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                            <div class="card-title">Criação de Task</div>
+                        </div>
+                        <div style="background: #1e293b; border-radius: 8px; padding: 12px; font-family: 'Consolas', monospace; font-size: 13px; color: #e2e8f0; line-height: 1.4;">
+                            <span style="color: #60a5fa;">xTaskCreate</span>(
+                            <span style="color: #f59e0b;">tocarSirene</span>,
+                            <span style="color: #34d399;">"Task_Sirene"</span>,
+                            <span style="color: #fbbf24;">10000</span>,
+                            <span style="color: #94a3b8;">NULL</span>,
+                            <span style="color: #fbbf24;">1</span>,
+                            &amp;<span style="color: #f59e0b;">TaskAlarme</span>
+                            );
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="content-card" style="flex: 0.69;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="card-title">Atividade Prática: Alarme de Intrusão</div>
+                        </div>
+                        <div class="practical-section">
+                            <div class="practical-header">
+                                <i class="fas fa-bell" style="color: #f59e0b; font-size: 16px;"></i>
+                                <div class="practical-title">App: Alarme de Intrusão</div>
+                            </div>
+                            <div class="practical-desc">
+                                Implementação de sistema de segurança com PIR, buzzer e LED usando multitarefa no Wokwi para monitorar ambientes em tempo real.
+                            </div>
+                        </div>
+                        <div class="circuit-preview">
+                            <div class="circuit-components">
+                                <div class="component-box">
+                                    <div class="component-icon"><i class="fas fa-satellite-dish"></i></div>
+                                    <div class="component-text">PIR<br />GPIO 27</div>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="component-box">
+                                    <div class="component-icon"><i class="fas fa-microchip"></i></div>
+                                    <div class="component-text">ESP32<br />Processa</div>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="component-box">
+                                    <div class="component-icon"><i class="fas fa-bullhorn"></i></div>
+                                    <div class="component-text">Buzzer<br />GPIO 26</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="card-title">Estrutura da ISR</div>
+                        </div>
+                        <div style="background: #1e293b; border-radius: 8px; padding: 12px; font-family: 'Consolas', monospace; font-size: 13px; color: #e2e8f0; line-height: 1.4;">
+                            <span style="color: #60a5fa;">void</span> <span style="color: #f59e0b;">IRAM_ATTR</span>
+                            <span style="color: #f59e0b;">detectouMovimento</span>() {<br />
+                            &nbsp;&nbsp;<span style="color: #94a3b8;">// ISR rápida - Seta notificação</span><br />
+                            &nbsp;&nbsp;xTaskNotifyFromISR(...);<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-university"></i>
+                        <span>FATESE - Faculdade de Tecnologia do Senac</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>ADS</span>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Aula Ativa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

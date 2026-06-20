@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade Prática - Passo 2</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #333;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background-color: #8CC84B;
+            box-shadow: 0 0 10px rgba(140, 200, 75, 0.5);
+        }
+
+        /* Main Content Layout */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Left Column: Instructions */
+        .instructions-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .task-card {
+            background-color: #252526;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #8CC84B;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .task-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            background-color: #8CC84B;
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #1e1e1e;
+        }
+
+        .task-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+            padding-left: 15px;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            color: #ccc;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .task-icon {
+            color: #8CC84B;
+            margin-right: 12px;
+            margin-top: 4px;
+        }
+
+        /* Right Column: Code/Visual */
+        .visual-col {
+            flex: 0 0 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-preview {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            border: 1px solid #444;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            background-color: #333;
+            padding: 8px 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-content {
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+            flex: 1;
+            overflow: hidden;
+            background-color: #1e1e1e;
+        }
+
+        .kwd {
+            color: #569cd6;
+        }
+
+        .str {
+            color: #ce9178;
+        }
+
+        .func {
+            color: #dcdcaa;
+        }
+
+        .var {
+            color: #9cdcfe;
+        }
+
+        .cmt {
+            color: #6a9955;
+        }
+
+        .num {
+            color: #b5cea8;
+        }
+
+        .acceptance-box {
+            background-color: rgba(66, 133, 244, 0.1);
+            border: 1px solid #4285F4;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .acceptance-title {
+            color: #4285F4;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .acceptance-text {
+            color: #ccc;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Decoration */
+        .bg-shape {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(140, 200, 75, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            bottom: -50px;
+            right: -50px;
+            z-index: 0;
+        }
+
+        .indent-1 {
+            padding-left: 20px;
+        }
+
+        .indent-2 {
+            padding-left: 40px;
+        }
+
+        .indent-3 {
+            padding-left: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-shape"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <div>
+                    <p class="subtitle">Atividade Prática</p>
+                    <h1 class="title">Passo 2: Middleware de Validação</h1>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                </div>
+            </header>
+            <div class="main-layout">
+                <!-- Left: Instructions -->
+                <div class="instructions-col">
+                    <div class="task-card">
+                        <div class="task-number">2</div>
+                        <h3 class="task-title">Objetivo: Validar Dados de Entrada</h3>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <i class="fas fa-file-code task-icon"></i>
+                                <p>Crie o arquivo <code>src/middlewares/validaLivro.js</code>.</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-filter task-icon"></i>
+                                <p>Verifique se <code>titulo</code>, <code>autor</code> e <code>ano</code> estão
+                                    presentes no <code>req.body</code>.</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-ban task-icon"></i>
+                                <p>Se faltar algo, retorne status <code>400</code> (Bad Request).</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-network-wired task-icon"></i>
+                                <p>Importe e injete o middleware <strong>apenas</strong> nas rotas <code>POST</code> e
+                                    <code>PUT</code> em <code>livroRoutes.js</code>.</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="acceptance-box">
+                        <p class="acceptance-title">
+                            <i class="fas fa-check-circle mr-2"></i> Critério de Aceitação
+                        </p>
+                        <p class="acceptance-text">
+                            Tente cadastrar um livro via Postman sem enviar o campo "titulo". O servidor deve retornar
+                            status 400 com JSON de erro, e o controller de criação NÃO deve ser executado.
+                        </p>
+                    </div>
+                </div>
+                <!-- Right: Visual Guide -->
+                <div class="visual-col">
+                    <!-- File 1: validaLivro.js -->
+                    <div class="code-preview">
+                        <div class="preview-header">
+                            <span>src/middlewares/validaLivro.js</span>
+                            <i class="fab fa-js text-yellow-400"></i>
+                        </div>
+                        <div class="preview-content">
+                            <span class="kwd">const</span> <span class="func">validaLivro</span> = (<span
+                                class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>)
+                            =&gt; { <br>
+                            <span class="kwd indent-1">const</span> { <span class="var">titulo</span>, <span
+                                class="var">autor</span>, <span class="var">ano</span> } = <span
+                                class="var">req</span>.<span class="var">body</span>; <br><br>
+
+                            <span class="cm indent-1">// Validação simples</span> <br>
+                            <span class="kwd indent-1">if</span> (!<span class="var">titulo</span> || !<span
+                                class="var">autor</span> || !<span class="var">ano</span>) { <br>
+                            <span class="kwd indent-2">return</span> <span class="var">res</span>.<span
+                                class="func">status</span>(<span class="num">400</span>).<span
+                                class="func">json</span>({ <br>
+                            <span class="var indent-3">erro</span>: <span class="str">"Dados inválidos"</span> <br>
+                            <span class="indent-2">});</span>  <br>
+                            <span class="indent-1">}</span> <br>
+
+                            <span class="func indent-1">next</span>(); <span class="cmt">// Dados ok, pode passar!</span> <br>
+                            }; <br>
+                            <span class="var">module</span>.<span class="var">exports</span> = <span
+                                class="var">validaLivro</span>;
+                        </div>
+                    </div>
+                    <!-- File 2: livroRoutes.js -->
+                    <div class="code-preview" style="flex: 1.2;">
+                        <div class="preview-header">
+                            <span>src/routes/livroRoutes.js</span>
+                            <i class="fab fa-js text-yellow-400"></i>
+                        </div>
+                        <div class="preview-content">
+                            <span class="kwd">const</span> <span class="var">express</span> = <span
+                                class="func">require</span>(<span class="str">'express'</span>); <br>
+                            <span class="kwd">const</span> <span class="var">router</span> = <span
+                                class="var">express</span>.<span class="func">Router</span>(); <br>
+                            <span class="kwd">const</span> <span class="var">valida</span> = <span
+                                class="func">require</span>(<span class="str">'../middlewares/validaLivro'</span>); <br> <br>
+
+                            <span class="cmt">// Validação apenas na criação e atualização</span>
+                            <span class="var">router</span>.<span class="func">post</span>(<span
+                                class="str">'/livros'</span>, <span class="var">valida</span>, <span
+                                class="var">controller</span>.<span class="func">criar</span>);
+                            <span class="var">router</span>.<span class="func">put</span>(<span
+                                class="str">'/livros/:id'</span>, <span class="var">valida</span>, <span
+                                class="var">controller</span>.<span class="func">editar</span>); <br><br>
+
+                            <span class="cmt">// Leitura não precisa validar body</span> <br>
+                            <span class="var">router</span>.<span class="func">get</span>(<span
+                                class="str">'/livros'</span>, <span class="var">controller</span>.<span
+                                class="func">listar</span>); <br> <br>
+
+                            <span class="var">module</span>.<span class="var">exports</span> = <span
+                                class="var">router</span>;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

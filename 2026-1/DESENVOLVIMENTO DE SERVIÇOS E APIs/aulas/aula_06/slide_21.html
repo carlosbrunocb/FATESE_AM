@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ordem de Execução e Fluxo de Erros</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e1e;
+        }
+
+        .slide-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100%;
+            padding: 40px 6vw; /* Usando viewport width para padding responsivo */
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title {
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 30px;
+            /* Responsividade para telas menores */
+            flex-wrap: wrap;
+        }
+
+        .diagram-area {
+            flex: 2;
+            min-width: 300px;
+            min-height: 600px;
+            background-color: #252526;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .notes-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        .note-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #8CC84B;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            transition: transform 0.2s;
+        }
+
+        .note-card:last-child {
+            margin-bottom: 0;
+            border-left-color: #ef4444; /* Vermelho para erro */
+        }
+
+        .note-title {
+            font-weight: bold;
+            color: #8CC84B;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .note-card:last-child .note-title {
+            color: #ef4444;
+        }
+
+        .note-text {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .diagram-label {
+            position: absolute;
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #aaa;
+            top: 10px;
+            right: 10px;
+            z-index: 20;
+        }
+
+        /* SVG Diagram Styling */
+        .svg-diagram {
+            width: 100%;
+            height: 100%;
+            max-height: 700px;
+        }
+
+        .svg-line { fill: none; stroke: #888; stroke-width: 2px; marker-end: url(#arrow); }
+        .svg-line-dashed { fill: none; stroke: #888; stroke-width: 2px; stroke-dasharray: 6,4; marker-end: url(#arrow); }
+        .svg-line-no-arrow { fill: none; stroke: #888; stroke-width: 2px; }
+        .svg-label { font-size: 13px; fill: #aaa; font-family: 'Roboto', sans-serif; }
+        .svg-text { font-size: 14px; fill: #ddd; font-family: 'Roboto', sans-serif; text-anchor: middle; dominant-baseline: middle; }
+        .svg-text-dark { font-size: 14px; fill: #000; font-family: 'Roboto', sans-serif; text-anchor: middle; dominant-baseline: middle; font-weight: bold; }
+        .svg-text-light { font-size: 14px; fill: #fff; font-family: 'Roboto', sans-serif; text-anchor: middle; dominant-baseline: middle; font-weight: bold; }
+        
+        .svg-box { fill: #2d2d2d; stroke: #666; stroke-width: 1px; rx: 6px; }
+        .svg-box-blue { fill: #3b82f6; stroke: #fff; stroke-width: 2px; rx: 6px; }
+        .svg-box-red { fill: #ef4444; stroke: #fff; stroke-width: 2px; rx: 6px; }
+        .svg-box-green { fill: #8CC84B; stroke: #fff; stroke-width: 2px; rx: 25px; }
+        .svg-box-white { fill: #ffffff; stroke: #333; stroke-width: 2px; rx: 30px; }
+
+        /* Background Decoration */
+        .bg-decoration {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background-color: rgba(140, 200, 75, 0.03);
+            top: -100px;
+            right: -100px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bg-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            height: 200px;
+            background-image: radial-gradient(circle, #333 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+            z-index: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-decoration"></div>
+        <div class="bg-dots"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div>
+                    <p class="subtitle">Pipeline de Execução</p>
+                    <h1 class="title">Ordem de Execução e Fluxo de Erros</h1>
+                </div>
+                <div class="text-left lg:text-right">
+                    <p class="text-gray-400 text-sm">Caminho da Requisição & Tratamento de Exceções</p>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="diagram-area">
+                    <div class="diagram-label">Flowchart: Express Middleware Stack</div>
+                    
+                    <svg class="svg-diagram" viewBox="0 0 850 800" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#888" />
+                            </marker>
+                        </defs>
+
+                        <path class="svg-line" d="M400,90 L400,125" />
+                        <path class="svg-line" d="M400,170 L400,205" />
+                        <path class="svg-line" d="M400,250 L400,278" />
+                        <path class="svg-line" d="M340,310 L170,310 L170,415" />
+                        <path class="svg-line" d="M400,320 L400,415" />
+                        <path class="svg-line-dashed" d="M460,310 L735,310 L735,420" />
+
+                        <path class="svg-line" d="M400,460 L400,515" />
+                        <path class="svg-line-dashed" d="M480,440 L515,440" />
+
+                        <path class="svg-line-no-arrow" d="M170,460 L170,670" />
+                        <path class="svg-line-no-arrow" d="M400,560 L400,670" />
+                        <path class="svg-line" d="M170,670 L285,670 L285,715" />
+                        <path class="svg-line-no-arrow" d="M400,670 L250,670" />
+
+                        <path class="svg-line-no-arrow" d="M570,460 L570,580" />
+                        <path class="svg-line-no-arrow" d="M735,460 L735,580" />
+                        <path class="svg-line" d="M735,580 L650,580 L650,615" />
+                        <path class="svg-line-no-arrow" d="M570,580 L650,580" />
+
+                        <path class="svg-line" d="M650,660 L650,715" />
+
+                        <text x="250" y="300" class="svg-label" text-anchor="middle">GET /livros</text>
+                        <text x="410" y="360" class="svg-label">POST /livros</text>
+                        <text x="560" y="300" class="svg-label">Rota inexistente</text>
+                        <text x="410" y="490" class="svg-label">Valido</text>
+                        <text x="478" y="475" class="svg-label">Invalido</text>
+
+                        <rect x="80" y="260" width="720" height="330" fill="none" stroke="#666" stroke-dasharray="8,4" rx="10"/>
+                        <text x="90" y="280" class="svg-label" font-weight="bold">Roteador</text>
+
+                        <circle cx="400" cy="60" r="40" class="svg-box-white" />
+                        <text x="400" y="60" class="svg-text-dark">Requisição</text>
+
+                        <rect x="300" y="130" width="200" height="40" class="svg-box" />
+                        <text x="400" y="150" class="svg-text">app.use json body parser</text>
+
+                        <rect x="300" y="210" width="200" height="40" class="svg-box" />
+                        <text x="400" y="230" class="svg-text">app.use Logger</text>
+
+                        <polygon points="400,280 460,310 400,340 340,310" class="svg-box" />
+                        <text x="400" y="310" class="svg-text">Rota /api</text>
+
+                        <rect x="90" y="420" width="160" height="40" class="svg-box" />
+                        <text x="170" y="440" class="svg-text">Controller Listar</text>
+
+                        <rect x="320" y="420" width="160" height="40" class="svg-box-blue" />
+                        <text x="400" y="440" class="svg-text-light">Middleware Validacao</text>
+
+                        <rect x="320" y="520" width="160" height="40" class="svg-box" />
+                        <text x="400" y="540" class="svg-text">Controller Criar</text>
+
+                        <rect x="520" y="420" width="100" height="40" rx="20" class="svg-box" />
+                        <text x="570" y="440" class="svg-text">Erro 400</text>
+
+                        <rect x="680" y="420" width="110" height="40" class="svg-box" />
+                        <text x="735" y="440" class="svg-text">Middleware 404</text>
+
+                        <rect x="570" y="620" width="160" height="40" class="svg-box-red" />
+                        <text x="650" y="640" class="svg-text-light">Error Handler</text>
+
+                        <rect x="225" y="720" width="120" height="40" class="svg-box-green" />
+                        <text x="285" y="740" class="svg-text-dark">Resposta</text>
+
+                        <rect x="590" y="720" width="120" height="40" class="svg-box-red" rx="20" />
+                        <text x="650" y="740" class="svg-text-light">Resposta Erro</text>
+                    </svg>
+                </div>
+                
+                <div class="notes-area">
+                    <div class="note-card">
+                        <div class="note-title">
+                            <i class="fas fa-list-ol mr-2"></i>
+                            Ordem Sequencial (Top-Down)
+                        </div>
+                        <p class="note-text">
+                            O Express executa linha a linha. <code>express.json()</code> deve vir antes das rotas para
+                            que o <code>req.body</code> esteja disponível. O Logger registra tudo que passa.
+                        </p>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">
+                            <i class="fas fa-route mr-2"></i>
+                            Rotas e Validação
+                        </div>
+                        <p class="note-text">
+                            Dentro do roteador, middlewares específicos (como validação) protegem os controllers. Se
+                            falhar, o fluxo é desviado para o tratamento de erro.
+                        </p>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Rota 404
+                        </div>
+                        <p class="note-text">
+                            Se nenhuma rota der match, a requisição "cai" no final da pilha. É comum ter um middleware
+                            aqui para gerar um erro 404 explícito.
+                        </p>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Error Handler (O Último)
+                        </div>
+                        <p class="note-text">
+                            O middleware com 4 parâmetros <code>(err, req, res, next)</code> deve ser SEMPRE o último.
+                            Ele captura qualquer <code>next(err)</code> chamado anteriormente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Validação e Casos de Teste</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow-x: hidden;
+            /* Evita scroll horizontal */
+        }
+
+        /* Container Principal em Grid */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            /* Header, Conteúdo (flexível), Footer */
+            min-height: 100vh;
+            width: 100%;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Header Ajustado */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Conteúdo Principal Ajustado */
+        .main-content {
+            padding: 25px 40px;
+            width: 100%;
+            overflow-y: auto;
+            /* Permite scroll interno se o conteúdo crescer */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .test-matrix {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .test-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .test-cell {
+            flex: 1;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .test-header {
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .test-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pass {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .status-pass .status-icon {
+            background: #22c55e;
+            color: white;
+        }
+
+        .status-fail .status-icon {
+            background: #ef4444;
+            color: white;
+        }
+
+        .status-pending .status-icon {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .validation-summary {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 18px;
+            border: 1px solid #3b82f6;
+            margin-top: 15px;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 25px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        /* Footer Ajustado para Flex/Grid */
+        .footer {
+            margin: 0 40px 25px 40px;
+            /* Margens para manter o efeito flutuante */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 54px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .test-category {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-icon {
+            width: 24px;
+            height: 24px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .category-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+            word-break: break-all;
+        }
+
+        /* Ajustes de Responsividade */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                /* Uma coluna em telas menores */
+            }
+
+            .slide-container {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .header {
+                height: auto;
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-right {
+                text-align: center;
+            }
+
+            .footer {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 15px;
+                gap: 10px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div>
+                    <div class="header-title">Validação e Casos de Teste</div>
+                    <div class="header-subtitle">Matriz de testes para versões v1 e v2 da API</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Testes</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Casos de Teste v1</div>
+                                <div class="section-subtitle">Validação da API legada</div>
+                            </div>
+                        </div>
+                        <div class="test-matrix">
+                            <div class="test-row">
+                                <div class="test-cell test-header" style="flex: 1.5;">Cenário</div>
+                                <div class="test-cell test-header">Status</div>
+                                <div class="test-cell test-header">Resultado</div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-check"></i></div>
+                                        <div class="category-name">GET /livros</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pass">
+                                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                                        <span>Passou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #166534; font-weight: 600;">200 OK</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-filter"></i></div>
+                                        <div class="category-name">GET /livros?titulo=A</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pass">
+                                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                                        <span>Passou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #166534; font-weight: 600;">200 OK</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-exclamation"></i></div>
+                                        <div class="category-name">GET /livros/999</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-fail">
+                                        <div class="status-icon"><i class="fas fa-times"></i></div>
+                                        <span>Falhou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #991b1b; font-weight: 600;">404 Not Found</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-ban"></i></div>
+                                        <div class="category-name">POST /livros</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pending">
+                                        <div class="status-icon"><i class="fas fa-clock"></i></div>
+                                        <span>Pendente</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #92400e; font-weight: 600;">Não implementado</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="validation-summary">
+                            <div class="summary-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Estatísticas v1
+                            </div>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">3/4</span>
+                                    <span>testes passaram</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">75%</span>
+                                    <span>taxa de sucesso</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Casos de Teste v2</div>
+                                <div class="section-subtitle">Validação da API com paginação</div>
+                            </div>
+                        </div>
+                        <div class="test-matrix">
+                            <div class="test-row">
+                                <div class="test-cell test-header" style="flex: 1.5;">Cenário</div>
+                                <div class="test-cell test-header">Status</div>
+                                <div class="test-cell test-header">Resultado</div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-check"></i></div>
+                                        <div class="category-name">GET /livros?pagina=1</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pass">
+                                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                                        <span>Passou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #166534; font-weight: 600;">200 OK</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-list"></i></div>
+                                        <div class="category-name">GET /livros?limite=10</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pass">
+                                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                                        <span>Passou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #166534; font-weight: 600;">200 OK</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-exclamation"></i></div>
+                                        <div class="category-name">GET /livros?pagina=999</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-fail">
+                                        <div class="status-icon"><i class="fas fa-times"></i></div>
+                                        <span>Falhou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #991b1b; font-weight: 600;">404 Not Found</span>
+                                </div>
+                            </div>
+                            <div class="test-row">
+                                <div class="test-cell" style="flex: 1.5;">
+                                    <div class="test-category">
+                                        <div class="category-icon"><i class="fas fa-sync"></i></div>
+                                        <div class="category-name">GET /livros?pagina=1&amp;limite=50</div>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <div class="test-status status-pass">
+                                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                                        <span>Passou</span>
+                                    </div>
+                                </div>
+                                <div class="test-cell">
+                                    <span style="color: #166534; font-weight: 600;">200 OK</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="validation-summary">
+                            <div class="summary-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Estatísticas v2
+                            </div>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">4/4</span>
+                                    <span>testes passaram</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">100%</span>
+                                    <span>taxa de sucesso</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>8 testes executados</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

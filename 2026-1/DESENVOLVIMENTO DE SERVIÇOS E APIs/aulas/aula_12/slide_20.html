@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modelo de Usuário - Usuario.js</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 138vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .header-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+
+        .file-path {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .file-path i {
+            color: #3b82f6;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            align-items: stretch;
+            margin-bottom: 10px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .code-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .code-action {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .code-content pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .info-text {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .info-list li i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .schema-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .schema-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .schema-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .schema-item:last-child {
+            border-bottom: none;
+        }
+
+        .schema-field {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .schema-type {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .schema-required {
+            font-size: 12px;
+            color: #ef4444;
+            margin-left: 6px;
+        }
+
+        .keyword {
+            color: #c678dd;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .function {
+            color: #61afef;
+        }
+
+        .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="header-title">Modelo de Usuário</div>
+                        <div class="header-subtitle">Definição do schema MongoDB para armazenar dados de usuários</div>
+                    </div>
+                </div>
+                <div class="file-path">
+                    <i class="fas fa-folder"></i>
+                    <span>src/models/Usuario.js</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Código do Modelo
+                            </div>
+                            <div class="code-actions">
+                                <div class="code-action"><i class="fas fa-copy"></i></div>
+                                <div class="code-action"><i class="fas fa-download"></i></div>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code class="language-javascript"><span class="comment">// src/models/Usuario.js</span>
+<span class="keyword">const</span> mongoose = <span class="function">require</span>(<span class="string">'mongoose'</span>);
+
+<span class="comment">// Definição do schema de usuário</span>
+<span class="keyword">const</span> UsuarioSchema = <span class="keyword">new</span> mongoose.Schema({
+    nome: { 
+        type: <span class="string">String</span>, 
+        required: <span class="keyword">true</span>,
+        trim: <span class="keyword">true</span>,
+        maxlength: <span class="number">100</span>
+    },
+    email: { 
+        type: <span class="string">String</span>, 
+        required: <span class="keyword">true</span>, 
+        unique: <span class="keyword">true</span>,
+        trim: <span class="keyword">true</span>,
+        lowercase: <span class="keyword">true</span>
+    },
+    senha: { 
+        type: <span class="string">String</span>, 
+        required: <span class="keyword">true</span>,
+        minlength: <span class="number">6</span>
+    },
+    role: {
+        type: <span class="string">String</span>,
+        enum: [<span class="string">'usuario'</span>, <span class="string">'admin'</span>],
+        default: <span class="string">'usuario'</span>
+    },
+    ativo: {
+        type: <span class="string">Boolean</span>,
+        default: <span class="keyword">true</span>
+    }
+}, { 
+    timestamps: <span class="keyword">true</span>,
+    versionKey: <span class="keyword">false</span>
+});
+
+<span class="comment">// Método para ocultar senha ao converter para JSON</span>
+UsuarioSchema.methods.toJSON = <span class="keyword">function</span>() {
+    <span class="keyword">const</span> usuario = <span class="keyword">this</span>.toObject();
+    <span class="keyword">delete</span> usuario.senha;
+    <span class="keyword">return</span> usuario;
+};
+
+<span class="keyword">module.exports</span> = mongoose.model(<span class="string">'Usuario'</span>, UsuarioSchema);</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="info-title">Sobre o Modelo</div>
+                        </div>
+                        <div class="info-text">
+                            O modelo de usuário define a estrutura de dados para armazenar informações de autenticação e
+                            autorização centralizada.
+                        </div>
+                        <ul class="info-list">
+                            <li><i class="fas fa-check"></i> Nome e email obrigatórios</li>
+                            <li><i class="fas fa-check"></i> Senha criptografada</li>
+                            <li><i class="fas fa-check"></i> Controle de acesso por role</li>
+                            <li><i class="fas fa-check"></i> Timestamps automáticos</li>
+                        </ul>
+                    </div>
+                    <div class="schema-container">
+                        <div class="schema-title">
+                            <i class="fas fa-database"></i>
+                            Schema Visual
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">nome</span>
+                                <span class="schema-required">*</span>
+                            </div>
+                            <div class="schema-type">String</div>
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">email</span>
+                                <span class="schema-required">*</span>
+                            </div>
+                            <div class="schema-type">String (unique)</div>
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">senha</span>
+                                <span class="schema-required">*</span>
+                            </div>
+                            <div class="schema-type">String</div>
+                        </div>
+                        <div class="schema-item">
+                            <div>
+                                <span class="schema-field">role</span>
+                            </div>
+                            <div class="schema-type">String (enum)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

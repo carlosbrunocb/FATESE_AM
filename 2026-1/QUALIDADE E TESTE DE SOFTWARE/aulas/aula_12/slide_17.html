@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade de Laboratório — Protocolo de Aceite</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            height: auto;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 15px;
+        }
+
+        .main-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        /* Content grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+            height: auto;
+        }
+
+        /* Left column */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Right column */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Info cards */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .card-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .card-icon.purple {
+            background: rgba(147, 51, 234, 0.2);
+            color: #a855f7;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Role cards */
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .role-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .role-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .role-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* Deliverables list */
+        .deliverables-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .deliverable-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #94a3b8;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .deliverable-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        /* Feature list */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        /* Time indicator */
+        .time-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .time-icon {
+            font-size: 16px;
+        }
+
+        /* Status row */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+            background: #1a1a2e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .progress-fill {
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Time indicator -->
+        <div class="time-indicator" data-object="true">
+            <i class="fas fa-clock time-icon"></i>
+            <span>40 minutos</span>
+        </div>
+        <!-- Main content -->
+        <div class="main-content" data-object="true">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Atividade de Laboratório</span> — Protocolo de Aceite
+                </div>
+                <div class="subtitle">
+                    Simulação de sessão de UAT com feedback de usuários
+                </div>
+            </div>
+            <!-- Content grid -->
+            <div class="content-grid">
+                <!-- Left column -->
+                <div class="left-column">
+                    <!-- Cenario card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div class="card-title">Cenário</div>
+                        </div>
+                        <div class="card-content">
+                            Sistema de <strong style="color: #3b82f6;">calculadora web</strong> com função <strong
+                                style="color: #22c55e;">"Exportar Relatório em PDF"</strong>. O sistema possui interface
+                            web e deve atender às necessidades de um contador que precisa gerar relatórios profissionais
+                            para seus clientes.
+                        </div>
+                    </div>
+                    <!-- Papéis card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-title">Papéis (Duplas)</div>
+                        </div>
+                        <div class="role-grid">
+                            <div class="role-card">
+                                <div class="role-icon" style="color: #3b82f6;">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="role-title">Desenvolvedor/QA</div>
+                                <div class="role-desc">Implementa e testa</div>
+                            </div>
+                            <div class="role-card">
+                                <div class="role-icon" style="color: #22c55e;">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="role-title">Cliente Final</div>
+                                <div class="role-desc">Contador</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Objetivo card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="card-title">Objetivo</div>
+                        </div>
+                        <div class="card-content">
+                            Definir <strong style="color: #f97316;">3 critérios de aceite</strong> para a função de
+                            exportar PDF e validar aderência ao processo do contador, verificando usabilidade e
+                            conformidade com requisitos de negócio.
+                        </div>
+                    </div>
+                </div>
+                <!-- Right column -->
+                <div class="right-column">
+                    <!-- Entregáveis card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon purple">
+                                <i class="fas fa-file-contract"></i>
+                            </div>
+                            <div class="card-title">Entregáveis</div>
+                        </div>
+                        <div class="deliverables-list">
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon"><i class="fas fa-check-square"></i></div>
+                                <span>Checklist de critérios de aceite</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon"><i class="fas fa-file-pdf"></i></div>
+                                <span>Evidências (prints/PDF gerado)</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon"><i class="fas fa-comments"></i></div>
+                                <span>Feedbacks de usabilidade</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon"><i class="fas fa-signature"></i></div>
+                                <span>Termo de Aceite assinado</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ambiente card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <div class="card-title">Ambiente e Dados</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                                    <span>Navegador desktop (Chrome/Firefox)</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-database"></i></div>
+                                    <span>Dados de exemplo: operações, cliente, data</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                                    <span>Modelo de termo de aceite</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row" style="padding-bottom: 50px;">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>4 etapas</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>2 papéis</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>40 minutos</span>
+                </div>
+            </div>
+            <!-- Progress bar -->
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

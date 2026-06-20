@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Método do Número Mágico</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23e2e8f0" opacity="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20pt;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            color: #1e293b;
+        }
+
+        .logo-subtitle {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13pt;
+            color: #1e293b;
+        }
+
+        .course-code {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 32pt;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .highlight-bar {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .process-step {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            min-height: 180px;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 14pt;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-content {
+            margin-top: 20px;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13pt;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-icon {
+            color: #2563eb;
+            font-size: 12pt;
+        }
+
+        .step-description {
+            font-size: 11pt;
+            color: #64748b;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .step-example {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 10pt;
+            color: #1e293b;
+            border-left: 3px solid #2563eb;
+        }
+
+        .step-formula {
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+            color: #2563eb;
+            margin-top: 5px;
+        }
+
+        .calculation-area {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .calculation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .calculation-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 14pt;
+        }
+
+        .calculation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+            color: #1e293b;
+        }
+
+        .calculation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .calculation-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .calculation-label {
+            font-size: 11pt;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .calculation-value {
+            font-family: 'Courier New', monospace;
+            font-size: 13pt;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            background: #f0f9ff;
+            color: #2563eb;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">FATESE</div>
+                        <div class="logo-subtitle">Faculdade de Tecnologia do Senac</div>
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Redes de Computadores</div>
+                    <div class="course-code">Aula 06 - Sub-redes</div>
+                </div>
+            </div>
+            <div class="title-section">
+                <div class="main-title">Método do Número Mágico</div>
+                <div class="subtitle">Passo a passo para cálculo rápido de sub-redes</div>
+                <div class="highlight-bar"></div>
+            </div>
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-calculator step-icon"></i>
+                            Definir Nova Máscara
+                        </div>
+                        <div class="step-description">Determine a nova máscara após emprestar bits da parte de host.
+                        </div>
+                        <div class="step-example">
+                            Máscara original: /24<br />
+                            Emprestar 2 bits → /26<br />
+                            Decimal: 255.255.255.192
+                        </div>
+                        <div class="step-formula">256 - 192 = 64</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-magic step-icon"></i>
+                            Número Mágico
+                        </div>
+                        <div class="step-description">Calcule: 256 - valor do octeto da máscara que mudou.</div>
+                        <div class="step-example">
+                            Octeto modificado: 192<br />
+                            Número mágico: 64<br />
+                            Incremento: 64 em 64
+                        </div>
+                        <div class="step-formula">256 - 192 = 64</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-list-ol step-icon"></i>
+                            Identificar Blocos
+                        </div>
+                        <div class="step-description">Os blocos de rede avançam de número mágico em número mágico.</div>
+                        <div class="step-example">
+                            Bloco 1: 0-63<br />
+                            Bloco 2: 64-127<br />
+                            Bloco 3: 128-191<br />
+                            Bloco 4: 192-255
+                        </div>
+                        <div class="step-formula">Início: 0, 64, 128, 192</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-check-circle step-icon"></i>
+                            Validar Sub-redes
+                        </div>
+                        <div class="step-description">Verifique se as sub-redes atendem aos requisitos.</div>
+                        <div class="step-example">
+                            Sub-rede 1: 192.168.1.0/26<br />
+                            Hosts: 62 (2<sup>6</sup> - 2)<br />
+                            Broadcast: .63
+                        </div>
+                        <div class="step-formula">2^6 - 2 = 62 hosts</div>
+                    </div>
+                </div>
+            </div>
+            <div class="calculation-area">
+                <div class="calculation-header">
+                    <div class="calculation-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="calculation-title">Exemplo Prático: 192.168.1.0/24 → 4 sub-redes</div>
+                </div>
+                <div class="calculation-grid">
+                    <div class="calculation-item">
+                        <div class="calculation-label">Bits emprestados (n)</div>
+                        <div class="calculation-value">2 bits (para 4 sub-redes)</div>
+                    </div>
+                    <div class="calculation-item">
+                        <div class="calculation-label">Nova máscara</div>
+                        <div class="calculation-value">/26 (255.255.255.192)</div>
+                    </div>
+                    <div class="calculation-item">
+                        <div class="calculation-label">Número mágico</div>
+                        <div class="calculation-value">64 (256 - 192)</div>
+                    </div>
+                    <div class="calculation-item">
+                        <div class="calculation-label">Hosts por sub-rede</div>
+                        <div class="calculation-value">62 (2<sup>6</sup> - 2)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <i class="fas fa-calendar-alt"></i> Aula 06 | Duração: 3 horas
+                </div>
+                <div class="footer-right">
+                    <div class="badge"><i class="fas fa-check-circle"></i> 4 passos</div>
+                    <div class="badge"><i class="fas fa-magic"></i> Número Mágico</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

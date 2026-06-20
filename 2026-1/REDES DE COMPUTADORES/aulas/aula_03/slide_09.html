@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparativo UTP vs STP</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Open Sans', sans-serif;
+            /* overflow: hidden; foi removido para permitir rolagem caso a tela seja muito baixa */
+        }
+
+        .slide-container {
+            width: 100vw;
+            min-height: 100vh;
+            /* Permite que o slide ocupe toda a tela e cresça se necessário */
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            padding: 30px 60px 10px 60px;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: #111827;
+            margin: 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background-color: #3b82f6;
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            color: #6b7280;
+            margin-top: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content - Two Columns */
+        .comparison-container {
+            display: flex;
+            flex: 1;
+            /* Faz a área de conteúdo central crescer e preencher o espaço */
+            padding: 20px 60px;
+            gap: 40px;
+            align-items: stretch;
+            min-height: 300px;
+        }
+
+        .col-card {
+            flex: 1;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-top: 6px solid transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .col-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* UTP Styling */
+        .card-utp {
+            background-color: #f0f9ff;
+            /* Light Blue */
+            border-top-color: #3b82f6;
+        }
+
+        .card-utp .icon-circle {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .card-utp h2 {
+            color: #1e40af;
+        }
+
+        /* STP Styling */
+        .card-stp {
+            background-color: #fff7ed;
+            /* Light Orange/Amber */
+            border-top-color: #f59e0b;
+        }
+
+        .card-stp .icon-circle {
+            background-color: #ffedd5;
+            color: #d97706;
+        }
+
+        .card-stp h2 {
+            color: #9a3412;
+        }
+
+        /* Card Internals */
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 15px;
+        }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .col-card h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .col-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .col-card li {
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #4b5563;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .col-card li i {
+            margin-top: 4px;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+
+        .card-utp li i {
+            color: #3b82f6;
+        }
+
+        .card-stp li i {
+            color: #f59e0b;
+        }
+
+        /* Bottom Visual Section */
+        .visual-section {
+            min-height: 180px;
+            /* Garante um tamanho razoável */
+            margin: 0 60px 60px 60px;
+            /* Margem bottom maior para não encostar no footer */
+            background-color: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .visual-label {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1f2937;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            top: 10px;
+            left: 10px;
+            font-family: 'Montserrat', sans-serif;
+            z-index: 10;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            /* Empurra o footer para o final */
+            margin-left: 60px;
+            margin-right: 60px;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #9ca3af;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+
+        /* VS Badge */
+        .vs-badge {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1f2937;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            z-index: 20;
+            border: 4px solid #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <p>Camada Física: Meios Guiados</p>
+            <h1>Par Trançado: UTP vs STP</h1>
+        </div>
+
+        <div class="comparison-container relative">
+            <div class="vs-badge">VS</div>
+
+            <div class="col-card card-utp">
+                <div class="card-header">
+                    <div class="icon-circle">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <h2>UTP</h2>
+                        <p class="text-sm text-blue-600 font-semibold">Unshielded Twisted Pair</p>
+                    </div>
+                </div>
+                <ul>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <span><strong>Sem blindagem:</strong> Apenas o trançamento cancela ruídos básicos.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <span><strong>Vantagens:</strong> Baixo custo, flexível, fácil instalação (conector RJ-45
+                            padrão).</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-times-circle"></i>
+                        <span><strong>Desvantagem:</strong> Sujeito a interferência eletromagnética (EMI) de motores e
+                            luzes.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-tag"></i>
+                        <span><strong>Uso Típico:</strong> Residências e escritórios com pouco ruído.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-card card-stp">
+                <div class="card-header">
+                    <div class="icon-circle">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h2>STP / FTP</h2>
+                        <p class="text-sm text-yellow-700 font-semibold">Shielded / Foiled Twisted Pair</p>
+                    </div>
+                </div>
+                <ul>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <span><strong>Com blindagem:</strong> Malha metálica ou folha de alumínio envolve os
+                            pares.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <span><strong>Vantagens:</strong> Alta imunidade a ruídos (EMI/RFI) e diafonia
+                            (crosstalk).</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span><strong>Atenção:</strong> Exige aterramento correto, mais caro e cabo mais rígido.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-industry"></i>
+                        <span><strong>Uso Típico:</strong> Indústrias, forros com muitos cabos elétricos,
+                            hospitais.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="visual-section">
+            <div class="visual-label">Estrutura Física Interna</div>
+            <div class="image-container flex w-full justify-around items-center px-10">
+
+                <div class="flex flex-col items-center px-2">
+                    <div
+                        class="relative w-48 h-12 flex rounded-r-full overflow-hidden border border-gray-300 shadow-sm">
+                        <div
+                            class="w-1/4 h-full bg-blue-500 border-r-2 border-gray-800 flex items-center justify-center">
+                            <span class="text-white text-[10px] font-bold transform -rotate-90">CAPA</span>
+                        </div>
+                        <div class="w-3/4 h-full bg-blue-100 flex flex-col justify-around py-1 px-2">
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#fb923c_2px,#fb923c_4px)] rounded-full">
+                            </div>
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#3b82f6_2px,#3b82f6_4px)] rounded-full">
+                            </div>
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#22c55e_2px,#22c55e_4px)] rounded-full">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-blue-800 mt-3 uppercase tracking-wide">Cabo UTP</p>
+                    <p class="text-xs text-gray-500 mt-1">Pares sem blindagem</p>
+                </div>
+
+                <div class="flex flex-col items-center px-2">
+                    <div
+                        class="relative w-48 h-12 flex rounded-r-full overflow-hidden border border-gray-300 shadow-sm">
+                        <div
+                            class="w-1/4 h-full bg-gray-700 border-r-2 border-gray-900 flex items-center justify-center z-20">
+                            <span class="text-white text-[10px] font-bold transform -rotate-90">CAPA</span>
+                        </div>
+                        <div class="w-1/6 h-full bg-gray-300 border-r border-gray-400 flex items-center justify-center z-10"
+                            style="background-image: repeating-linear-gradient(45deg, #d1d5db 25%, transparent 25%, transparent 75%, #d1d5db 75%, #d1d5db), repeating-linear-gradient(45deg, #d1d5db 25%, transparent 25%, transparent 75%, #d1d5db 75%, #d1d5db); background-position: 0 0, 2px 2px; background-size: 4px 4px;">
+                            <i class="fas fa-shield-alt text-gray-500 text-[10px]"></i>
+                        </div>
+                        <div class="w-7/12 h-full bg-orange-50 flex flex-col justify-around py-1 px-2">
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#fb923c_2px,#fb923c_4px)] border border-gray-300 rounded-full">
+                            </div>
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#3b82f6_2px,#3b82f6_4px)] border border-gray-300 rounded-full">
+                            </div>
+                            <div
+                                class="h-2 w-full bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#22c55e_2px,#22c55e_4px)] border border-gray-300 rounded-full">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-yellow-700 mt-3 uppercase tracking-wide">Cabo STP</p>
+                    <p class="text-xs text-gray-500 mt-1">Malha metálica / Shield</p>
+                </div>
+
+                <div><img class="px-10" width="550px" src="imagens/UTPvsSTPvsFibra.png" alt="UTP vs STP"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>Redes de Computadores - Aula 03</span>
+            <span>9/36</span>
+        </div>
+    </div>
+</body>
+
+</html>

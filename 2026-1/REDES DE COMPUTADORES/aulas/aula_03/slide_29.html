@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Switch - Encaminhamento de Frames</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Open+Sans:wght@300;400;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Left Content Panel (40%) */
+        .left-panel {
+            width: 40%;
+            padding: 50px 40px 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #ffffff;
+            z-index: 10;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+            border-left: 6px solid #3b82f6;
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            color: #111827;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content-text {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .info-card {
+            background-color: #f8fafc;
+            border-left: 4px solid;
+            border-radius: 0 8px 8px 0;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-known {
+            border-color: #10b981;
+        }
+
+        .card-unknown {
+            border-color: #f59e0b;
+        }
+
+        .card-broadcast {
+            border-color: #ef4444;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 8px;
+        }
+
+        .card-text {
+            font-size: 14px;
+            margin: 0;
+            color: #4b5563;
+        }
+
+        .text-green-600 { color: #059669; }
+        .text-amber-600 { color: #d97706; }
+        .text-red-600 { color: #dc2626; }
+
+        /* Right Diagram Panel (60%) */
+        .right-panel {
+            width: 60%;
+            background-color: #eff6ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Flowchart Styles */
+        .flowchart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .flow-node {
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+            width: 220px;
+            z-index: 2;
+        }
+
+        .node-start {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 25px;
+            margin-bottom: 40px;
+        }
+
+        .node-decision {
+            background-color: #ffffff;
+            border: 2px solid #6b7280;
+            color: #374151;
+            transform: rotate(45deg);
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .decision-text {
+            transform: rotate(-45deg);
+            width: 100%;
+            line-height: 1.2;
+        }
+
+        .branches {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: -20px;
+        }
+
+        .branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .node-action {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 180px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-forward {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .action-flood {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        /* Arrows */
+        .arrow-line {
+            position: absolute;
+            background-color: #9ca3af;
+        }
+
+        .label-decision {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 700;
+            background: white;
+            padding: 2px 6px;
+            color: #6b7280;
+        }
+
+        .footer-page {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            opacity: 0.05;
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="header-section">
+                <h2>Lógica de Comutação</h2>
+                <h1>Encaminhamento de Frames</h1>
+            </div>
+            <div class="content-text">
+                <p style="margin-bottom: 25px;">
+                    Ao receber um frame, o Switch consulta sua tabela MAC usando o <strong>Endereço de Destino</strong>
+                    para decidir o que fazer.
+                </p>
+                <div class="info-card card-known">
+                    <div class="card-title text-green-600">
+                        <i class="fas fa-check-circle"></i> Unicast Conhecido
+                    </div>
+                    <p class="card-text">
+                        O MAC de destino está na tabela. O switch encaminha o frame <strong>apenas para a porta
+                            específica</strong> associada.
+                    </p>
+                </div>
+                <div class="info-card card-unknown">
+                    <div class="card-title text-amber-600">
+                        <i class="fas fa-question-circle"></i> Unicast Desconhecido
+                    </div>
+                    <p class="card-text">
+                        O MAC não está na tabela. O switch faz <strong>Flooding</strong> (inunda): envia para todas as
+                        portas, exceto a origem.
+                    </p>
+                </div>
+                <div class="info-card card-broadcast">
+                    <div class="card-title text-red-600">
+                        <i class="fas fa-bullhorn"></i> Broadcast / Multicast
+                    </div>
+                    <p class="card-text">
+                        MAC destino é FF:FF:FF:FF:FF:FF. O switch trata como "desconhecido" e envia para <strong>todas
+                            as portas</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="decoration-circle circle-1"></div>
+            <div class="flowchart-container">
+                <h3 class="text-gray-500 font-bold mb-4 uppercase text-sm tracking-wider">Fluxograma de Decisão</h3>
+                <div class="flow-node node-start">
+                    Frame Recebido na Porta X
+                </div>
+                <div class="arrow-line" style="width: 2px; height: 30px; top: 85px; left: 50%;"></div>
+                <div class="flow-node node-decision">
+                    <div class="decision-text">
+                        MAC Destino<br />na Tabela?
+                    </div>
+                </div>
+                <div style="position: absolute; width: 340px; height: 2px; background: #9ca3af; top: 255px; left: 50%; transform: translateX(-50%); z-index: 1;"></div>
+                <div style="position: absolute; width: 2px; height: 157px; background: #9ca3af; top: 255px; left: calc(50% - 170px); z-index: 1;"></div>
+                <div style="position: absolute; width: 2px; height: 157px; background: #9ca3af; top: 255px; left: calc(50% + 170px); z-index: 1;"></div>
+                <div class="label-decision" style="top: 235px; left: calc(50% - 200px); color: #059669;">SIM (Conhecido)</div>
+                <div class="label-decision" style="top: 235px; left: calc(50% + 100px); color: #d97706;">NÃO (Desconhecido)</div>
+                <div class="branches" style="margin-top: 40px;">
+                    <div class="branch">
+                        <div class="node-action action-forward">
+                            <i class="fas fa-arrow-right mb-2 text-green-600"></i><br />
+                            <strong>Encaminhar (Forward)</strong><br />
+                            Apenas para a porta mapeada na tabela
+                        </div>
+                    </div>
+                    <div class="branch">
+                        <div class="node-action action-flood">
+                            <i class="fas fa-water mb-2 text-amber-600"></i><br />
+                            <strong>Inundar (Flood)</strong><br />
+                            Para todas as portas<br />(exceto porta X)
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-xs text-gray-400 italic text-center w-3/4 border-t pt-2">
+                    * Frames de Broadcast seguem o mesmo caminho do "Não (Desconhecido)"
+                </div>
+            </div>
+            <div class="footer-page">29/36</div>
+        </div>
+    </div>
+</body>
+</html>

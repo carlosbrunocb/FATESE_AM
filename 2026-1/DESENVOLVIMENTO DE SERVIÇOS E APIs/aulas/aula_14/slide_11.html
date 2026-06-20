@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Query Parameters: Conceito e Uso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .concept-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .concept-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .concept-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .concept-text {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .code-example {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            margin-top: 8px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .code-keyword {
+            color: #3b82f6;
+        }
+
+        .code-string {
+            color: #10b981;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .example-url {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .url-text {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+            word-break: break-all;
+        }
+
+        .url-part {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 2px;
+        }
+
+        .url-base {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .url-param {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .url-value {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .feature-item {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .feature-text {
+            color: #e2e8f0;
+            font-size: 15px;
+        }
+
+        .parameter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .parameter-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #3b82f6;
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .param-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            flex: 1;
+        }
+
+        .param-type {
+            font-size: 12px;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .highlight-text {
+            color: #e2e8f0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .highlight-icon {
+            color: #3b82f6;
+            margin-right: 8px;
+        }
+
+        .url-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .url-segment {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .segment-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-right: 4px;
+        }
+
+        .segment-value {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .segment-base {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .segment-query {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .segment-param {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .segment-value {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+        }
+
+        .decorative-element {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-title">
+                        <i class="fas fa-filter"></i>
+                        Query Parameters: Conceito e Uso
+                    </div>
+                    <div class="section-subtitle">
+                        Parâmetros de busca para filtrar, ordenar e paginar coleções de recursos
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="concept-title">O que são Query Parameters?</div>
+                        </div>
+                        <div class="concept-text">
+                            Query Parameters são pares chave-valor que aparecem após o <code>?</code> na URL. Eles são
+                            usados para <strong>filtrar</strong>, <strong>ordenar</strong> ou <strong>paginar</strong>
+                            uma listagem de recursos, diferindo dos Path Parameters que identificam recursos
+                            específicos.
+                        </div>
+                        <div class="example-url">
+                            <div class="url-text">
+                                <span class="url-part url-base">/api/livros</span><span
+                                    class="url-part url-param">?titulo=Node</span><span
+                                    class="url-part url-value">&amp;pagina=1</span><span
+                                    class="url-part url-param">&amp;limite=20</span>
+                            </div>
+                            <div class="url-breakdown">
+                                <div class="url-segment">
+                                    <span class="segment-label">Endpoint:</span>
+                                    <span class="segment-value segment-base">/api/livros</span>
+                                </div>
+                                <div class="url-segment">
+                                    <span class="segment-label">Filtro:</span>
+                                    <span class="segment-value segment-query">titulo=Node</span>
+                                </div>
+                                <div class="url-segment">
+                                    <span class="segment-label">Paginação:</span>
+                                    <span class="segment-value segment-param">pagina=1</span>
+                                </div>
+                                <div class="url-segment">
+                                    <span class="segment-label">Limite:</span>
+                                    <span class="segment-value segment-value">limite=20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div class="concept-title">Uso Comum de Query Parameters</div>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="feature-text">Filtragem por campos</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-sort"></i>
+                                </div>
+                                <div class="feature-text">Ordenação de resultados</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="feature-text">Paginação</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="feature-text">Busca parcial</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="concept-title">Exemplo Prático</div>
+                        </div>
+                        <div class="concept-text">
+                            Implementação de busca por título com filtro case-insensitive:
+                        </div>
+                        <div class="code-example">
+                            <div class="code-line">
+                                <span class="code-keyword">const</span> buscarTodos = <span
+                                    class="code-keyword">async</span> (titulo) =&gt; {
+                            </div>
+                            <div class="code-line">
+                                <span class="code-keyword">&nbsp;&nbsp;let</span> filtro = {};
+                            </div>
+                            <div class="code-line">
+                                <span class="code-keyword">&nbsp;&nbsp;if</span> (titulo) {
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;&nbsp;&nbsp;filtro.titulo = { <span class="code-string">$regex</span>: titulo, <span
+                                    class="code-string">$options</span>: <span class="code-string">'i'</span> };
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;}
+                            </div>
+                            <div class="code-line">
+                                <span class="code-keyword">&nbsp;&nbsp;return</span> <span class="code-keyword">await</span>
+                                LivroModel.find(filtro);
+                            </div>
+                            <div class="code-line">
+                                };
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="concept-title">Parâmetros Disponíveis</div>
+                        </div>
+                        <div class="parameter-list">
+                            <div class="parameter-item">
+                                <span class="param-name">titulo</span>
+                                <span class="param-desc">Filtra por título do livro</span>
+                                <span class="param-type">string</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-name">autor</span>
+                                <span class="param-desc">Filtra por nome do autor</span>
+                                <span class="param-type">string</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-name">ano</span>
+                                <span class="param-desc">Filtra por ano de publicação</span>
+                                <span class="param-type">number</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-name">pagina</span>
+                                <span class="param-desc">Número da página</span>
+                                <span class="param-type">number</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-name">limite</span>
+                                <span class="param-desc">Itens por página</span>
+                                <span class="param-type">number</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="decorative-element"></div>
+    </div>
+</body>
+
+</html>

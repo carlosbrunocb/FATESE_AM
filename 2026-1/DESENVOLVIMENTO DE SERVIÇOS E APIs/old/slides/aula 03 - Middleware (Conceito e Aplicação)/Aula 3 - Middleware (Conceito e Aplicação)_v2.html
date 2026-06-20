@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 3 - Middlewares</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Adicionado: Font Awesome para os ícones -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        /* Estilo base com a fonte Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Esconde todos os slides por padrão */
+        .slide {
+            display: none;
+        }
+
+        /* Mostra apenas o slide ativo */
+        .slide.active {
+            display: flex;
+            /* Usamos flex para centralizar o conteúdo */
+        }
+
+        /* Estilos customizados para blocos de código */
+        pre {
+            background-color: #1e293b;
+            /* bg-slate-800 */
+            color: #e2e8f0;
+            /* text-slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        /* Destaque de sintaxe simples para JS */
+        .code-js .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Verde para comentários */
+        .code-js .keyword {
+            color: #4e9cd6;
+        }
+
+        /* Azul para 'const', 'require' */
+        .code-js .function {
+            color: #dcdcaa;
+        }
+
+        /* Amarelo para 'app', 'express', 'log' */
+        .code-js .string {
+            color: #ce9178;
+        }
+
+        /* Laranja para 'Hello World' */
+        .code-js .variable {
+            color: #9cdcfe;
+        }
+
+        /* Azul claro para 'request', 'response' */
+        .code-js .number {
+            color: #b5cea8;
+        }
+
+        /* Verde claro para '3000' */
+
+        /* Destaque para Bash */
+        .code-bash .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .code-bash .command {
+            color: #9cdcfe;
+        }
+
+        .code-bash .arg {
+            color: #ce9178;
+        }
+
+        /* Estilos específicos para o diagrama do Ciclo Req/Res */
+        .req-res-arrow {
+            position: absolute;
+            height: 6px;
+            background-color: #38bdf8;
+            /* bg-sky-500 */
+            width: 98%;
+        }
+
+        .req-res-arrow::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .req-arrow {
+            top: 20%;
+            left: 0%;
+        }
+
+        .req-arrow::after {
+            right: -14px;
+            top: -7px;
+            border-width: 10px 0 10px 15px;
+            border-color: transparent transparent transparent #38bdf8;
+        }
+
+        .res-arrow {
+            bottom: 20%;
+            right: 0%;
+        }
+
+        .res-arrow::after {
+            left: -14px;
+            top: -7px;
+            border-width: 10px 15px 10px 0;
+            border-color: transparent #38bdf8 transparent transparent;
+        }
+
+        #destaque {
+            background-color: #356e99;
+            border-radius: 3px;
+            padding: 0px 3px;
+            margin: 0px 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Container Principal do Slide -->
+    <div class="w-full max-w-5xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        style="height: 650px;">
+
+        <!-- Viewport do Slide (onde o conteúdo aparece) -->
+        <div id="slide-container" class="flex-1 w-full h-full overflow-y-auto">
+
+            <!-- Slide 0: Título -->
+            <div class="slide active w-full h-full flex-col justify-center items-center text-center p-8">
+                <span class="text-sm font-semibold text-cyan-400">FACULDADE DE TECNOLOGIA SENAC - FATESE</span>
+                <span class="text-lg text-gray-300 mt-1">Curso de Análise e Desenvolvimento de Sistemas</span>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mt-6">Desenvolvimento de Serviços e APIs</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <h2 class="text-2xl md:text-3xl font-semibold text-white">Aula 3: Middleware (Conceito e Aplicação)</h2>
+                <p class="text-xl text-gray-300 mt-8">Professor: Carlos Bruno Oliveira Lopes</p>
+            </div>
+
+            <!-- Slide 1: Recapitulação da Aula 2 -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Recapitulando a Aula 2</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Na última aula, organizamos nossa API usando <span class="text-cyan-400 font-semibold">Separação de
+                        Responsabilidades</span>.
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> <span
+                            class="text-cyan-300">Rotas:</span> Definem os endpoints (<code>/api/users</code>).</li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> <span
+                            class="text-yellow-300">Controllers:</span> Orquestram a requisição (<code>req</code>,
+                        <code>res</code>).
+                    </li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> <span
+                            class="text-green-300">Services:</span> Executam a lógica de negócio
+                        (<code>getById(...)</code>).</li>
+                </ul>
+                <p class="text-xl text-gray-300 mt-6">
+                    Nossa arquitetura está <span class="font-semibold">verticalmente</span> organizada. Mas...
+                </p>
+            </div>
+
+            <!-- Slide 2: O Problema: Preocupações Transversais -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Problema: Preocupações Transversais</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    O que acontece se precisarmos executar uma lógica em <span
+                        class="text-yellow-400 font-semibold">VÁRIAS</span> ou <span
+                        class="text-yellow-400 font-semibold">TODAS</span> as nossas rotas?
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-start"><span class="text-red-400 font-bold mr-3">?</span> "Quero registrar
+                        (logar) no console toda requisição que chega na API."</li>
+                    <li class="flex items-start"><span class="text-red-400 font-bold mr-3">?</span> "Quero validar se o
+                        <span id="destaque">name</span> e <span id="destaque">email</span> existem ANTES de chegar no Controller."</li>
+                    <li class="flex items-start"><span class="text-red-400 font-bold mr-3">?</span> "Quero verificar se
+                        o usuário está autenticado (logado) antes de permitir que ele acesse a rota."</li>
+                </ul>
+            </div>
+
+            <!-- Slide 3: A Solução Ruim (Repetir Código) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">A Solução Ruim: Repetir Código</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Poderíamos colocar essa lógica em <span class="font-bold">cada</span> método do Controller...
+                    </s>
+                <pre class="code-js"><code><span class="keyword">class</span> <span class="function">UserController</span> {
+  <span class="keyword">async</span> <span class="function">create</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+    <span class="comment">// 1. Logar a requisição</span>
+    <span class="variable">console</span>.log(<span class="string">"Requisição recebida!"</span>); <span class="comment">// <--- REPETIDO</span>
+    
+    <span class="comment">// 2. Validar o body</span>
+    <span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">email</span> } = <span class="variable">req</span>.body;
+    <span class="keyword">if</span> (!<span class="variable">name</span>) { <span class="comment">// <--- REPETIDO</span>
+      <span class="keyword">return</span> <span class="variable">res</span>.status(<span class="number">400</span>).json(...);
+    }
+    <span class="comment">// ... resto da lógica ...</span>
+  }
+
+  <span class="keyword">async</span> <span class="function">update</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+    <span class="comment">// 1. Logar a requisição</span>
+    <span class="variable">console</span>.log(<span class="string">"Requisição recebida!"</span>); <span class="comment">// <--- REPETIDO</span>
+
+    <span class="comment">// 2. Validar o body...</span> <span class="comment">// <--- REPETIDO</span>
+  }
+}</code></pre>
+                <p class="text-xl text-red-400 mt-4 font-semibold text-center">Isso viola o princípio DRY (Don't Repeat
+                    Yourself)!</p>
+            </div>
+
+            <!-- Slide 4: A Solução Elegante: Middleware -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">A Solução Elegante: Middleware</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    <span class="text-cyan-400 font-semibold">Middleware</span> é um conceito de design que nos permite
+                    "interceptar" uma requisição <span class="font-bold">ANTES</span> que ela chegue ao seu destino
+                    final (o Controller).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    É um "checkpoint" ou um "porteiro" que fica no meio do caminho.
+                </p>
+                <img style="width: 768px; height: auto;" src="Diagrama do fluxo com Middleware_v2.png"
+                    alt="[Diagrama do fluxo com Middleware]"
+                    class="mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto bg-gray-600">
+                <p class="text-center text-lg text-gray-400 mt-2">
+                    A requisição é "inspecionada" pelo Middleware antes de continuar.
+                </p>
+            </div>
+
+            <!-- Slide 5: O Princípio DRY (era novo) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Princípio <span class="text-yellow-400">DRY</span></h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">"Don't Repeat Yourself" (Não se Repita)</h3>
+
+                <div class="bg-gray-700 p-6 rounded-lg text-lg">
+                    <p class="text-xl font-semibold text-white mb-3">Definição:</p>
+                    <p class="text-gray-300">"Cada parte do conhecimento (lógica, regra de negócio) deve ter uma
+                        representação única, inequívoca e autoritativa dentro de um sistema."</p>
+
+                    <div class="w-full h-px bg-gray-600 my-4"></div>
+
+                    <p class="text-gray-300 mb-2"><span class="text-red-400 font-bold">O Problema (Anti-DRY):</span> Se
+                        a lógica de validação de email está em 5 controllers, e você precisa atualizá-la, você tem que
+                        alterar em 5 lugares. Se esquecer de 1, você tem um bug.</p>
+                    <p class="text-gray-300 mt-2"><span class="text-green-400 font-bold">A Solução (DRY com
+                            Middlewares):</span> Você cria a lógica de validação <span class="font-bold">UMA VEZ</span>
+                        (no middleware) e a "anexa" em 5 rotas. Para atualizar, você altera em <span
+                            class="font-bold">UM SÓ LUGAR</span>.</p>
+                </div>
+            </div>
+
+            <!-- Slide 6: Objetivos da Aula 3 (era 5) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Objetivos da Aula 3</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Hoje vamos dominar o conceito de Middlewares para tornar nossa API mais robusta e <span
+                        class="text-yellow-400 font-semibold">DRY</span>.
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Entender o que é um
+                        Middleware no Express.</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Compreender o fluxo
+                        da requisição e a função <span id="destaque">next()</span>.</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Conhecer os
+                        diferentes tipos de Middlewares.</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Criar um Middleware
+                        de <span class="font-semibold">Log (Logger)</span>.</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Criar um Middleware
+                        de <span class="font-semibold">Validação</span>.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 7: Índice da Aula (era 6) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Nossa Jornada Hoje</h2>
+                <ul class="space-y-5 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">1.</span> Teoria: O que
+                        é um Middleware?</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">2.</span> Teoria: A
+                        Assinatura Mágica: <span id="destaque">(req, res, next)</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">3.</span> Teoria: A
+                        "Esteira" de Middlewares.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">4.</span> Teoria:
+                        Classificando os Middlewares.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">5.</span> Prática:
+                        Criando a pasta <span id="destaque">(req, res, next)</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">6.</span> Prática:
+                        Exemplo 1 - Um Logger Global.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">7.</span> Prática:
+                        Exemplo 2 - Um Validador de Rota.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 8: Teoria: O que é um Middleware? (era 7) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">1. Teoria: O que é um Middleware?</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">O "Porteiro" 💂</h3>
+
+                <p class="text-xl text-gray-300 mb-4 leading-relaxed">
+                    No Express, um Middleware é simplesmente uma <span class="font-bold text-yellow-400">função</span>.
+                </p>
+                <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                    É uma função que tem acesso:
+                </p>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2">
+                    <li>Ao objeto de <span class="font-semibold text-cyan-300">Requisição (<strong>req</strong>)</span>.
+                    </li>
+                    <li>Ao objeto de <span class="font-semibold text-cyan-300">Resposta (<strong>res</strong>)</span>.
+                    </li>
+                    <li>À <span class="font-bold text-green-400">PRÓXIMA</span> função no ciclo da requisição
+                        (<code>next</code>).</li>
+                </ul>
+            </div>
+
+            <!-- Slide 9: O que é Middleware? (Definição) (era 8) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O que é Middleware? (Definição)</h2>
+                <div class="flex flex-col md:flex-row flex-1 gap-8 mt-4 mb-4">
+                    <!-- Coluna Esquerda (Texto) -->
+                    <div class="w-full md:w-[70%]">
+                        <!-- Definição -->
+                        <div class="bg-gray-700 p-4 rounded-lg border-l-4 border-cyan-500">
+                            <p class="text-lg text-gray-200 leading-relaxed">Middlewares são <strong
+                                    class="text-white">funções</strong> que têm acesso aos objetos de requisição (req),
+                                resposta (res) e à próxima função de middleware (next) no ciclo de requisição-resposta
+                                da aplicação. Eles atuam como <strong class="text-white">intermediários</strong> entre a
+                                chegada da requisição e o handler final.</p>
+                        </div>
+
+                        <!-- Lista de Bullets -->
+                        <ul class="space-y-4 text-lg text-gray-300 mt-6">
+                            <li class="flex items-start">
+                                <i class="fas fa-filter text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">Funções intermediárias</strong> que interceptam e
+                                    processam requisições HTTP antes de alcançarem os controllers finais.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exchange-alt text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p>Acesso total aos objetos <strong class="text-cyan-300">req</strong> (requisição),
+                                    <strong class="text-cyan-300">res</strong> (resposta) e <strong
+                                        class="text-cyan-300">next</strong> (próxima função no ciclo).
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-tasks text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p>Podem <strong class="text-cyan-300">executar código</strong>, <strong
+                                        class="text-cyan-300">modificar req/res</strong>, <strong
+                                        class="text-cyan-300">encerrar o ciclo</strong> ou <strong
+                                        class="text-cyan-300">chamar o próximo</strong> middleware na pilha.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-project-diagram text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p>Formam um <strong class="text-cyan-300">pipeline de processamento</strong> que é
+                                    executado sequencialmente na ordem de registro.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Coluna Direita (Visual) -->
+                    <div class="w-full md:w-[30%]">
+                        <div class="bg-gray-700/50 p-6 rounded-lg h-full flex flex-col justify-center items-center">
+                            <i class="fas fa-cogs text-cyan-400 text-6xl mb-6"></i>
+                            <p class="text-xl font-semibold mb-4">Analogia: <strong
+                                    class="text-yellow-300">"Porteiros"</strong> ou <strong
+                                    class="text-yellow-300">"Checkpoints"</strong></p>
+                            <p class="text-lg text-gray-300 mb-4">Exemplos comuns:</p>
+                            <ul class="text-lg text-gray-300 space-y-2 text-left">
+                                <li class="flex items-center"><i
+                                        class="fas fa-user-shield text-cyan-400 w-6 mr-2 text-center"></i> Autenticação
+                                </li>
+                                <li class="flex items-center"><i
+                                        class="fas fa-file-alt text-cyan-400 w-6 mr-2 text-center"></i> Validação de
+                                    dados</li>
+                                <li class="flex items-center"><i
+                                        class="fas fa-history text-cyan-400 w-6 mr-2 text-center"></i> Logging</li>
+                                <li class="flex items-center"><i
+                                        class="fas fa-shield-alt text-cyan-400 w-6 mr-2 text-center"></i> Segurança
+                                    (CORS)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Quando usar Middlewares (era 9) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Quando usar Middlewares</h2>
+
+                <!-- Intro Box -->
+                <div class="bg-gray-700 p-4 rounded-lg border-l-4 border-cyan-500 mb-6">
+                    <p class="text-lg text-gray-200 leading-relaxed">Middlewares são ideais para processar requisições
+                        de forma consistente e modular. Conheça os principais casos de uso e quando aplicá-los:</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row flex-1 gap-6">
+                    <!-- Coluna Esquerda -->
+                    <div class="flex-1 space-y-4">
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-user-shield text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Autenticação e Autorização</h3>
+                                <p class="text-base text-gray-300">Validar tokens JWT, verificar permissões e proteger
+                                    rotas baseadas em roles de usuário.</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-clipboard-list text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Logging e Auditoria</h3>
+                                <p class="text-base text-gray-300">Registrar detalhes de cada requisição (método, URL,
+                                    IP, tempo de resposta) para monitoramento e depuração.</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-check-circle text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Validação de Dados</h3>
+                                <p class="text-base text-gray-300">Validar e sanitizar dados de entrada antes que
+                                    cheguem aos controllers (usando Joi, Zod, Yup).</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-file-code text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Parsing de Dados</h3>
+                                <p class="text-base text-gray-300">Processar dados recebidos (JSON, formulários,
+                                    multipart/form-data) em formatos utilizáveis.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita -->
+                    <div class="flex-1 space-y-4">
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-shield-alt text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">CORS e Segurança</h3>
+                                <p class="text-base text-gray-300">Gerenciar Cross-Origin Resource Sharing, adicionar
+                                    headers de segurança e proteção contra ataques comuns.</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-compress-arrows-alt text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Compressão e Performance</h3>
+                                <p class="text-base text-gray-300">Comprimir respostas, cachear resultados e otimizar o
+                                    desempenho da API.</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-tachometer-alt text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Rate Limiting</h3>
+                                <p class="text-base text-gray-300">Limitar número de requisições por cliente para
+                                    prevenir abusos e garantir disponibilidade do serviço.</p>
+                            </div>
+                        </div>
+                        <!-- Caso de Uso -->
+                        <div class="flex items-start bg-gray-700/50 p-4 rounded-lg">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full bg-gray-900/50 flex items-center justify-center mr-4">
+                                <i class="fas fa-bug text-2xl text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-cyan-300 mb-1">Tratamento de Erros</h3>
+                                <p class="text-base text-gray-300">Capturar e processar erros de forma centralizada,
+                                    garantindo respostas consistentes e seguras.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: O "Porteiro" em Ação (era 10) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O "Porteiro" em Ação</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Quando uma requisição chega, o "Porteiro" (Middleware) pode:
+                </p>
+
+                <div class="bg-gray-700 p-6 rounded-lg text-lg space-y-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-green-400 font-bold mr-3 text-2xl">1.</span>
+                            <b>Apenas observar e deixar passar:</b>
+                        </div>
+                        <div>
+                            <p>"Vi que a requisição chegou às 10:05. Pode continuar."</p>
+                        </div>
+                        <div>
+                            <i>Ex: Logger</i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-yellow-400 font-bold mr-3 text-2xl">2.</span>
+                            <b>Modificar e deixar passar:</b>
+                        </div>
+                        <div>
+                            <p>"Vi que você não tem um 'crachá'. Aqui está um crachá de 'Visitante'. Pode continuar."
+                            </p>
+                        </div>
+                        <div>
+                            <i>Ex: Adicionar <span id="destaque">req.user</span> em um middleware de auth</i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-red-400 font-bold mr-3 text-2xl">3.</span>
+                            <b>Barrar a entrada:</b>
+                        </div>
+                        <div>
+                            <p>"Você não tem convite. Não pode entrar. Dê meia volta."</p>
+                        </div>
+                        <div>
+                            <i>Ex: Validação ou Autenticação falhou</i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Slide 12: Analogia dos Porteiros / Checkpoints (era 11) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Analogia dos Porteiros / Checkpoints</h2>
+
+                <div class="bg-gray-700/50 p-6 rounded-lg w-full flex-1 flex flex-col justify-center">
+
+                    <!-- Fluxo Visual (os 'porteiros') -->
+                    <div class="flex justify-between items-start text-center text-gray-300 relative px-4">
+
+                        <!-- Linha de Fundo -->
+                        <div class="absolute h-1.5 bg-gray-600 w-10/12 top-10 left-1/2 -translate-x-1/2 z-0"></div>
+
+                        <!-- Nó 1: Cliente -->
+                        <div class="flex flex-col items-center z-10 w-24">
+                            <div
+                                class="bg-gray-800 rounded-full w-20 h-20 flex items-center justify-center border-4 border-cyan-500">
+                                <i class="fas fa-laptop text-3xl text-cyan-400"></i>
+                            </div>
+                            <p class="mt-2 font-semibold">Cliente</p>
+                        </div>
+
+                        <!-- Nó 2: MW 1 -->
+                        <div class="flex flex-col items-center z-10 w-28">
+                            <div
+                                class="bg-gray-800 rounded-lg w-20 h-20 flex items-center justify-center border-4 border-yellow-500">
+                                <i class="fas fa-shield-alt text-3xl text-yellow-400"></i>
+                            </div>
+                            <p class="mt-2 font-semibold">Middleware 1</p>
+                            <p class="text-sm text-gray-400">Autenticação</p>
+                        </div>
+
+                        <!-- Nó 3: MW 2 -->
+                        <div class="flex flex-col items-center z-10 w-28">
+                            <div
+                                class="bg-gray-800 rounded-lg w-20 h-20 flex items-center justify-center border-4 border-yellow-500">
+                                <i class="fas fa-file-alt text-3xl text-yellow-400"></i>
+                            </div>
+                            <p class="mt-2 font-semibold">Middleware 2</p>
+                            <p class="text-sm text-gray-400">Validação</p>
+                        </div>
+
+                        <!-- Nó 4: MW 3 -->
+                        <div class="flex flex-col items-center z-10 w-28">
+                            <div
+                                class="bg-gray-800 rounded-lg w-20 h-20 flex items-center justify-center border-4 border-yellow-500">
+                                <i class="fas fa-history text-3xl text-yellow-400"></i>
+                            </div>
+                            <p class="mt-2 font-semibold">Middleware 3</p>
+                            <p class="text-sm text-gray-400">Logger</p>
+                        </div>
+
+                        <!-- Nó 5: Controller -->
+                        <div class="flex flex-col items-center z-10 w-24">
+                            <div
+                                class="bg-gray-800 rounded-full w-20 h-20 flex items-center justify-center border-4 border-green-500">
+                                <i class="fas fa-code text-3xl text-green-400"></i>
+                            </div>
+                            <p class="mt-2 font-semibold">Controller</p>
+                        </div>
+                    </div>
+
+                    <!-- Explicação (Texto de baixo) -->
+                    <div class="text-lg text-gray-300 space-y-4 mt-12">
+                        <p><strong class="text-cyan-300">Middlewares são como porteiros</strong> que verificam,
+                            processam e encaminham requisições antes de chegarem ao destino final.</p>
+                        <p>Cada middleware pode: <strong>(1)</strong> executar verificações, <strong>(2)</strong>
+                            modificar a requisição/resposta, <strong>(3)</strong> encerrar o ciclo ou
+                            <strong>(4)</strong> passar para o próximo com <code>next()</code>.
+                        </p>
+                        <p class="text-yellow-400">Se um porteiro (middleware) detecta um problema, ele pode <strong
+                                class="font-bold">"barrar" a requisição</strong> sem chamar <code>next()</code>,
+                            enviando uma resposta de erro.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13: Ciclo Requisição-Resposta (era 12) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Ciclo Requisição-Resposta</h2>
+                <div class="bg-gray-700/50 p-6 rounded-lg w-full flex-1 flex flex-col justify-center">
+
+                    <!-- Diagrama -->
+                    <div class="flex-1 flex flex-col justify-center items-center">
+                        <!-- Entidades Cliente/Servidor -->
+                        <div class="flex justify-between w-10/12">
+                            <div class="flex flex-col items-center text-center bg-gray-700 p-4 rounded-lg w-40">
+                                <i class="fas fa-laptop text-4xl text-cyan-400 mb-2"></i>
+                                <p class="font-semibold">Cliente</p>
+                            </div>
+                            <div class="flex flex-col items-center text-center bg-gray-700 p-4 rounded-lg w-40">
+                                <i class="fas fa-server text-4xl text-cyan-400 mb-2"></i>
+                                <p class="font-semibold">Servidor Express</p>
+                            </div>
+                        </div>
+
+                        <!-- Fluxo de Requisição e Resposta -->
+                        <div class="w-10/12 h-64 relative my-4">
+                            <!-- Seta de Requisição (req) -->
+                            <div class="req-res-arrow req-arrow"></div>
+                            <div class="absolute top-[0%] left-[0%] bg-gray-800 px-2 py-1 rounded">
+                                <span class="font-mono text-lg font-semibold text-red-400">req (request)</span>
+                            </div>
+
+                            <!-- Cadeia de Middlewares (no meio) -->
+                            <div
+                                class="absolute top-[45%] left-1/3 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-2 w-full z-10">
+                                <div
+                                    class="flex flex-col items-center text-center bg-gray-700 border-2 border-cyan-500 p-2 rounded-lg w-24 h-24 justify-center">
+                                    <i class="fas fa-file-alt text-2xl text-cyan-300 mb-1"></i><span
+                                        class="text-sm">parse</span>
+                                </div>
+                                <div
+                                    class="flex flex-col items-center text-center bg-gray-700 border-2 border-cyan-500 p-2 rounded-lg w-24 h-24 justify-center">
+                                    <i class="fas fa-shield-alt text-2xl text-cyan-300 mb-1"></i><span
+                                        class="text-sm">auth</span>
+                                </div>
+                                <div
+                                    class="flex flex-col items-center text-center bg-gray-700 border-2 border-cyan-500 p-2 rounded-lg w-24 h-24 justify-center">
+                                    <i class="fas fa-check-circle text-2xl text-cyan-300 mb-1"></i><span
+                                        class="text-sm">validate</span>
+                                </div>
+                                <div
+                                    class="flex flex-col items-center text-center bg-gray-700 border-2 border-green-500 p-2 rounded-lg w-24 h-24 justify-center">
+                                    <i class="fas fa-code text-2xl text-green-300 mb-1"></i><span
+                                        class="text-sm">controller</span>
+                                </div>
+                            </div>
+                            <!-- Seta de Resposta (res) -->
+                            <div class="req-res-arrow res-arrow"></div>
+                            <div class="absolute bottom-[0%] right-[0%] bg-gray-800 px-2 py-1 rounded">
+                                <span class="font-mono text-lg font-semibold text-green-400">res (response)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explicação -->
+                    <div class="text-base text-gray-300 space-y-2 mt-4">
+                        <p><strong class="text-cyan-300">Fluxo:</strong> O cliente envia uma requisição que passa por
+                            vários middlewares antes de chegar ao controller.</p>
+                        <p><strong class="text-red-400">Objeto req:</strong> Contém informações (body, params, query) e
+                            é enriquecido ao passar pelos middlewares.</p>
+                        <p><strong class="text-green-400">Objeto res:</strong> Permite enviar a resposta (com
+                            <code>res.json()</code>, <code>res.send()</code>, <code>res.status()</code>). Quando um
+                            método de resposta é chamado,
+                            o ciclo é encerrado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 14: Arquitetura do Express e Middlewares (era 13) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Arquitetura do Express e Middlewares</h2>
+                <div class="bg-gray-700/50 p-6 rounded-lg w-full flex-1 flex flex-col justify-center">
+
+                    <!-- Diagrama Vertical -->
+                    <div class="flex flex-col items-center space-y-2 text-center text-white">
+
+                        <!-- Nível 1: App -->
+                        <div class="p-4 rounded-lg border-2 border-cyan-500 bg-gray-700 w-10/12">
+                            <p class="font-bold text-lg">Application-Level Middleware</p>
+                            <p class="text-sm text-gray-300">Escopo Global - Todas as requisições</p>
+                            <code
+                                class="font-mono bg-gray-900 px-2 py-1 rounded text-sm mt-2 inline-block">app.use(middleware)</code>
+                        </div>
+
+                        <i class="fas fa-arrow-down text-cyan-400 text-3xl my-1"></i>
+
+                        <!-- Nível 2: Router -->
+                        <div class="p-4 rounded-lg border-2 border-cyan-500 bg-gray-700 w-9/12">
+                            <p class="font-bold text-lg">Router-Level Middleware</p>
+                            <p class="text-sm text-gray-300">Escopo de Roteador - Grupo de rotas</p>
+                            <code
+                                class="font-mono bg-gray-900 px-2 py-1 rounded text-sm mt-2 inline-block">router.use(middleware)</code>
+                        </div>
+
+                        <i class="fas fa-arrow-down text-cyan-400 text-3xl my-1"></i>
+
+                        <!-- Nível 3: Handler -->
+                        <div class="p-4 rounded-lg border-2 border-cyan-500 bg-gray-700 w-7/12">
+                            <p class="font-bold text-lg">Route Handler</p>
+                            <p class="text-sm text-gray-300">Controlador final</p>
+                            <code
+                                class="font-mono bg-gray-900 px-2 py-1 rounded text-sm mt-2 inline-block">(req, res) =&gt; { ... }</code>
+                        </div>
+
+                        <i class="fas fa-arrow-down text-cyan-400 text-3xl my-1"></i>
+
+                        <!-- Nível 4: Resposta -->
+                        <div class="p-4 rounded-lg border-2 border-green-500 bg-gray-700 w-6/12">
+                            <p class="font-bold text-lg text-green-300">Resposta ao Cliente</p>
+                            <p class="text-sm text-gray-300">Retorno da solicitação</p>
+                            <code
+                                class="font-mono bg-gray-900 px-2 py-1 rounded text-sm mt-2 inline-block">res.json(...)</code>
+                        </div>
+                    </div>
+
+                    <!-- Explicação -->
+                    <div class="text-lg text-gray-300 space-y-3 mt-6">
+                        <p><strong class="text-cyan-300">Ordem importa:</strong> Middlewares são executados na sequência
+                            exata em que são registrados no código.</p>
+                        <p><strong class="text-cyan-300">Pipeline de processamento:</strong> Uma requisição atravessa
+                            cada middleware na ordem até encontrar uma resposta ou o handler final.</p>
+                        <p><strong class="text-cyan-300">Função next():</strong> Cada middleware decide se encaminha a
+                            requisição para o próximo da cadeia ou encerra o ciclo com uma resposta.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 15: Anatomia de um Middleware (era 14) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Anatomia de um Middleware</h2>
+
+                <div class="flex-1 flex flex-col justify-center">
+                    <!-- Caixa de Código -->
+                    <pre class="code-js"><code><span class="keyword">function</span> <span class="function">meuMiddleware</span>(<span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) {
+  <span class="comment">// 1) Executa alguma lógica (log, auth, parse, validação...)</span>
+  <span class="keyword">const</span> <span class="variable">start</span> = <span class="keyword">new</span> <span class="function">Date</span>().getTime();
+  <span class="variable">console</span>.log(<span class="string">`Recebida requisição ${<span class="variable">req</span>.method} para ${<span class="variable">req</span>.url}`</span>);
+
+  <span class="comment">// 2) Pode alterar req/res: ex. req.user = {...}</span>
+  <span class="variable">req</span>.requestTime = <span class="variable">start</span>;
+  <span class="variable">res</span>.set(<span class="string">'X-Processed-By'</span>, <span class="string">'Meu Middleware'</span>);
+
+  <span class="comment">// 3) Decide: encerrar (res.status(...).json(...)) OU seguir</span>
+  <span class="keyword">if</span> (<span class="variable">req</span>.path === <span class="string">'/proibido'</span>) {
+    <span class="keyword">return</span> <span class="variable">res</span>.status(<span class="number">403</span>).json({
+      <span class="variable">success</span>: <span class="keyword">false</span>,
+      <span class="variable">message</span>: <span class="string">'Acesso negado'</span>
+    });
+  }
+
+  <span class="function">next</span>(); <span class="comment">// Importante para continuar o pipeline</span>
+}
+
+<span class="comment">// Registro (app-level)</span>
+<span class="function">app</span>.use(<span class="function">meuMiddleware</span>);
+
+<span class="comment">// Registro (router-level)</span>
+<span class="function">router</span>.use(<span class="function">meuMiddleware</span>);
+</code></pre>
+
+                    <!-- Explicação -->
+                    <div class="mt-4 text-gray-300">
+                        <p class="text-lg font-semibold text-cyan-400 mb-2">Componentes essenciais:</p>
+                        <p class="flex items-center text-lg mb-1"><i class="fas fa-angle-right text-cyan-400 mr-2"></i>
+                            <strong>Função</strong> com 3 parâmetros: <code>req</code>, <code>res</code> e
+                            <code>next</code>.
+                        </p>
+                        <p class="flex items-center text-lg mb-1"><i class="fas fa-angle-right text-cyan-400 mr-2"></i>
+                            <strong><code>next()</code></strong> é crucial - sem ele a requisição fica "presa" no
+                            middleware.
+                        </p>
+                        <p class="flex items-center text-lg"><i class="fas fa-angle-right text-cyan-400 mr-2"></i> Um
+                            middleware pode encerrar o ciclo com uma resposta OU chamar <code>next()</code>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 16: 2. A Assinatura Mágica: (req, res, next) (era 15) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">2. A Assinatura Mágica: <span id="destaque">(req, res,
+                        next)</span></h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Toda função middleware (padrão) tem esta assinatura:
+                </p>
+                <pre class="code-js"><code><span class="keyword">function</span> <span class="function">meuMiddleware</span>(<span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) {
+  <span class="comment">// 1. O que fazer com a requisição?</span>
+  
+  <span class="comment">// 2. Terminei? Deixo o próximo trabalhar.</span>
+  <span class="function">next</span>();
+}</code></pre>
+
+                <ul class="space-y-4 mt-6">
+                    <li class="bg-gray-700 p-3 rounded-lg">
+                        <h3 class="text-lg font-bold text-cyan-400"><code>req</code> (Requisição)</h3>
+                        <p class="text-gray-300 mt-1">O mesmo <strong>req</strong> do Controller. Podemos <span
+                                class="font-bold">ler</span> (<code>req.body</code>) ou até <span
+                                class="font-bold">adicionar</span> dados (<code>req.userId = 123</code>).</p>
+                    </li>
+                    <li class="bg-gray-700 p-3 rounded-lg">
+                        <h3 class="text-lg font-bold text-cyan-400"><code>res</code> (Resposta)</h3>
+                        <p class="text-gray-300 mt-1">O mesmo <strong>res</strong> do Controller. O middleware pode
+                            usá-lo para <span class="font-bold">encerrar a requisição</span> (ex:
+                            <code>res.status(401).send()</code>).
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ** NOVO SLIDE 17 (CONTEÚDO DO USUÁRIO) ** -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Objeto Request (req)</h2>
+                <div class="flex flex-col md:flex-row flex-1 gap-8 mt-4">
+                    <!-- Coluna Esquerda (Texto) -->
+                    <div class="flex-1">
+                        <!-- Definição -->
+                        <div class="bg-gray-700 p-4 rounded-lg border-l-4 border-cyan-500">
+                            <p class="text-lg text-gray-200 leading-relaxed">O objeto <strong>request (req)</strong>
+                                representa a requisição HTTP enviada pelo cliente. Ele contém toda a informação
+                                relevante como cabeçalhos, corpo, parâmetros, URL e outros metadados que chegam ao
+                                servidor Express.</p>
+                        </div>
+
+                        <!-- Lista de Bullets -->
+                        <ul class="space-y-3 text-lg text-gray-300 mt-6">
+                            <li class="flex items-start">
+                                <i class="fas fa-cube text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">req.body</strong>: Contém dados do corpo da requisição
+                                    (POST/PUT). Requer middleware de parsing (express.json()).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-link text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">req.params</strong>: Parâmetros de rota definidos na
+                                    URL (ex: /users/:id).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-question-circle text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">req.query</strong>: Objeto contendo valores da query
+                                    string (ex: ?page=2).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-tags text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">req.headers</strong>: Todos os cabeçalhos HTTP enviados
+                                    (ex: Authorization).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-info-circle text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">Outros</strong>: req.method (GET/POST), req.url,
+                                    req.ip, req.path.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Coluna Direita (Visual / Código) -->
+                    <div class="flex-1">
+                        <div class="bg-gray-700/50 p-6 rounded-lg h-full flex flex-col justify-center">
+                            <i class="fas fa-exchange-alt text-cyan-400 text-6xl mb-6"></i>
+                            <p class="text-xl font-semibold mb-4 text-white">Exemplo de uso:</p>
+                            <pre class="code-js w-full"><code><span class="comment">// Obtendo dados da requisição</span>
+<span class="keyword">const</span> { <span class="variable">id</span> } = <span class="variable">req</span>.params;
+<span class="keyword">const</span> { <span class="variable">page</span>, <span class="variable">limit</span> } = <span class="variable">req</span>.query;
+<span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">email</span> } = <span class="variable">req</span>.body;
+<span class="keyword">const</span> <span class="variable">token</span> = <span class="variable">req</span>.headers.authorization;
+<span class="keyword">const</span> <span class="variable">clientIP</span> = <span class="variable">req</span>.ip;
+
+<span class="comment">// No middleware você pode modificar req</span>
+<span class="variable">req</span>.user = { <span class="variable">id</span>: <span class="string">'123'</span>, <span class="variable">role</span>: <span class="string">'admin'</span> };
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 17: O Objeto Response (res) (era 16) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Objeto Response (res)</h2>
+                <div class="flex flex-col md:flex-row flex-1 gap-8 mt-4">
+                    <!-- Coluna Esquerda (Texto) -->
+                    <div class="flex-1">
+                        <!-- Definição -->
+                        <div class="bg-gray-700 p-4 rounded-lg border-l-4 border-cyan-500">
+                            <p class="text-lg text-gray-200 leading-relaxed">O objeto <strong>response (res)</strong> é
+                                a segunda parte fundamental do middleware e representa a resposta HTTP que o servidor
+                                Express envia de volta ao cliente.</p>
+                        </div>
+
+                        <!-- Lista de Bullets -->
+                        <ul class="space-y-3 text-lg text-gray-300 mt-6">
+                            <li class="flex items-start">
+                                <i class="fas fa-flag text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">res.status(codigo)</strong>: Define o código de status
+                                    HTTP (200, 404, 500, etc).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-file-code text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">res.json(dados)</strong>: Envia uma resposta JSON
+                                    formatada.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-paper-plane text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">res.send(conteúdo)</strong>: Envia resposta (texto,
+                                    HTML, etc).</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-tag text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">res.set(header, valor)</strong>: Define cabeçalhos
+                                    HTTP.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-external-link-alt text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">res.redirect(url)</strong>: Redireciona o cliente.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Coluna Direita (Visual / Código) -->
+                    <div class="flex-1">
+                        <div class="bg-gray-700/50 p-6 rounded-lg h-full flex flex-col justify-center">
+                            <i class="fas fa-reply-all text-cyan-400 text-6xl mb-6"></i>
+                            <pre class="code-js w-full"><code><span class="comment">// Resposta de sucesso com dados</span>
+<span class="variable">res</span>.status(<span class="number">200</span>).json({
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"data"</span>: <span class="variable">usuario</span>
+});
+
+<span class="comment">// Resposta de erro</span>
+<span class="variable">res</span>.status(<span class="number">404</span>).json({
+  <span class="string">"success"</span>: <span class="keyword">false</span>,
+  <span class="string">"message"</span>: <span class="string">'Usuário não encontrado'</span>
+});
+
+<span class="comment">// IMPORTANTE: Após enviar uma</span>
+<span class="comment">// resposta, não chame next()!</span>
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 18: A função next() em detalhes (era 17) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">A função <span id="destaque">next()</span> em detalhes
+                </h2>
+                <div class="flex flex-col md:flex-row flex-1 gap-8 mt-4">
+                    <!-- Coluna Esquerda (Texto) -->
+                    <div class="flex-1">
+                        <!-- Definição -->
+                        <div class="bg-gray-700 p-4 rounded-lg border-l-4 border-cyan-500">
+                            <p class="text-lg text-gray-200 leading-relaxed">A função <strong>next()</strong> é o
+                                mecanismo que controla o fluxo entre middlewares no Express, permitindo passar a
+                                execução para o próximo da pilha ou encaminhar erros.</p>
+                        </div>
+
+                        <!-- Lista de Bullets -->
+                        <ul class="space-y-3 text-lg text-gray-300 mt-6">
+                            <li class="flex items-start">
+                                <i class="fas fa-arrow-right text-cyan-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-cyan-300">Função básica:</strong> Passa o controle para o próximo
+                                    middleware registrado na pilha de execução.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-red-400">next(err):</strong> Pula todos os middlewares regulares
+                                    e passa para o primeiro middleware de <span class="font-bold">tratamento de
+                                        erro</span>.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-hourglass-end text-yellow-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-yellow-400">Não chamar next():</strong> Se não chamar
+                                    <code>next()</code> nem enviar resposta, a requisição ficará pendente até timeout.
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-400 w-6 text-center mt-1 mr-3"></i>
+                                <p><strong class="text-green-400">Boas práticas:</strong> Sempre chamar
+                                    <code>next()</code> apenas uma vez; se enviou resposta, não chame
+                                    <code>next()</code>.
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Coluna Direita (Visual / Diagrama) -->
+                    <div class="flex-1">
+                        <div
+                            class="bg-gray-700/50 p-6 rounded-lg h-full flex flex-col justify-center items-center relative">
+                            <i class="fas fa-forward text-cyan-400 text-5xl mb-4"></i>
+                            <p class="text-xl font-semibold mb-4 text-white">Fluxo de Execução com <span
+                                    id="destaque">next()</span></p>
+
+                            <!-- Fluxo Normal -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-gray-700 border-2 border-cyan-500 rounded-lg px-4 py-2 w-48 text-center">
+                                    <p>Middleware 1</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-cyan-400 text-2xl my-2"></i>
+                                <div class="bg-gray-700 border-2 border-cyan-500 rounded-lg px-4 py-2 w-48 text-center">
+                                    <p>Middleware 2</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-cyan-400 text-2xl my-2"></i>
+                                <div
+                                    class="bg-gray-700 border-2 border-green-500 rounded-lg px-4 py-2 w-48 text-center">
+                                    <p>Controller</p>
+                                </div>
+                            </div>
+
+                            <!-- Fluxo de Erro (Lateral) -->
+                            <div class="absolute top-1/2 -right-[7%] flex flex-col items-center">
+                                <i
+                                    class="fas fa-long-arrow-alt-right text-red-400 text-3xl -translate-y-4 rotate-45"></i>
+                                <div
+                                    class="bg-gray-700 border-2 border-red-500 rounded-lg px-4 py-2 text-center -translate-y-4">
+                                    <p class="text-red-400">Error Handler</p>
+                                </div>
+                            </div>
+
+                            <p class="text-lg text-cyan-300 mt-6"><code>next()</code> → Fluxo normal</p>
+                            <p class="text-lg text-red-400"><code>next(err)</code> → Fluxo de erro</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 19: O Conceito Mais Importante: <span id="destaque">next()</span> (era 18) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Conceito Mais Importante: <code
+                        class="text-green-400">next()</code></h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span id="destaque">next()</span> é uma função que, ao ser chamada, <span class="font-bold">passa o
+                        controle para o próximo
+                        middleware</span> na "esteira" de execução.
+                </p>
+                <div class="bg-gray-700 p-6 rounded-lg text-lg space-y-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-green-400 font-bold mr-3 text-2xl">✔</span>
+                            <b>Se você
+                                chamar <span id="destaque">next()</span>:</b>
+                        </div>
+                        <div>
+                            O Express procura o próximo middleware ou
+                            o Controller final da
+                            rota e o executa.
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-red-400 font-bold mr-3 text-2xl">❌</span>
+                            <b>Se você
+                                NÃO chamar <span id="destaque">next()</span>
+                                <br> (e não enviar resposta):</b>
+                        </div>
+                        <div>
+                            A requisição
+                            fica "presa" (pendurada).
+                            O cliente (Insomnia) dará "Timeout".
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <div class="flex items-start">
+                            <span class="text-yellow-400 font-bold mr-3 text-2xl">!</span>
+                            <b>Se
+                                você enviar uma resposta
+                                <br> (ex: <span id="destaque">res.json()</span>):</b>
+                        </div>
+                        <div>
+                            Você <span class="font-bold">NÃO
+                                DEVE</span> chamar <span id="destaque">next()</span>. A requisição já foi encerrada e
+                            respondida.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Slide 20: 3. A "Esteira" de Middlewares (era 19) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">3. A "Esteira" de Middlewares</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Pense em uma linha de montagem. A requisição (<strong>req</strong>) é o produto, e cada middleware é
+                    um "braço
+                    robótico" que faz algo com ela.
+                </p>
+                <img style="width: 512px; height: auto;" src="Diagrama da esteira de middlewares_v2.png"
+                    alt="[Diagrama da esteira de middlewares]"
+                    class="mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto bg-gray-600">
+                <p class="text-center text-lg text-gray-400 mt-2">
+                    <code>app.use(mw1)</code> ➔ <code>app.use(mw2)</code> ➔
+                    <code>router.post('/', mw3, controller)</code>
+                </p>
+            </div>
+
+            <!-- Slide 21: A Ordem de Declaração IMPORTA! (era 20) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">A Ordem de Declaração <span
+                        class="text-red-500">IMPORTA!</span></h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Middlewares são executados na <span class="font-bold">ordem exata</span> em que são declarados no
+                    código (com `app.use` ou `router.use`).
+                </p>
+                <p class="text-lg text-white font-semibold mb-2">Exemplo CORRETO:</p>
+                <pre class="code-js"><code><span class="comment">// 1. Primeiro, ensinamos o Express a ler JSON</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json());
+<span class="comment">// 2. Agora, o validador pode LER o req.body</span>
+<span class="function">app</span>.use(<span class="function">meuValidador</span>);
+</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">Exemplo <span class="text-red-400">ERRADO</span>:
+                </p>
+                <pre class="code-js"><code><span class="comment">// 1. O validador tenta ler req.body.</span>
+<span class="function">app</span>.use(<span class="function">meuValidador</span>); <span class="comment">// CRASH! req.body é undefined aqui</span>
+<span class="comment">// 2. Só agora o Express aprende a ler JSON. Tarde demais.</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json());
+</code></pre>
+            </div>
+
+            <!-- Slide 22: Fluxo de Execução Sequencial (era 21) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Fluxo de Execução Sequencial</h2>
+
+                <div class="flex-1 flex flex-col justify-center">
+                    <!-- Caixa de Código -->
+                    <pre class="code-js"><code><span class="keyword">const</span> <span class="function">express</span> = <span class="keyword">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> <span class="function">app</span> = <span class="function">express</span>();
+
+<span class="comment">// 1. Executa primeiro (parser)</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json()); 
+
+<span class="comment">// 2. Executa segundo (logger global)</span>
+<span class="function">app</span>.use((<span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) => {
+  <span class="variable">console</span>.log(<span class="string">`[${<span class="keyword">new</span> <span class="function">Date</span>().toISOString()}] ${<span class="variable">req</span>.method} ${<span class="variable">req</span>.url}`</span>);
+  <span class="function">next</span>();
+});
+
+<span class="comment">// 3. Executa terceiro (apenas para rotas /api/*)</span>
+<span class="function">app</span>.use(<span class="string">'/api'</span>, <span class="variable">apiRouter</span>);
+
+<span class="comment">// 4. Executa apenas para /health (fora de /api)</span>
+<span class="function">app</span>.get(<span class="string">'/health'</span>, (<span class="variable">req</span>, <span class="variable">res</span>) => <span class="variable">res</span>.json({ <span class="variable">ok</span>: <span class="keyword">true</span> }));
+
+<span class="comment">// 5. Executa apenas em caso de erro (sempre por último)</span>
+<span class="function">app</span>.use((<span class="variable">err</span>, <span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) => {
+  <span class="variable">console</span>.error(<span class="string">'Erro:'</span>, <span class="variable">err</span>);
+  <span class="variable">res</span>.status(<span class="number">500</span>).json({ <span class="variable">error</span>: <span class="string">'Erro interno'</span> });
+});
+</code></pre>
+
+                    <!-- Explicação -->
+                    <div class="mt-4 text-gray-300">
+                        <p class="text-lg font-semibold text-cyan-400 mb-2">Fluxo de execução para requisição GET
+                            /api/users:</p>
+                        <p class="flex items-center text-base mb-1"><i
+                                class="fas fa-arrow-right text-cyan-400 mr-2"></i> <strong>1. express.json()</strong>:
+                            parseia o corpo da requisição (se existir)</p>
+                        <p class="flex items-center text-base mb-1"><i
+                                class="fas fa-arrow-right text-cyan-400 mr-2"></i> <strong>2. logger</strong>: registra
+                            a requisição no console</p>
+                        <p class="flex items-center text-base mb-1"><i
+                                class="fas fa-arrow-right text-cyan-400 mr-2"></i> <strong>3. apiRouter</strong>: contém
+                            as rotas /api/* e manipula a requisição</p>
+                        <p class="flex items-center text-base mb-1"><i
+                                class="fas fa-exclamation-triangle text-yellow-400 mr-2"></i> A rota
+                            <strong>/health</strong> não passa pelo apiRouter, pois está em outro caminho
+                        </p>
+                        <p class="flex items-center text-base"><i
+                                class="fas fa-exclamation-circle text-red-400 mr-2"></i> <strong>IMPORTANTE:</strong> A
+                            ordem de registro determina a ordem de execução!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 23: 4. Classificando (Por Nível de Aplicação) (era 22) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">4. Classificando (Por Nível de Aplicação)</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    A forma mais importante de classificar é por <span class="font-bold">COMO</span> ele é aplicado:
+                </p>
+                <ul class="space-y-4 text-lg text-gray-300">
+                    <li><span class="font-semibold text-cyan-300">Nível de Aplicação (Global):</span>
+                        <p class="text-gray-400 ml-4">Executa em <span class="font-bold">TODAS</span> as requisições.
+                            <br>Ex: <code>app.use(meuLogger);</code>
+                        </p>
+                    </li>
+                    <li><span class="font-semibold text-cyan-300">Nível de Roteador:</span>
+                        <p class="text-gray-400 ml-4">Executa em todas as rotas de um <span class="font-bold">roteador
+                                específico</span>. <br>Ex: <code>userRoutes.use(checkAuth);</code></p>
+                    </li>
+                    <li><span class="font-semibold text-cyan-300">Nível de Rota (Específico):</span>
+                        <p class="text-gray-400 ml-4">Executa <span class="font-bold">apenas em uma rota</span>. <br>Ex:
+                            <code>router.post('/', validateUser, controller);</code>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 24: Classificando (Por Origem vs. Aplicação) (era 23) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Classificando (Por Origem vs. Aplicação)</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    A "Origem" (de onde vem) e a "Aplicação" (como usamos) se misturam.
+                </p>
+
+                <div class="space-y-4 text-lg text-gray-300">
+                    <!-- Nativos -->
+                    <div class="bg-gray-700/50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-green-300">1. Nativos (Built-in)</h3>
+                        <p class="text-gray-400 ml-4">Vêm com o Express. (Ex: <code>express.json()</code>)</p>
+                        <p class="text-gray-400 ml-4"><b>Como usamos:</b> Quase sempre em <span class="font-bold">Nível
+                                de Aplicação (Global)</span>.<br><code>app.use(express.json());</code></p>
+                    </div>
+
+                    <!-- De Terceiros -->
+                    <div class="bg-gray-700/50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-yellow-300">2. De Terceiros (Third-party)</h3>
+                        <p class="text-gray-400 ml-4">Instalados via NPM (Ex: <code>cors</code>, <code>helmet</code>)
+                        </p>
+                        <p class="text-gray-400 ml-4"><b>Como usamos:</b> Geralmente em <span class="font-bold">Nível de
+                                Aplicação (Global)</span>.<br><code>app.use(cors());</code></p>
+                    </div>
+
+                    <!-- Customizados -->
+                    <div class="bg-gray-700/50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-cyan-300">3. Customizados (Nós que fazemos!)</h3>
+                        <p class="text-gray-400 ml-4">Nossas próprias funções (Ex: <code>logger</code>,
+                            <code>validateUser</code>)
+                        </p>
+                        <p class="text-gray-400 ml-4"><b>Como usamos:</b> Onde quisermos!
+                            <br>· <code>app.use(logger)</code> -> <span class="font-bold">Global</span>
+                            <br>· <code>router.post('/', validateUser, ...)</code> -> <span class="font-bold">Específico
+                                de Rota</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 25: Tipo Especial: Error Handling (era 24) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Tipo Especial: Error Handling</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    (Vamos implementar na Aula 4, mas é importante conhecer agora).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Existe um tipo especial de middleware para <span class="font-bold">capturar erros</span>.
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Ele tem uma assinatura diferente, com <span class="font-bold text-red-400">4 argumentos</span>:
+                </p>
+                <pre class="code-js"><code><span class="comment">// O 'err' vem primeiro!</span>
+<span class="keyword">function</span> <span class="function">meuTratadorDeErros</span>(<span class="variable">err</span>, <span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) {
+  <span class="variable">console</span>.error(<span class="variable">err</span>); <span class="comment">// Loga o erro</span>
+  <span class="variable">res</span>.status(<span class="number">500</span>).json({ <span class="variable">message</span>: <span class="string">'Algo deu errado!'</span> });
+}</code></pre>
+                <p class="text-lg text-gray-300 mt-4">
+                    Ele é ativado quando chamamos <code>next(<span class="text-red-400">new Error()</span>)</code>.
+                </p>
+            </div>
+
+            <!-- Slide 26: Mão na Massa: Transição (era 25) -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Mão na Massa</h2>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <p class="text-xl text-gray-300">Vamos implementar nossos primeiros middlewares.</p>
+            </div>
+
+            <!-- ** NOVO SLIDE 27 (CONTEÚDO DO USUÁRIO) ** -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Preparação do Ambiente</h2>
+
+                <div class="flex-1 flex flex-col justify-center">
+                    <!-- Caixa de Código -->
+                    <pre class="code-bash"><code><span class="comment"># Iniciar projeto</span>
+npm init -y
+
+<span class="comment"># Dependências</span>
+npm i express cors helmet compression
+
+<span class="comment"># Dev (opcional)</span>
+npm i -D nodemon
+
+<span class="comment"># Script exemplo em package.json</span>
+<span class="text-cyan-300">"scripts"</span>: {
+  <span class="text-cyan-300">"dev"</span>: <span class="text-yellow-300">"nodemon src/index.js"</span>,
+  <span class="text-cyan-300">"start"</span>: <span class="text-yellow-300">"node src/index.js"</span>
+}
+
+<span class="comment"># Estruturar pastas</span>
+mkdir -p src/{middlewares,routes,controllers,services}
+</code></pre>
+
+                    <!-- Explicação -->
+                    <div class="mt-4 text-gray-300">
+                        <p class="text-lg font-semibold text-cyan-400 mb-3">Módulos principais:</p>
+                        <ul class="space-y-2 text-base">
+                            <li class="flex items-center"><i class="fas fa-box text-cyan-400 w-5 mr-2 text-center"></i>
+                                <strong>express</strong>: Framework web minimalista para Node.js
+                            </li>
+                            <li class="flex items-center"><i
+                                    class="fas fa-shield-alt text-cyan-400 w-5 mr-2 text-center"></i>
+                                <strong>cors</strong>: Middleware para lidar com Cross-Origin Resource Sharing
+                            </li>
+                            <li class="flex items-center"><i
+                                    class="fas fa-user-shield text-cyan-400 w-5 mr-2 text-center"></i>
+                                <strong>helmet</strong>: Middleware de segurança que configura cabeçalhos HTTP
+                            </li>
+                            <li class="flex items-center"><i
+                                    class="fas fa-compress-alt text-cyan-400 w-5 mr-2 text-center"></i>
+                                <strong>compression</strong>: Middleware para compressão de respostas
+                            </li>
+                            <li class="flex items-center"><i
+                                    class="fas fa-sync-alt text-cyan-400 w-5 mr-2 text-center"></i>
+                                <strong>nodemon</strong>: Utilitário que monitora mudanças e reinicia o servidor
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 28: 5. Nova Estrutura de Pastas (era 27) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">5. Nova Estrutura de Pastas</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Nossa estrutura de pastas (criada com `mkdir`):
+                </p>
+                <pre class="code-bash"><code>/src
+  <span class="text-cyan-300">/routes</span>
+    user.routes.js
+  <span class="text-cyan-300">/controllers</span>
+    user.controller.js
+  <span class="text-cyan-300">/services</span>
+    user.service.js
+  <span class="text-green-400 font-bold">/middlewares</span>
+    <span class="text-green-400">logger.middleware.js</span>
+    <span class="text-green-400">validation.middleware.js</span>
+  index.js</code></pre>
+                <p class="text-lg text-gray-300 mt-4">
+                    Isso mantém nosso projeto organizado por responsabilidade.
+                </p>
+            </div>
+
+            <!-- Slide 29: 6. Exemplo 1: Middleware de Log (Logger) (era 28) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">6. Exemplo 1: Logger (Global)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Objetivo:</span> Registrar no console <span class="font-bold">TODA</span>
+                    requisição que chega na API, mostrando o método, a URL e a data.
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Tipo:</span> Customizado, aplicado em Nível de Aplicação (Global).
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Ação do Porteiro:</span> "Anotar e deixar passar".
+                </p>
+            </div>
+
+            <!-- Slide 30: Código: Logger (era 29) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Código: Logger</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie <code
+                        class="text-yellow-300">src/middlewares/logger.middleware.js</code></p>
+                <pre class="code-js flex-1"><code><span class="keyword">function</span> <span class="function">logger</span>(<span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) {
+  <span class="comment">// 1. Obtém a data/hora atual em formato ISO</span>
+  <span class="keyword">const</span> <span class="variable">timestamp</span> = <span class="keyword">new</span> <span class="function">Date</span>().toISOString();
+  
+  <span class="comment">// 2. Obtém o método HTTP (GET, POST, etc.)</span>
+  <span class="keyword">const</span> <span class="variable">method</span> = <span class="variable">req</span>.method;
+  
+  <span class="comment">// 3. Obtém a URL original que o cliente pediu</span>
+  <span class="keyword">const</span> <span class="variable">url</span> = <span class="variable">req</span>.originalUrl;
+
+  <span class="comment">// 4. Loga a informação no console do servidor</span>
+  <span class="variable">console</span>.log(
+    <span class="string">`[${<span class="variable">timestamp</span>}] ${<span class="variable">method</span>} ${<span class="variable">url</span>}`</span>
+  );
+
+  <span class="comment">// 5. ESSENCIAL: Passa o controle para o próximo</span>
+  <span class="function">next</span>();
+}
+
+<span class="variable">module</span>.exports = <span class="variable">logger</span>;
+</code></pre>
+            </div>
+
+            <!-- Slide 31: Aplicando o Logger (Globalmente) (era 30) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Aplicando o Logger</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Para que ele rode em <span class="font-bold">TODAS</span> as rotas, o aplicamos no <code
+                        class="text-yellow-300">src/index.js</code> com <code>app.use()</code>.
+                </p>
+                <pre class="code-js flex-1"><code><span class="keyword">const</span> <span class="function">express</span> = <span class="keyword">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> <span class="variable">userRoutes</span> = <span class="keyword">require</span>(<span class="string">'./routes/user.routes'</span>);
+<span class="comment">// 1. Importamos o logger</span>
+<span class="keyword">const</span> <span class="variable">logger</span> = <span class="keyword">require</span>(<span class="string">'./middlewares/logger.middleware'</span>);
+
+<span class="keyword">const</span> <span class="function">app</span> = <span class="function">express</span>();
+<span class="keyword">const</span> <span class="variable">PORT</span> = <span class="number">3000</span>;
+
+<span class="comment">// --- ORDEM DOS MIDDLEWARES ---</span>
+<span class="comment">// 1. Primeiro, o parser de JSON</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json());
+
+<span class="comment">// 2. Segundo, nosso Logger (global)</span>
+<span class="function">app</span>.use(<span class="variable">logger</span>);
+<span class="comment">// --- FIM DOS MIDDLEWARES GLOBAIS ---</span>
+
+<span class="comment">// 3. Por último, as Rotas</span>
+<span class="function">app</span>.use(<span class="string">'/api'</span>, <span class="variable">userRoutes</span>);
+
+<span class="function">app</span>.listen(...);
+</code></pre>
+            </div>
+
+            <!-- Slide 32: Testando o Logger (era 31) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Testando o Logger</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    1. Verifique se o servidor está rodando com <code class="text-yellow-300">npm run dev</code>.
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    2. Abra o <span class="font-bold">Insomnia</span>.
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    3. Faça <span class="font-bold">QUALQUER</span> requisição (<code>GET /api/users</code>,
+                    <code>GET /api/users/1</code>, etc).
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    4. Olhe o seu <span class="font-bold">Terminal</span> (onde o <span id="destaque">nodemon</span> está rodando).
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    Você deve ver os logs aparecendo:
+                </p>
+                <pre class="code-bash"><code>[2025-11-02T17:10:30.123Z] GET /api/users
+[2025-11-02T17:10:35.456Z] GET /api/users/1</code></pre>
+            </div>
+
+            <!-- Slide 33: 7. Exemplo 2: Middleware de Validação (era 32) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">7. Exemplo 2: Validação (Por Rota)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Objetivo:</span> Garantir que, ao <span class="font-bold">criar um
+                        usuário</span> (<code>POST /api/users</code>), os campos <span id="destaque">name</span> e <span id="destaque">email</span> <span
+                        class="font-bold">obrigatoriamente</span> existam no <span id="destaque">req.body</span>.
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Tipo:</span> Customizado, aplicado em Nível de Rota (Específico).
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold">Ação do Porteiro:</span> "Verificar o convite. Se estiver OK, deixe passar.
+                    Se não, barre a entrada (400 Bad Request)."
+                </p>
+            </div>
+
+            <!-- Slide 34: Código: Validação (era 33) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Código: Validação</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie <code
+                        class="text-yellow-300">src/middlewares/validation.middleware.js</code></p>
+                <pre class="code-js flex-1"><code><span class="keyword">function</span> <span class="function">validateUserCreation</span>(<span class="variable">req</span>, <span class="variable">res</span>, <span class="variable">next</span>) {
+  <span class="comment">// 1. Puxamos 'name' e 'email' do req.body</span>
+  <span class="comment">// (Isso só funciona se app.use(express.json()) veio antes)</span>
+  <span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">email</span> } = <span class="variable">req</span>.body;
+
+  <span class="comment">// 2. Verificamos se algum deles está faltando</span>
+  <span class="keyword">if</span> (!<span class="variable">name</span> || !<span class="variable">email</span>) {
+    <span class="comment">// 3. Se faltar: BARRAMOS A ENTRADA</span>
+    <span class="comment">// Enviamos uma resposta de erro (400 Bad Request)</span>
+    <span class="comment">// E NÃO CHAMAMOS next()!</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.status(<span class="number">400</span>).json({
+      <span class="variable">success</span>: <span class="keyword">false</span>,
+      <span class="variable">message</span>: <span class="string">'Nome e email são obrigatórios.'</span>
+    });
+  }
+
+  <span class="comment">// 4. Se passou na validação: DEIXE PASSAR</span>
+  <span class="comment">// Chamamos next() para ir para o Controller</span>
+  <span class="function">next</span>();
+}
+
+<span class="variable">module</span>.exports = { <span class="variable">validateUserCreation</span> };
+</code></pre>
+            </div>
+
+            <!-- Slide 35: Aplicando a Validação (Na Rota) (era 34) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Aplicando a Validação</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Não queremos validar isso em <span class="font-bold">TODAS</span> as rotas, apenas na de <span
+                        class="font-bold">criação</span>.
+                    Por isso, aplicamos "em linha" no arquivo <code
+                        class="text-yellow-300">src/routes/user.routes.js</code>.
+                </p>
+                <pre class="code-js flex-1"><code><span class="keyword">const</span> { <span class="variable">Router</span> } = <span class="keyword">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> <span class="variable">userController</span> = <span class="keyword">require</span>(<span class="string">'../controllers/user.controller'</span>);
+<span class="comment">// 1. Importamos nosso validador</span>
+<span class="keyword">const</span> { <span class="variable">validateUserCreation</span> } = <span class="keyword">require</span>(<span class="string">'../middlewares/validation.middleware'</span>);
+
+<span class="keyword">const</span> <span class="variable">router</span> = <span class="function">Router</span>();
+
+<span class="comment">// Rota GET (sem validação de body)</span>
+<span class="variable">router</span>.get(<span class="string">'/users'</span>, <span class="variable">userController</span>.getAll);
+
+<span class="comment">// 2. Adicionamos o middleware ANTES do controller</span>
+<span class="variable">router</span>.post(
+  <span class="string">'/users'</span>, 
+  <span class="variable">validateUserCreation</span>,  <span class="comment">// <-- ELE RODA PRIMEIRO</span>
+  <span class="variable">userController</span>.create  <span class="comment">// <-- SÓ RODA SE O PRIMEIRO CHAMAR next()</span>
+);
+
+<span class="variable">router</span>.get(<span class="string">'/users/:id'</span>, <span class="variable">userController</span>.getById);
+
+<span class="variable">module</span>.exports = <span class="variable">router</span>;
+</code></pre>
+            </div>
+
+            <!-- Slide 36: O Fluxo de Validação (Visual) (era 35) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Fluxo de Validação (Visual)</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Quando uma requisição <code>POST /api/users</code> chega:
+                </p>
+                <img style="width: 512px; height: auto;" src="Diagrama do fluxo de validação_v2.png"
+                    alt="[Diagrama do fluxo de validação]"
+                    class="mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto bg-gray-600">
+                <div class="text-left text-lg text-gray-400 mt-2 space-y-2">
+                    <p>1. Requisição ➔ <code>express.json()</code> (Lê o Body)</p>
+                    <p>2. ➔ <code>logger()</code> (Loga no console) ➔ <span id="destaque">next()</span></p>
+                    <p>3. ➔ Roteador acha <code>POST /api/users</code></p>
+                    <p>4. ➔ <code>validateUserCreation()</code> (Verifica <span id="destaque">req.body</span>)</p>
+                    <p class="ml-6 text-red-400">↳ <b>Falha:</b> <code>res.status(400).json()</code> (Controller NUNCA é
+                        chamado)</p>
+                    <p class="ml-6 text-green-400">↳ <b>Sucesso:</b> <code>next()</code></p>
+                    <p>5. ➔ <code>userController.create()</code> (Controller finalmente trabalha)</p>
+                </div>
+            </div>
+
+            <!-- Slide 37: Testando a Validação (Cenário 1) (era 36) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Testando a Validação (Cenário 1: Falha)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    1. No <span class="font-bold">Insomnia</span>, crie uma requisição <code>POST /api/users</code>.
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    2. No <span class="font-bold">Body (JSON)</span>, envie dados incompletos:
+                </p>
+                <pre class="code-js"><code>{
+  <span class="string">"name"</span>: <span class="string">"Carlos"</span>
+  <span class="comment">// Faltando o "email"</span>
+}</code></pre>
+                <p class="text-xl text-gray-300 mt-4 mb-2">
+                    3. Clique em "Send".
+                </p>
+                <p class="text-xl text-gray-300 mb-2">
+                    <span class="font-bold">Resultado Esperado:</span>
+                </p>
+                <pre><code><span class="text-red-400">Status: 400 Bad Request</span>
+
+{
+  "success": false,
+  "message": "Nome e email são obrigatórios."
+}</code></pre>
+                <p class="text-lg text-gray-400 mt-2">O Controller nem foi acionado. O Middleware nos protegeu.</p>
+            </div>
+
+            <!-- Slide 38: Testando a Validação (Cenário 2) (era 37) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Testando a Validação (Cenário 2: Sucesso)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    1. Na mesma requisição do <span class="font-bold">Insomnia</span>...
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    2. No <span class="font-bold">Body (JSON)</span>, envie dados completos:
+                </p>
+                <pre class="code-js"><code>{
+  <span class="string">"name"</span>: <span class="string">"Carlos"</span>,
+  <span class="string">"email"</span>: <span class="string">"carlos@senac.com"</span>
+}</code></pre>
+                <p class="text-xl text-gray-300 mt-4 mb-2">
+                    3. Clique em "Send".
+                </p>
+                <p class="text-xl text-gray-300 mb-2">
+                    <span class="font-bold">Resultado Esperado:</span>
+                </p>
+                <pre><code><span class="text-green-400">Status: 201 Created</span>
+
+{
+  "success": true,
+  "data": {
+    "id": 2, <span class="comment">// (ou próximo id)</span>
+    "name": "Carlos",
+    "email": "carlos@senac.com"
+  }
+}</code></pre>
+            </div>
+
+            <!-- Slide 39: Middlewares de Terceiros (Exemplo: CORS) (era 38) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Bônus: Middlewares de Terceiros</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Se você tentar acessar sua API de um site (React, Angular) em <code>localhost:3001</code>, o
+                    navegador irá <span class="font-bold text-red-400">BLOQUEAR</span> a requisição por segurança
+                    (Política de Mesma Origem - CORS).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Para consertar isso, usamos um middleware de terceiro, o <code>cors</code>.
+                </p>
+                <pre class="code-bash"><code><span class="comment"># 1. Instalar</span>
+<span class="command">npm</span> <span class="arg">install cors</span>
+</code></pre>
+                <pre class="code-js mt-4"><code><span class="comment">// 2. Usar (no index.js, globalmente)</span>
+<span class="keyword">const</span> <span class="variable">cors</span> = <span class="keyword">require</span>(<span class="string">'cors'</span>);
+<span class="function">app</span>.use(<span class="function">cors</span>()); <span class="comment">// Permite acesso de qualquer origem</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json());
+<span class="function">app</span>.use(<span class="variable">logger</span>);
+...
+</code></pre>
+            </div>
+
+            <!-- Slide 40: Resumo da Aula 3 (era 39) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Resumo da Aula 3</h2>
+                <p class="text-xl text-gray-300 mb-6">O que aprendemos hoje:</p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> O que é um
+                        Middleware (O "Porteiro" da requisição).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A importância
+                        da assinatura <code>(req, res, next)</code>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A função
+                        <code>next()</code> é a chave para "continuar" o fluxo.
+                    </li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A <span
+                            class="font-bold">ordem</span> de declaração dos middlewares é crucial.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como criar um
+                        middleware <span class="font-bold">Global</span> (Logger).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como criar um
+                        middleware <span class="font-bold">de Rota</span> (Validação).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como um
+                        middleware pode <span class="font-bold">barrar</span> uma requisição.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 43: Módulos Instalados (Oculto/Bônus) (era 42) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Módulos Node Utilizados (Até agora)</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Resumo dos módulos que instalamos (e por que):
+                </p>
+                <ul class="space-y-4">
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400"><span id="destaque">express</span></h3>
+                        <p class="text-gray-300 mt-1">Nosso Framework Web. A base de tudo.</p>
+                        <p class="text-sm text-gray-400 mt-1">(Instalado como `dependency`)</p>
+                    </li>
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-yellow-400"><span id="destaque">nodemon</span></h3>
+                        <p class="text-gray-300 mt-1">Monitora nossos arquivos e reinicia o servidor automaticamente.
+                        </p>
+                        <p class="text-sm text-gray-400 mt-1">(Instalado como `devDependency`)</p>
+                    </li>
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-400"><span id="destaque">cors</span> (Opcional)</h3>
+                        <p class="text-gray-300 mt-1">Permite que aplicações front-end acessem nossa API.</p>
+                        <p class="text-sm text-gray-400 mt-1">(Instalado como `dependency`)</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 44: Diagrama de Fluxo Completo (Opcional) (era 43) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Diagrama de Fluxo Completo (Até agora)</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Requisição: <code>POST /api/users</code> com Body <span id="destaque">{ "name": "Ana" }</span>
+                </p>
+                <div class="bg-gray-800 p-6 rounded-lg text-white">
+
+                    <div class="flex flex-col items-center mb-4">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center w-64">
+                            <i class="fas fa-laptop text-4xl text-cyan-400 mb-2"></i>
+                            <p class="font-semibold">Cliente (Insomnia)</p>
+                        </div>
+
+                        <i class="fas fa-long-arrow-alt-down text-red-400 text-5xl my-2"></i>
+                        <div class="bg-red-900 text-red-100 p-3 rounded-lg text-sm font-mono text-center w-64">
+                            <p class="font-bold">POST /api/users</p>
+                            <p>Body: { "name": "Ana" }</p>
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-gray-500 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-center mb-4">Fluxo de Execução no Servidor</h3>
+
+                        <div class="flex flex-col items-center space-y-2">
+
+                            <div class="bg-gray-700 p-3 rounded-lg w-full text-center shadow-md">
+                                <p>1. app.use(express.json()) ➔ Lê o Body</p>
+                            </div>
+                            <div class="text-cyan-400 text-xs font-mono">next() <i class="fas fa-arrow-down"></i></div>
+
+                            <div class="bg-gray-700 p-3 rounded-lg w-full text-center shadow-md">
+                                <p>2. app.use(logger()) ➔ Loga no console</p>
+                            </div>
+                            <div class="text-cyan-400 text-xs font-mono">next() <i class="fas fa-arrow-down"></i></div>
+
+                            <div class="bg-gray-700 p-3 rounded-lg w-full text-center shadow-md">
+                                <p>3. app.use('/api', userRoutes) ➔ Direciona</p>
+                            </div>
+                            <div class="text-cyan-400 text-xs font-mono"><i class="fas fa-arrow-down"></i></div>
+
+                            <div class="bg-gray-700 p-3 rounded-lg w-full text-center shadow-md">
+                                <p>4. router.post('/users', ...) ➔ Encontra rota</p>
+                            </div>
+                            <div class="text-cyan-400 text-xs font-mono"><i class="fas fa-arrow-down"></i></div>
+
+                            <div class="bg-red-900 border-2 border-red-500 p-3 rounded-lg w-full text-center shadow-xl">
+                                <p class="font-bold">5. validateUserCreation() ➔ VALIDAÇÃO FALHA!</p>
+                                <p class="text-red-200 text-sm">(Falta email no Body)</p>
+                            </div>
+
+                            <div class="flex items-center text-green-400 my-3 w-full">
+                                <i class="fas fa-reply fa-flip-horizontal text-3xl mr-3"></i>
+                                <div class="bg-green-900 text-green-100 p-3 rounded-lg flex-1">
+                                    <p class="font-bold">6. return res.status(400).json(...)</p>
+                                    <p class="text-sm">Resposta é enviada de volta ao Cliente.</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-gray-900 p-4 rounded-lg w-full text-center opacity-50 relative border-2 border-gray-600">
+                                <i
+                                    class="fas fa-ban text-red-500 text-4xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50"></i>
+                                <p class="line-through">7. userController.create()</p>
+                                <p class="font-bold text-gray-400 mt-1">(FLUXO INTERROMPIDO)</p>
+                                <p class="text-sm text-gray-400">O Controller NÃO é chamado.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                
+                <ol class="list-decimal list-inside text-lg text-gray-400 mt-2 space-y-1">
+                    <li><code>app.use(express.json())</code> ➔ Lê o Body. Chama <span id="destaque">next()</span>.</li>
+                    <li><code>app.use(logger())</code> ➔ Loga no console. Chama <span id="destaque">next()</span>.</li>
+                    <li><code>app.use('/api', userRoutes)</code> ➔ Direciona para o Roteador.</li>
+                    <li><code>router.post('/users', ...)</code> ➔ Encontra a rota.</li>
+                    <li><code>validateUserCreation()</code> ➔ Validação falha (falta email).</li>
+                    <li><code>return res.status(400).json(...)</code> ➔ Resposta é enviada.</li>
+                    <li>O fluxo é <span class="text-red-400 font-bold">INTERROMPIDO</span>. O Controller <span
+                            class="font-bold">NÃO</span> é chamado.</li>
+                </ol>
+            </div>
+
+            <!-- Slide 45: O que é "Middleware"? (Revisão) (era 44) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Revisão: O que é "Middleware"?</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    O nome "Middleware" (Software do Meio) faz sentido:
+                </p>
+
+                <div class="bg-gray-700 p-6 rounded-lg text-2xl text-center">
+                    <p class="text-cyan-300 font-semibold">
+                        É um software que fica <span class="underline">no meio</span> do "pedido" (Requisição) e do
+                        "processamento final" (Controller).
+                    </p>
+                </div>
+
+                <p class="text-xl text-gray-300 mt-6 leading-relaxed">
+                    Eles formam uma <span class="font-bold">cadeia</span> (chain) de processamento. São a base de como
+                    aplicações Express.js gerenciam autenticação, validação, logging e muito mais.
+                </p>
+            </div>
+
+            <!-- Slide 41: Próxima Aula (era 40) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Próxima Aula</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">Aula 4: Tratamento de Erros Centralizado</h3>
+
+                <p class="text-xl text-gray-300 mb-4">
+                    Nossa validação funciona, mas e se um <span class="font-bold text-red-500">erro inesperado</span>
+                    acontecer <span class="font-bold">dentro</span> de um Controller ou Serviço? (Ex: O banco de dados
+                    cai).
+                </p>
+
+                <ul class="list-disc list-inside text-xl text-gray-300 space-y-3 mt-6">
+                    <li>Atualmente, isso faria o servidor <span class="font-bold">CRASHAR</span>.</li>
+                    <li>Vamos aprender a usar <code>try...catch</code> com <code>next(error)</code>.</li>
+                    <li>Vamos criar o Middleware de Error Handling (com 4 argumentos).</li>
+                </ul>
+            </div>
+
+            <!-- Slide 42: Encerramento (era 41) -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h1 class="text-4xl font-bold text-white mb-4">Obrigado!</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-4"></div>
+                <h2 class="text-2xl font-semibold text-white mb-2">Disciplina: Desenvolvimento de Serviços e APIs</h2>
+
+                <p class="text-3xl text-gray-300 mt-12">Perguntas?</p>
+            </div>
+
+        </div>
+
+        <!-- Navegação dos Slides -->
+        <div class="flex-shrink-0 w-full bg-gray-700 p-4 flex justify-between items-center border-t border-gray-600">
+            <button id="prevBtn"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Anterior
+            </button>
+            <span id="slide-counter" class="text-sm text-gray-400">Slide 1 / 46</span>
+            <button id="nextBtn"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Próximo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slide-counter');
+            const slideContainer = document.getElementById('slide-container');
+            let currentSlide = 0;
+            const totalSlides = slides.length; // ATUALIZADO para 46
+
+            if (slides.length > 0) {
+                const activeSlide = document.querySelector('.slide.active');
+                if (activeSlide) {
+                    currentSlide = Array.from(slides).indexOf(activeSlide);
+                } else {
+                    currentSlide = 0; // Fallback
+                }
+                showSlide(currentSlide);
+            }
+
+            function showSlide(index) {
+                // Remove 'active' de todos os slides
+                slides.forEach((slide) => {
+                    slide.classList.remove('active');
+                });
+
+                // Adiciona 'active' ao slide correto
+                slides[index].classList.add('active');
+
+                // Reseta o scroll do container do slide para o topo
+                slideContainer.scrollTop = 0;
+
+                // Atualiza o estado dos botões
+                currentSlide = index;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === totalSlides - 1);
+
+                // Atualiza o contador
+                slideCounter.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+            }
+
+            // Event Listeners
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Permite navegação pelas setas do teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

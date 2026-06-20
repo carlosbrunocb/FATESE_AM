@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 4 - Listar Sub-redes Criadas</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23e2e8f0" opacity="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20pt;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            color: #1e293b;
+        }
+
+        .logo-subtitle {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13pt;
+            color: #1e293b;
+        }
+
+        .course-code {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 28pt;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .highlight-bar {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 16pt;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+            color: #1e293b;
+        }
+
+        .subnet-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12pt;
+        }
+
+        .subnet-table th {
+            background: #f0f9ff;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .subnet-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .subnet-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .subnet-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 11pt;
+            font-weight: 600;
+        }
+
+        .ip-range {
+            font-family: 'Courier New', monospace;
+            font-size: 11pt;
+            color: #2563eb;
+        }
+
+        .hosts-count {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10pt;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .network-diagram {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .network-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11pt;
+            flex: 1;
+        }
+
+        .network-label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .network-ip {
+            font-family: 'Courier New', monospace;
+            color: #2563eb;
+            font-size: 10pt;
+        }
+
+        .arrow {
+            color: #64748b;
+            font-size: 14pt;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            background: #f0f9ff;
+            color: #2563eb;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">FATESE</div>
+                        <div class="logo-subtitle">Faculdade de Tecnologia do Senac</div>
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Redes de Computadores</div>
+                    <div class="course-code">Aula 06 - Sub-redes</div>
+                </div>
+            </div>
+            <div class="title-section">
+                <div class="main-title">Passo 4 - Listar Sub-redes Criadas</div>
+                <div class="subtitle">Visualização das 4 sub-redes geradas a partir da divisão de 192.168.1.0/24</div>
+                <div class="highlight-bar"></div>
+            </div>
+            <div class="content-grid">
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-list-ol"></i>
+                        </div>
+                        <div class="card-title">Tabela de Sub-redes /26</div>
+                    </div>
+                    <table class="subnet-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Sub-rede</th>
+                                <th style="width: 25%">Endereço de Rede</th>
+                                <th style="width: 30%">Faixa de Hosts</th>
+                                <th style="width: 20%">Broadcast</th>
+                                <th style="width: 10%">Hosts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="subnet-number">1</span></td>
+                                <td class="ip-range">192.168.1.0/26</td>
+                                <td class="ip-range">.1 - .62</td>
+                                <td class="ip-range">.63</td>
+                                <td class="hosts-count">62</td>
+                            </tr>
+                            <tr>
+                                <td><span class="subnet-number">2</span></td>
+                                <td class="ip-range">192.168.1.64/26</td>
+                                <td class="ip-range">.65 - .126</td>
+                                <td class="ip-range">.127</td>
+                                <td class="hosts-count">62</td>
+                            </tr>
+                            <tr>
+                                <td><span class="subnet-number">3</span></td>
+                                <td class="ip-range">192.168.1.128/26</td>
+                                <td class="ip-range">.129 - .190</td>
+                                <td class="ip-range">.191</td>
+                                <td class="hosts-count">62</td>
+                            </tr>
+                            <tr>
+                                <td><span class="subnet-number">4</span></td>
+                                <td class="ip-range">192.168.1.192/26</td>
+                                <td class="ip-range">.193 - .254</td>
+                                <td class="ip-range">.255</td>
+                                <td class="hosts-count">62</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 10px; font-size: 11pt; color: #64748b;">
+                        <i class="fas fa-info-circle"></i> Cada sub-rede possui 62 hosts utilizáveis (64 - 2 para rede e
+                        broadcast)
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="card-title">Diagrama de Rede</div>
+                    </div>
+                    <div class="network-diagram">
+                        <div class="diagram-row">
+                            <div class="network-box">
+                                <div class="network-label">Sub-rede 1</div>
+                                <div class="network-ip">192.168.1.0/26</div>
+                                <div style="font-size: 10pt; color: #64748b; margin-top: 2px;">Desenvolvimento</div>
+                            </div>
+                            <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="network-box">
+                                <div class="network-label">Sub-rede 2</div>
+                                <div class="network-ip">192.168.1.64/26</div>
+                                <div style="font-size: 10pt; color: #64748b; margin-top: 2px;">Financeiro</div>
+                            </div>
+                        </div>
+                        <div class="diagram-row">
+                            <div class="network-box">
+                                <div class="network-label">Sub-rede 3</div>
+                                <div class="network-ip">192.168.1.128/26</div>
+                                <div style="font-size: 10pt; color: #64748b; margin-top: 2px;">RH</div>
+                            </div>
+                            <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="network-box">
+                                <div class="network-label">Sub-rede 4</div>
+                                <div class="network-ip">192.168.1.192/26</div>
+                                <div style="font-size: 10pt; color: #64748b; margin-top: 2px;">Visitantes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11pt; color: #64748b;">
+                        <i class="fas fa-check-circle"></i> Todas as sub-redes estão isoladas em domínios de broadcast
+                        separados
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <i class="fas fa-calculator"></i> Cálculo: 256 - 192 = 64 (incremento)
+                </div>
+                <div class="footer-right">
+                    <div class="badge"><i class="fas fa-check-circle"></i> 4 sub-redes</div>
+                    <div class="badge"><i class="fas fa-users"></i> 248 hosts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

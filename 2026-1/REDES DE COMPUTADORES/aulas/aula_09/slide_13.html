@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Encerramento TCP: Four-Way Termination</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            right: 50px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #4a5568;
+            flex: 1;
+        }
+
+        .termination-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #2c5282;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #2c5282;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .step-arrow {
+            color: #2c5282;
+            font-size: 16px;
+            padding-right: 10px;
+        }
+
+        .state-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .state-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .state-box {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #2c5282;
+            text-align: center;
+            position: relative;
+        }
+
+        .state-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .state-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .state-arrow {
+            color: #2c5282;
+            font-size: 20px;
+            padding: 0 5px;
+        }
+
+        .state-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .flow-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .flow-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .flow-desc {
+            font-size: 10px;
+            color: #718096;
+        }
+
+        .highlight-box {
+            background: #ebf8ff;
+            border-left: 4px solid #2c5282;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 75%;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .step-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+        }
+
+        .client-server {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .role-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .role-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-handshake-slash"></i>
+                </div>
+                <div>
+                    <div class="header-title">Encerramento TCP: Four-Way Termination</div>
+                    <div class="header-subtitle">Processo de encerramento gracioso de conexões TCP</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Estados</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">6 estados</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Section: Four-Way Termination -->
+                <div class="left-section">
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-list-ol"></i>
+                            Four-Way Termination - Sequência FIN/ACK
+                        </div>
+                        <div class="card-content">
+                            <div class="termination-steps">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <div class="step-title">Cliente → Servidor: FIN, Seq = u</div>
+                                        <div class="step-desc">Cliente envia FIN para encerrar sua direção de envio
+                                        </div>
+                                    </div>
+                                    <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <div class="step-title">Servidor → Cliente: ACK, Ack = u + 1</div>
+                                        <div class="step-desc">Servidor confirma recebimento do FIN</div>
+                                    </div>
+                                    <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <div class="step-title">Servidor → Cliente: FIN, Seq = v</div>
+                                        <div class="step-desc">Servidor envia seu próprio FIN</div>
+                                    </div>
+                                    <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <div class="step-title">Cliente → Servidor: ACK, Ack = v + 1</div>
+                                        <div class="step-desc">Cliente confirma recebimento do FIN</div>
+                                    </div>
+                                    <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                </div>
+                            </div>
+                            <div class="highlight-box">
+                                <div class="highlight-text">
+                                    <i class="fas fa-info-circle"></i> <strong>TIME_WAIT:</strong> Cliente aguarda 2×MSL
+                                    para garantir que o último ACK foi recebido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Section: State Diagram -->
+                <div class="right-section">
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-project-diagram"></i>
+                            Diagrama de Estados TCP
+                        </div>
+                        <div class="card-content">
+                            <div class="state-diagram">
+                                <div class="state-row">
+                                    <div class="state-box">
+                                        <div class="state-label">ESTABLISHED</div>
+                                        <div class="state-desc">Conexão ativa</div>
+                                    </div>
+                                    <div class="state-arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="state-box">
+                                        <div class="state-label">FIN_WAIT_1</div>
+                                        <div class="state-desc">Aguarda ACK</div>
+                                    </div>
+                                </div>
+                                <div class="state-row">
+                                    <div class="state-box">
+                                        <div class="state-label">FIN_WAIT_2</div>
+                                        <div class="state-desc">Aguarda FIN</div>
+                                    </div>
+                                    <div class="state-arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="state-box">
+                                        <div class="state-label">TIME_WAIT</div>
+                                        <div class="state-desc">2×MSL</div>
+                                    </div>
+                                </div>
+                                <div class="state-row">
+                                    <div class="state-box">
+                                        <div class="state-label">CLOSE_WAIT</div>
+                                        <div class="state-desc">Servidor</div>
+                                    </div>
+                                    <div class="state-arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="state-box">
+                                        <div class="state-label">LAST_ACK</div>
+                                        <div class="state-desc">Aguarda ACK</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="client-server">
+                                <div>
+                                    <div class="role-label">Cliente</div>
+                                    <div class="role-desc">FIN_WAIT_1 → FIN_WAIT_2 → TIME_WAIT</div>
+                                </div>
+                                <div>
+                                    <div class="role-label">Servidor</div>
+                                    <div class="role-desc">CLOSE_WAIT → LAST_ACK → CLOSED</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Progresso: 65%</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso da aula</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Detecção de Erros – CRC/FCS</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@300;400;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Decorative Elements */
+        .bg-accent {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100%;
+            background-color: #f8fafc;
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+            z-index: 0;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            font-size: 400px;
+            color: #e2e8f0;
+            opacity: 0.3;
+            z-index: 1;
+            transform: rotate(-15deg);
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 40px;
+            border-left: 8px solid #ef4444;
+            /* Changed to Red/Alert color for Error Detection theme */
+            padding-left: 24px;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 18px;
+            color: #64748b;
+            margin: 8px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Definition Card */
+        .definition-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .card-icon-section {
+            width: 120px;
+            background-color: #ef4444;
+            /* Matching Header */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .card-content {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #991b1b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #334155;
+            margin: 0;
+        }
+
+        /* Points Grid */
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .point-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-top: 4px solid #94a3b8;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .point-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .point-item.blue {
+            border-top-color: #3b82f6;
+        }
+
+        .point-item.red {
+            border-top-color: #ef4444;
+        }
+
+        .point-item.orange {
+            border-top-color: #f59e0b;
+        }
+
+        .point-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .point-title i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .point-title.blue i {
+            color: #3b82f6;
+        }
+
+        .point-title.red i {
+            color: #ef4444;
+        }
+
+        .point-title.orange i {
+            color: #f59e0b;
+        }
+
+        .point-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 24px;
+            left: 80px;
+            right: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-accent"></div>
+        <i class="fas fa-file-contract bg-pattern"></i>
+        <div class="content-wrapper">
+            <div class="header">
+                <p>Camada de Enlace: Integridade de Dados</p>
+                <h1>Detecção de Erros – CRC/FCS</h1>
+            </div>
+            <div class="definition-card">
+                <div class="card-icon-section">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Verificação de Integridade (CRC-32)</div>
+                    <p class="card-text">
+                        O campo <strong>FCS</strong> (Frame Check Sequence) ocupa os 4 bytes finais de um quadro
+                        Ethernet. Ele armazena o resultado de um cálculo matemático complexo chamado
+                        <strong>CRC</strong> (Cyclic Redundancy Check), que funciona como uma "impressão digital"
+                        digital para garantir que os bits não foram alterados durante o trajeto.
+                    </p>
+                </div>
+            </div>
+            <div class="points-grid">
+                <div class="point-item blue">
+                    <div class="point-title blue">
+                        <i class="fas fa-calculator"></i>
+                        O Processo Matemático
+                    </div>
+                    <p class="point-desc">
+                        O emissor divide os bits da mensagem por um polinômio padrão e envia o resto. O receptor refaz a
+                        conta; se o resto for zero, o quadro está intacto.
+                    </p>
+                </div>
+                <div class="point-item red">
+                    <div class="point-title red">
+                        <i class="fas fa-trash-alt"></i>
+                        Descarte Silencioso
+                    </div>
+                    <p class="point-desc">
+                        Se o cálculo não bater (CRC Error), a placa de rede assume que houve corrupção e
+                        <strong>descarta o quadro</strong> imediatamente. Não há aviso ao remetente na Camada 2.
+                    </p>
+                </div>
+                <div class="point-item orange">
+                    <div class="point-title orange">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Não há Correção
+                    </div>
+                    <p class="point-desc">
+                        O Ethernet detecta o erro, mas não corrige os bits. A responsabilidade de solicitar o reenvio
+                        (se necessário) recai sobre protocolos superiores como o TCP.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>Camada Física e Enlace – Cabos e Switches</span>
+            <span>23/36</span>
+        </div>
+    </div>
+</body>
+
+</html>

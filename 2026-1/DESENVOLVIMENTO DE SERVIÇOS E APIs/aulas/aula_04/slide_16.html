@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação de Rotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+            background-image: radial-gradient(#21262d 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Window / Editor Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .code-area {
+            padding: 20px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #e6edf3;
+            overflow: hidden;
+        }
+
+        /* Syntax Highlighting (GitHub Dark) */
+        .kwd { color: #ff7b72; }
+        .func { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+        .obj { color: #79c0ff; }
+        .prop { color: #d2a8ff; }
+        .var { color: #e6edf3; }
+
+        /* Connection Lines */
+        .connection-arrow {
+            position: absolute;
+            height: 2px;
+            background-color: #58a6ff;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-12">
+        <div class="flex items-center justify-between mb-8 border-b border-[#30363d] pb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center border border-blue-500/30 text-blue-400">
+                    <i class="fa-solid fa-route text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white tracking-tight">Rotas &amp; Montagem</h1>
+                    <p class="text-gray-400 mt-1">Definição de endpoints e integração no arquivo principal</p>
+                </div>
+            </div>
+            <div class="text-gray-500 font-mono text-sm bg-[#161b22] px-3 py-1 rounded border border-[#30363d]">
+                src/routes/tasks.routes.js &amp; app.js
+            </div>
+        </div>
+        <div class="flex gap-8 items-start h-full">
+            <div class="flex-[1.4] h-full flex flex-col">
+                <p class="text-sm text-blue-400 font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-regular fa-file-code"></i> 1. Definição das Rotas
+                </p>
+                <div class="window-frame flex-1">
+                    <div class="window-header">
+                        <div class="window-controls">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font">src/routes/tasks.routes.js</div>
+                    </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">1</span><span><span class="kwd">const</span> express = <span class="func">require</span>(<span class="str">'express'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">2</span><span><span class="kwd">const</span> router = express.<span class="func">Router</span>();</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">3</span><span><span class="kwd">const</span> controller = <span class="func">require</span>(<span class="str">'../controllers/tasks.controller'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">4</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">5</span><span><span class="comment">// Mapeia rotas para métodos do controller</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">6</span><span>router.<span class="func">get</span>(<span class="str">'/'</span>, controller.<span class="prop">getAll</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">7</span><span>router.<span class="func">get</span>(<span class="str">'/:id'</span>, controller.<span class="prop">getById</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">8</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">9</span><span>router.<span class="func">post</span>(<span class="str">'/'</span>, controller.<span class="prop">create</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">10</span><span>router.<span class="func">put</span>(<span class="str">'/:id'</span>, controller.<span class="prop">update</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">11</span><span>router.<span class="func">delete</span>(<span class="str">'/:id'</span>, controller.<span class="prop">remove</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">12</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">13</span><span><span class="comment">// Exporta o roteador configurado</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">14</span><span>module.<span class="prop">exports</span> = router;</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col justify-center h-full pt-12">
+                <i class="fa-solid fa-arrow-right text-gray-600 text-2xl"></i>
+            </div>
+            <div class="flex-1 h-full flex flex-col">
+                <p class="text-sm text-green-400 font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-plug"></i> 2. Montagem no App (Setup)
+                </p>
+                <div class="window-frame h-auto mb-6">
+                    <div class="window-header">
+                        <div class="window-controls">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font">app.js</div>
+                    </div>
+                    <div class="code-area mono-font" style="font-size: 0.95rem;">
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">1</span><span><span class="kwd">const</span> express = <span class="func">require</span>(<span class="str">'express'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">2</span><span><span class="kwd">const</span> app = <span class="func">express</span>();</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">3</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">4</span><span><span class="comment">// 1. Importa as rotas</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">5</span><span><span class="kwd">const</span> tasksRoutes = <span class="func">require</span>(<span class="str">'./src/routes/tasks.routes'</span>);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">6</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">7</span><span>app.<span class="func">use</span>(express.<span class="func">json</span>());</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">8</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">9</span><span><span class="comment">// 2. Monta com prefixo '/tasks'</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">10</span><span>app.<span class="func">use</span>(<span class="str">'/tasks'</span>, tasksRoutes);</span></div>
+                    </div>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] rounded-lg p-4 flex-1">
+                    <h3 class="text-gray-300 font-semibold mb-2 text-sm"><i class="fa-regular fa-lightbulb text-yellow-500 mr-2"></i>Conceito de Montagem</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Ao usar <code class="bg-[#21262d] px-1 py-0.5 rounded text-blue-300">app.use('/tasks', ...)</code>, definimos que todas as rotas daquele arquivo responderão sob esse prefixo.
+                    </p>
+                    <div class="mt-3 p-2 bg-[#0d1117] rounded border border-[#30363d] font-mono text-xs text-gray-400">
+                        <div class="flex justify-between">
+                            <span>GET /</span>
+                            <span class="text-gray-600">-&gt;</span>
+                            <span class="text-green-400">/tasks</span>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <span>GET /:id</span>
+                            <span class="text-gray-600">-&gt;</span>
+                            <span class="text-green-400">/tasks/1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d]">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>16 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

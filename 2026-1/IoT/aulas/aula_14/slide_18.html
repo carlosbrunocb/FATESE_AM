@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Payload JSON - Simulação de Sensores</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a8a5e6;
+        }
+
+        .code-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+            height: 520px;
+        }
+
+        .code-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13.5px;
+            color: #e0e0e0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+        }
+
+        .code-line {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .line-number {
+            color: #6b7280;
+            margin-right: 16px;
+            min-width: 28px;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .code-content {
+            flex: 1;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #c678dd;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .function {
+            color: #61afef;
+        }
+
+        .variable {
+            color: #e06c75;
+        }
+
+        .type {
+            color: #56b6c2;
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .sensor-data {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .sensor-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sensor-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 18px;
+        }
+
+        .sensor-info {
+            flex: 1;
+        }
+
+        .sensor-name {
+            font-size: 12px;
+            color: #a8a5e6;
+            margin-bottom: 2px;
+        }
+
+        .sensor-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .json-output {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 16px;
+            flex: 1;
+        }
+
+        .json-key {
+            color: #a8a5e6;
+        }
+
+        .json-value {
+            color: #98c379;
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 24px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .status-success {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .status-warning {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .payload-preview {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .payload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .payload-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .payload-status {
+            font-size: 12px;
+            color: #a8a5e6;
+        }
+
+        .payload-content {
+            font-family: 'Fira Code', monospace;
+            font-size: 13.5px;
+            color: #e0e0e0;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Payload JSON - Simulação de Sensores</div>
+                    <div class="header-subtitle">Montagem de dados de telemetria com ArduinoJson para TagoIO</div>
+                </div>
+            </div>
+            <div class="code-container">
+                <div class="code-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="section-title">Simulação de Sensores</div>
+                    </div>
+                    <div class="sensor-data">
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="sensor-info">
+                                <div class="sensor-name">Temperatura</div>
+                                <div class="sensor-value">26.5°C</div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="sensor-info">
+                                <div class="sensor-name">Umidade</div>
+                                <div class="sensor-value">70%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <div class="code-content"><span class="comment">// Simulação de leitura de sensores</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <div class="code-content"><span class="keyword">float</span> <span
+                                    class="variable">temperatura</span> = <span class="function">random</span>(<span
+                                    class="number">240</span>, <span class="number">385</span>) / <span
+                                    class="number">10.0</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <div class="code-content"><span class="keyword">int</span> <span
+                                    class="variable">umidade</span> = <span class="function">random</span>(<span
+                                    class="number">50</span>, <span class="number">95</span>);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <div class="code-content"></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <div class="code-content"><span class="comment">// Montagem do payload JSON</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <div class="code-content"><span class="type">JsonDocument</span> <span
+                                    class="variable">doc</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <div class="code-content"><span class="type">JsonObject</span> <span
+                                    class="variable">objTemp</span> = <span class="variable">doc</span>.<span
+                                    class="function">add</span>&lt;<span class="type">JsonObject</span>&gt;();</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <div class="code-content"><span class="variable">objTemp</span>[<span
+                                    class="string">"variable"</span>] = <span class="string">"temperatura"</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <div class="code-content"><span class="variable">objTemp</span>[<span
+                                    class="string">"value"</span>] = <span class="variable">temperatura</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <div class="code-content"><span class="variable">objTemp</span>[<span
+                                    class="string">"unit"</span>] = <span class="string">"°C"</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <div class="code-content"><span class="variable">objTemp</span>[<span
+                                    class="string">"time"</span>] = <span class="function">millis</span>();</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div class="section-title">JSON Estruturado</div>
+                    </div>
+                    <div class="payload-preview">
+                        <div class="payload-header">
+                            <div class="payload-title">Payload Final</div>
+                            <div class="payload-status">Formato TagoIO</div>
+                        </div>
+                        <div class="payload-content">[
+    {
+      "variable": "temperatura",
+      "value": 26.5,
+      "unit": "°C",
+      "time": 1234567890
+    },
+    {
+      "variable": "umidade",
+      "value": 70,
+      "unit": "%",
+      "time": 1234567890
+    }
+]</div>
+                    </div>
+                    <div class="json-output">
+                        <div style="color: #a8a5e6; margin-bottom: 12px; font-weight: 500;">
+                            <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                            Estrutura do JSON:
+                        </div>
+                        <div style="font-size: 13px; line-height: 1.8;">
+                            • <span class="json-key">variable</span>: <span class="json-value">Nome do
+                                sensor</span><br />
+                            • <span class="json-key">value</span>: <span class="json-value">Valor medido</span><br />
+                            • <span class="json-key">unit</span>: <span class="json-value">Unidade de
+                                medida</span><br />
+                            • <span class="json-key">time</span>: <span class="json-value">Timestamp</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-info">
+                <div class="info-item">
+                    <i class="fas fa-check-circle" style="color: #4ade80; margin-right: 8px;"></i>
+                    <span><span class="info-label">Status:</span> Payload válido</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-info-circle" style="color: #a8a5e6; margin-right: 8px;"></i>
+                    <span><span class="info-label">Próximo passo:</span> Enviar via HTTP POST</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock" style="color: #a8a5e6; margin-right: 8px;"></i>
+                    <span><span class="info-label">Intervalo:</span> 10 segundos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

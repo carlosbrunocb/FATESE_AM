@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Latência de Hardware e Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Decorative Elements */
+        .bg-accent {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30vw; /* Alterado para se adaptar à tela */
+            min-width: 400px;
+            height: 100%;
+            background-color: #f8fafc;
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+            z-index: 0;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            font-size: 400px;
+            color: #e2e8f0;
+            opacity: 0.3;
+            z-index: 1;
+            transform: rotate(-15deg);
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 5% 8%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 40px;
+            border-left: 8px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(32px, 4vw, 42px); /* Responsivo */
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: clamp(14px, 2vw, 18px);
+            color: #64748b;
+            margin: 8px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Definition Card */
+        .definition-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .card-icon-section {
+            width: 120px;
+            background-color: #3b82f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .card-content {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #334155;
+            margin: 0;
+        }
+
+        /* Points Grid */
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .point-item {
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            border-top: 5px solid #94a3b8;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+
+        .point-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .point-item.blue { border-top-color: #3b82f6; }
+        .point-item.green { border-top-color: #10b981; }
+        .point-item.purple { border-top-color: #8b5cf6; }
+
+        .point-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .point-title i { margin-right: 10px; font-size: 18px; }
+        .point-title.blue i { color: #3b82f6; }
+        .point-title.green i { color: #10b981; }
+        .point-title.purple i { color: #8b5cf6; }
+
+        .point-desc {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 24px;
+            left: 8%;
+            right: 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-accent"></div>
+        <i class="fas fa-server bg-pattern"></i>
+        <div class="content-wrapper">
+            <div class="header">
+                <p>Aplicação em ADS</p>
+                <h1>Latência de Hardware e Performance</h1>
+            </div>
+            <div class="definition-card">
+                <div class="card-icon-section">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Impacto da Infraestrutura no Tempo de Resposta</div>
+                    <p class="card-text">
+                        Para o desenvolvedor, a latência de hardware é um gargalo invisível. Mesmo que o código da
+                        aplicação seja otimizado (O(1)), uma infraestrutura física inadequada — como switches saturados
+                        ou cabos de baixa qualidade — introduz atrasos físicos que degradam a experiência do usuário
+                        (UX) e violam SLAs.
+                    </p>
+                </div>
+            </div>
+            <div class="points-grid">
+                <div class="point-item blue">
+                    <div class="point-title blue">
+                        <i class="fas fa-wifi"></i>
+                        Meio Físico: Wi-Fi vs Cabo
+                    </div>
+                    <p class="point-desc">
+                        Um ambiente Wi-Fi congestionado sofre com retransmissões de quadros (camada 2), causando
+                        <strong>jitter</strong> elevado. Em aplicações críticas, o cabo (CAT6) oferece latência estável
+                        e previsível.
+                    </p>
+                </div>
+                <div class="point-item green">
+                    <div class="point-title green">
+                        <i class="fas fa-hourglass-half"></i>
+                        Bufferbloat &amp; Filas
+                    </div>
+                    <p class="point-desc">
+                        Switches e APs mantêm buffers para tráfego excessivo. Quando cheios, o tempo de enfileiramento
+                        aumenta drasticamente o <strong>RTT</strong> (Round Trip Time), criando a sensação de lentidão
+                        na aplicação.
+                    </p>
+                </div>
+                <div class="point-item purple">
+                    <div class="point-title purple">
+                        <i class="fas fa-tools"></i>
+                        Boas Práticas
+                    </div>
+                    <p class="point-desc">
+                        Não ignore o hardware. Utilize cabeamento certificado, monitore erros de CRC nas interfaces e
+                        configure <strong>QoS</strong> para priorizar tráfego sensível à latência (VoIP, Games, DB).
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>Camada Física e Enlace – Cabos e Switches</span>
+            <span>33/36</span>
+        </div>
+    </div>
+</body>
+</html>

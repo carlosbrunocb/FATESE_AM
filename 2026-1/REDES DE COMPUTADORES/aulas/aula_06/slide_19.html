@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VLSM - Máscaras de Comprimento Variável</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23e2e8f0" opacity="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20pt;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            color: #1e293b;
+        }
+
+        .logo-subtitle {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13pt;
+            color: #1e293b;
+        }
+
+        .course-code {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 28pt;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .highlight-bar {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .vlsm-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .vlsm-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .vlsm-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 16pt;
+        }
+
+        .vlsm-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+            color: #1e293b;
+        }
+
+        .vlsm-subtitle {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .vlsm-content {
+            font-size: 12pt;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .vlsm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .vlsm-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .vlsm-item-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 11pt;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .vlsm-item-desc {
+            font-size: 10pt;
+            color: #64748b;
+        }
+
+        .allocation-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 18px;
+            color: white;
+        }
+
+        .allocation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .allocation-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14pt;
+        }
+
+        .allocation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+        }
+
+        .allocation-text {
+            font-size: 12pt;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .allocation-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tree-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tree-node {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11pt;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tree-connector {
+            width: 20px;
+            height: 1px;
+            background: #3b82f6;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            background: #f0f9ff;
+            color: #2563eb;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">FATESE</div>
+                        <div class="logo-subtitle">Faculdade de Tecnologia do Senac</div>
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Redes de Computadores</div>
+                    <div class="course-code">Aula 06 - Sub-redes</div>
+                </div>
+            </div>
+            <div class="title-section">
+                <div class="main-title">VLSM - Máscaras de Comprimento Variável</div>
+                <div class="subtitle">Alocação eficiente de endereços IP para redes de tamanhos diferentes</div>
+                <div class="highlight-bar"></div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="vlsm-card">
+                        <div class="vlsm-header">
+                            <div class="vlsm-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <div class="vlsm-title">Conceito VLSM</div>
+                                <div class="vlsm-subtitle">Variable Length Subnet Masking</div>
+                            </div>
+                        </div>
+                        <div class="vlsm-content">
+                            <p style="margin-bottom: 10px;"><strong>VLSM</strong> permite usar máscaras de sub-rede de
+                                diferentes tamanhos dentro da mesma rede principal, otimizando o uso de endereços IP.
+                            </p>
+                            <p>Ideal para redes com setores de tamanhos distintos, evitando desperdício de endereços.
+                            </p>
+                        </div>
+                        <div class="vlsm-grid">
+                            <div class="vlsm-item">
+                                <div class="vlsm-item-title">Rede Principal</div>
+                                <div class="vlsm-item-desc">192.168.1.0/24</div>
+                            </div>
+                            <div class="vlsm-item">
+                                <div class="vlsm-item-title">Sub-redes</div>
+                                <div class="vlsm-item-desc">Tamanhos variáveis</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vlsm-card">
+                        <div class="vlsm-header">
+                            <div class="vlsm-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div>
+                                <div class="vlsm-title">Exemplo Prático</div>
+                                <div class="vlsm-subtitle">Alocação por necessidade</div>
+                            </div>
+                        </div>
+                        <div class="vlsm-content">
+                            <div class="vlsm-grid">
+                                <div class="vlsm-item">
+                                    <div class="vlsm-item-title">60 hosts</div>
+                                    <div class="vlsm-item-desc">/26 (62 hosts)</div>
+                                </div>
+                                <div class="vlsm-item">
+                                    <div class="vlsm-item-title">30 hosts</div>
+                                    <div class="vlsm-item-desc">/27 (30 hosts)</div>
+                                </div>
+                                <div class="vlsm-item">
+                                    <div class="vlsm-item-title">10 hosts</div>
+                                    <div class="vlsm-item-desc">/28 (14 hosts)</div>
+                                </div>
+                                <div class="vlsm-item">
+                                    <div class="vlsm-item-title">5 hosts</div>
+                                    <div class="vlsm-item-desc">/29 (6 hosts)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="allocation-section">
+                        <div class="allocation-header">
+                            <div class="allocation-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="allocation-title">Árvore de Alocação</div>
+                        </div>
+                        <div class="allocation-text">
+                            Estrutura hierárquica de alocação de endereços IP
+                        </div>
+                        <div class="allocation-tree">
+                            <div class="tree-level">
+                                <div class="tree-node"
+                                    style="background: rgba(59, 130, 246, 0.2); border-color: #3b82f6;">
+                                    <strong>192.168.1.0/24</strong>
+                                </div>
+                            </div>
+                            <div class="tree-level" style="margin-left: 20px;">
+                                <div class="tree-connector"></div>
+                                <div class="tree-node">192.168.1.0/26 (62 hosts)</div>
+                            </div>
+                            <div class="tree-level" style="margin-left: 20px;">
+                                <div class="tree-connector"></div>
+                                <div class="tree-node">192.168.1.64/26 (62 hosts)</div>
+                            </div>
+                            <div class="tree-level" style="margin-left: 20px;">
+                                <div class="tree-connector"></div>
+                                <div class="tree-node">192.168.1.128/27 (30 hosts)</div>
+                            </div>
+                            <div class="tree-level" style="margin-left: 20px;">
+                                <div class="tree-connector"></div>
+                                <div class="tree-node">192.168.1.160/28 (14 hosts)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <i class="fas fa-calendar-alt"></i> Aula 06 | VLSM
+                </div>
+                <div class="footer-right">
+                    <div class="badge"><i class="fas fa-check-circle"></i> VLSM</div>
+                    <div class="badge"><i class="fas fa-tasks"></i> Prática</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

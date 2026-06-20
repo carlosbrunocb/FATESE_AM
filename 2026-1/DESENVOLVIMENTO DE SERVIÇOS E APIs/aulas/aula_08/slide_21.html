@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Async/Await no Acesso a Dados</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 130px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .right-section {
+            width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .concept-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            font-size: 16px;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-string {
+            color: #98c379;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .code-variable {
+            color: #e5c07b;
+        }
+
+        .flow-diagram {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .flow-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flow-box {
+            flex: 1;
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #f8fafc;
+        }
+
+        .flow-arrow {
+            color: #8b5cf6;
+            font-size: 16px;
+        }
+
+        .flow-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .benefit-icon {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .benefit-text {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Async/Await no Acesso a Dados</div>
+                    <div class="header-subtitle">Por que e como usar async/await em operações de banco de dados</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-code" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">Aula 08</div>
+                    <div class="header-subtitle">Persistência SQL</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="card-title">Por que usar Async/Await?</div>
+                    </div>
+                    <div class="card-content">
+                        O acesso ao banco de dados é uma operação de <strong style="color: #3b82f6;">I/O
+                            (Input/Output)</strong> que leva tempo. Usar <strong
+                            style="color: #8b5cf6;">async/await</strong> evita bloquear o event loop do Node.js,
+                        permitindo que outras requisições sejam processadas enquanto aguardamos a resposta do banco.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="card-title">Exemplo de Controller com Async/Await</div>
+                    </div>
+                    <div class="code-block"><span class="code-keyword">const</span> <span
+                            class="code-variable">livroService</span> = <span class="code-function">require</span>(<span
+                            class="code-string">'../services/livroService'</span>);
+
+<span class="code-keyword">const</span> <span class="code-function">listarLivros</span> = <span
+    class="code-keyword">async</span> (<span class="code-variable">req</span>, <span
+    class="code-variable">res</span>, <span class="code-variable">next</span>) =&gt; {
+    <span class="code-keyword">try</span> {
+        <span class="code-keyword">const</span> <span class="code-variable">livros</span> = <span
+            class="code-keyword">await</span> <span class="code-variable">livroService</span>.<span
+            class="code-function">listarTodos</span>();
+        <span class="code-variable">res</span>.<span class="code-function">status</span>(200).<span
+            class="code-function">json</span>(<span class="code-variable">livros</span>);
+    } <span class="code-keyword">catch</span> (<span class="code-variable">error</span>) {
+        <span class="code-function">next</span>(<span class="code-variable">error</span>);
+    }
+};                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="card-title">Benefícios do Async/Await</div>
+                    </div>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <span class="benefit-text">Código mais limpo e legível</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <span class="benefit-text">Tratamento de erros simplificado</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <span class="benefit-text">Execução sequencial clara</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle benefit-icon"></i>
+                            <span class="benefit-text">Melhor debugging</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="flow-diagram">
+                    <div class="flow-title">Fluxo Assíncrono da Requisição</div>
+                    <div class="flow-container">
+                        <div class="flow-row">
+                            <div class="flow-box">
+                                <div class="flow-label">Cliente HTTP</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box">
+                                <div class="flow-label">Controller</div>
+                            </div>
+                        </div>
+                        <div class="flow-row">
+                            <div class="flow-box">
+                                <div class="flow-label">Service</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box">
+                                <div class="flow-label">Sequelize</div>
+                            </div>
+                        </div>
+                        <div class="flow-row">
+                            <div class="flow-box">
+                                <div class="flow-label">Banco de Dados</div>
+                            </div>
+                            <div class="flow-arrow">←</div>
+                            <div class="flow-box">
+                                <div class="flow-label">Resposta JSON</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-title">Pontos de Atenção</div>
+                    </div>
+                    <div class="card-content">
+                        • Sempre use <strong style="color: #3b82f6;">try/catch</strong> para tratar erros<br />
+                        • Use <strong style="color: #8b5cf6;">await</strong> em chamadas ao banco<br />
+                        • Não esqueça de marcar funções como <strong style="color: #3b82f6;">async</strong><br />
+                        • Centralize erros com <strong style="color: #8b5cf6;">next(error)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>I2C - Arquitetura Mestre/Escravo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #ffffff;
+            color: #1e3a8a;
+            padding: 40px 60px 20px 60px;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+        }
+
+        .header-accent {
+            height: 6px;
+            width: 100px;
+            background-color: #3b82f6;
+            margin-top: 10px;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            gap: 40px;
+            background-color: #f9fafb;
+        }
+
+        .diagram-container {
+            flex: 2;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            justify-content: center;
+        }
+
+        .notes-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .note-card {
+            background-color: white;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: #1e3a8a;
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .note-card p {
+            color: #4b5563;
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Bus Diagram Styles */
+        .bus-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            align-items: center;
+        }
+
+        /* Master Section */
+        .master-section {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .device-box {
+            background: linear-gradient(145deg, #1e40af, #1e3a8a);
+            background-color: #1e40af;
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .device-box.slave {
+            background-color: #059669;
+            width: 100px;
+            font-size: 0.9rem;
+        }
+
+        .device-box.slave-2 {
+            background-color: #7c3aed;
+        }
+
+        .device-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .device-role {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .device-addr {
+            font-family: 'Roboto Mono', monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        /* Bus Lines - Coordenadas Absolutas */
+        .bus-lines-container {
+            flex: 1;
+            position: relative;
+            height: 250px; /* Altura fixa para servir de quadro */
+            margin-left: -20px;
+        }
+
+        .bus-line {
+            height: 6px;
+            width: 100%;
+            position: absolute; /* Removido do fluxo Flex */
+            border-radius: 3px;
+        }
+
+        .sda-line {
+            background-color: #3b82f6;
+            top: 80px; /* Posição Y fixa */
+        }
+
+        .scl-line {
+            background-color: #10b981;
+            top: 140px; /* Posição Y fixa */
+        }
+
+        .line-label {
+            position: absolute;
+            right: 700px;
+            top: -20px;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .sda-label {
+            color: #3b82f6;
+        }
+
+        .scl-label {
+            color: #10b981;
+        }
+
+        /* Slaves Area */
+        .slaves-container {
+            position: absolute;
+            top: 200px; /* Posição Y fixa (sempre 200px do topo do container) */
+            left: 50px;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .slave-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Connection Lines - Matemática Exata */
+        .connection-line {
+            width: 2px;
+            position: absolute;
+        }
+
+        .conn-sda {
+            height: 117px;
+            top: -117px;
+            left: 40%;
+            background-color: #3b82f6;
+        }
+
+        .conn-scl {
+            height: 57px;
+            top: -57px;
+            left: 60%;
+            background-color: #10b981;
+        }
+
+        /* Connection Dots */
+        .conn-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            transform: translateX(-50%);
+            z-index: 5;
+            border: 2px solid white;
+        }
+
+        .dot-sda {
+            background-color: #3b82f6;
+            top: -122px;
+            left: 40%;
+        }
+
+        .dot-scl {
+            background-color: #10b981;
+            top: -62px;
+            left: 60%;
+        }
+
+        /* Pull-up Resistors */
+        .pull-up-area {
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .resistor-box {
+            border: 2px solid #6b7280;
+            background-color: white;
+            padding: 2px 5px;
+            font-size: 0.7rem;
+            color: #4b5563;
+            z-index: 5;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .vcc-label {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .wire-up {
+            width: 2px;
+            background-color: #6b7280;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div>
+                <h1>I2C - Arquitetura Mestre/Escravo</h1>
+                <div class="header-accent"></div>
+            </div>
+            <div class="text-right">
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-blue-200">PROTOCOLO</span>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="diagram-container">
+                <div class="absolute top-4 left-4 text-gray-400 font-semibold text-sm">TOPOLOGIA DE BARRAMENTO</div>
+                <div class="bus-layout">
+                    <div class="master-section">
+                        <div class="device-box">
+                            <i class="fas fa-microchip fa-2x mb-2"></i>
+                            <span class="device-label">ESP32</span>
+                            <span class="device-role">MASTER</span>
+                        </div>
+                    </div>
+                    <div class="bus-lines-container">
+                        <div class="pull-up-area">
+                            <div class="vcc-label">3.3V</div>
+                            <div class="flex flex-col items-center">
+                                <div class="wire-up" style="height: 20px;"></div>
+                                <div class="resistor-box">4.7kΩ</div>
+                                <div class="wire-up" style="height: 33px; background-color: #3b82f6;"></div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="wire-up" style="height: 20px;"></div>
+                                <div class="resistor-box">4.7kΩ</div>
+                                <div class="wire-up" style="height: 93px; background-color: #10b981;"></div>
+                            </div>
+                        </div>
+                        <div class="bus-line sda-line">
+                            <span class="line-label sda-label">SDA (Data)</span>
+                        </div>
+                        <div class="bus-line scl-line">
+                            <span class="line-label scl-label">SCL (Clock)</span>
+                        </div>
+                        <div class="slaves-container">
+                            <div class="slave-wrapper">
+                                <div class="conn-dot dot-sda"></div>
+                                <div class="connection-line conn-sda"></div>
+                                <div class="conn-dot dot-scl"></div>
+                                <div class="connection-line conn-scl"></div>
+                                <div class="device-box slave">
+                                    <i class="fas fa-desktop mb-1"></i>
+                                    <span class="device-label">OLED</span>
+                                    <span class="device-role">SLAVE</span>
+                                    <span class="device-addr">0x3C</span>
+                                </div>
+                            </div>
+                            <div class="slave-wrapper">
+                                <div class="conn-dot dot-sda"></div>
+                                <div class="connection-line conn-sda"></div>
+                                <div class="conn-dot dot-scl"></div>
+                                <div class="connection-line conn-scl"></div>
+                                <div class="device-box slave slave-2">
+                                    <i class="fas fa-temperature-low mb-1"></i>
+                                    <span class="device-label">SHT31</span>
+                                    <span class="device-role">SLAVE</span>
+                                    <span class="device-addr">0x44</span>
+                                </div>
+                            </div>
+                            <div class="slave-wrapper">
+                                <div class="conn-dot dot-sda"></div>
+                                <div class="connection-line conn-sda"></div>
+                                <div class="conn-dot dot-scl"></div>
+                                <div class="connection-line conn-scl"></div>
+                                <div class="device-box slave" style="background-color: #d97706;">
+                                    <i class="fas fa-compass mb-1"></i>
+                                    <span class="device-label">MPU6050</span>
+                                    <span class="device-role">SLAVE</span>
+                                    <span class="device-addr">0x68</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="notes-container">
+                <div class="note-card">
+                    <h3><i class="fas fa-crown text-blue-500 mr-2"></i>Mestre (Master)</h3>
+                    <p>O ESP32 é quem inicia toda a comunicação. Ele gera o sinal de relógio (SCL) e controla o tráfego de dados no barramento.</p>
+                </div>
+                <div class="note-card" style="border-left-color: #059669;">
+                    <h3><i class="fas fa-users text-green-600 mr-2"></i>Escravos (Slaves)</h3>
+                    <p>Dispositivos passivos (displays, sensores). Eles ficam "escutando" o barramento e só respondem quando o Mestre chama seu <strong>endereço único</strong> (ex: 0x3C).</p>
+                </div>
+                <div class="note-card" style="border-left-color: #7c3aed;">
+                    <h3><i class="fas fa-network-wired text-purple-600 mr-2"></i>Eficiência</h3>
+                    <p>Apenas dois fios físicos (SDA e SCL) podem controlar até ~127 dispositivos diferentes, economizando pinos GPIO valiosos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

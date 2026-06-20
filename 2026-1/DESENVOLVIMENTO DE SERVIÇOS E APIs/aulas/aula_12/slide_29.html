@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boas Práticas de Segurança JWT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .title {
+            font-size: 46px;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .practice-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .card-icon.orange {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .card-icon.red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .card-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 16px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .warning-icon {
+            color: #ef4444;
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        .warning-text {
+            font-size: 15px;
+            color: #fca5a5;
+            line-height: 1.5;
+        }
+
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+        }
+
+        .highlight {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <div class="title">Boas Práticas de Segurança JWT</div>
+                        <div class="subtitle">Recomendações para proteger APIs e tokens de autenticação</div>
+                    </div>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Segurança Ativa</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <!-- Left Column with even vertical distribution -->
+                <div class="left-column">
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="card-title">1. Armazenamento Seguro da Chave Secreta</div>
+                        </div>
+                        <div class="card-content">
+                            Nunca armazene JWT_SECRET diretamente no código. Use variáveis de ambiente:
+                            <div class="code-snippet">
+                                <span class="highlight">process.env.JWT_SECRET</span> // em vez de string hardcoded
+                            </div>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-title">2. Configurar Expiração Adequada</div>
+                        </div>
+                        <div class="card-content">
+                            Tokens devem ter expiração curta (15-60 minutos). Considere refresh tokens para sessões
+                            longas.
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="card-title">3. Usar HTTPS</div>
+                        </div>
+                        <div class="card-content">
+                            Sempre use HTTPS em produção para proteger tokens em trânsito contra interceptação.
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon purple">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="card-title">4. Validar Payload</div>
+                        </div>
+                        <div class="card-content">
+                            Nunca confie cegamente no payload do JWT. Valide todos os dados antes de usar no backend.
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column with balanced items -->
+                <div class="right-column">
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-title">5. Evitar Dados Sensíveis</div>
+                        </div>
+                        <div class="card-content">
+                            Nunca inclua senhas, tokens de API ou dados pessoais identificáveis no payload do JWT.
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div class="card-title">6. Implementar Revogação</div>
+                        </div>
+                        <div class="card-content">
+                            Tenha uma estratégia clara para invalidar tokens comprometidos através de listas de
+                            revogação.
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-circle warning-icon"></i>
+                        <div class="warning-text">
+                            <strong>Atenção:</strong> Tokens JWT são decodificáveis por qualquer um que tenha o token.
+                            Não armazene segredos ou dados sensíveis no payload.
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">7. Rate Limiting</div>
+                        </div>
+                        <div class="card-content">
+                            Implemente limites de requisição por IP ou usuário para prevenir ataques de força bruta e
+                            DoS.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

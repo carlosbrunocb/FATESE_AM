@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Execução Inicial - Estado FAIL</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 60px;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-container {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15pt;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-title i {
+            color: #004A8D;
+        }
+
+        .code-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-fail {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-pass {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .terminal-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .terminal-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2px;
+        }
+
+        .terminal-prompt {
+            color: #22c55e;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .terminal-command {
+            color: #e2e8f0;
+        }
+
+        .terminal-output {
+            color: #94a3b8;
+            margin-left: 16px;
+        }
+
+        .terminal-error {
+            color: #f87171;
+        }
+
+        .terminal-success {
+            color: #4ade80;
+        }
+
+        .terminal-warning {
+            color: #fbbf24;
+        }
+
+        .interpretation-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .interpret-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .interpret-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .interpret-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .interpret-icon i {
+            font-size: 14pt;
+        }
+
+        .interpret-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .interpret-content {
+            font-size: 13pt;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .interpret-highlight {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #fee2e2;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #dc2626;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #dc2626;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Execução Inicial — Estado FAIL</div>
+                    <div class="aula-subtitle">Executando pytest -v para verificar o estado inicial dos testes</div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>2 Falhas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-terminal"></i>
+                            <span>Terminal - Execução do Pytest</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <div class="code-badge badge-fail">2 Failed</div>
+                            <div class="code-badge badge-pass">2 Passed</div>
+                        </div>
+                    </div>
+                    <div class="terminal-block">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-command">pytest -v</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">====================== test session starts
+                                ======================</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">collected 4 items</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output"></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-success">tests/test_calculadora.py::test_soma_positiva PASSED</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-success">tests/test_calculadora.py::test_multiplicacao PASSED</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-error">tests/test_calculadora.py::test_soma_negativa FAILED</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">E AssertionError: assert 5 == -5</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">E + where 5 = somar(-2, -3)</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output"></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-error">tests/test_calculadora.py::test_divisao_por_zero FAILED</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">E ZeroDivisionError: division by zero</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output"></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-warning">=================== 2 failed, 2 passed in 0.XXs
+                                ===================</span>
+                        </div>
+                    </div>
+                    <div class="interpretation-section">
+                        <div class="interpret-card">
+                            <div class="interpret-header">
+                                <div class="interpret-icon" style="background: #fee2e2;">
+                                    <i class="fas fa-bug" style="color: #dc2626;"></i>
+                                </div>
+                                <div class="interpret-title">Interpretação dos Resultados</div>
+                            </div>
+                            <div class="interpret-content">
+                                <div style="margin-bottom: 8px;">
+                                    <strong style="color: #dc2626;">test_soma_negativa:</strong> Falha de <span
+                                        class="interpret-highlight">regressão</span> - função somar() retorna valor
+                                    absoluto incorreto para negativos
+                                </div>
+                                <div>
+                                    <strong style="color: #dc2626;">test_divisao_por_zero:</strong> <span
+                                        class="interpret-highlight">ZeroDivisionError</span> - função dividir() não
+                                    trata divisão por zero
+                                </div>
+                            </div>
+                        </div>
+                        <div class="interpret-card">
+                            <div class="interpret-header">
+                                <div class="interpret-icon" style="background: #dcfce7;">
+                                    <i class="fas fa-check" style="color: #166534;"></i>
+                                </div>
+                                <div class="interpret-title">Próximo Passo</div>
+                            </div>
+                            <div class="interpret-content">
+                                <div style="margin-bottom: 8px;">
+                                    1. Corrigir <strong>dividir()</strong> para tratar divisão por zero
+                                </div>
+                                <div>
+                                    2. Verificar se a correção afeta outros testes (regressão)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                <span style="font-size: 13px; color: #64748b;">|</span>
+                <span class="footer-text">17 de 30 slides</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

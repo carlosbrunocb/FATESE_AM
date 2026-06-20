@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Geração de HTML Dinâmico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto+Mono:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .code-section {
+            display: flex;
+            gap: 25px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            flex: 0.65;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .right-column {
+            flex: 0.35;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .code-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .code-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .code-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11pt;
+            color: #e2e8f0;
+            overflow: auto;
+            flex: 1;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .led-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .led-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .led-circle.active {
+            background: #22c55e;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+        }
+
+        .led-label {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ligar {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .btn-ligar:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-desligar {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .btn-desligar:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .highlight {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #22c55e;
+        }
+
+        .number {
+            color: #f59e0b;
+        }
+
+        .tag {
+            color: #ef4444;
+        }
+
+        .attribute {
+            color: #f59e0b;
+        }
+
+        .value {
+            color: #22c55e;
+        }
+
+        .preview-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .preview-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .preview-content {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Geração de HTML Dinâmico</h1>
+                        <p>Função gerarHTML() - Interface Web para Controle de LED</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span style="color: #94a3b8; font-size: 16px;">ESP32 WebServer</span>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="code-section">
+                    <!-- Left Column -->
+                    <div class="left-column">
+                        <div class="code-card">
+                            <div class="code-header">
+                                <div class="code-icon">
+                                    <i class="fas fa-html5"></i>
+                                </div>
+                                <div class="code-title">Função gerarHTML() - Geração Dinâmica</div>
+                            </div>
+                            <div class="code-content"><span class="comment">// Função para gerar HTML dinâmico com estado do LED</span>
+<span class="keyword">String</span> <span class="highlight">gerarHTML</span>() {
+    <span class="comment">// Verifica estado atual do LED</span>
+    <span class="keyword">bool</span> ledStatus = <span
+        class="highlight">digitalRead</span>(pinoLED);
+    <span class="keyword">String</span> estado = ledStatus ? <span
+        class="string">"LIGADO"</span> : <span class="string">"DESLIGADO"</span>;
+    <span class="keyword">String</span> cor = ledStatus ? <span
+                                    class="string">"#22c55e"</span> : <span class="string">"#ef4444"</span>;
+
+    <span class="keyword">String</span> html = <span class="string">"&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;"</span>;
+    html += <span class="string">"&lt;meta charset=\"UTF-8\"&gt;"</span>;
+    html += <span class="string">"&lt;title&gt;ESP32 WebServer&lt;/title&gt;"</span>;
+    html += <span class="string">"&lt;style&gt;"</span>;
+    html += <span class="string">"body{font-family:Arial;text-align:center;margin-top:50px;}"</span>;
+    html += <span class="string">".btn{padding:15px 30px;font-size:18px;"</span>;
+    html += <span class="string">"border-radius:8px;margin:10px;display:inline-block;}"</span>;
+    html += <span class="string">".btn-ligar{background:#4CAF50;color:white;}"</span>;
+    html += <span class="string">".btn-desligar{background:#f44336;color:white;}"</span>;
+    html += <span class="string">"&lt;/style&gt;&lt;/head&gt;&lt;body&gt;"</span>;
+
+    html += <span class="string">"&lt;h1&gt;Painel de Controle IoT&lt;/h1&gt;"</span>;
+    html += <span class="string">"&lt;p&gt;Estado do LED: &lt;span style='color:"</span> + cor + <span class="string">"'&gt;"</span> + estado + <span
+                                    class="string">"&lt;/span&gt;&lt;/p&gt;"</span>;
+
+    <span class="comment">// Botões com links para as rotas</span>
+    html += <span class="string">"&lt;a href=\"/ligar\" class=\"btn btn-ligar\"&gt;LIGAR&lt;/a&gt;"</span>;
+    html += <span class="string">"&lt;a href=\"/desligar\" class=\"btn btn-desligar\"&gt;DESLIGAR&lt;/a&gt;"</span>;
+
+    html += <span class="string">"&lt;/body&gt;&lt;/html&gt;"</span>;
+    <span class="keyword">return</span> html;
+}                            </div>
+                        </div>
+                        <div class="code-card">
+                            <div class="code-header">
+                                <div class="code-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <div class="code-title">Rotas e Handlers</div>
+                            </div>
+                            <div class="code-content"><span class="comment">// Handlers para as rotas</span>
+<span class="keyword">void</span> <span class="highlight">rotaRaiz</span>() {
+    server.<span class="highlight">send</span>(<span class="number">200</span>, <span
+    class="string">"text/html"</span>, <span class="highlight">gerarHTML</span>());
+}
+
+<span class="keyword">void</span> <span class="highlight">rotaLigar</span>() {
+    <span class="highlight">digitalWrite</span>(pinoLED, <span class="keyword">HIGH</span>);
+    <span class="highlight">Serial</span>.<span class="highlight">println</span>(<span
+    class="string">"Comando via Web: LIGAR"</span>);
+    server.<span class="highlight">send</span>(<span class="number">200</span>, <span
+    class="string">"text/html"</span>, <span class="highlight">gerarHTML</span>());
+}
+
+<span class="keyword">void</span> <span class="highlight">rotaDesligar</span>() {
+    <span class="highlight">digitalWrite</span>(pinoLED, <span class="keyword">LOW</span>);
+    <span class="highlight">Serial</span>.<span class="highlight">println</span>(<span
+        class="string">"Comando via Web: DESLIGAR"</span>);
+    server.<span class="highlight">send</span>(<span class="number">200</span>, <span
+    class="string">"text/html"</span>, <span class="highlight">gerarHTML</span>());
+}                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column -->
+                    <div class="right-column">
+                        <div class="status-card">
+                            <div class="status-header">
+                                <div class="status-indicator"></div>
+                                <div class="status-text">Estado do LED</div>
+                            </div>
+                            <div class="led-display">
+                                <div class="led-circle active"></div>
+                                <div class="led-label">LED GPIO 2</div>
+                            </div>
+                            <div class="button-group">
+                                <div class="btn btn-ligar">LIGAR</div>
+                                <div class="btn btn-desligar">DESLIGAR</div>
+                            </div>
+                        </div>
+                        <div class="preview-box">
+                            <div class="preview-title">Visualização da Interface</div>
+                            <div class="preview-content">
+                                • Título: "Painel de Controle IoT"<br />
+                                • Estado atual do LED<br />
+                                • Botões LIGAR/DESLIGAR<br />
+                                • Links para rotas /ligar e /desligar
+                            </div>
+                        </div>
+                        <div class="code-card">
+                            <div class="code-header">
+                                <div class="code-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="code-title">Dicas</div>
+                            </div>
+                            <div style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                                • Use <span class="highlight">digitalRead()</span> para verificar estado<br />
+                                • Concatene strings com <span class="highlight">+=</span><br />
+                                • Retorne HTML completo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

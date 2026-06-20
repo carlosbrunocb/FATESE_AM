@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atualizando Controllers para Async/Await</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 24px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-section {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .code-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.5;
+            height: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .line-number {
+            color: #64748b;
+            min-width: 30px;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-variable {
+            color: #f472b6;
+        }
+
+        .code-number {
+            color: #fbbf24;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 4px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .info-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon i {
+            font-size: 10px;
+            color: #3b82f6;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .success-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #86efac;
+            font-size: 12px;
+        }
+
+        .success-dot {
+            width: 8px;
+            height: 8px;
+            background: #86efac;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Atualizando Controllers: Async/Await</div>
+                    <div class="header-subtitle">Adaptando controllers para operações assíncronas com Sequelize</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">MVC Pattern</div>
+                <div class="success-indicator">
+                    <div class="success-dot"></div>
+                    <span>Atualizado</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-section">
+                <div class="code-card">
+                    <div class="code-header">
+                        <div>
+                            <div class="code-title">src/controllers/livroController.js</div>
+                            <div class="code-subtitle">Controller completo com async/await e tratamento de erros</div>
+                        </div>
+                        <div class="header-icon"
+                            style="background: rgba(59, 130, 246, 0.1); width: 32px; height: 32px;">
+                            <i class="fab fa-node-js" style="color: #3b82f6; font-size: 16px;"></i>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line"><span class="line-number">1</span><span class="code-content"><span
+                                    class="code-keyword">const</span> <span class="code-variable">livroService</span> = <span class="code-function">require</span>(<span
+                                    class="code-string">'../services/livroService'</span>);</span></div>
+                        <div class="code-line"><span class="line-number">2</span><span class="code-content"></span>
+                        </div>
+                        <div class="code-line"><span class="line-number">3</span><span class="code-content"><span
+                                    class="code-keyword">const</span> <span class="code-function">listarLivros</span> = <span class="code-keyword">async</span> (<span class="code-variable">req</span>, <span
+                                    class="code-variable">res</span>, <span class="code-variable">next</span>) =&gt; {</span></div>
+                        <div class="code-line"><span class="line-number">4</span><span class="code-content"> <span
+                                    class="code-keyword">try</span> {</span></div>
+                        <div class="code-line"><span class="line-number">5</span><span class="code-content">   <span
+                                    class="code-keyword">const</span> <span class="code-variable">livros</span> = <span
+                                    class="code-keyword">await</span> <span
+                                    class="code-variable">livroService</span>.<span
+                                    class="code-function">listarTodos</span>();</span></div>
+                        <div class="code-line"><span class="line-number">6</span><span class="code-content">   <span
+                                    class="code-keyword">return</span> <span class="code-variable">res</span>.<span
+                                    class="code-function">status</span>(<span class="code-number">200</span>).<span
+                                    class="code-function">json</span>(<span class="code-variable">livros</span>);</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">7</span><span class="code-content"> } <span
+                                    class="code-keyword">catch</span> (<span class="code-variable">err</span>) {</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">8</span><span class="code-content">   <span
+                                    class="code-function">next</span>(<span class="code-variable">err</span>);</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">9</span><span class="code-content"> }</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">10</span><span class="code-content">};</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">11</span><span class="code-content"></span>
+                        </div>
+                        <div class="code-line"><span class="line-number">12</span><span class="code-content"><span
+                                    class="code-keyword">const</span> <span class="code-function">criarLivro</span> = <span class="code-keyword">async</span> (<span class="code-variable">req</span>, <span
+                                    class="code-variable">res</span>, <span class="code-variable">next</span>) =&gt; {</span></div>
+                        <div class="code-line"><span class="line-number">13</span><span class="code-content"> <span
+                                    class="code-keyword">try</span> {</span></div>
+                        <div class="code-line"><span class="line-number">14</span><span class="code-content">   <span
+                                    class="code-keyword">const</span> { <span class="code-variable">titulo</span>, <span
+                                    class="code-variable">autor</span>, <span class="code-variable">ano</span> } = <span
+                                    class="code-variable">req</span>.<span class="code-variable">body</span>;</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">15</span><span class="code-content">   <span
+                                    class="code-keyword">const</span> <span class="code-variable">novoLivro</span> = <span class="code-keyword">await</span> <span
+                                    class="code-variable">livroService</span>.<span class="code-function">criar</span>({ <span 
+                                        class="code-variable">titulo</span>, <span class="code-variable">autor</span>, <span 
+                                        class="code-variable">ano</span> });</span></div>
+                        <div class="code-line"><span class="line-number">16</span><span class="code-content">   <span
+                                    class="code-keyword">return</span> <span class="code-variable">res</span>.<span
+                                    class="code-function">status</span>(<span class="code-number">201</span>).<span
+                                    class="code-function">json</span>(<span
+                                    class="code-variable">novoLivro</span>);</span></div>
+                        <div class="code-line"><span class="line-number">17</span><span class="code-content"> } <span
+                                    class="code-keyword">catch</span> (<span class="code-variable">err</span>) {</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">18</span><span class="code-content">   <span
+                                    class="code-function">next</span>(<span class="code-variable">err</span>);</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">19</span><span class="code-content"> }</span>
+                        </div>
+                        <div class="code-line"><span class="line-number">20</span><span class="code-content">};</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <div class="highlight-text">
+                        <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 8px;"></i>
+                        <strong>Pattern:</strong> Todas as funções são <code>async</code> e usam <code>await</code> para
+                        operações do Service
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-check-circle" style="color: #86efac;"></i>
+                        Boas Práticas
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Try/Catch:</strong> Sempre use try/catch para capturar erros e repassar com
+                            next(err)
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Async/Await:</strong> Evite callbacks, use async/await para código mais limpo
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Tratamento de Erros:</strong> Retorne status HTTP adequados (404, 500, etc.)
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-code-branch" style="color: #60a5fa;"></i>
+                        Fluxo da Requisição
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="info-text">
+                            1. Cliente HTTP → Router
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="info-text">
+                            2. Controller (async) → Service
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="info-text">
+                            3. Service → Model → DB
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

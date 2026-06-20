@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IDEs — VS Code e PyCharm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw; /* Largura total da Viewport */
+            height: 100vh; /* Altura total da Viewport */
+            background-color: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            bottom: -15vw;
+            left: -10vw;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+        }
+
+        .decorative-dots {
+            position: absolute;
+            top: 100px;
+            right: 50px;
+            width: 200px;
+            height: 100px;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 1;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 4vh 4vw;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            box-sizing: border-box;
+            height: 100%;
+        }
+
+        /* Layout Columns */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 40px;
+            flex: 1; /* Expande para ocupar altura disponível */
+            margin-top: 10px;
+            min-height: 0; /* Permite scroll interno se necessário */
+        }
+
+        /* Left Column: IDE Cards */
+        .ide-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center; /* Centraliza verticalmente */
+        }
+
+        .ide-card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 3vh 2vw;
+            border: 1px solid #334155;
+            transition: transform 0.3s ease;
+        }
+
+        .ide-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+        }
+
+        .ide-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ide-icon {
+            font-size: 2rem;
+            margin-right: 12px;
+        }
+
+        .vscode-color { color: #3b82f6; }
+        .pycharm-color { color: #fbbf24; }
+
+        .ide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .ide-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ide-features li {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ide-features li i {
+            font-size: 0.7rem;
+            margin-right: 8px;
+            color: #64748b;
+        }
+
+        /* Right Column: Numbered Steps */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly; /* Espaça igualmente em telas maiores */
+            padding: 10px 0;
+            position: relative;
+            overflow-y: auto; /* Adicionado para evitar sobreposição em telas muito baixas */
+        }
+
+        /* Connecting Line */
+        .steps-line {
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: 40px;
+            width: 2px;
+            background-color: #334155;
+            z-index: 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 24px;
+            position: relative;
+            z-index: 10;
+            background-color: rgba(15, 23, 42, 0.6);
+            padding: 10px 0;
+            border-radius: 8px;
+            margin-bottom: 1vh; /* Margem flexível */
+        }
+
+        .step-number-box {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background-color: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .step-content {
+            flex: 1;
+            background-color: #1e293b;
+            border-radius: 8px;
+            padding: 2.5vh 2vw;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            color: #cbd5e1;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #0f172a;
+            color: #fca5a5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="decorative-dots"></div>
+        <div class="content-area">
+            <div class="mb-4 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Ambiente de Desenvolvimento</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">IDEs — VS Code e PyCharm</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-grid">
+                <div class="ide-section">
+                    <div class="ide-card">
+                        <div class="ide-header">
+                            <i class="fas fa-code ide-icon vscode-color"></i>
+                            <h3 class="ide-title">VS Code</h3>
+                        </div>
+                        <ul class="ide-features">
+                            <li>
+                                <p><i class="fas fa-circle"></i> Leve e Customizável</p>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-circle"></i> Extensão oficial Microsoft</p>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-circle"></i> "Test Explorer" Integrado</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="ide-card">
+                        <div class="ide-header">
+                            <i class="fab fa-python ide-icon pycharm-color"></i>
+                            <h3 class="ide-title">PyCharm</h3>
+                        </div>
+                        <ul class="ide-features">
+                            <li>
+                                <p><i class="fas fa-circle"></i> IDE Robusta "All-in-one"</p>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-circle"></i> Configuração automática</p>
+                            </li>
+                            <li>
+                                <p><i class="fas fa-circle"></i> Análise de código estática</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="steps-container">
+                    <div class="steps-line"></div>
+                    <div class="step-item">
+                        <div class="step-number-box">1</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Configure o Interpretador (Venv)</h3>
+                            <p class="step-desc">
+                                Aponte a IDE para o Python dentro da pasta <span class="code-snippet">venv/</span>.
+                                <br />
+                                <i class="fas fa-arrow-right text-blue-400 text-xs mt-2"></i> Isso garante que o pacote
+                                <code>pytest</code> instalado seja reconhecido e utilizado, evitando erros de "Module
+                                Not Found".
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number-box">2</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Habilite a Descoberta de Testes</h3>
+                            <p class="step-desc">
+                                No VS Code, acesse a aba "Testing" (ícone de Erlenmeyer) e configure para usar o
+                                framework <strong>Pytest</strong>. Indique que a pasta raiz dos testes é <span
+                                    class="code-snippet">tests/</span>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number-box">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Execução e Análise Visual</h3>
+                            <p class="step-desc">
+                                Use os botões de "Play" (▶) que aparecem ao lado de cada função <code>test_</code>.
+                                Em caso de falha, use breakpoints (bolinha vermelha) e o modo <strong>Debug</strong>
+                                para inspecionar variáveis passo a passo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-6 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Configuração de IDE</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

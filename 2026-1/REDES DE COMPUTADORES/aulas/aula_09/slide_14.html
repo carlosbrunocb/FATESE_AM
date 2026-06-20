@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=1280, height=720, initial-scale=1.0" name="viewport" />
+    <title>Fluxo de Encerramento TCP - Dinâmico</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        /* Reset e Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; font-family: 'Open Sans', sans-serif; background: #f5f7fa; }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        /* Estilo do Header (Idêntico ao anterior) */
+        .header {
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header-icon {
+            width: 50px; height: 50px; background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1e3a5f; font-size: 24px; margin-right: 20px;
+        }
+        .header-title { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 700; color: white; }
+        .header-subtitle { font-size: 14px; color: #a0aec0; margin-top: 5px; }
+
+        /* Área de Diagramação */
+        .main-content {
+            padding: 40px 50px;
+            display: grid;
+            grid-template-columns: 700px 1fr;
+            gap: 40px;
+            height: calc(100% - 160px);
+        }
+
+        /* Container do Diagrama */
+        .diagram-area {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Linhas de Vida (Life Lines) */
+        .life-line-label {
+            position: absolute;
+            top: 20px;
+            font-weight: 800;
+            color: #1e3a5f;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .label-client { left: 100px; }
+        .label-server { right: 100px; }
+
+        .life-line {
+            position: absolute;
+            top: 60px;
+            bottom: 40px;
+            width: 4px;
+            background: #cbd5e0;
+            border-radius: 2px;
+        }
+        .line-client { left: 130px; border-left: 2px dashed #2c5282; background: none; }
+        .line-server { right: 130px; border-left: 2px dashed #2c5282; background: none; }
+
+        /* Pacotes e Animações */
+        .packet {
+            position: absolute;
+            height: 35px;
+            padding: 0 15px;
+            background: #1e3a5f;
+            color: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+            opacity: 0;
+        }
+
+        /* Timeline de Animação */
+        @keyframes flowRight {
+            0% { left: 135px; top: 100px; opacity: 0; transform: scale(0.8); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; transform: scale(1); }
+            100% { left: 515px; top: 160px; opacity: 0; transform: scale(0.8); }
+        }
+
+        @keyframes flowLeft {
+            0% { right: 135px; top: 180px; opacity: 0; transform: scale(0.8); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; transform: scale(1); }
+            100% { right: 515px; top: 240px; opacity: 0; transform: scale(0.8); }
+        }
+
+        @keyframes flowLeftLate {
+            0% { right: 135px; top: 280px; opacity: 0; transform: scale(0.8); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; transform: scale(1); }
+            100% { right: 515px; top: 340px; opacity: 0; transform: scale(0.8); }
+        }
+
+        @keyframes flowRightFinal {
+            0% { left: 135px; top: 360px; opacity: 0; transform: scale(0.8); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; transform: scale(1); }
+            100% { left: 515px; top: 420px; opacity: 0; transform: scale(0.8); }
+        }
+
+        .p1 { animation: flowRight 4s infinite; }
+        .p2 { animation: flowLeft 4s infinite; animation-delay: 1s; }
+        .p3 { animation: flowLeftLate 4s infinite; animation-delay: 2s; }
+        .p4 { animation: flowRightFinal 4s infinite; animation-delay: 3s; }
+
+        /* Legenda Lateral */
+        .legend-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+        .info-box h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            color: #2c5282;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10pt;
+            font-weight: 700;
+            background: #edf2f7;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        .active-status { background: #c6f6d5; color: #22543d; }
+
+        /* Barra Inferior */
+        .status-bar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 60px; background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <div>
+                <div class="header-title">Fluxo Dinâmico: Encerramento TCP</div>
+                <div class="header-subtitle">Visualização da troca de segmentos durante o Four-Way Handshake</div>
+            </div>
+            <div style="margin-left: auto; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 30px; color: white; font-size: 13px; font-weight: 600;">
+                <i class="fas fa-play-circle"></i> Animação Ativa
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="diagram-area">
+                <div class="life-line-label label-client"><i class="fas fa-desktop"></i> Cliente</div>
+                <div class="life-line-label label-server"><i class="fas fa-server"></i> Servidor</div>
+
+                <div class="life-line line-client"></div>
+                <div class="life-line line-server"></div>
+
+                <div class="packet p1">1. FIN (Seq=u)</div>
+                <div class="packet p2" style="background: #2c5282;">2. ACK (Ack=u+1)</div>
+                <div class="packet p3" style="background: #1a365d;">3. FIN (Seq=v)</div>
+                <div class="packet p4" style="background: #2c5282;">4. ACK (Ack=v+1)</div>
+
+                <svg width="100%" height="100%" style="position:absolute; top:0; left:0; pointer-events: none;">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#cbd5e0" />
+                        </marker>
+                    </defs>
+                    <line x1="135" y1="120" x2="560" y2="180" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+                    <line x1="560" y1="200" x2="135" y2="260" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+                    <line x1="560" y1="300" x2="135" y2="360" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+                    <line x1="135" y1="380" x2="560" y2="440" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+                </svg>
+            </div>
+
+            <div class="legend-card">
+                <div class="info-box">
+                    <h4><i class="fas fa-sign-out-alt"></i> Fase 1: Encerramento do Cliente</h4>
+                    <span class="status-pill active-status">FIN_WAIT_1</span>
+                    <p style="font-size: 12pt; color: #718096;">O Cliente decide fechar a conexão e para de enviar dados, enviando o bit <strong>FIN</strong>.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4><i class="fas fa-hourglass-half"></i> Fase 2: Confirmação e Espera</h4>
+                    <span class="status-pill">CLOSE_WAIT</span>
+                    <p style="font-size: 12pt; color: #718096;">O Servidor reconhece o pedido e entra em modo de encerramento pendente.</p>
+                </div>
+
+                <div class="info-box" style="border-left: 4px solid #f6ad55;">
+                    <h4><i class="fas fa-exclamation-triangle"></i> TIME_WAIT (2×MSL - Maximum Segment Lifetime)</h4>
+                    <p style="font-size: 12pt; color: #718096;">
+                        <strong>Por que o Cliente espera?</strong><br>
+                        Para garantir que o último ACK chegou ao servidor e para que pacotes "fantasiados" na rede expirem antes de uma nova conexão.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-left">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4a5568;">
+                    <i class="fas fa-network-wired" style="color: #2c5282;"></i>
+                    <span>Tópico: Camada de Transporte</span>
+                </div>
+                
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 12px; color: #718096;">Visualização Progressiva</span>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4a5568; margin-left: 20px;">
+                    <i class="fas fa-clock" style="color: #2c5282;"></i>
+                    <span>Sincronismo: Full-Duplex</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

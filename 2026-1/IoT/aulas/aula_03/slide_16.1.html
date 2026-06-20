@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cenário: O Cruzamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 6vh 6vw;
+            position: relative;
+            z-index: 2;
+        }
+
+        .circuit-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #60a5fa;
+            padding-bottom: 16px;
+            margin-top: 0;
+        }
+
+        .accent-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #60a5fa;
+        }
+
+        /* ESTILOS DO DIAGRAMA VISUAL */
+        .scenario-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 1;
+            padding: 0 4vw;
+            margin-top: 20px;
+        }
+
+        .entity-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            width: 250px;
+        }
+
+        .entity-icon {
+            font-size: 90px;
+            transition: color 0.3s;
+        }
+
+        .car-icon { color: #22c55e; } /* Verde - Fluxo fluindo */
+        .pedestrian-icon { color: #ef4444; } /* Vermelho - Parado */
+
+        .traffic-light-box {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border: 4px solid #334155;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .light {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            opacity: 0.2;
+            transition: all 0.3s;
+        }
+
+        /* Luzes Ativas */
+        .light.red.active {
+            background-color: #ef4444;
+            opacity: 1;
+            box-shadow: 0 0 25px 5px rgba(239, 68, 68, 0.6);
+        }
+        
+        .light.yellow.active {
+            background-color: #fbbf24;
+            opacity: 1;
+            box-shadow: 0 0 25px 5px rgba(251, 191, 36, 0.6);
+        }
+
+        .light.green.active {
+            background-color: #22c55e;
+            opacity: 1;
+            box-shadow: 0 0 25px 5px rgba(34, 197, 94, 0.6);
+        }
+
+        .status-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-green { color: #22c55e; }
+        .status-red { color: #ef4444; }
+
+        .interaction-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(30, 41, 59, 0.6);
+            padding: 40px 30px;
+            border-radius: 16px;
+            border: 2px dashed #60a5fa;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .interaction-icon {
+            font-size: 60px;
+            color: #60a5fa;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .interaction-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .interaction-desc {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <svg class="circuit-bg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="200" cy="150" fill="none" r="60" stroke="currentColor" stroke-width="2"></circle>
+            <circle cx="1080" cy="570" fill="none" r="80" stroke="currentColor" stroke-width="2"></circle>
+            <line stroke="currentColor" stroke-width="2" x1="100" x2="300" y1="100" y2="100"></line>
+            <line stroke="currentColor" stroke-width="2" x1="980" x2="1180" y1="620" y2="620"></line>
+        </svg>
+        <div class="content-wrapper">
+            <div>
+                <p class="slide-title">Ilustração do Estado Padrão</p>
+            </div>
+            
+            <div class="scenario-container">
+                
+                <div class="entity-group">
+                    <i class="fas fa-car-side entity-icon car-icon"></i>
+                    <div class="traffic-light-box">
+                        <div class="light red"></div>
+                        <div class="light yellow"></div>
+                        <div class="light green active"></div>
+                    </div>
+                    <p class="status-text status-green">Fluindo</p>
+                </div>
+
+                <div class="interaction-center">
+                    <i class="fas fa-hand-pointer interaction-icon"></i>
+                    <h3 class="interaction-title">Acionamento</h3>
+                    <p class="interaction-desc">O sistema aguarda o pedestre apertar o botão para iniciar a rotina de transição.</p>
+                </div>
+
+                <div class="entity-group">
+                    <i class="fas fa-walking entity-icon pedestrian-icon"></i>
+                    <div class="traffic-light-box">
+                        <div class="light red active"></div>
+                        <div class="light green"></div>
+                    </div>
+                    <p class="status-text status-red">Aguardando</p>
+                </div>
+
+            </div>
+        </div>
+        <div class="accent-bar"></div>
+    </div>
+</body>
+</html>

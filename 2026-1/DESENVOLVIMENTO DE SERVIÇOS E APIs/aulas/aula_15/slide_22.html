@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 3: Controllers v1 e v2</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* * ALTERAÇÃO AQUI: 
+         * Transformando o container em Grid com 3 linhas (Header, Conteúdo e Footer)
+         */
+        .slide-container {
+            display: grid;
+            grid-template-rows: 100px 1fr auto;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ALTERAÇÃO AQUI: Removido absolute, top, left e width fixo */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* ALTERAÇÃO AQUI: Removido absolute, larguras fixas e alturas engessadas. 
+           O Grid cuida de esticar este container (1fr). */
+        .main-content {
+            padding: 25px 40px;
+            z-index: 10;
+            overflow-y: auto; /* Permite scroll se o código ficar muito longo em telas pequenas */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            flex-grow: 1;
+            overflow-x: auto; /* Permite rolar código lateralmente se quebrar a tela */
+            margin-top: 5px;
+        }
+
+        .code-header {
+            margin-bottom: 8px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.35;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .code-function {
+            color: #c084fc;
+        }
+
+        .code-variable {
+            color: #fca5a5;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #3b82f6;
+            margin-top: 10px;
+        }
+
+        .explanation-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation-text {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border-radius: 6px;
+            padding: 10px;
+            border-left: 4px solid #f59e0b;
+            margin-top: 8px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        /* ALTERAÇÃO AQUI: Removido absolute, ajustado para margins que simulam o posicionamento */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+            margin: 0 40px 20px 40px; 
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .version-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .v1-badge {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .v2-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Bônus de responsividade: transforma em 1 coluna se a tela for menor que 900px */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+            }
+            .slide-container {
+                overflow-y: auto;
+            }
+            body {
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div>
+                    <div class="header-title">Passo 3: Controllers v1 e v2</div>
+                    <div class="header-subtitle">Implementação dos controladores para ambas as versões da API</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div>
+                                    <div class="section-title">Controller V1 <span
+                                            class="version-badge v1-badge">LEGADO</span></div>
+                                    <div class="section-subtitle">src/controllers/v1/livroController.js</div>
+                                </div>
+                            </div>
+                            <div class="step-indicator">
+                                <div class="step-number">1</div>
+                                <div class="step-text">Controller mantendo compatibilidade</div>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <div class="code-title">livroController.js (v1)</div>
+                                    <div style="color: #94a3b8; font-size: 11px;">JavaScript</div>
+                                </div>
+                                <div class="code-content">
+                                    <span class="code-keyword">const</span> livroServiceV1 = <span
+                                        class="code-function">require</span>(<span
+                                        class="code-string">'../../services/v1/livroService'</span>);<br /><br />
+                                    <span class="code-keyword">const</span> <span
+                                        class="code-function">listarLivros</span> = <span
+                                        class="code-keyword">async</span> (req, res, next) =&gt; {<br />
+                                        <span class="code-keyword">try</span> {<br />
+                                            <span class="code-comment">// Adicionando header de aviso de depreciação</span><br />
+                                            res.set(<span class="code-string">'Deprecation'</span>, <span
+                                        class="code-string">'true'</span>);<br />
+                                            <br />
+                                            <span class="code-keyword">const</span> livros = <span
+                                        class="code-keyword">await</span> livroServiceV1.listarTodosV1(req.query.titulo);<br />
+                                            res.status(<span class="code-variable">200</span>).json(livros); <span
+                                        class="code-comment">// Retorna ARRAY</span><br />
+                                        } <span class="code-keyword">catch</span> (error) {<br />
+                                            next(error);<br />
+                                        }<br />
+                                    };<br />
+                                    <span class="code-keyword">module.exports</span> = { listarLivros };
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>⚠️ Importante:</strong> Header <code>Deprecation: true</code> avisa que versão
+                                será descontinuada
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <div class="section-card">
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div>
+                                    <div class="section-title">Controller V2 <span
+                                            class="version-badge v2-badge">NOVO</span></div>
+                                    <div class="section-subtitle">src/controllers/v2/livroController.js</div>
+                                </div>
+                            </div>
+                            <div class="step-indicator">
+                                <div class="step-number">2</div>
+                                <div class="step-text">Controller com nova estrutura</div>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <div class="code-title">livroController.js (v2)</div>
+                                    <div style="color: #94a3b8; font-size: 11px;">JavaScript</div>
+                                </div>
+                                <div class="code-content">
+                                    <span class="code-keyword">const</span> livroServiceV2 = <span
+                                        class="code-function">require</span>(<span
+                                        class="code-string">'../../services/v2/livroService'</span>);<br /><br />
+                                    <span class="code-keyword">const</span> <span
+                                        class="code-function">listarLivros</span> = <span
+                                        class="code-keyword">async</span> (req, res, next) =&gt; {<br />
+                                        <span class="code-keyword">try</span> {<br />
+                                            <span class="code-keyword">const</span> { titulo, pagina, limite } = req.query;<br />
+                                            <span class="code-keyword">const</span> resultado = <span
+                                        class="code-keyword">await</span> livroServiceV2.listarTodosV2(<br />
+                                                titulo, pagina, limite<br />
+                                            );<br />
+                                            res.status(<span class="code-variable">200</span>).json(resultado); <span
+                                        class="code-comment">// Retorna OBJETO</span><br />
+                                        } <span class="code-keyword">catch</span> (error) {<br />
+                                            next(error);<br />
+                                        }<br />
+                                    };<br />
+                                    <span class="code-keyword">module.exports</span> = { listarLivros };
+                                </div>
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <div class="explanation-title">
+                                <i class="fas fa-info-circle"></i>
+                                Diferença Principal
+                            </div>
+                            <div class="explanation-text">
+                                V1 retorna array simples, V2 retorna objeto com metadados de paginação
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Controllers implementados</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

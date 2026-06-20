@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo de Código: Análise Manual</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #F5F5F5;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Consistente */
+        .header-bar {
+            background-color: #0055A4;
+            padding: 25px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 38px;
+            color: white;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Layout Principal */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Divisão 50/50 */
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        /* Coluna Esquerda: Código */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Janelas de Código (IDE Style) */
+        .ide-window {
+            background-color: #1E1E1E;
+            /* VS Code Dark */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ide-header {
+            background-color: #252526;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .red {
+            background-color: #FF5F56;
+        }
+
+        .yellow {
+            background-color: #FFBD2E;
+        }
+
+        .green {
+            background-color: #27C93F;
+        }
+
+        .filename {
+            color: #9CA3AF;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+        }
+
+        .code-content {
+            padding: 20px;
+            color: #D4D4D4;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #C586C0;
+        }
+
+        /* Keyword purple */
+        .fn {
+            color: #DCDCAA;
+        }
+
+        /* Function yellow */
+        .var {
+            color: #9CDCFE;
+        }
+
+        /* Variable blue */
+        .num {
+            color: #B5CEA8;
+        }
+
+        /* Number green */
+        .str {
+            color: #CE9178;
+        }
+
+        /* String orange */
+        .com {
+            color: #6A9955;
+            font-style: italic;
+        }
+
+        /* Comment green */
+
+        /* Destaque do Erro */
+        .error-line {
+            background-color: rgba(244, 67, 54, 0.15);
+            display: block;
+            margin: 0 -20px;
+            padding: 0 20px;
+            border-left: 3px solid #F44336;
+        }
+
+        /* Badge de Status do Código */
+        .status-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-bad {
+            background-color: #3f1818;
+            color: #F87171;
+            border: 1px solid #7f1d1d;
+        }
+
+        .status-good {
+            background-color: #064E3B;
+            color: #34D399;
+            border: 1px solid #065F46;
+        }
+
+        /* Coluna Direita: Análise */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .analysis-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid #DC2626;
+            /* Vermelho erro */
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .problem-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .problem-icon {
+            color: #DC2626;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        .problem-text {
+            font-family: 'Roboto', sans-serif;
+            color: #4B5563;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .problem-text strong {
+            color: #1F2937;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div class="header-left">
+                <i class="fab fa-python header-icon"></i>
+                <h1 class="title">Exemplo de Código: Análise Manual</h1>
+            </div>
+            <div class="logo-container">
+                <img src="imagens/Senac_logo.svg.png" alt="Senac Logo" class="logo-img">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+
+            <div class="left-section">
+
+                <div class="ide-window">
+                    <div class="ide-header">
+                        <div class="window-controls">
+                            <div class="dot red"></div>
+                            <div class="dot yellow"></div>
+                            <div class="dot green"></div>
+                        </div>
+                        <span class="filename">bad_code.py</span>
+                        <span class="status-badge status-bad">Original</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="kwd">def</span> <span class="fn">calcular_desconto</span>(<span
+                            class="var">valor</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">if</span> <span class="var">valor</span> > <span
+                            class="num">100</span>:<br>
+                        <span class="error-line">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">return</span> <span
+                                class="var">valor</span> * <span class="num">0.1</span> <span class="com"># Erro
+                                Lógico!</span>
+                        </span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">return</span> <span class="var">valor</span>
+                    </div>
+                </div>
+
+                <div class="ide-window" style="border-color: #059669;">
+                    <div class="ide-header" style="background-color: #064E3B;">
+                        <div class="window-controls">
+                            <div class="dot red"></div>
+                            <div class="dot yellow"></div>
+                            <div class="dot green"></div>
+                        </div>
+                        <span class="filename" style="color: #A7F3D0;">good_code.py</span>
+                        <span class="status-badge status-good">Corrigido</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="kwd">def</span> <span class="fn">calcular_desconto</span>(<span
+                            class="var">valor</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"""Retorna valor final c/ desconto se >
+                            100."""</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">return</span> <span class="var">valor</span> * <span
+                            class="num">0.9</span> <span class="kwd">if</span> <span class="var">valor</span> > <span
+                            class="num">100</span> <span class="kwd">else</span> <span class="var">valor</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="right-section">
+
+                <div class="analysis-card">
+                    <div class="card-header">
+                        <i class="fas fa-clipboard-check" style="font-size: 32px; color: #DC2626;"></i>
+                        <h2 class="card-title">Problemas Identificados</h2>
+                    </div>
+
+                    <div class="problem-item">
+                        <i class="fas fa-bug problem-icon"></i>
+                        <div class="problem-text">
+                            <strong>Erro de Lógica (Grave):</strong><br>
+                            O código retorna apenas o <em>valor do desconto</em> (0.1), e não o valor final com o
+                            desconto aplicado (0.9).
+                        </div>
+                    </div>
+
+                    <div class="problem-item">
+                        <i class="fas fa-font problem-icon"></i>
+                        <div class="problem-text">
+                            <strong>Nomenclatura Confusa:</strong><br>
+                            A função diz <code>calcular_desconto</code>, mas o fluxo sugere que deveria retornar o preço
+                            final a pagar.
+                        </div>
+                    </div>
+
+                    <div class="problem-item">
+                        <i class="fas fa-book-open problem-icon"></i>
+                        <div class="problem-text">
+                            <strong>Falta de Documentação:</strong><br>
+                            Ausência de <em>Docstring</em> explicando o comportamento da função e o que ela espera
+                            receber/retornar.
+                        </div>
+                    </div>
+
+                    <div class="problem-item">
+                        <i class="fas fa-exclamation-triangle problem-icon"></i>
+                        <div class="problem-text">
+                            <strong>Edge Case:</strong><br>
+                            Comportamento para valor <code>exatamente 100</code> não está explícito (cai no
+                            <code>else</code> implícito).
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

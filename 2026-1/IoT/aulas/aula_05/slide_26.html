@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            background: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        .font-roboto {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .font-opensans {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .brand-blue {
+            color: #1a365d;
+        }
+
+        .brand-gray {
+            color: #4a5568;
+        }
+
+        .brand-orange {
+            color: #ff6b35;
+        }
+
+        .border-soft {
+            border-color: rgba(26, 54, 93, 0.16);
+        }
+
+        .shadow-soft {
+            box-shadow: 0 12px 28px rgba(26, 54, 93, 0.10);
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        .chip {
+            background: rgba(26, 54, 93, 0.04);
+            border: 1px solid rgba(26, 54, 93, 0.14);
+        }
+
+        .cardbg {
+            background: #ffffff;
+        }
+
+        .arrow {
+            color: rgba(26, 54, 93, 0.40);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide flex">
+        <div class="flex-1 flex flex-col relative">
+            <!-- Header -->
+            <div class="w-full flex items-center justify-between px-14 py-10">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center border border-soft">
+                        <i class="fa-solid fa-diagram-project brand-blue text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="font-opensans text-sm brand-gray tracking-wide">Faculdade de Tecnologia do Senac
+                            (FATESE)</p>
+                        <p class="font-opensans text-sm brand-gray tracking-wide">Curso: Análise e Desenvolvimento de
+                            Sistemas</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 rounded-full" style="background:#ff6b35;"></div>
+                    <p class="font-opensans text-sm brand-gray tracking-wide">Aula 05 — Atuadores e PWM</p>
+                </div>
+            </div>
+            <!-- Main -->
+            <div class="flex-1 flex px-14 pb-12">
+                <!-- Left: architecture diagram -->
+                <div class="flex-1 flex flex-col pr-10">
+                    <div>
+                        <p class="font-roboto text-xs brand-gray uppercase tracking-widest">Integração — sensores +
+                            atuadores (loop de controle)</p>
+                        <p class="font-roboto brand-blue" style="font-size:54px; line-height:1.05; font-weight:900;">
+                            Sensor <span class="brand-orange">→</span> ESP32 <span class="brand-orange">→</span> Atuador
+                        </p>
+                        <p class="font-opensans brand-gray mt-4" style="font-size:16px; line-height:1.7;">
+                            A leitura no <span class="font-semibold brand-blue">ADC</span> vira uma decisão (código) e
+                            se transforma em saída:
+                            <span class="font-semibold brand-blue">PWM</span> para controlar <span
+                                class="font-semibold brand-blue">potência</span> (LED) ou <span
+                                class="font-semibold brand-blue">posição</span> (servo).
+                        </p>
+                    </div>
+                    <!-- Diagram card -->
+                    <div class="mt-7 p-7 rounded-2xl border border-soft shadow-soft cardbg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-roboto brand-blue text-lg" style="font-weight:900;">Diagrama de
+                                    arquitetura (didático)</p>
+                                <p class="font-opensans brand-gray text-sm mt-1" style="line-height:1.55;">
+                                    Dois exemplos práticos de mapeamento: <span class="font-semibold brand-blue">LDR →
+                                        brilho do LED</span> e
+                                    <span class="font-semibold brand-blue">potenciômetro → ângulo do servo</span>.
+                                </p>
+                            </div>
+                            <div class="px-4 py-2 rounded-lg chip">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fa-solid fa-arrows-rotate brand-orange"></i>
+                                    <p class="font-opensans text-sm brand-gray">Entrada (ADC) → Saída (PWM)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pipeline blocks -->
+                        <div class="mt-6 grid grid-cols-3 gap-4">
+                            <!-- Sensors -->
+                            <div class="p-5 rounded-2xl border border-soft" style="background: rgba(26,54,93,0.03);">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                                            style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.22);">
+                                            <i class="fa-solid fa-eye" style="color:#16a34a;"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Sensores
+                                                (Entrada)</p>
+                                            <p class="font-opensans brand-gray text-xs mt-1">Sinais analógicos → ADC</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full"
+                                        style="background: rgba(34,197,94,0.10); border: 1px solid rgba(34,197,94,0.20);">
+                                        <p class="mono text-xs" style="color:#166534; font-weight:900;">ADC</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-3">
+                                    <div class="p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                        <div class="flex items-start space-x-3">
+                                            <i class="fa-solid fa-sun brand-orange mt-1"></i>
+                                            <div class="flex-1">
+                                                <p class="font-roboto brand-blue text-xs" style="font-weight:900;">LDR
+                                                    (luminosidade)</p>
+                                                <p class="font-opensans brand-gray text-xs mt-1"
+                                                    style="line-height:1.45;">
+                                                    Quanto mais luz, maior (ou menor) o valor lido no ADC.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                        <div class="flex items-start space-x-3">
+                                            <i class="fa-solid fa-sliders brand-blue mt-1"></i>
+                                            <div class="flex-1">
+                                                <p class="font-roboto brand-blue text-xs" style="font-weight:900;">
+                                                    Potenciômetro (posição manual)</p>
+                                                <p class="font-opensans brand-gray text-xs mt-1"
+                                                    style="line-height:1.45;">
+                                                    Leitura contínua para definir ângulo do servo.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ESP32 -->
+                            <div class="p-5 rounded-2xl border border-soft" style="background: rgba(255,107,53,0.06);">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                                            style="background: rgba(26,54,93,0.10); border: 1px solid rgba(26,54,93,0.18);">
+                                            <i class="fa-solid fa-microchip brand-blue"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-roboto brand-blue text-sm" style="font-weight:900;">ESP32
+                                                (Processamento)</p>
+                                            <p class="font-opensans brand-gray text-xs mt-1">Lógica + mapeamento</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full"
+                                        style="background: rgba(26,54,93,0.06); border: 1px solid rgba(26,54,93,0.16);">
+                                        <p class="mono brand-blue text-xs" style="font-weight:900;">C/C++</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                    <p class="font-roboto brand-blue text-xs" style="font-weight:900;">Passos típicos no
+                                        código</p>
+                                    <div class="mt-3 space-y-2">
+                                        <div class="flex items-start space-x-2">
+                                            <i class="fa-solid fa-1 brand-orange text-xs mt-1"></i>
+                                            <p class="font-opensans brand-gray text-xs" style="line-height:1.45;">
+                                                <span class="font-semibold brand-blue">Ler ADC</span> (ex.: 0–4095)
+                                            </p>
+                                        </div>
+                                        <div class="flex items-start space-x-2">
+                                            <i class="fa-solid fa-2 brand-orange text-xs mt-1"></i>
+                                            <p class="font-opensans brand-gray text-xs" style="line-height:1.45;">
+                                                <span class="font-semibold brand-blue">Mapear</span> para a saída (0–255
+                                                ou 0–180)
+                                            </p>
+                                        </div>
+                                        <div class="flex items-start space-x-2">
+                                            <i class="fa-solid fa-3 brand-orange text-xs mt-1"></i>
+                                            <p class="font-opensans brand-gray text-xs" style="line-height:1.45;">
+                                                <span class="font-semibold brand-blue">Aplicar</span> em PWM/servo
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 p-4 rounded-xl"
+                                    style="background: rgba(26,54,93,0.04); border: 1px solid rgba(26,54,93,0.14);">
+                                    <p class="font-opensans brand-gray text-xs" style="line-height:1.55;">
+                                        Ex.: <span class="mono brand-blue font-semibold">int x =
+                                            analogRead(pin);</span><br />
+                                        <span class="mono brand-blue font-semibold">int y =
+                                            map(x,0,4095,0,255);</span><br />
+                                        <span class="mono brand-blue font-semibold">analogWrite(ledPin,y);</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Actuators -->
+                            <div class="p-5 rounded-2xl border border-soft" style="background: rgba(26,54,93,0.03);">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                                            style="background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.22);">
+                                            <i class="fa-solid fa-bolt brand-orange"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Atuadores
+                                                (Saída)</p>
+                                            <p class="font-opensans brand-gray text-xs mt-1">Ação no mundo físico</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full"
+                                        style="background: rgba(255,107,53,0.10); border: 1px solid rgba(255,107,53,0.20);">
+                                        <p class="mono brand-blue text-xs" style="font-weight:900;">PWM</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-3">
+                                    <div class="p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                        <div class="flex items-start space-x-3">
+                                            <i class="fa-solid fa-lightbulb brand-orange mt-1"></i>
+                                            <div class="flex-1">
+                                                <p class="font-roboto brand-blue text-xs" style="font-weight:900;">LED
+                                                    (potência / brilho)</p>
+                                                <p class="font-opensans brand-gray text-xs mt-1"
+                                                    style="line-height:1.45;">
+                                                    Controle via <span
+                                                        class="mono brand-blue font-semibold">analogWrite()</span>
+                                                    (0–255).
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                        <div class="flex items-start space-x-3">
+                                            <i class="fa-solid fa-gear brand-blue mt-1"></i>
+                                            <div class="flex-1">
+                                                <p class="font-roboto brand-blue text-xs" style="font-weight:900;">
+                                                    Servomotor (posição)</p>
+                                                <p class="font-opensans brand-gray text-xs mt-1"
+                                                    style="line-height:1.45;">
+                                                    Controle via <span
+                                                        class="mono brand-blue font-semibold">ESP32Servo.write(0..180)</span>.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 p-4 rounded-xl"
+                                    style="background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.20);">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fa-solid fa-circle-info brand-orange mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-roboto brand-blue text-xs" style="font-weight:900;">
+                                                Observação</p>
+                                            <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.55;">
+                                                PWM “de LED” (duty) ≠ PWM “de servo” (largura do pulso em 50 Hz).
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Arrows row -->
+                        <div class="mt-5 flex items-center justify-center">
+                            <div class="flex items-center space-x-6">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-arrow-right arrow"></i>
+                                    <p class="font-opensans brand-gray text-xs">Leitura</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-arrow-right arrow"></i>
+                                    <p class="font-opensans brand-gray text-xs">Mapeamento</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-arrow-right arrow"></i>
+                                    <p class="font-opensans brand-gray text-xs">Ação</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bottom: two mini examples -->
+                    <div class="mt-6 grid grid-cols-2 gap-6">
+                        <div class="p-6 rounded-2xl border border-soft" style="background: rgba(26,54,93,0.02);">
+                            <div class="flex items-center justify-between">
+                                <p class="font-roboto brand-blue text-base" style="font-weight:900;">Exemplo A — Dimmer
+                                    automático</p>
+                                <div class="px-3 py-1 rounded-full"
+                                    style="background: rgba(255,107,53,0.10); border: 1px solid rgba(255,107,53,0.22);">
+                                    <p class="font-opensans brand-gray text-xs">LDR → LED</p>
+                                </div>
+                            </div>
+                            <p class="font-opensans brand-gray text-sm mt-3" style="line-height:1.6;">
+                                Ambientes mais escuros podem aumentar o brilho do LED (ou reduzir, conforme a regra de
+                                negócio).
+                            </p>
+                            <div class="mt-3 p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                <p class="mono brand-blue text-xs" style="font-weight:900;">
+                                    brilho = map(ldr, 0..4095, 255..0)
+                                </p>
+                                <p class="mono brand-blue text-xs mt-1" style="font-weight:900;">
+                                    analogWrite(ledPin, brilho)
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-6 rounded-2xl border border-soft" style="background: rgba(255,107,53,0.05);">
+                            <div class="flex items-center justify-between">
+                                <p class="font-roboto brand-blue text-base" style="font-weight:900;">Exemplo B —
+                                    Controle manual</p>
+                                <div class="px-3 py-1 rounded-full"
+                                    style="background: rgba(26,54,93,0.06); border: 1px solid rgba(26,54,93,0.16);">
+                                    <p class="font-opensans brand-gray text-xs">Pot → Servo</p>
+                                </div>
+                            </div>
+                            <p class="font-opensans brand-gray text-sm mt-3" style="line-height:1.6;">
+                                Um potenciômetro pode definir o ângulo de uma tranca/cancela em tempo real.
+                            </p>
+                            <div class="mt-3 p-4 rounded-xl border border-soft" style="background:#ffffff;">
+                                <p class="mono brand-blue text-xs" style="font-weight:900;">
+                                    ang = map(pot, 0..4095, 0..180)
+                                </p>
+                                <p class="mono brand-blue text-xs mt-1" style="font-weight:900;">
+                                    meuServo.write(ang)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: guidance panel -->
+                <div class="flex flex-col" style="width: 33%;">
+                    <div class="p-6 rounded-2xl border border-soft shadow-soft cardbg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-roboto brand-blue text-lg" style="font-weight:900;">Checklist de
+                                    integração</p>
+                                <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.45;">
+                                    O que precisa estar certo para o “loop” funcionar.
+                                </p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                                style="background: rgba(26,54,93,0.08);">
+                                <i class="fa-solid fa-list-check brand-blue"></i>
+                            </div>
+                        </div>
+                        <div class="mt-5 space-y-4">
+                            <div class="p-4 rounded-xl border border-soft" style="background: rgba(26,54,93,0.03);">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                        style="background: rgba(26,54,93,0.10); border: 1px solid rgba(26,54,93,0.18);">
+                                        <p class="font-roboto brand-blue text-sm" style="font-weight:900;">1</p>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Mapeamento
+                                            (escala)</p>
+                                        <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.55;">
+                                            ESP32 ADC tipicamente retorna <span
+                                                class="mono brand-blue font-semibold">0..4095</span>. Converta para a
+                                            faixa do atuador.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl border border-soft" style="background: rgba(255,107,53,0.06);">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                        style="background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.22);">
+                                        <p class="font-roboto brand-orange text-sm" style="font-weight:900;">2</p>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Filtro /
+                                            estabilidade</p>
+                                        <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.55;">
+                                            Leituras podem oscilar. Uma média móvel simples pode melhorar o controle
+                                            (ex.: 5 amostras).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl border border-soft" style="background: rgba(26,54,93,0.03);">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                        style="background: rgba(26,54,93,0.10); border: 1px solid rgba(26,54,93,0.18);">
+                                        <p class="font-roboto brand-blue text-sm" style="font-weight:900;">3</p>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Boas práticas
+                                            com servo</p>
+                                        <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.55;">
+                                            Em hardware real: <span class="font-semibold brand-blue">fonte
+                                                dedicada</span> + <span class="font-semibold brand-blue">GND
+                                                comum</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-5 p-5 rounded-xl"
+                            style="background: rgba(26,54,93,0.04); border: 1px solid rgba(26,54,93,0.14);">
+                            <div class="flex items-start space-x-3">
+                                <i class="fa-solid fa-lightbulb brand-blue mt-1"></i>
+                                <div class="flex-1">
+                                    <p class="font-roboto brand-blue text-sm" style="font-weight:900;">Ideia de
+                                        mini-projeto</p>
+                                    <p class="font-opensans brand-gray text-xs mt-1" style="line-height:1.55;">
+                                        “Luz noturna”: LDR detecta escuridão e aumenta gradualmente o LED. Ao mesmo
+                                        tempo, um potenciômetro define a posição de uma “persiana” (servo).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-6 rounded-2xl border border-soft" style="background: rgba(26,54,93,0.02);">
+                        <div class="flex items-center justify-between">
+                            <p class="font-roboto brand-blue text-base" style="font-weight:900;">No próximo slide</p>
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                style="background: rgba(255,107,53,0.10); border: 1px solid rgba(255,107,53,0.22);">
+                                <i class="fa-solid fa-layer-group brand-orange"></i>
+                            </div>
+                        </div>
+                        <p class="font-opensans brand-gray text-sm mt-3" style="line-height:1.6;">
+                            Exemplos de <span class="font-semibold brand-blue">projetos IoT</span> usando PWM e servos
+                            (smart home, irrigação, iluminação).
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="w-full px-14 pb-10">
+                <div class="flex items-center justify-between border-t border-soft pt-5">
+                    <p class="font-opensans text-xs brand-gray">
+                        Conceito-chave: integração = <span class="font-semibold brand-blue">medir</span> (sensor) +
+                        <span class="font-semibold brand-blue">decidir</span> (código) + <span
+                            class="font-semibold brand-blue">agir</span> (atuador).
+                    </p>
+                    <div class="flex items-center space-x-3">
+                        <p class="font-opensans text-xs brand-gray">ADC 0–4095</p>
+                        <span class="w-1 h-1 rounded-full" style="background:#4a5568;"></span>
+                        <p class="font-opensans text-xs brand-gray">PWM (LED)</p>
+                        <span class="w-1 h-1 rounded-full" style="background:#4a5568;"></span>
+                        <p class="font-opensans text-xs brand-gray">Servo (0–180°)</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Decorative (no gradients) -->
+            <div class="absolute right-0 top-0 w-40 h-40"
+                style="background: rgba(26,54,93,0.05); border-left: 1px solid rgba(26,54,93,0.10); border-bottom: 1px solid rgba(26,54,93,0.10);">
+            </div>
+            <div class="absolute left-0 bottom-0 w-72 h-20"
+                style="background: rgba(255,107,53,0.06); border-top: 1px solid rgba(255,107,53,0.18); border-right: 1px solid rgba(255,107,53,0.18);">
+            </div>
+            <div class="absolute left-14 top-28 w-10 h-10 rounded-full"
+                style="background: rgba(255,107,53,0.10); border: 1px solid rgba(255,107,53,0.25);"></div>
+        </div>
+    </div>
+</body>
+
+</html>

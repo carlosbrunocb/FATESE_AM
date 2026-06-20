@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Checklist de UAT</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        /* Checklist grid */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .checklist-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .checklist-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #3b82f6;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checklist-checkbox.checked {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .checklist-content {
+            flex: 1;
+            padding-right: 4px;
+        }
+
+        .checklist-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .checklist-description {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .checklist-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .checklist-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .checklist-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .checklist-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .checklist-icon.purple {
+            background: rgba(147, 51, 234, 0.2);
+            color: #a855f7;
+        }
+
+        .checklist-icon.red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .checklist-icon.cyan {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        /* Priority tags */
+        .priority-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .priority-medium {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Checklist</span> de UAT
+                </div>
+                <div class="subtitle">
+                    11 itens essenciais para validação de aceitação do usuário
+                </div>
+            </div>
+            <!-- Checklist Grid -->
+            <div class="checklist-grid">
+                <!-- Item 1 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon blue">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Ambiente de UAT preparado
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">URL, build, feature flags, acessos configurados e validados
+                        </div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon green">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Dados de teste carregados
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Representativos e anonimizados quando necessário</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon orange">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Critérios de Aceite definidos
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Rastreáveis e aprovados pelo negócio</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 4 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon purple">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Usuários treinados
+                            <span class="priority-tag priority-medium">Média</span>
+                        </div>
+                        <div class="checklist-description">Treinamento realizado e agenda confirmada</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 5 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon red">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Roteiro/cenários publicados
+                            <span class="priority-tag priority-medium">Média</span>
+                        </div>
+                        <div class="checklist-description">Pré-condições, passos e resultados esperados</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 6 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon cyan">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Evidências coletadas
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Prints, vídeos, arquivos gerados, logs</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 7 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon blue">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Defeitos registrados
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Priorizados por severidade, impacto e risco</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 8 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon green">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Feedback de usabilidade
+                            <span class="priority-tag priority-medium">Média</span>
+                        </div>
+                        <div class="checklist-description">Barreiras, sugestões e observações</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 9 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon orange">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Métricas capturadas
+                            <span class="priority-tag priority-medium">Média</span>
+                        </div>
+                        <div class="checklist-description">Tempo por tarefa, taxa de sucesso, NPS/CSAT</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 10 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon purple">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Riscos e pendências
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Responsáveis e prazos definidos</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <!-- Item 11 -->
+                <div class="checklist-item">
+                    <div class="checklist-icon red">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Reunião de decisão go/no-go
+                            <span class="priority-tag priority-high">Alta</span>
+                        </div>
+                        <div class="checklist-description">Agendada com stakeholders</div>
+                    </div>
+                    <div class="checklist-checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>11 itens essenciais</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>Verificação completa</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Pronto para UAT</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

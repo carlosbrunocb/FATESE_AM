@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 2 — Ambiente Virtual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        /* Reset para garantir cálculos corretos de tamanho */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a; /* Fundo escuro para evitar bordas brancas no resize */
+            overflow: hidden; /* Remove barra de rolagem da janela principal */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+            pointer-events: none; /* Garante que não atrapalhe cliques */
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px 60px; /* Ajustado levemente para telas menores */
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+        }
+
+        /* Layout Adaptativo */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            /* Alterado de height: 100% para flex: 1 para ocupar o espaço restante sem estourar */
+            flex: 1; 
+            min-height: 0; /* Crucial para o scroll interno funcionar no flexbox */
+            margin-top: 10px;
+            margin-bottom: 20px; /* Espaço para o rodapé */
+        }
+
+        .info-pane {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto; /* Permite rolar se o texto explicativo for muito longo */
+            padding-right: 10px; /* Espaço para scrollbar se aparecer */
+        }
+
+        /* Estilização da scrollbar fina para o info-pane */
+        .info-pane::-webkit-scrollbar {
+            width: 6px;
+        }
+        .info-pane::-webkit-scrollbar-thumb {
+            background-color: #334155;
+            border-radius: 4px;
+        }
+
+        .code-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Evita que o flex item cresça além do container */
+        }
+
+        /* Info Cards */
+        .concept-card {
+            background-color: #1e293b;
+            border-left: 4px solid #10b981;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; /* Impede que o card encolha demais */
+        }
+
+        .features-list {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1; /* Ocupa espaço disponível */
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            color: #3b82f6;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 10px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            height: 100%; /* Ocupa toda a altura do code-pane */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0; /* Cabeçalho nunca encolhe */
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #64748b;
+            font-size: 0.85rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 50px;
+        }
+
+        .terminal-content {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            overflow-y: auto; /* Scroll interno apenas no conteúdo do terminal */
+            flex: 1;
+            line-height: 1.8;
+        }
+
+        /* Custom Scrollbar for Terminal */
+        .terminal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-content::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .terminal-content::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .terminal-content::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Syntax Highlighting Mockup */
+        .cmd-prompt { color: #10b981; font-weight: bold; margin-right: 10px; }
+        .cmd-text { color: #f8fafc; font-weight: bold; }
+        .cmd-flag { color: #60a5fa; }
+        .cmd-arg { color: #facc15; }
+        .cmd-path { color: #a5b4fc; }
+        .comment-line { color: #64748b; font-style: italic; margin-top: 16px; margin-bottom: 4px; display: block; }
+        .output-line { color: #94a3b8; display: block; margin-bottom: 4px; }
+        .output-success { color: #4ade80; }
+        .venv-prefix { color: #fbbf24; margin-right: 5px; }
+
+        /* Footer Positioning Adjustment */
+        .footer-text {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            text-align: right;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="content-area">
+            <div class="mb-6 border-b border-slate-700 pb-4 flex-shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-emerald-500 text-3xl">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Configuração do Ambiente</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Passo 2 — Ambiente Virtual</h1>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-layout">
+                <div class="info-pane">
+                    <div class="concept-card">
+                        <h3 class="text-emerald-400 font-bold mb-2 uppercase text-sm tracking-wide">O que é VENV?</h3>
+                        <p class="text-gray-200 leading-relaxed text-sm">
+                            O módulo <code>venv</code> (Virtual Environment) cria ambientes leves e isolados. Cada
+                            ambiente possui sua própria instalação de binários do Python e um conjunto independente de
+                            bibliotecas.
+                        </p>
+                    </div>
+                    <div class="features-list">
+                        <h3 class="text-white font-bold mb-4 flex items-center">
+                            <i class="fas fa-check-double text-blue-400 mr-2 text-sm"></i> Por que é Essencial?
+                        </h3>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt feature-icon"></i>
+                            <p class="text-sm"><strong>Isolamento:</strong> Evita conflitos de versão entre projetos
+                                diferentes.</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-broom feature-icon"></i>
+                            <p class="text-sm"><strong>Limpeza:</strong> Não instala pacotes de teste no Python global
+                                do sistema.</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-share-alt feature-icon"></i>
+                            <p class="text-sm"><strong>Reprodutibilidade:</strong> Garante que todos da equipe usem as
+                                mesmas versões.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-pane">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-controls">
+                                <div class="control-dot dot-red"></div>
+                                <div class="control-dot dot-yellow"></div>
+                                <div class="control-dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">bash — setup venv</div>
+                        </div>
+                        <div class="terminal-content">
+                            <span class="comment-line"># 1. Criar o ambiente virtual (nome padrão: venv)</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">python</span> <span class="cmd-flag">-m</span> <span
+                                    class="cmd-arg">venv</span> <span class="cmd-arg">venv</span>
+                            </div>
+                            <span class="comment-line"># 2a. Ativar no Linux ou macOS</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">source</span> <span class="cmd-path">venv/bin/activate</span>
+                            </div>
+                            <span class="comment-line"># 2b. Ativar no Windows (PowerShell/CMD)</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">venv\Scripts\activate</span>
+                            </div>
+                            <span class="comment-line"># 3. Confirmar se o ambiente está ativo</span>
+                            <div>
+                                <span class="venv-prefix">(venv)</span><span class="cmd-prompt">$</span>
+                                <span class="cmd-text">which</span> <span class="cmd-arg">python</span>
+                            </div>
+                            <div class="output-line">/home/user/lab_qualidade_software/<span
+                                    class="output-success">venv</span>/bin/python</div>
+                            <div>
+                                <span class="venv-prefix">(venv)</span><span class="cmd-prompt">$</span>
+                                <span class="cmd-text">pip</span> <span class="cmd-flag">--version</span>
+                            </div>
+                            <div class="output-line">pip 23.0 from .../venv/lib/python3.10/site-packages/pip (python
+                                3.10)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-text text-slate-500 text-sm font-light">
+                <p>Aula 06 - Configuração Prática</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

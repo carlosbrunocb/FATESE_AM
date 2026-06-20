@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2 - Arquitetura em Camadas</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilo base com a fonte Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Esconde todos os slides por padrão */
+        .slide {
+            display: none;
+        }
+
+        /* Mostra apenas o slide ativo */
+        .slide.active {
+            display: flex; /* Usamos flex para centralizar o conteúdo */
+        }
+
+        /* Estilos customizados para blocos de código */
+        pre {
+            background-color: #1e293b; /* bg-slate-800 */
+            color: #e2e8f0; /* text-slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        /* Destaque de sintaxe simples para JS */
+        .code-js .comment { color: #6a9955; font-style: italic; } /* Verde para comentários */
+        .code-js .keyword { color: #4e9cd6; } /* Azul para 'const', 'require' */
+        .code-js .function { color: #dcdcaa; } /* Amarelo para 'app', 'express', 'log' */
+        .code-js .string { color: #ce9178; } /* Laranja para 'Hello World' */
+        .code-js .variable { color: #9cdcfe; } /* Azul claro para 'request', 'response' */
+        .code-js .number { color: #b5cea8; } /* Verde claro para '3000' */
+
+        /* Destaque para Bash */
+        .code-bash .comment { color: #6a9955; font-style: italic; }
+        .code-bash .command { color: #9cdcfe; }
+        .code-bash .arg { color: #ce9178; }
+
+        #destaque {
+            background-color: #0891B2;
+            border-radius: 3px;
+            padding: 2px 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Container Principal do Slide -->
+    <div class="w-full max-w-5xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden" style="height: 650px;">
+        
+        <!-- Viewport do Slide (onde o conteúdo aparece) -->
+        <div id="slide-container" class="flex-1 w-full h-full overflow-y-auto">
+
+            <!-- Slide 0: Título -->
+            <div class="slide active w-full h-full flex-col justify-center items-center text-center p-8">
+                <span class="text-sm font-semibold text-cyan-400">FACULDADE DE TECNOLOGIA SENAC - FATESE</span>
+                <span class="text-lg text-gray-300 mt-1">Curso de Análise e Desenvolvimento de Sistemas</span>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mt-6">Desenvolvimento de Serviços e APIs</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <h2 class="text-2xl md:text-3xl font-semibold text-white">Aula 2: Arquitetura em Camadas (Rotas, Controllers, Services)</h2>
+                <p class="text-xl text-gray-300 mt-8">Professor: Carlos Bruno Oliveira Lopes</p>
+            </div>
+
+            <!-- Slide 1: Recapitulação da Aula 1 -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Recapitulando a Aula 1</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Na última aula, criamos nosso primeiro servidor web com Express.js.
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> Configuramos o ambiente Node.js.</li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> Instalamos o Express (<span id="destaque">npm install express</span>).</li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> Criamos um arquivo único (<span id="destaque">index.js</span>).</li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> Definimos uma rota <span id="destaque">GET /</span> ("Hello World").</li>
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">✔</span> Subimos o servidor com <span id="destaque">node index.js</span>.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 2: O Problema do "Arquivão Único" -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Problema do "Arquivão Único"</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Nosso <span id="destaque">index.js</span> da Aula 1 funciona, mas tem um problema sério: <span class="text-yellow-400 font-semibold">ele não escala</span>.
+                </p>
+                <p class="text-lg text-gray-300 mb-4">Imagine adicionar 50 rotas diferentes (CRUD de usuários, produtos, pedidos, etc.) em um só arquivo:</p>
+                
+                <div class="bg-gray-700 p-6 rounded-lg text-lg space-y-3">
+                    <p><span class="font-bold text-red-400">❌ Difícil de Ler:</span> Encontrar uma rota específica vira um pesadelo.</p>
+                    <p><span class="font-bold text-red-400">❌ Difícil de Manter:</span> Alterar a lógica de um usuário pode quebrar a de um produto.</p>
+                    <p><span class="font-bold text-red-400">❌ Difícil de Testar:</span> Não conseguimos testar a "lógica de negócio" separadamente da "lógica de rota".</p>
+                    <p><span class="font-bold text-red-400">❌ Código Espaguete:</span> Lógica de banco de dados misturada com validação e resposta HTTP.</p>
+                </div>
+            </div>
+
+            <!-- Slide 3: Objetivos da Aula 2 -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Objetivos da Aula 2</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Hoje vamos <span class="text-cyan-400 font-semibold">refatorar</span> nosso projeto para uma arquitetura profissional, limpa e escalável.
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Compreender a "Separação de Responsabilidades".</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Estruturar o projeto em camadas: <span class="font-semibold">Rotas, Controllers e Services</span>.</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Configurar ferramentas de produtividade (<span id="destaque">nodemon</span>).</li>
+                    <li class="flex items-start"><span class="text-cyan-400 font-bold mr-3">›</span> Lidar com dados da requisição (<span id="destaque">params</span> e <span id="destaque">body</span>).</li>
+                </ul>
+            </div>
+            
+            <!-- Slide 4: Índice da Aula -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Nossa Jornada Hoje</h2>
+                <ul class="space-y-5 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">1.</span> Teoria: Separação de Responsabilidades (SoC).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">2.</span> Teoria: As 3 Camadas (Rotas, Controllers, Services).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">3.</span> Prática: Nova Estrutura de Pastas.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">4.</span> Prática: Instalando e usando o <span id="destaque">nodemon</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">5.</span> Prática: Entendendo o <span id="destaque">express.json()</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">6.</span> Prática: Refatorando o código (Mão na Massa).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">7.</span> Prática: Lidando com Parâmetros (<span id="destaque">req.params</span>, <span id="destaque">req.body</span>).</li>
+                </ul>
+            </div>
+            
+            <!-- Slide 5: Teoria: Separação de Responsabilidades -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">1. Teoria: Separação de Responsabilidades</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 italic">"Separation of Concerns" (SoC)</h3>
+                <p class="text-xl text-gray-300 mb-4 leading-relaxed">
+                    É um princípio de design de software que diz:
+                </p>
+                <div class="bg-gray-700 p-6 rounded-lg text-2xl text-center">
+                    <p class="text-cyan-300 font-semibold">"Cada parte do software deve ter uma <span class="underline">única</span> e <span class="underline">bem definida</span> responsabilidade."</p>
+                </div>
+                
+                <p class="text-xl text-gray-300 mt-6 leading-relaxed">
+                    Em vez de um arquivo que faz <span class="font-bold">TUDO</span> (define rotas, valida dados, acessa o banco, formata resposta), teremos arquivos <span class="font-bold">ESPECIALISTAS</span>.
+                </p>
+            </div>
+            
+            <!-- Slide 6: Teoria: A Arquitetura em 3 Camadas -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">2. Teoria: A Arquitetura em 3 Camadas</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Vamos dividir nosso projeto em 3 camadas principais:
+                </p>
+                <img src="Diagrama do fluxo da requisição_vs_01.png" 
+                     alt="[Diagrama do fluxo da requisição]" 
+                     class="mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto bg-gray-600">
+                <div class="text-center text-lg text-gray-400 mt-2">
+                    <p>Requisição HTTP ➔ <span class="text-cyan-300">Rota</span> ➔ <span class="text-yellow-300">Controller</span> ➔ <span class="text-green-300">Service</span> ➔ Banco de Dados (e o caminho reverso para a Resposta)</p>
+                </div>
+            </div>
+
+            <!-- Slide 7: A Camada de ROTA (Router) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">A Camada de <span class="text-cyan-400">ROTA</span> (Router)</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">O "Recepcionista" 🤵</h3>
+                
+                <div class="bg-gray-700 p-6 rounded-lg text-lg">
+                    <p class="text-xl font-semibold text-white mb-3">Responsabilidade Única:</p>
+                    <p class="text-gray-300">Definir os <span class="font-bold">endpoints</span> (URLs) e quais <span class="font-bold">verbos HTTP</span> (GET, POST, etc.) eles aceitam.</p>
+                    
+                    <div class="w-full h-px bg-gray-600 my-4"></div>
+                    
+                    <p class="text-gray-300">Ele <span class="font-bold">NÃO SABE</span> o que fazer. Ele apenas <span class="font-bold">DIRECIONA</span> a requisição para o especialista (o Controller).</p>
+                    
+                    <p class="text-lg text-gray-400 mt-4">Ex: "Uma requisição <code class="text-green-300">GET</code> para <code class="text-cyan-300">/users</code>? Fale com o <code class="text-yellow-300">userController</code>."</p>
+                </div>
+            </div>
+
+            <!-- Slide 8: A Camada de CONTROLE (Controller) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">A Camada de <span class="text-yellow-400">CONTROLE</span> (Controller)</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">O "Gerente da Loja" 👨‍💼</h3>
+                
+                <div class="bg-gray-700 p-6 rounded-lg text-lg">
+                    <p class="text-xl font-semibold text-white mb-3">Responsabilidade Única:</p>
+                    <p class="text-gray-300"><span class="font-bold">Orquestrar</span> o fluxo da requisição. Ele é o <span class="font-bold">intermediário</span> entre a Rota e o Serviço.</p>
+                    
+                    <div class="w-full h-px bg-gray-600 my-4"></div>
+                    
+                    <p class="text-gray-300 mb-2">1. Recebe a requisição (<span id="destaque">req</span>, <span id="destaque">res</span>) da Rota.</p>
+                    <p class="text-gray-300 mb-2">2. Extrai dados (<code>req.body</code>, <code>req.params</code>).</p>
+                    <p class="text-gray-300 mb-2">3. Chama o Serviço (a lógica de negócio) para fazer o trabalho.</p>
+                    <p class="text-gray-300 mb-2">4. Pega a resposta do Serviço e envia de volta ao cliente (<code>res.json()</code>, <code>res.status()</code>).</p>
+                </div>
+            </div>
+
+            <!-- Slide 9: A Camada de SERVIÇO (Service) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">A Camada de <span class="text-green-400">SERVIÇO</span> (Service)</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">O "Especialista" / "Estoque" 👩‍🔧</h3>
+                
+                <div class="bg-gray-700 p-6 rounded-lg text-lg">
+                    <p class="text-xl font-semibold text-white mb-3">Responsabilidade Única:</p>
+                    <p class="text-gray-300">Conter a <span class="font-bold">LÓGICA DE NEGÓCIO</span> pura da aplicação.</p>
+                    
+                    <div class="w-full h-px bg-gray-600 my-4"></div>
+                    
+                    <p class="text-gray-300 mb-2">Aqui fica: Acesso ao banco de dados, cálculos complexos, validações de regra de negócio (ex: "o usuário é maior de idade?").</p>
+                    <p class="text-lg text-red-400 font-bold mt-4">CRÍTICO: O Serviço <span class="underline">NUNCA</span> deve saber sobre <span id="destaque">req</span> ou <span id="destaque">res</span>. Ele recebe dados puros (ex: `id`, `userData`) e retorna dados puros (ex: um `user`).</o>
+                </div>
+            </div>
+            
+            <!-- Slide 10: Mão na Massa: Transição -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">3. Mão na Massa</h2>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <p class="text-xl text-gray-300">Vamos estruturar nosso projeto.</p>
+            </div>
+            
+            <!-- Slide 11: Nova Estrutura de Pastas -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Nova Estrutura de Pastas</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Vamos criar uma pasta <code class="text-yellow-300">src</code> (source/código-fonte) para organizar nosso código:
+                </p>
+                <pre class="code-bash"><code>/aula1-api
+  /node_modules
+  /src
+    /routes
+      user.routes.js  <span class="comment"># Nossas Rotas de Usuário</span>
+      index.js        <span class="comment"># (Opcional) Roteador principal</span>
+    /controllers
+      user.controller.js <span class="comment"># Nosso Controller de Usuário</span>
+    /services
+      user.service.js   <span class="comment"># Nosso Serviço de Usuário</span>
+    index.js            <span class="comment"># Arquivo principal (o antigo index.js)</span>
+  package.json
+  package-lock.json</code></pre>
+            </div>
+            
+            <!-- Slide 12: Ferramenta de Produtividade: `nodemon` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">4. Ferramenta: <span id="destaque">nodemon</span></h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">Chega de <span id="destaque">Ctrl+C</span>, <span id="destaque">node index.js</span>!</h3>
+                
+                <p class="text-xl text-gray-300 mb-4 leading-relaxed">
+                    <span class="font-bold text-cyan-400">O que é?</span> O <span id="destaque">nodemon</span> (Node Monitor) é uma ferramenta que "assiste" seus arquivos.
+                </p>
+                <p class="text-xl text-gray-300 mb-4 leading-relaxed">
+                    <span class="font-bold text-cyan-400">O que faz?</span> Assim que você salva uma alteração em um arquivo <span id="destaque">.js</span>, ele <span class="font-bold text-yellow-300">automaticamente reinicia o servidor</span> para você.
+                </p>
+                <p class="text-xl text-gray-300 mb-4 leading-relaxed">
+                    <span class="font-bold text-cyan-400">Por que?</span> Aumenta drasticamente a produtividade. Você salva o código e testa no Insomnia imediatamente.
+                </p>
+            </div>
+
+            <!-- Slide 13: Instalando o `nodemon` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Instalando o <span id="destaque">nodemon</span></h2>
+                <p class="text-lg text-gray-300 mb-4">Vamos instalá-lo como uma <span class="font-bold text-yellow-300">Dependência de Desenvolvimento</span>:</p>
+                
+                <pre class="code-bash"><code><span class="command">npm</span> <span class="arg">install nodemon -D</span></code></pre>
+                
+                <div class="w-full h-px bg-gray-700 my-6"></div>
+                
+                <h3 class="text-2xl font-semibold text-white mb-4"><span id="destaque">dependencies</span> vs <span id="destaque">devDependencies</span> (-D)</h3>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2">
+                    <li><span class="font-semibold text-cyan-300">dependencies (Ex: express):</span>
+                        <p class="text-gray-400 ml-4">Pacotes que a aplicação precisa para <span class="font-bold">rodar em produção</span>.</p>
+                    </li>
+                    <li><span class="font-semibold text-yellow-300">devDependencies (Ex: nodemon):</span>
+                        <p class="text-gray-400 ml-4">Pacotes usados <span class="font-bold">APENAS</span> durante o desenvolvimento (testes, monitoramento, etc.).</p>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Slide 14: Configurando o `package.json` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Configurando o <span id="destaque">package.json</span></h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Vamos criar um "atalho" (script) no <span id="destaque">package.json</span> para rodar o <span id="destaque">nodemon</span>:
+                </p>
+                
+                <pre><code><span class="comment">// package.json</span>
+...
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  <span class="text-green-400 font-bold">"dev": "nodemon src/index.js"</span>
+},
+...</code></pre>
+                
+                <p class="text-lg text-gray-300 my-4">
+                    Agora, em vez de <span id="destaque">node src/index.js</span>, vamos rodar no terminal:
+                </p>
+                <pre class="code-bash"><code><span class="command">npm</span> <span class="arg">run dev</span></code></pre>
+                <p class="text-lg text-gray-300 mt-4">
+                    Seu servidor irá iniciar e ficará "assistindo" por mudanças.
+                </p>
+            </div>
+            
+            <!-- Slide 15: Lendo JSON: O Middleware `express.json()` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">5. O Middleware <span id="destaque">express.json()</span></h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Na Aula 1, nossa API só <span class="font-bold">enviava</span> dados (<span id="destaque">res.send()</span>).
+                </p>
+                <p class="text-xl text-gray-300 mb-4">
+                    Mas como fazemos para <span class="font-bold text-yellow-300">RECEBER</span> dados do cliente? (Ex: em uma requisição <span id="destaque">POST</span> para criar um usuário).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Por padrão, o Express não sabe como "ler" o JSON enviado no <span class="font-bold">corpo (body)</span> da requisição.
+                </p>
+                <p class="text-lg text-gray-300 bg-gray-700 p-4 rounded-lg leading-relaxed">
+                    Precisamos ativar um "tradutor" (Middleware) nativo do Express:
+                </p>
+                <pre class="code-js mt-4"><code><span class="function">app</span>.use( <span class="function">express</span>.json() );</code></pre>
+            </div>
+
+            <!-- Slide 16: O que é `req.body`? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O que é o <span id="destaque">req.body</span>?</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Quando o <span id="destaque">express.json()</span> está ativo, qualquer JSON enviado pelo cliente (via Insomnia, por ex.) será "traduzido" e colocado dentro do objeto <code class="text-cyan-300">req.body</code>.
+                </p>
+                
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <p class="text-lg text-white font-semibold mb-2">Requisição do Insomnia (Body):</p>
+                        <pre><code>{
+  "name": "Bruno",
+  "email": "bruno@senac.com"
+}</code></pre>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-lg text-white font-semibold mb-2">No nosso Controller (Código):</p>
+                        <pre class="code-js"><code><span class="variable">console</span>.log(<span class="variable">req</span>.body);
+<span class="comment">// Output:</span>
+<span class="comment">// { name: 'Bruno', email: 'bruno@senac.com' }</span>
+
+<span class="keyword">const</span> <span class="variable">nome</span> = <span class="variable">req</span>.body.name; <span class="comment">// "Bruno"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 17: Plano de Refatoração (Mão na Massa) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">6. Plano de Refatoração</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Vamos migrar nosso código do <span id="destaque">index.js</span> antigo para a nova estrutura.
+                </p>
+                <p class="text-xl text-gray-300">
+                    A melhor forma é de "dentro para fora":
+                </p>
+                
+                <ul class="space-y-4 text-xl text-gray-300 mt-6">
+                    <li class="flex items-center"><span class="text-green-400 font-semibold mr-3">Passo 1.</span> Criar o <span class="font-bold">Serviço</span> (A lógica pura).</li>
+                    <li class="flex items-center"><span class="text-yellow-400 font-semibold mr-3">Passo 2.</span> Criar o <span class="font-bold">Controlador</span> (O orquestrador).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">Passo 3.</span> Criar a <span class="font-bold">Rota</span> (O endpoint).</li>
+                    <li class="flex items-center"><span class="text-gray-400 font-semibold mr-3">Passo 4.</span> Limpar o <span class="font-bold"><span id="destaque">index.js</span></span> principal.</li>
+                </ul>
+            </div>
+            
+            <!-- Slide 18: Passo 1: A Camada de Serviço -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Passo 1: Camada de Serviço</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie <code class="text-yellow-300">src/services/user.service.js</code></p>
+                <pre class="code-js flex-1"><code><span class="comment">// Por enquanto, simulando um banco de dados em memória</span>
+<span class="keyword">const</span> <span class="variable">users</span> = [{ <span class="variable">id</span>: <span class="number">1</span>, <span class="variable">name</span>: <span class="string">'João'</span> }];
+
+<span class="keyword">class</span> <span class="function">UserService</span> {
+  <span class="function">getAll</span>() {
+    <span class="comment">// Lógica de negócio pura (ex: buscar no DB)</span>
+    <span class="keyword">return</span> <span class="variable">users</span>;
+  }
+
+  <span class="function">create</span>(<span class="variable">userData</span>) {
+    <span class="comment">// Lógica de negócio (ex: validar, inserir no DB)</span>
+    <span class="comment">// Note: Recebe 'userData', não 'req.body'</span>
+    <span class="keyword">const</span> <span class="variable">newUser</span> = { <span class="variable">id</span>: <span class="variable">users</span>.length + <span class="number">1</span>, ...<span class="variable">userData</span> };
+    <span class="variable">users</span>.push(<span class="variable">newUser</span>);
+    <span class="keyword">return</span> <span class="variable">newUser</span>;
+  }
+
+  <span class="function">getById</span>(<span class="variable">id</span>) {
+    <span class="comment">// Lógica pura (recebe 'id', não 'req.params')</span>
+    <span class="keyword">return</span> <span class="variable">users</span>.find(<span class="variable">u</span> => <span class="variable">u</span>.id === parseInt(<span class="variable">id</span>));
+  }
+}
+<span class="comment">// Exportamos uma instância da classe</span>
+<span class="variable">module</span>.exports = <span class="keyword">new</span> <span class="function">UserService</span>();
+</code></pre>
+            </div>
+            
+            <!-- Slide 19: Passo 2: A Camada de Controle -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Passo 2: Camada de Controle</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie <code class="text-yellow-300">src/controllers/user.controller.js</code></p>
+                <pre class="code-js flex-1"><code><span class="comment">// Importa o especialista</span>
+<span class="keyword">const</span> <span class="variable">userService</span> = <span class="keyword">require</span>(<span class="string">'../services/user.service'</span>);
+
+<span class="keyword">class</span> <span class="function">UserController</span> {
+  <span class="comment">// Orquestrador para buscar todos</span>
+  <span class="keyword">async</span> <span class="function">getAll</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+    <span class="keyword">const</span> <span class="variable">users</span> = <span class="variable">userService</span>.<span class="function">getAll</span>(); <span class="comment">// 1. Chama o Serviço</span>
+    <span class="variable">res</span>.json({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">users</span> }); <span class="comment">// 2. Envia a resposta</span>
+  }
+
+  <span class="comment">// Orquestrador para criar um</span>
+  <span class="keyword">async</span> <span class="function">create</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+    <span class="comment">// 1. Extrai dados do 'req'</span>
+    <span class="keyword">const</span> <span class="variable">userData</span> = <span class="variable">req</span>.body; 
+    <span class="comment">// 2. Chama o Serviço com os dados puros</span>
+    <span class="keyword">const</span> <span class="variable">newUser</span> = <span class="variable">userService</span>.<span class="function">create</span>(<span class="variable">userData</span>);
+    <span class="comment">// 3. Envia a resposta (Status 201 = Criado)</span>
+    <span class="variable">res</span>.status(<span class="number">201</span>).json({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">newUser</span> });
+  }
+
+  <span class="comment">// Orquestrador para buscar por ID</span>
+  <span class="keyword">async</span> <span class="function">getById</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+    <span class="keyword">const</span> <span class="variable">id</span> = <span class="variable">req</span>.params.id; <span class="comment">// 1. Extrai o ID</span>
+    <span class="keyword">const</span> <span class="variable">user</span> = <span class="variable">userService</span>.<span class="function">getById</span>(<span class="variable">id</span>); <span class="comment">// 2. Chama o Serviço</span>
+    
+    <span class="keyword">if</span> (!<span class="variable">user</span>) { <span class="comment">// 3. Trata o 'não encontrado'</span>
+      <span class="keyword">return</span> <span class="variable">res</span>.status(<span class="number">404</span>).json({ <span class="variable">success</span>: <span class="keyword">false</span>, <span class="variable">message</span>: <span class="string">'Usuário não encontrado'</span> });
+    }
+    <span class="variable">res</span>.json({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">user</span> }); <span class="comment">// 4. Envia a resposta</span>
+  }
+}
+<span class="variable">module</span>.exports = <span class="keyword">new</span> <span class="function">UserController</span>();
+</code></pre>
+            </div>
+            
+            <!-- Slide 20: Passo 3: A Camada de Rota -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Passo 3: Camada de Rota</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie <code class="text-yellow-300">src/routes/user.routes.js</code></p>
+                <pre class="code-js flex-1"><code><span class="comment">// Importamos o 'Router' do express</span>
+<span class="keyword">const</span> { <span class="variable">Router</span> } = <span class="keyword">require</span>(<span class="string">'express'</span>);
+<span class="comment">// Importamos o 'Gerente' (Controller)</span>
+<span class="keyword">const</span> <span class="variable">userController</span> = <span class="keyword">require</span>(<span class="string">'../controllers/user.controller'</span>);
+
+<span class="comment">// Criamos uma instância do Roteador</span>
+<span class="keyword">const</span> <span class="variable">router</span> = <span class="function">Router</span>();
+
+<span class="comment">// Definimos as rotas e quem as controla</span>
+
+<span class="comment">// GET /users -> controlado por userController.getAll</span>
+<span class="variable">router</span>.get(<span class="string">'/users'</span>, <span class="variable">userController</span>.getAll);
+
+<span class="comment">// POST /users -> controlado por userController.create</span>
+<span class="variable">router</span>.post(<span class="string">'/users'</span>, <span class="variable">userController</span>.create);
+
+<span class="comment">// GET /users/:id -> controlado por userController.getById</span>
+<span class="variable">router</span>.get(<span class="string">'/users/:id'</span>, <span class="variable">userController</span>.getById);
+
+<span class="comment">// Exportamos o roteador pronto</span>
+<span class="variable">module</span>.exports = <span class="variable">router</span>;
+</code></pre>
+            </div>
+            
+            <!-- Slide 21: Passo 4: O `index.js` Limpo -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Passo 4: O <span id="destaque">index.js</span> Limpo</h2>
+                <p class="text-lg text-gray-300 mb-4">Mova o código antigo para <code class="text-yellow-300">src/index.js</code> e limpe-o:</p>
+                <pre class="code-js flex-1"><code><span class="keyword">const</span> <span class="function">express</span> = <span class="keyword">require</span>(<span class="string">'express'</span>);
+<span class="comment">// 1. Importamos nossas rotas de usuário</span>
+<span class="keyword">const</span> <span class="variable">userRoutes</span> = <span class="keyword">require</span>(<span class="string">'./routes/user.routes'</span>);
+
+<span class="keyword">const</span> <span class="function">app</span> = <span class="function">express</span>();
+<span class="keyword">const</span> <span class="variable">PORT</span> = <span class="number">3000</span>;
+
+<span class="comment">// 2. Adicionamos o Middleware para ler JSON</span>
+<span class="function">app</span>.use(<span class="function">express</span>.json());
+
+<span class="comment">// 3. Usamos as rotas importadas</span>
+<span class="function">app</span>.use(<span class="variable">userRoutes</span>);
+
+<span class="comment">// Rota "Hello World" (opcional)</span>
+<span class="function">app</span>.get(<span class="string">'/'</span>, (<span class="variable">req</span>, <span class="variable">res</span>) => {
+  <span class="variable">res</span>.send(<span class="string">'API Rodando!'</span>);
+});
+
+<span class="function">app</span>.listen(<span class="variable">PORT</span>, () => {
+  <span class="variable">console</span>.log(<span class="string">`Servidor rodando em http://localhost:${<span class="variable">PORT</span>}`</span>);
+});
+</code></pre>
+            </div>
+            
+            <!-- Slide 22: Bônus: Prefixo de API -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Bônus: Prefixo de API</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    É uma boa prática adicionar um prefixo em todas as rotas da sua API (ex: <span id="destaque">/api</span> ou <span id="destaque">/api/v1</span>).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Isso ajuda a versionar sua API no futuro e a separar rotas de API de rotas de páginas web.
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Em <code class="text-yellow-300">src/index.js</code>, mude UMA linha:
+                </p>
+                
+                <pre class="code-js"><code><span class="comment">// ANTES</span>
+<span class="function">app</span>.use(<span class="variable">userRoutes</span>);
+
+<span class="comment">// DEPOIS (com prefixo)</span>
+<span class="function">app</span>.use(<span class="string">'/api'</span>, <span class="variable">userRoutes</span>);
+</code></pre>
+                
+                <p class="text-lg text-gray-300 mt-4 font-semibold">
+                    Agora, nossas rotas são:
+                </p>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 mt-2">
+                    <li><code class="text-cyan-300">GET /api/users</code></li>
+                    <li><code class="text-cyan-300">POST /api/users</code></li>
+                    <li><code class="text-cyan-300">GET /api/users/:id</code></li>
+                </ul>
+            </div>
+            
+            <!-- Slide 23: 7. Lidando com Parâmetros -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">7. Lidando com Parâmetros de Requisição</h2>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <p class="text-xl text-gray-300">Como o Controller obtém dados do <span id="destaque">req</span>?</p>
+            </div>
+            
+            <!-- Slide 24: Tipo 1: `req.params` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Tipo 1: <code class="text-cyan-300">req.params</code> (Parâmetros de Rota)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Usados para identificar um <span class="font-bold">recurso específico</span>. Fazem parte da URL.
+                </p>
+                
+                <p class="text-lg text-white font-semibold mb-2">Na Rota (<span id="destaque">user.routes.js</span>):</p>
+                <pre class="code-js"><code><span class="comment">// O ':id' é um placeholder dinâmico</span>
+<span class="variable">router</span>.get(<span class="string">'/users/:id'</span>, <span class="variable">userController</span>.getById);
+</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">Requisição no Insomnia:</p>
+                <pre><code>GET /api/users/1</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">No Controller (`user.controller.js`):</p>
+                <pre class="code-js"><code><span class="keyword">async</span> <span class="function">getById</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+  <span class="keyword">const</span> <span class="variable">id</span> = <span class="variable">req</span>.params.id; <span class="comment">// id será "1"</span>
+  <span class="comment">// ...</span>
+}
+</code></pre>
+            </div>
+            
+            <!-- Slide 25: Tipo 2: `req.body` -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Tipo 2: <code class="text-yellow-300">req.body</code> (Corpo da Requisição)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Usado para <span class="font-bold">enviar dados</span> para criar ou atualizar um recurso (em <span id="destaque">POST</span> ou <span id="destaque">PUT</span>).
+                </p>
+                
+                <p class="text-lg text-white font-semibold mb-2">Na Rota (<span id="destaque">user.routes.js</span>):</p>
+                <pre class="code-js"><code><span class="variable">router</span>.post(<span class="string">'/users'</span>, <span class="variable">userController</span>.create);
+</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">Requisição no Insomnia (com Body JSON):</p>
+                <pre><code>POST /api/users
+{ "name": "Maria", "email": "maria@senac.com" }</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">No Controller (`user.controller.js`):</p>
+                <pre class="code-js"><code><span class="keyword">async</span> <span class="function">create</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+  <span class="comment">// Requer app.use(express.json())</span>
+  <span class="keyword">const</span> <span class="variable">userData</span> = <span class="variable">req</span>.body; 
+  <span class="comment">// userData será { name: "Maria", ... }</span>
+  <span class="comment">// ...</span>
+}
+</code></pre>
+            </div>
+
+            <!-- Slide 26: Tipo 3: `req.query` (Bônus) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Tipo 3 (Bônus): <code class="text-green-300">req.query</code> (Query Params)</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Usados para <span class="font-bold">filtrar, ordenar ou paginar</span> listas. Vêm <span class="font-bold">APÓS O <span id="destaque">?</span></span> na URL.
+                </p>
+                
+                <p class="text-lg text-white font-semibold mb-2">Na Rota (<span id="destaque">user.routes.js</span>):</p>
+                <pre class="code-js"><code><span class="comment">// Usa a mesma rota GET /users</span>
+<span class="variable">router</span>.get(<span class="string">'/users'</span>, <span class="variable">userController</span>.getAll);
+</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">Requisição no Insomnia:</p>
+                <pre><code>GET /api/users?status=ativo&sort=nome</code></pre>
+
+                <p class="text-lg text-white font-semibold mt-4 mb-2">No Controller (`user.controller.js`):</p>
+                <pre class="code-js"><code><span class="keyword">async</span> <span class="function">getAll</span>(<span class="variable">req</span>, <span class="variable">res</span>) {
+  <span class="keyword">const</span> <span class="variable">status</span> = <span class="variable">req</span>.query.status; <span class="comment">// status será "ativo"</span>
+  <span class="keyword">const</span> <span class="variable">sort</span> = <span class="variable">req</span>.query.sort;   <span class="comment">// sort será "nome"</span>
+  <span class="comment">// ... lógica para filtrar/ordenar ...</span>
+}
+</code></pre>
+            </div>
+            
+            <!-- Slide 27: Resumo dos Parâmetros -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Resumo dos Parâmetros</h2>
+                <table class="w-full text-left table-auto">
+                    <thead>
+                        <tr class="bg-gray-700">
+                            <th class="p-3 text-lg font-semibold text-cyan-400">Tipo</th>
+                            <th class="p-3 text-lg font-semibold text-white">Onde Vem?</th>
+                            <th class="p-3 text-lg font-semibold text-white">Uso Comum</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-gray-700/50">
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-cyan-300"><span id="destaque">req.params</span></td>
+                            <td class="p-3 text-lg">Na Rota (<code>/users/:id</code>)</td>
+                            <td class="p-3 text-lg">Identificar recurso (GET, PUT, DELETE)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-yellow-300"><span id="destaque">req.body</span></td>
+                            <td class="p-3 text-lg">Corpo da Requisição (JSON)</td>
+                            <td class="p-3 text-lg">Enviar dados (POST, PUT)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-green-300"><span id="destaque">req.query</span></td>
+                            <td class="p-3 text-lg">Após o <span id="destaque">?</span> (<code>?filtro=...</code>)</td>
+                            <td class="p-3 text-lg">Filtrar, Ordenar, Paginar (GET)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Slide 28: Testando no Insomnia -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Testando no Insomnia</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    Agora é hora de testar nossa nova arquitetura!
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Abra o Insomnia e teste as 3 rotas que criamos (lembre-se de rodar com <code class="text-yellow-300">npm run dev</code>):
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-green-400">1. Listar todos</h3>
+                        <p class="text-gray-300"><code>GET http://localhost:3000/api/users</code></p>
+                    </div>
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-blue-400">2. Criar um</h3>
+                        <p class="text-gray-300"><code>POST http://localhost:3000/api/users</code></p>
+                        <p class="text-gray-400 text-sm">Não esqueça de enviar o JSON no Body!</p>
+                        <pre class="mt-2 text-sm code-js"><code><span class="comment">// Exemplo de JSON para enviar no Body</span>
+{
+  <span class="string">"name"</span>: <span class="string">"Maria"</span>,
+  <span class="string">"email"</span>: <span class="string">"maria@senac.com"</span>
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-lg font-bold text-green-400">3. Buscar por ID</h3>
+                        <p class="text-gray-300"><code>GET http://localhost:3000/api/users/1</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 29: Resumo da Aula 2 -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Resumo da Aula 2</h2>
+                <p class="text-xl text-gray-300 mb-6">O que aprendemos hoje:</p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A importância da "Separação de Responsabilidades".</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A função de cada camada: <span class="text-cyan-300">Rota</span>, <span class="text-yellow-300">Controller</span> e <span class="text-green-300">Service</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como usar o <span id="destaque">nodemon</span> para agilizar o desenvolvimento.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como ler JSON do cliente com <span id="destaque">express.json()</span>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como refatorar um projeto para uma arquitetura limpa.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> A diferença entre <span id="destaque">req.params</span>, <span id="destaque">req.body</span> e <span id="destaque">req.query</span>.</li>
+                </ul>
+            </div>
+            
+            <!-- Slide 30: Próxima Aula -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Próxima Aula</h2>
+                <h3 class="text-2xl text-gray-300 mb-6 font-semibold">Aula 3: Middlewares e Tratamento de Erros</h3>
+                
+                <p class="text-xl text-gray-300 mb-4">
+                    Agora que nossa arquitetura está organizada, vamos deixá-la mais robusta:
+                </p>
+                
+                <ul class="list-disc list-inside text-xl text-gray-300 space-y-3 mt-6">
+                    <li>O que são Middlewares? (O "Porteiro" da API).</li>
+                    <li>Criando um middleware de "Log" (Logger).</li>
+                    <li>Criando um middleware de "Validação".</li>
+                    <li>Tratamento de Erros Centralizado (Error Handler).</li>
+                </ul>
+            </div>
+
+            <!-- Slide 31: Encerramento -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h1 class="text-4xl font-bold text-white mb-4">Obrigado!</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-4"></div>
+                <h2 class="text-2xl font-semibold text-white mb-2">Disciplina: Desenvolvimento de Serviços e APIs</h2>
+                
+                <p class="text-3xl text-gray-300 mt-12">Perguntas?</p>
+            </div>
+            
+            <!-- Slide 32: Módulos Instalados (Oculto/Bônus) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Módulos Node Utilizados</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Resumo dos módulos que instalamos (e por que):
+                </p>
+                <ul class="space-y-4">
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400">express</h3>
+                        <p class="text-gray-300 mt-1">Nosso Framework Web. A base de tudo.</p>
+                        <pre class="code-bash mt-2"><code><span class="command">npm</span> <span class="arg">install express</span></code></pre>
+                        <p class="text-sm text-gray-400 mt-1">(Instalado como `dependency` - necessário para produção)</p>
+                    </li>
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-yellow-400">nodemon</h3>
+                        <p class="text-gray-300 mt-1">Monitora nossos arquivos e reinicia o servidor automaticamente.</p>
+                        <pre class="code-bash mt-2"><code><span class="command">npm</span> <span class="arg">install nodemon -D</span></code></pre>
+                        <p class="text-sm text-gray-400 mt-1">(Instalado como `devDependency` - usado apenas para desenvolver)</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Navegação dos Slides -->
+        <div class="flex-shrink-0 w-full bg-gray-700 p-4 flex justify-between items-center border-t border-gray-600">
+            <button id="prevBtn" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Anterior
+            </button>
+            <span id="slide-counter" class="text-sm text-gray-400">Slide 1 / 33</span>
+            <button id="nextBtn" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Próximo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slide-counter');
+            const slideContainer = document.getElementById('slide-container');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            if (slides.length > 0) {
+                const activeSlide = document.querySelector('.slide.active');
+                if (activeSlide) {
+                    currentSlide = Array.from(slides).indexOf(activeSlide);
+                } else {
+                    currentSlide = 0; // Fallback
+                }
+                showSlide(currentSlide);
+            }
+
+            function showSlide(index) {
+                // Remove 'active' de todos os slides
+                slides.forEach((slide) => {
+                    slide.classList.remove('active');
+                });
+
+                // Adiciona 'active' ao slide correto
+                slides[index].classList.add('active');
+
+                // Reseta o scroll do container do slide para o topo
+                slideContainer.scrollTop = 0;
+
+                // Atualiza o estado dos botões
+                currentSlide = index;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === totalSlides - 1);
+
+                // Atualiza o contador
+                slideCounter.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+            }
+
+            // Event Listeners
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Permite navegação pelas setas do teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

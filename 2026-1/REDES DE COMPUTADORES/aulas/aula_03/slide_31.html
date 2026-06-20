@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Domínios de Colisão vs Broadcast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@300;400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Decorative Elements */
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background-color: #1e3a8a;
+            z-index: 0;
+        }
+
+        .header-curve {
+            position: absolute;
+            top: 140px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #ffffff;
+            border-top-left-radius: 50% 100%;
+            border-top-right-radius: 50% 100%;
+            z-index: 1;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            height: 100%;
+        }
+
+        .custom-table th {
+            background-color: #f1f5f9;
+            color: #1e3a8a;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-align: left;
+            padding: 18px 24px;
+            border-bottom: 2px solid #3b82f6;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .custom-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .custom-table tr:hover {
+            background-color: #eff6ff;
+        }
+
+        /* Column Widths */
+        .col-feature {
+            width: 20%;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .col-collision {
+            width: 40%;
+        }
+
+        .col-broadcast {
+            width: 40%;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+
+        .badge-switch {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-hub {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-router {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-concept {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Visual Area (Bottom) */
+        .visual-area {
+            height: 90px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            background-color: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #eff6ff;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+
+        .icon-header {
+            position: absolute;
+            top: 30px;
+            right: 60px;
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-curve"></div>
+        <i class="fas fa-project-diagram icon-header"></i>
+        <div class="content-wrapper">
+            <div class="header">
+                <p>Equipamentos de Interconexão</p>
+                <h1>Domínios de Colisão vs Broadcast</h1>
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th class="col-feature">Característica</th>
+                            <th class="col-collision">Domínio de Colisão</th>
+                            <th class="col-broadcast">Domínio de Broadcast</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-feature">Definição</td>
+                            <td>Segmento de rede onde pacotes de dados podem colidir uns com os outros (CSMA/CD).</td>
+                            <td>Segmento lógico onde qualquer dispositivo pode alcançar outro via broadcast.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-feature">Quem separa?</td>
+                            <td>
+                                <p class="m-0 mb-1"><span class="badge badge-switch">Switch</span> (Camada 2)</p>
+                                <p class="m-0"><span class="badge badge-router">Roteador</span> (Camada 3)</p>
+                            </td>
+                            <td>
+                                <p class="m-0 mb-1"><span class="badge badge-router">Roteador</span> (Camada 3)</p>
+                                <p class="m-0"><span class="badge badge-switch">Switch</span> (apenas se usar VLANs)</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-feature">Comportamento Hub</td>
+                            <td>
+                                <p class="m-0"><span class="badge badge-hub">Hub</span></p>
+                                <p class="mt-1 text-sm text-gray-600">Todo o equipamento é <strong>1 único</strong>
+                                    domínio. Colisões afetam a todos.</p>
+                            </td>
+                            <td>
+                                <p class="m-0"><span class="badge badge-hub">Hub</span></p>
+                                <p class="mt-1 text-sm text-gray-600">Todo o equipamento é <strong>1 único</strong>
+                                    domínio de broadcast.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-feature">Comportamento Switch</td>
+                            <td>
+                                <p class="m-0"><span class="badge badge-switch">Switch</span></p>
+                                <p class="mt-1 text-sm text-gray-600"><strong>Cada porta</strong> é um domínio de
+                                    colisão separado (Microsegmentação).</p>
+                            </td>
+                            <td>
+                                <p class="m-0"><span class="badge badge-switch">Switch</span></p>
+                                <p class="mt-1 text-sm text-gray-600">Padrão: Todo o switch é <strong>1 único</strong>
+                                    domínio (até configurar VLANs).</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-feature">Impacto Prático</td>
+                            <td>Excesso causa retransmissões e lentidão na rede (reduz throughput).</td>
+                            <td>Excesso ("Broadcast Storm") consome CPU de todos os hosts da rede.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="visual-area">
+                <div class="info-box w-1/2">
+                    <div class="icon-circle">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div>
+                        <p class="m-0 font-bold text-gray-700 text-sm">Segmentação Ideal</p>
+                        <p class="m-0 text-xs text-gray-500">Em redes modernas, usamos Switches para eliminar colisões e
+                            VLANs para conter broadcasts.</p>
+                    </div>
+                </div>
+                <div class="info-box w-1/2 border-l border-gray-200 pl-4">
+                    <div class="icon-circle bg-red-50 text-red-500">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <p class="m-0 font-bold text-gray-700 text-sm">Alerta de Design</p>
+                        <p class="m-0 text-xs text-gray-500">Redes "planas" (sem VLANs) muito grandes sofrem degradação
+                            por tráfego de broadcast excessivo (ARP, DHCP, mDNS).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>Camada Física e Enlace – Cabos e Switches</span>
+            <span>31/36</span>
+        </div>
+    </div>
+</body>
+
+</html>

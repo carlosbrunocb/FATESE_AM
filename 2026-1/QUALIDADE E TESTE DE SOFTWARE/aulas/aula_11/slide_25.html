@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Impacto Financeiro dos Bugs Regressivos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* Container Principal com Flexbox */
+        .slide-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            flex-shrink: 0;
+        }
+
+        /* Envoltório do Conteúdo utilizando CSS Grid */
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto 1fr auto;
+            gap: 20px 30px;
+            padding: 30px 50px;
+            min-height: 0;
+            /* Permite que o flex child encolha adequadamente */
+        }
+
+        /* Título ocupando todas as 3 colunas */
+        .title-section {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .badge {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .title-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(28px, 2.5vw, 36px);
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .title-section p {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        /* Configuração Base dos Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .card-top-red {
+            border-top: 5px solid #ef4444;
+        }
+
+        .card-top-blue {
+            border-top: 5px solid #004A8D;
+        }
+
+        .card-top-green {
+            border-top: 5px solid #10b981;
+        }
+
+        .card-left-orange {
+            border-left: 5px solid #F7931E;
+        }
+
+        /* Rodapé do Grid ocupando todas as colunas */
+        .bottom-section {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        /* Cabeçalho Interno dos Cards */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .icon-red {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .icon-blue {
+            background: #f0f9ff;
+            color: #004A8D;
+        }
+
+        .icon-green {
+            background: #dcfce7;
+            color: #10b981;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Distribui o espaço internamente */
+        }
+
+        /* Estilos Internos Específicos */
+
+        /* Coluna 1: Lista com Ícones */
+        .custom-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .custom-list li {
+            font-size: 14pt;
+            color: #475569;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .custom-list li i {
+            color: #ef4444;
+            font-size: 8pt;
+            margin-top: 9px;
+        }
+
+        /* Coluna 2: Comparação */
+        .comparison-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .comp-box {
+            flex: 1;
+            text-align: center;
+            padding: 12px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .comp-dev {
+            background: #f0f9ff;
+        }
+
+        .comp-prod {
+            background: #fef2f2;
+        }
+
+        .comp-label {
+            font-size: 12pt;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .comp-dev .comp-label {
+            color: #004A8D;
+        }
+
+        .comp-prod .comp-label {
+            color: #ef4444;
+        }
+
+        .comp-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .comp-dev .comp-value {
+            color: #004A8D;
+        }
+
+        .comp-prod .comp-value {
+            color: #ef4444;
+        }
+
+        .comp-desc {
+            font-size: 10pt;
+            color: #64748b;
+        }
+
+        .hint-box {
+            font-size: 12pt;
+            color: #475569;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Coluna 3: Métricas em Grid Interno 2x2 */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            flex: 1;
+        }
+
+        .metric-box {
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .metric-label {
+            font-size: 11pt;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Rodapé de Conteúdo (Exemplos) */
+        .example-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .example-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-text {
+            font-size: 13pt;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 5px;
+        }
+
+        .rule-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Barra de Rodapé da Página */
+        .footer-bar {
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            flex-shrink: 0;
+        }
+
+        .footer-text,
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+
+        <main class="content-wrapper">
+            <div class="title-section">
+                <div class="badge">AULA 11</div>
+                <h1>Impacto Financeiro dos Bugs Regressivos</h1>
+                <p>Custos reais e estratégias de prevenção</p>
+            </div>
+
+            <div class="card card-top-red">
+                <div class="card-header">
+                    <div class="card-icon icon-red">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="card-title">Por que é caro?</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="custom-list">
+                        <li>
+                            <i class="fas fa-circle"></i>
+                            <span>Retrabalho e interrupções</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-circle"></i>
+                            <span>Perda de receita</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-circle"></i>
+                            <span>Danos à reputação</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-circle"></i>
+                            <span>Suporte ao cliente</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card card-top-blue">
+                <div class="card-header">
+                    <div class="card-icon icon-blue">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="card-title">Comparação de Detecção</h3>
+                </div>
+                <div class="card-body">
+                    <div class="comparison-container">
+                        <div class="comp-box comp-dev">
+                            <span class="comp-label">Desenvolvimento</span>
+                            <span class="comp-value">R$ 100</span>
+                            <span class="comp-desc">Correção rápida</span>
+                        </div>
+                        <div class="comp-box comp-prod">
+                            <span class="comp-label">Produção</span>
+                            <span class="comp-value">R$ 1.000</span>
+                            <span class="comp-desc">Custo multiplicado</span>
+                        </div>
+                    </div>
+                    <div class="hint-box">
+                        <strong>Dica:</strong> Detectar bugs em desenvolvimento custa 10x menos
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-top-green">
+                <div class="card-header">
+                    <div class="card-icon icon-green">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3 class="card-title">Métricas para Monitorar</h3>
+                </div>
+                <div class="card-body">
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <span class="metric-label">% Falhas Regressivas</span>
+                            <span class="metric-value">&lt; 5%</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="metric-label">MTTR</span>
+                            <span class="metric-value">&lt; 2h</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="metric-label">MTTD</span>
+                            <span class="metric-value">&lt; 30min</span>
+                        </div>
+                        <div class="metric-box">
+                            <span class="metric-label">Taxa Retrabalho</span>
+                            <span class="metric-value">&lt; 10%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-left-orange bottom-section">
+                <div class="example-col">
+                    <h3 class="example-title">
+                        <i class="fas fa-shopping-cart" style="color: #F7931E;"></i>
+                        Exemplo: Checkout E-commerce
+                    </h3>
+                    <p class="example-text"><strong>Problema:</strong> Diferença de centavos no cálculo de frete</p>
+                    <p class="example-text"><strong>Impacto:</strong> Recusas de pagamento → carrinhos abandonados →
+                        perda de vendas</p>
+                </div>
+
+                <div class="example-col">
+                    <h3 class="example-title">
+                        <i class="fas fa-database" style="color: #004A8D;"></i>
+                        Exemplo: Mudança de Banco de Dados
+                    </h3>
+                    <p class="example-text"><strong>Problema:</strong> Consultas mais lentas após update</p>
+                    <p class="example-text"><strong>Impacto:</strong> Degradação de SLAs → timeout em requisições</p>
+                </div>
+
+                <div class="example-col rule-box">
+                    <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 5px;">Regra Prática
+                    </div>
+                    <div style="font-size: 12px; color: #475569;">
+                        Priorize regressão em fluxos críticos e áreas com alto histórico de falhas
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

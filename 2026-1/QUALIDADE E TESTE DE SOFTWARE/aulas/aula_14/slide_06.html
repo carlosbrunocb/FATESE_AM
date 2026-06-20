@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>O Desafio do Assincronismo</title>
+    <link rel="stylesheet" href="./assets/chrome.css">
+</head>
+
+<body>
+    <div class="slide-container" data-screen-label="06 Assincronismo">
+
+        <!-- Header -->
+        <div class="chrome-header">
+            <span class="title">Contextualização Teórica</span>
+            <span class="discipline">Qualidade e Teste de Software</span>
+        </div>
+
+        <div style="position: absolute; top: 150px; left: 120px; z-index: 10;" data-object="true"
+            data-object-type="textbox">
+            <h2 style="font-size: 56px; font-weight: 800; margin: 0; color: #ffffff;">O Desafio da Web Assíncrona</h2>
+            <p style="font-size: 22px; color: var(--text-secondary); margin: 5px 0 0 0;">Como o AJAX, React, Angular e
+                Vue impactam diretamente a estabilidade dos testes de software.</p>
+        </div>
+
+        <!-- Esquerda: Explicação do problema -->
+        <div class="card" style="position: absolute; top: 280px; left: 120px; width: 740px; height: 630px; z-index: 10;"
+            data-object="true" data-object-type="textbox">
+            <h3 style="font-size: 28px; margin: 0 0 25px 0; color: var(--accent-error);">Por que testes falham sem
+                motivo aparente?</h3>
+
+            <p style="font-size: 20px; color: var(--text-primary); line-height: 1.6; margin-bottom: 25px;">
+                Em aplicações modernas, ao interagir com a interface, a página não é recarregada por completo. Apenas
+                pedaços do DOM (Document Object Model) são atualizados de forma assíncrona após chamadas de API ao
+                servidor.
+            </p>
+
+            <div
+                style="background-color: rgba(239, 68, 68, 0.05); border-left: 4px solid var(--accent-error); padding: 20px; border-radius: 4px; margin-bottom: 25px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 20px; color: #ffffff; font-weight: 700;">As Exceções Temidas
+                    na Automação:</h4>
+                <ul
+                    style="margin: 0; padding-left: 25px; font-size: 18px; color: var(--text-secondary); line-height: 1.6;">
+                    <li style="margin-bottom: 8px;"><strong
+                            style="color: #ffffff; font-family: monospace;">NoSuchElementException</strong>: Tentativa
+                        de ler ou interagir com um elemento que ainda não foi renderizado na árvore do DOM.</li>
+                    <li><strong
+                            style="color: #ffffff; font-family: monospace;">ElementNotInteractableException</strong>: O
+                        elemento está presente no HTML, mas ainda não está visível, habilitado ou pronto para receber
+                        cliques na tela.</li>
+                </ul>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 32px;">👻</div>
+                <p style="font-size: 18px; color: var(--text-secondary); margin: 0; font-style: italic;">
+                    Isso cria os chamados <strong>Flaky Tests</strong> (testes instáveis que ora passam, ora falham sem
+                    alteração no código de produção).
+                </p>
+            </div>
+        </div>
+
+        <!-- Direita: O fluxo visual do problema -->
+        <div class="card"
+            style="position: absolute; top: 280px; left: 940px; width: 820px; height: 630px; z-index: 10; display: flex; flex-direction: column; justify-content: space-between;"
+            data-object="true" data-object-type="textbox">
+            <h3 style="font-size: 28px; margin: 0; color: var(--accent-cyan);">A Corrida de Corrida de Impedância (Race
+                Condition)</h3>
+
+            <div
+                style="background-color: var(--accent-gray); padding: 25px; border-radius: 8px; font-family: monospace; font-size: 16px; line-height: 1.5; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="color: var(--accent-cyan); font-weight: 700; margin-bottom: 10px;">[Cenário de Teste
+                    Tradicional na Automação]</div>
+                <div style="color: var(--text-secondary);">1. Script: Clica no botão "Entrar"</div>
+                <div style="color: var(--text-secondary);">2. Browser: Dispara requisição HTTP assíncrona ao servidor da
+                    API...</div>
+                <div style="color: var(--accent-error); font-weight: 700; margin: 10px 0;">3. Script (Tentativa
+                    imediata): Procura campo "Logout" para validar</div>
+                <div style="color: #ef4444; background: rgba(239,68,68,0.1); padding: 10px; border-radius: 4px;">
+                    &gt;&gt; ERRO: NoSuchElementException! (A API ainda não respondeu, a página não mudou)</div>
+            </div>
+
+            <div style="border-top: 1px solid var(--accent-gray); padding-top: 25px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 20px; color: #ffffff;">Como resolver sem inserir atrasos fixos
+                    desnecessários?</h4>
+                <p style="margin: 0; font-size: 18px; color: var(--text-secondary); line-height: 1.6;">
+                    Utilizar <strong>atrasos cegos</strong> (<code
+                        style="color: var(--accent-cyan); font-family: monospace;">time.sleep(5)</code>) é considerado
+                    uma péssima prática na automação profissional de testes, pois atrasa a execução geral da pipeline e
+                    não garante a resolução do problema caso a rede oscile.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="chrome-footer">
+            <div class="logo">FATESE <span>•</span> ADS</div>
+            <div>O Desafio do Sincronismo na Automação</div>
+            <div>Slide 06/16</div>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Product Backlog</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-title {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 2px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-panel {
+            flex: 0 0 65%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 0 0 calc(35% - 30px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .backlog-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .backlog-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .backlog-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .backlog-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .backlog-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .backlog-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .backlog-id {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            background: #dbeafe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .backlog-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1e3a5f;
+            line-height: 1.5;
+        }
+
+        .backlog-priority {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .priority-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .priority-high {
+            background: #ef4444;
+        }
+
+        .priority-medium {
+            background: #f59e0b;
+        }
+
+        .priority-low {
+            background: #10b981;
+        }
+
+        .structure-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .structure-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .structure-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .structure-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .structure-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .structure-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .structure-label {
+            font-size: 13px;
+            color: #64748b;
+            width: 80px;
+            font-weight: 600;
+        }
+
+        .structure-value {
+            font-size: 13px;
+            color: #1e3a5f;
+            flex: 1;
+        }
+
+        .dossie-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dossie-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .dossie-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .dossie-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .dossie-content {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .dossie-highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            width: 80%;
+            border-radius: 0 2px 2px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <div>
+                    <div class="header-title">Product Backlog</div>
+                    <div class="header-subtitle">Lista mestre de desejos do projeto</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-book"></i> Documentação
+                </div>
+                <div class="badge">
+                    <i class="fas fa-clock"></i> 15 min
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section-title">Product Backlog</div>
+            <div class="section-description">
+                O Backlog é a lista mestre de desejos do projeto, priorizada por valor de negócio e organizada para
+                entrega incremental.
+            </div>
+            <div class="main-content">
+                <div class="left-panel">
+                    <div class="backlog-card">
+                        <div class="backlog-header">
+                            <div class="backlog-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="backlog-title">Estrutura do Backlog</div>
+                        </div>
+                        <div class="backlog-content">
+                            <div class="backlog-item">
+                                <div class="backlog-id">US01</div>
+                                <div class="backlog-text">Como Adotante, quero responder ao Quiz de Afinidade, para
+                                    receber sugestões de pets que combinem com meu espaço e tempo.</div>
+                                <div class="backlog-priority">
+                                    <span class="priority-dot priority-high"></span>
+                                    <span>Alta</span>
+                                </div>
+                            </div>
+                            <div class="backlog-item">
+                                <div class="backlog-id">US02</div>
+                                <div class="backlog-text">Como ONG, quero visualizar o relatório de match dos
+                                    candidatos, para fazer uma triagem inteligente e evitar devoluções.</div>
+                                <div class="backlog-priority">
+                                    <span class="priority-dot priority-high"></span>
+                                    <span>Alta</span>
+                                </div>
+                            </div>
+                            <div class="backlog-item">
+                                <div class="backlog-id">US03</div>
+                                <div class="backlog-text">Como Adotante, quero abrir um chat com a ONG após o match,
+                                    para agendar uma visita e tirar dúvidas.</div>
+                                <div class="backlog-priority">
+                                    <span class="priority-dot priority-medium"></span>
+                                    <span>Média</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="structure-card">
+                        <div class="structure-header">
+                            <div class="structure-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="structure-title">Organização</div>
+                        </div>
+                        <div class="structure-list">
+                            <div class="structure-item">
+                                <div class="structure-label">ID:</div>
+                                <div class="structure-value">Identificador único</div>
+                            </div>
+                            <div class="structure-item">
+                                <div class="structure-label">US:</div>
+                                <div class="structure-value">Descrição da história</div>
+                            </div>
+                            <div class="structure-item">
+                                <div class="structure-label">Prioridade:</div>
+                                <div class="structure-value">Alta/Média/Baixa</div>
+                            </div>
+                            <div class="structure-item">
+                                <div class="structure-label">Critérios:</div>
+                                <div class="structure-value">Aceitação definida</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dossie-card">
+                        <div class="dossie-header">
+                            <div class="dossie-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="dossie-title">Vínculo com Dossiê</div>
+                        </div>
+                        <div class="dossie-content">
+                            Este Backlog alimenta o <span class="dossie-highlight">Capítulo 5 (Documentação
+                                Técnica)</span> do Dossiê do 2º Bimestre.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>25/04/2026</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Carlos Bruno Oliveira Lopes</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <i class="fas fa-graduation-cap"></i> FATESE - ADS
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

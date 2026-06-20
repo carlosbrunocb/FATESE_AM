@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura IoT em Camadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        .header-section {
+            background-color: #1e3a5f;
+            padding: 3% 6% 2.5% 6%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .title-accent {
+            color: #ff9933;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 4% 6%;
+            display: flex;
+            gap: clamp(30px, 4vw, 50px);
+        }
+
+        .diagram-section {
+            flex: 0 0 45%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: clamp(15px, 2vh, 20px);
+        }
+
+        .layer-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: clamp(15px, 2vh, 20px) clamp(20px, 2vw, 25px);
+            border-left: 6px solid #ff9933;
+            position: relative;
+        }
+
+        .layer-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .layer-icon {
+            width: clamp(40px, 4vw, 50px);
+            height: clamp(40px, 4vw, 50px);
+            background-color: #1e3a5f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .layer-icon i {
+            color: #ff9933;
+            font-size: clamp(20px, 2vw, 24px);
+        }
+
+        .layer-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(18px, 1.8vw, 22px);
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .layer-description {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(13px, 1.2vw, 15px);
+            font-weight: 400;
+            color: #555555;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .arrow-down {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: clamp(20px, 2.5vh, 25px);
+        }
+
+        .arrow-down i {
+            color: #ff9933;
+            font-size: clamp(20px, 2vw, 28px);
+        }
+
+        .info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(15px, 2.5vh, 25px);
+            justify-content: center;
+        }
+
+        .info-block {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: clamp(15px, 2vh, 20px);
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 1.6vw, 20px);
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0 0 clamp(10px, 1.5vh, 15px) 0;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #ff9933;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: clamp(8px, 1.2vh, 12px);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet-icon {
+            color: #ff9933;
+            font-size: clamp(10px, 1vw, 12px);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .info-text {
+            flex: 1;
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(13px, 1.2vw, 15px);
+            font-weight: 400;
+            color: #555555;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .info-text strong {
+            color: #1e3a5f;
+            font-weight: 600;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            width: clamp(80px, 10vw, 120px);
+            height: clamp(80px, 10vw, 120px);
+            border: 3px solid rgba(255, 153, 51, 0.3);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                <p>Arquitetura <span class="title-accent">IoT</span> em Camadas</p>
+            </h1>
+            <div class="decoration-circle"></div>
+        </div>
+        <div class="content-wrapper">
+            <div class="diagram-section">
+                <div class="layer-card">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <h2 class="layer-title">
+                            <p>Aplicação (Nuvem/Edge)</p>
+                        </h2>
+                    </div>
+                    <p class="layer-description">Bancos de dados, APIs, dashboards, analytics, processamento e visualização de dados</p>
+                </div>
+                <div class="arrow-down">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="layer-card">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h2 class="layer-title">
+                            <p>Rede (Conectividade)</p>
+                        </h2>
+                    </div>
+                    <p class="layer-description">Wi-Fi, Bluetooth LE, Ethernet, LoRa; Protocolos: MQTT, HTTP, CoAP</p>
+                </div>
+                <div class="arrow-down">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="layer-card">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h2 class="layer-title">
+                            <p>Percepção (Borda)</p>
+                        </h2>
+                    </div>
+                    <p class="layer-description">Sensores, atuadores, MCUs (ESP32), condicionamento de sinais</p>
+                </div>
+            </div>
+            <div class="info-section">
+                <div class="info-block">
+                    <h3 class="info-title">
+                        <p>Fluxo de Dados</p>
+                    </h3>
+                    <div class="info-item">
+                        <i class="fas fa-circle bullet-icon"></i>
+                        <p class="info-text"><strong>Sensor → MCU/Gateway:</strong> Coleta e pré-processamento local</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-circle bullet-icon"></i>
+                        <p class="info-text"><strong>MCU → Broker/Serviço:</strong> Transmissão via protocolos IoT</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-circle bullet-icon"></i>
+                        <p class="info-text"><strong>Broker → Aplicação:</strong> Armazenamento e análise</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-circle bullet-icon"></i>
+                        <p class="info-text"><strong>Aplicação → Usuário:</strong> Visualização e controle</p>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <h3 class="info-title">
+                        <p>Considerações Importantes</p>
+                    </h3>
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt bullet-icon"></i>
+                        <p class="info-text"><strong>Segurança:</strong> TLS/SSL, autenticação, criptografia</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-battery-half bullet-icon"></i>
+                        <p class="info-text"><strong>Energia:</strong> Otimização para dispositivos battery-powered</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock bullet-icon"></i>
+                        <p class="info-text"><strong>Latência:</strong> Trade-off entre cloud e edge processing</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-expand-arrows-alt bullet-icon"></i>
+                        <p class="info-text"><strong>Escalabilidade:</strong> Arquitetura preparada para crescimento</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

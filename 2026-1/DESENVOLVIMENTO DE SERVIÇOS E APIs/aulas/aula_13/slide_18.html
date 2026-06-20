@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modelo de Usuário com Papel (Mongoose)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            flex: 1;
+            height: calc(100% - 80px);
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .code-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-icon {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .code-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.4;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .code-line {
+            margin: 3px 0;
+            display: flex;
+            align-items: center;
+            white-space: pre-wrap;
+        }
+
+        .code-keyword {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-function {
+            color: #fbbf24;
+        }
+
+        .code-number {
+            color: #f472b6;
+        }
+
+        .code-variable {
+            color: #c4b5fd;
+        }
+
+        .code-property {
+            color: #93c5fd;
+        }
+
+        .config-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .config-icon {
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .config-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .config-content {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .config-item i {
+            color: #3b82f6;
+            font-size: 13px;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .config-value {
+            color: #64748b;
+            margin-left: auto;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .step-text {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .key-point i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid #f59e0b;
+            margin-top: 5px;
+        }
+
+        .warning-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-content {
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        .model-visual {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .model-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .model-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .model-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-user-shield"></i> Modelo de Usuário com Papel (Mongoose)</h1>
+                    <div class="subtitle">Evolução do modelo de usuário para incluir controle de acesso baseado em
+                        papéis</div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>RBAC Implementado</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="code-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="code-title">src/models/Usuario.js</div>
+                        </div>
+                        <div class="code-content">
+                            <div class="code-line"><span class="code-keyword">const</span> mongoose = <span
+                                    class="code-function">require</span>(<span class="code-string">'mongoose'</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-keyword">const</span> UsuarioSchema = <span
+                                    class="code-keyword">new</span> mongoose.<span class="code-function">Schema</span>({</div>
+                            <div class="code-line">   nome: { type: <span class="code-string">'String'</span>, required: <span class="code-keyword">true</span>},</div>
+                            <div class="code-line">   email: { type: <span class="code-string">'String'</span>, required: <span class="code-keyword">true</span>, unique: <span class="code-keyword">true</span>},</div>
+                            <div class="code-line">   senha: { type: <span class="code-string">'String'</span>, required: <span class="code-keyword">true</span>},</div>
+                            <div class="code-line"> <span class="code-comment">   // NOVO CAMPO: Papel do usuário</span>
+                            </div>
+                            <div class="code-line">   role: { </div>
+                            <div class="code-line">      type: <span class="code-string">'String'</span>, </div>
+                            <div class="code-line">      enum: [<span class="code-string">'CLIENTE'</span>, <span
+                                    class="code-string">'ADMIN'</span>], <span class="code-comment">// Só aceita esses dois valores</span></div>
+                            <div class="code-line">      default: <span class="code-string">'CLIENTE'</span> <span
+                                    class="code-comment">// Todo novo usuário é cliente por padrão</span></div>
+                            <div class="code-line">   }</div>
+                            <div class="code-line">}, { timestamps: <span class="code-keyword">true</span> });</div>
+                            <div class="code-line"></div>
+                            <div class="code-line">module.exports = mongoose.<span
+                                    class="code-function">model</span>(<span class="code-string">'Usuario'</span>, UsuarioSchema);</div>
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <div class="warning-title">
+                            <i class="fas fa-info-circle"></i> Importante
+                        </div>
+                        <div class="warning-content">
+                            O campo <span class="highlight">role</span> utiliza <span class="highlight">enum</span> para
+                            garantir que apenas valores válidos sejam aceitos no banco de dados.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="config-card" style="flex: 1;">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-users-cog"></i>
+                            </div>
+                            <div class="config-title">Estrutura do Modelo</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="model-visual">
+                                <div class="model-item">
+                                    <div class="model-label">Nome</div>
+                                    <div class="model-value">String</div>
+                                </div>
+                                <div class="model-item">
+                                    <div class="model-label">Email</div>
+                                    <div class="model-value">String</div>
+                                </div>
+                                <div class="model-item">
+                                    <div class="model-label">Senha</div>
+                                    <div class="model-value">String</div>
+                                </div>
+                                <div class="model-item">
+                                    <div class="model-label">Role</div>
+                                    <div class="model-value">Enum</div>
+                                </div>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span class="config-label">Validação:</span>
+                                <span class="config-value">Enum constraint</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-user-tag"></i>
+                                <span class="config-label">Padrão:</span>
+                                <span class="config-value">CLIENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-card" style="flex: 1;">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="config-title">Fluxo de Autorização</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="flow-diagram">
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="step-text">Usuário</div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="step-text">Role</div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="step-text">Autorizado</div>
+                                </div>
+                            </div>
+                            <div class="key-point">
+                                <i class="fas fa-check"></i>
+                                <span>Validação no schema</span>
+                            </div>
+                            <div class="key-point">
+                                <i class="fas fa-check"></i>
+                                <span>Default para CLIENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

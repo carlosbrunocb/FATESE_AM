@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Versão 2: Semáforo Profissional com millis() — Estratégia</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden; /* Evita barras de rolagem na tela cheia */
+        }
+
+        .slide-container {
+            width: 100vw; /* Ocupa 100% da largura da tela */
+            height: 100vh; /* Ocupa 100% da altura da tela */
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 5vh 5vw; /* Padding responsivo para manter a proporção */
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(30px, 3.8vw, 42px);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 4vh 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center; /* Centraliza verticalmente na versão cheia */
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            padding: 20px 24px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .info-icon {
+            min-width: 38px;
+            width: 38px;
+            height: 38px;
+            background-color: #1e40af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+            font-size: 18px;
+        }
+
+        .info-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: clamp(15px, 1.5vw, 17px);
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding-top: 4px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .diagram-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 1.8vw, 18px);
+            font-weight: 600;
+            color: #60a5fa;
+            margin: 0 0 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .flow-diagram {
+            position: relative;
+            width: 100%;
+            height: 100%; /* Aproveita todo o espaço disponível no card da direita */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centralizado em vez de space-around */
+            gap: 1.5vh; /* Ajuste flexível dos espaços entre os boxes */
+            padding: 20px 0;
+        }
+
+        .flow-box {
+            width: 85%;
+            padding: 18px 24px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 3px solid;
+            background-color: #0f172a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .box-1 {
+            border-color: #22c55e;
+        }
+
+        .box-2 {
+            border-color: #eab308;
+        }
+
+        .box-3 {
+            border-color: #8b5cf6;
+        }
+
+        .box-icon {
+            min-width: 40px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .box-1 .box-icon {
+            background-color: #22c55e;
+        }
+
+        .box-2 .box-icon {
+            background-color: #eab308;
+        }
+
+        .box-3 .box-icon {
+            background-color: #8b5cf6;
+        }
+
+        .box-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: clamp(14px, 1.4vw, 15px);
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .arrow-down {
+            width: 3px;
+            height: clamp(15px, 3vh, 28px);
+            background-color: #60a5fa;
+            position: relative;
+            margin: 4px 0;
+        }
+
+        .arrow-down::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid #60a5fa;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Versão 2: Semáforo Profissional com millis() — Estratégia</p>
+            </h1>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <p class="info-text">Substituir atrasos (delay) por temporização baseada em eventos com millis()
+                        </p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <p class="info-text">Implementar máquina de estados: 0=Verde, 1=Amarelo, 2=Vermelho</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <p class="info-text">Atualizar saídas a cada passagem no loop sem travar o processador</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <p class="info-text">Sistema responsivo e pronto para expansões (pedestre, sensores, IoT)</p>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <p class="diagram-title">Fluxo de Execução Não-Bloqueante</p>
+                    <div class="flow-diagram">
+                        <div class="flow-box box-1">
+                            <div class="box-icon">
+                                <p>1</p>
+                            </div>
+                            <p class="box-text">Checa tempo atual com millis()</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="flow-box box-2">
+                            <div class="box-icon">
+                                <p>2</p>
+                            </div>
+                            <p class="box-text">Verifica se intervalo foi atingido</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="flow-box box-3">
+                            <div class="box-icon">
+                                <p>3</p>
+                            </div>
+                            <p class="box-text">Muda estado e atualiza LEDs</p>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="flow-box box-1">
+                            <div class="box-icon">
+                                <i class="fas fa-redo"></i>
+                            </div>
+                            <p class="box-text">Loop continua livre para outras tarefas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

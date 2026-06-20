@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modelo Cliente-Servidor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .client-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .client-box:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .server-box {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .server-box:hover {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .intermediary-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .intermediary-box:hover {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .connection-line {
+            stroke: rgba(59, 130, 246, 0.5);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 5, 5;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .method-get {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .method-post {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .method-put {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .method-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-10">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-sm font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-2">Modelo Cliente-Servidor</h1>
+                    <p class="text-gray-400 text-lg">Arquitetura da Web e interação entre componentes</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-lg font-semibold">HTTP/1.1</div>
+                        <div class="text-sm text-gray-400">Stateless</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-server text-blue-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col gap-6">
+                <!-- Top Section - Diagram -->
+                <div class="grid grid-cols-3 gap-8 flex-1">
+                    <!-- Left Column - Client -->
+                    <div class="client-box flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                    <i class="fas fa-desktop text-blue-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white text-xl font-semibold">Cliente</div>
+                                    <div class="text-sm text-gray-400">Browser, Apps, Scripts</div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">Navegadores Web</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">Aplicativos Mobile</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">Scripts (curl, Postman)</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">APIs Client</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center gap-2">
+                            <span class="text-sm text-gray-400">Status:</span>
+                            <div class="status-indicator"></div>
+                            <span class="text-sm text-green-400">Conectado</span>
+                        </div>
+                    </div>
+                    <!-- Middle Column - Connection -->
+                    <div class="flex flex-col justify-center items-center relative">
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <!-- Connection Lines SVG -->
+                            <svg class="absolute inset-0 w-full h-full" style="z-index: 1;">
+                                <line class="connection-line" x1="0" x2="100%" y1="50%" y2="50%"></line>
+                            </svg>
+                            <!-- Connection Info -->
+                            <div class="bg-gray-800/80 backdrop-blur-md rounded-lg p-5 border border-gray-700/50 z-10">
+                                <div class="text-center mb-4">
+                                    <div class="text-white text-base font-semibold mb-1">Conexão HTTP</div>
+                                    <div class="text-sm text-gray-400">Request/Response</div>
+                                </div>
+                                <div class="flex items-center justify-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                    <span class="text-sm text-blue-400">TCP</span>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <span class="text-sm text-green-400">TLS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column - Server -->
+                    <div class="server-box flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                    <i class="fas fa-server text-green-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white text-xl font-semibold">Servidor</div>
+                                    <div class="text-sm text-gray-400">Origin, APIs, CDNs</div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">Origin Servers</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">APIs RESTful</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">CDNs</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check text-green-400 text-sm"></i>
+                                    <span class="text-gray-300 text-base">Reverse Proxies</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center gap-3">
+                            <span class="text-sm text-gray-400">Load:</span>
+                            <div class="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="w-3/4 h-full bg-green-500"></div>
+                            </div>
+                            <span class="text-sm text-green-400 font-medium">75%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bottom Section - Intermediaries -->
+                <div class="grid grid-cols-4 gap-6 mt-2">
+                    <div class="intermediary-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-network-wired text-orange-400 text-base"></i>
+                            <span class="text-white text-base font-medium">Cache</span>
+                        </div>
+                        <div class="text-sm text-gray-400">Armazenamento temporário</div>
+                    </div>
+                    <div class="intermediary-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-balance-scale text-orange-400 text-base"></i>
+                            <span class="text-white text-base font-medium">Load Balancer</span>
+                        </div>
+                        <div class="text-sm text-gray-400">Distribuição de carga</div>
+                    </div>
+                    <div class="intermediary-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-shield-alt text-orange-400 text-base"></i>
+                            <span class="text-white text-base font-medium">Gateway</span>
+                        </div>
+                        <div class="text-sm text-gray-400">Segurança e roteamento</div>
+                    </div>
+                    <div class="intermediary-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-database text-orange-400 text-base"></i>
+                            <span class="text-white text-base font-medium">Database</span>
+                        </div>
+                        <div class="text-sm text-gray-400">Persistência de dados</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Section -->
+            <div
+                class="mt-8 flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-clock text-blue-400 text-base"></i>
+                        <span class="text-white text-base">Duração: 45 minutos</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-calendar text-blue-400 text-base"></i>
+                        <span class="text-white text-base">Aula 12 de 20</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 text-base">Progresso da aula:</span>
+                    <div class="w-32 h-2.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-3/5 h-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <span class="text-white text-base font-medium">60%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

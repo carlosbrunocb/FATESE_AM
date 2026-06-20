@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hub - Funcionamento e Características</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            position: relative;
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+
+        /* Sidebar Navigation */
+        .left-sidebar {
+            width: 80px;
+            height: 100%;
+            background-color: #1e3a8a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+            z-index: 10;
+        }
+
+        .sidebar-icon {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-icon.active {
+            color: #ffffff;
+            position: relative;
+        }
+
+        .sidebar-icon.active::after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 40px;
+            background-color: #3b82f6;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top header accent */
+        .header-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background-color: #e5e7eb;
+        }
+
+        .header-accent-fill {
+            width: 70%;
+            /* Progress indicator ~70% */
+            height: 100%;
+            background-color: #3b82f6;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 42px;
+            color: #111827;
+            margin-bottom: 16px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 6px;
+            background-color: #3b82f6;
+            margin-top: 12px;
+            border-radius: 3px;
+        }
+
+        .content-area {
+            display: flex;
+            flex: 1;
+            margin-top: 30px;
+            align-items: flex-start;
+        }
+
+        .list-container {
+            flex: 2;
+            padding-right: 40px;
+        }
+
+        .visual-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Card Items Style */
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            background-color: #f9fafb;
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 5px solid #ef4444;
+            /* Red to indicate "Legacy/Warning" aspect of Hubs */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(10px);
+            background-color: #fff1f2;
+            /* Light red tint on hover */
+        }
+
+        .icon-box {
+            min-width: 48px;
+            height: 48px;
+            background-color: #fee2e2;
+            /* Light red bg */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            color: #b91c1c;
+            /* Dark red icon */
+            font-size: 20px;
+        }
+
+        .text-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #1f2937;
+            margin: 0 0 4px 0;
+        }
+
+        .text-content p {
+            font-size: 14px;
+            color: #4b5563;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            bottom: -80px;
+            right: -50px;
+            font-size: 350px;
+            color: #f3f4f6;
+            opacity: 0.6;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            font-size: 12px;
+            color: #9ca3af;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Hub Schematic in Visual Container */
+        .hub-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hub-box {
+            width: 180px;
+            height: 60px;
+            background-color: #374151;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .hub-port {
+            width: 20px;
+            height: 14px;
+            background-color: #1f2937;
+            border-radius: 2px;
+            border-top: 2px solid #fbbf24;
+            /* Activity light */
+        }
+
+        .broadcast-waves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border: 2px dashed #ef4444;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="left-sidebar">
+            <div class="sidebar-icon">
+                <i class="fas fa-list-check"></i>
+            </div>
+            <div class="sidebar-icon">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="sidebar-icon active">
+                <i class="fas fa-server"></i>
+            </div>
+            <div class="sidebar-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="header-accent">
+                <div class="header-accent-fill"></div>
+            </div>
+            <i class="fas fa-share-alt bg-pattern"></i>
+            <div>
+                <p class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-2">Equipamentos de Interconexão
+                </p>
+                <h1>Hub - Funcionamento e Características</h1>
+            </div>
+            <div class="content-area z-10">
+                <div class="list-container">
+                    <div class="feature-item">
+                        <div class="icon-box">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Repetidor de Camada Física (Layer 1)</h3>
+                            <p>Atua regenerando sinais elétricos. Recebe bits em uma porta e os replica cegamente para
+                                <strong>todas</strong> as outras portas (flooding), sem entender endereços MAC.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="icon-box">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Meio Compartilhado (Half-Duplex)</h3>
+                            <p>Opera como um barramento único. Apenas um dispositivo pode transmitir por vez; se dois
+                                transmitirem simultaneamente, ocorre uma colisão.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="icon-box">
+                            <i class="fas fa-traffic-light"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Dependência do CSMA/CD</h3>
+                            <p>Utiliza o algoritmo <em>Carrier Sense Multiple Access with Collision Detection</em> para
+                                gerenciar o acesso ao meio, o que degrada drasticamente a performance com muitos hosts.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="icon-box">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Ineficiente e Obsoleto</h3>
+                            <p>Gera tráfego desnecessário, desperdiça largura de banda e oferece riscos de segurança
+                                (sniffing fácil). Substituído completamente por Switches.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual-container">
+                    <div class="hub-diagram">
+                        <div class="broadcast-waves"></div>
+                        <i class="fas fa-network-wired text-gray-300 text-9xl mb-6"></i>
+                        <div class="mt-4 text-center">
+                            <p class="font-bold text-gray-500 uppercase tracking-widest">Broadcast Domain</p>
+                            <p class="text-sm text-red-500 font-semibold">1 Domínio de Colisão Único</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-info">
+                Redes de Computadores - Aula 03 | Camada Física e Enlace
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>O Problema da Confiabilidade</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=IBM+Plex+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="slide-container" style="background-color: var(--bg-light); padding: 80px;"
+        data-screen-label="04 Problema de Confiabilidade">
+
+        <!-- Header -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 60px; width: 1760px; height: 100px;">
+            <span class="caption">Análise de Caso Técnico</span>
+            <h2 class="title-lg" style="color: var(--text-dark); margin-top: 5px;">O Problema da Confiabilidade em
+                Conexões Móveis</h2>
+        </div>
+
+        <!-- Conteúdo em Duas Colunas com Diagrama Lógico Simplificado -->
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 220px; width: 1760px; height: 700px;">
+            <div class="grid-2" style="height: 100%; gap: 50px;">
+
+                <!-- Esquerda: Detalhes do Caso Real -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="font-size: 34px; font-weight: 800; color: var(--text-dark); margin: 0 0 25px 0;">O
+                            Cenário do Tanque de Água</h3>
+                        <p class="body-md" style="color: var(--text-muted); margin-bottom: 20px;">
+                            Imagine que você implementou uma bomba d'água automatizada e configurou um aplicativo em seu
+                            celular para controlá-la de forma remota através de tópicos MQTT convencionais.
+                        </p>
+
+                        <div
+                            style="background: #FFFBEB; border: 1px solid #FEF3C7; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                            <p
+                                style="font-size: 20px; font-weight: 700; color: var(--accent-warning); margin: 0 0 10px 0;">
+                                A FATOR DE RISCO (INSTABILIDADE DO WI-FI)</p>
+                            <p class="body-md" style="color: var(--text-dark); margin: 0;">
+                                O celular envia <code style="font-family: var(--font-mono);">OFF</code>. A conexão móvel
+                                cai por instantes. O Broker não recebe, o ESP32 continua com a bomba ativada. O
+                                resultado? Transbordamento de água ou pane seca do equipamento.
+                            </p>
+                        </div>
+
+                        <p class="body-md" style="color: var(--text-muted);">
+                            Sistemas inteligentes exigem mecanismos de <strong>reconhecimento</strong> (Acks), controle
+                            de transição de estado e verificação ativa se o comando físico de fato ocorreu.
+                        </p>
+                    </div>
+                    <span
+                        style="font-size: 16px; color: var(--accent); font-weight: bold; text-transform: uppercase;">Estudo
+                        de Conectividade</span>
+                </div>
+
+                <!-- Direita: Fluxograma Conceitual de Falha de Transmissão -->
+                <div class="card-glass"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: stretch; background: #F1F5F9; border: 1px solid #E2E8F0;">
+                    <h4
+                        style="font-size: 22px; font-weight: 800; color: var(--text-dark); text-align: center; margin: 0 0 40px 0;">
+                        Fluxo Tradicional Sem Garantias (QoS 0)</h4>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                        <!-- Passo 1 -->
+                        <div
+                            style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: 8px; border: 1px solid #CBD5E1;">
+                            <span
+                                style="font-family: var(--font-mono); font-weight: bold; color: var(--accent);">[Dispositivo
+                                Publicador]</span>
+                            <span style="font-size: 18px; font-weight: 600; color: var(--text-dark);">Envia comando
+                                'LIGAR'</span>
+                        </div>
+
+                        <!-- Seta de Direção -->
+                        <div style="font-size: 24px; color: var(--text-muted); font-family: var(--font-mono);">⬇️</div>
+
+                        <!-- Passo 2 -->
+                        <div
+                            style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #FEE2E2; padding: 15px 25px; border-radius: 8px; border: 1px solid #FCA5A5;">
+                            <span
+                                style="font-family: var(--font-mono); font-weight: bold; color: #DC2626;">[Conectividade
+                                Oscilando]</span>
+                            <span style="font-size: 18px; font-weight: 600; color: #B91C1C;">Pacote Perdido no
+                                Broker</span>
+                        </div>
+
+                        <!-- Seta de Direção -->
+                        <div style="font-size: 24px; color: var(--text-muted); font-family: var(--font-mono);">⬇️</div>
+
+                        <!-- Passo 3 -->
+                        <div
+                            style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #FFF1F2; padding: 15px 25px; border-radius: 8px; border: 1px solid #FECDD3;">
+                            <span style="font-family: var(--font-mono); font-weight: bold; color: #BE123C;">[Dispositivo
+                                Assinante (ESP32)]</span>
+                            <span style="font-size: 18px; font-weight: 600; color: #9F1239;">Zero Ações (Nenhuma mudança
+                                de estado)</span>
+                        </div>
+                    </div>
+
+                    <p
+                        style="text-align: center; margin-top: 30px; font-size: 18px; font-weight: 600; color: var(--accent-warning);">
+                        Sem feedback de resposta ou reenvio, o sistema permanece cego.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 980px; width: 1760px; height: 40px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+            <span style="font-size: 16px; color: var(--text-muted);">Internet das Coisas - QoS Avançado</span>
+            <span style="font-size: 16px; color: var(--text-muted); font-weight: bold;">Pág. 4 / 15</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

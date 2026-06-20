@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desacoplamento no Pub/Sub</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .section-badge span {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Decoupling Dimensions */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dimension-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border-left: 6px solid;
+        }
+
+        .dimension-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .dimension-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .dimension-content {
+            flex: 1;
+        }
+
+        .dimension-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dimension-desc {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .dimension-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        /* Color Coding */
+        .card-space {
+            border-left-color: #2196F3;
+        }
+
+        .card-space .dimension-icon {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .card-time {
+            border-left-color: #4CAF50;
+        }
+
+        .card-time .dimension-icon {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .card-sync {
+            border-left-color: #9C27B0;
+        }
+
+        .card-sync .dimension-icon {
+            background: #f3e5f5;
+            color: #9C27B0;
+        }
+
+        /* Right Column - Visual Diagram */
+        .right-column {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .visual-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .visual-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .visual-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .diagram-container {
+            position: relative;
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            overflow: hidden;
+            min-height: 280px;
+        }
+
+        .publisher {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: #e3f2fd;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 2px solid #2196F3;
+            font-size: 14px;
+            color: #1976D2;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .broker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff3e0;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #FF9800;
+            font-size: 16px;
+            color: #F57C00;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .subscriber {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            background: #e8f5e9;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 2px solid #4CAF50;
+            font-size: 14px;
+            color: #388E3C;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: #90A4AE;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .connection-line-1 {
+            top: 45px;
+            left: 135px;
+            width: 100px;
+            transform-origin: left center;
+            transform: rotate(32deg);
+        }
+
+        .connection-line-2 {
+            bottom: 45px;
+            right: 145px;
+            width: 100px;
+            transform-origin: right center;
+            transform: rotate(32deg);
+        }
+
+        .arrow {
+            position: absolute;
+            font-size: 16px;
+            color: #90A4AE;
+            z-index: 2;
+        }
+
+        .arrow-1 {
+            top: 80px;
+            left: 175px;
+            transform: rotate(32deg);
+        }
+
+        .arrow-2 {
+            bottom: 80px;
+            right: 185px;
+            transform: rotate(32deg);
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .footer-role {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-text {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .page-number {
+            font-size: 15px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="section-badge">
+                    <span><i class="fas fa-exchange-alt" style="margin-right: 8px;"></i>Seção 2</span>
+                </div>
+                <div class="header-title">
+                    <i class="fas fa-project-diagram" style="margin-right: 12px;"></i>
+                    Desacoplamento no Pub/Sub
+                </div>
+                <div class="header-subtitle">Três dimensões de desacoplamento: espaço, tempo e sincronização</div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Ao vivo</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="dimension-card card-space">
+                    <div class="dimension-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="dimension-content">
+                        <div class="dimension-title">
+                            Desacoplamento de Espaço
+                            <span style="color: #2196F3; font-size: 14px;">●</span>
+                        </div>
+                        <div class="dimension-desc">
+                            Publisher e Subscriber não precisam conhecer endereços IP um do outro. Comunicação mediada
+                            pelo Broker.
+                        </div>
+                        <div class="dimension-features">
+                            <span class="feature-tag">Sem troca de IP</span>
+                            <span class="feature-tag">Broker central</span>
+                            <span class="feature-tag">Anonimato</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dimension-card card-time">
+                    <div class="dimension-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="dimension-content">
+                        <div class="dimension-title">
+                            Desacoplamento de Tempo
+                            <span style="color: #4CAF50; font-size: 14px;">●</span>
+                        </div>
+                        <div class="dimension-desc">
+                            Publisher e Subscriber não precisam estar online simultaneamente. Mensagens armazenadas para
+                            entrega posterior.
+                        </div>
+                        <div class="dimension-features">
+                            <span class="feature-tag">Assíncrono</span>
+                            <span class="feature-tag">Persistência</span>
+                            <span class="feature-tag">Offline</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dimension-card card-sync">
+                    <div class="dimension-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="dimension-content">
+                        <div class="dimension-title">
+                            Desacoplamento de Sincronização
+                            <span style="color: #9C27B0; font-size: 14px;">●</span>
+                        </div>
+                        <div class="dimension-desc">
+                            Operações não bloqueantes. Publisher continua funcionando sem esperar confirmação do
+                            Subscriber.
+                        </div>
+                        <div class="dimension-features">
+                            <span class="feature-tag">Não bloqueante</span>
+                            <span class="feature-tag">Callbacks</span>
+                            <span class="feature-tag">Paralelo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="visual-card">
+                    <div class="visual-header">
+                        <div class="visual-title">
+                            <i class="fas fa-sitemap" style="margin-right: 8px;"></i>
+                            Arquitetura Pub/Sub
+                        </div>
+                    </div>
+                    <div class="diagram-container">
+                        <div class="publisher">
+                            <i class="fas fa-microchip" style="margin-right: 5px;"></i>
+                            Publisher
+                        </div>
+                        <div class="broker">
+                            <i class="fas fa-server" style="margin-right: 8px;"></i>
+                            Broker MQTT
+                        </div>
+                        <div class="subscriber">
+                            <i class="fas fa-mobile-alt" style="margin-right: 5px;"></i>
+                            Subscriber
+                        </div>
+                        <div class="connection-line connection-line-1"></div>
+                        <div class="connection-line connection-line-2"></div>
+                        <div class="arrow arrow-1">→</div>
+                        <div class="arrow arrow-2">→</div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #555; margin-bottom: 10px;">
+                            <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                            Benefícios do desacoplamento:
+                        </div>
+                        <div style="font-size: 13px; color: #666; line-height: 1.6;">
+                            • Escalabilidade horizontal<br />
+                            • Resiliência a falhas<br />
+                            • Flexibilidade de implementação
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">11/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

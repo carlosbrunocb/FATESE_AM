@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Evolução da Segurança Wi-Fi: WEP → WPA → WPA2 → WPA3</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* Security evolution container */
+        .security-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .security-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .security-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-title i {
+            color: #4a90d9;
+        }
+
+        /* Security timeline */
+        .security-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* Reduced gap */
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            position: relative;
+            padding: 12px;
+            /* Reduced padding */
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .security-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .security-marker {
+            width: 45px;
+            /* Reduced size */
+            height: 45px;
+            /* Reduced size */
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+            /* Reduced size */
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .security-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            /* Reduced gap */
+        }
+
+        .security-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            /* Reduced margin */
+        }
+
+        .security-name {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            /* Reduced size */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-year {
+            color: #4a90d9;
+            font-weight: 500;
+            font-size: 12px;
+            /* Reduced size */
+        }
+
+        .security-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            /* Reduced size */
+            line-height: 1.3;
+            /* Reduced line-height */
+        }
+
+        .security-features {
+            display: flex;
+            gap: 6px;
+            /* Reduced gap */
+            margin-top: 4px;
+            /* Reduced margin */
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: rgba(74, 144, 217, 0.2);
+            color: white;
+            padding: 2px 6px;
+            /* Reduced padding */
+            border-radius: 10px;
+            /* Reduced radius */
+            font-size: 10px;
+            /* Reduced size */
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            /* Reduced gap */
+            font-size: 10px;
+            /* Reduced size */
+        }
+
+        .status-dot {
+            width: 7px;
+            /* Reduced size */
+            height: 7px;
+            /* Reduced size */
+            border-radius: 50%;
+        }
+
+        .status-deprecated {
+            background-color: #ff4757;
+        }
+
+        .status-active {
+            background-color: #2ed573;
+        }
+
+        .status-warning {
+            background-color: #ffa502;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 75%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-lock"></i> Evolução da Segurança Wi-Fi
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="security-container">
+                    <div class="security-header">
+                        <div class="security-title">
+                            <i class="fas fa-timeline"></i>
+                            Linha do Tempo: WEP → WPA → WPA2 → WPA3
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <div
+                                style="background: rgba(74, 144, 217, 0.2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
+                                <i class="fas fa-wifi"></i> Segurança
+                            </div>
+                        </div>
+                    </div>
+                    <div class="security-timeline">
+                        <div class="security-item">
+                            <div class="security-marker" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">
+                                1997</div>
+                            <div class="security-content">
+                                <div class="security-header-row">
+                                    <div class="security-name">
+                                        <i class="fas fa-times-circle"></i> WEP (Wired Equivalent Privacy)
+                                    </div>
+                                    <div class="security-year">1997</div>
+                                </div>
+                                <div class="security-description">
+                                    Primeiro protocolo de segurança Wi-Fi. Usa RC4 com chave de 40/104 bits.
+                                    <strong>Vulnerável</strong> - chaves podem ser quebradas em minutos.
+                                </div>
+                                <div class="security-features">
+                                    <span class="feature-tag">RC4</span>
+                                    <span class="feature-tag">40/104 bits</span>
+                                    <span class="feature-tag"
+                                        style="background: rgba(255, 71, 87, 0.3);">Deprecated</span>
+                                </div>
+                                <div class="status-indicator">
+                                    <div class="status-dot status-deprecated"></div>
+                                    <span style="color: #ff4757; font-size: 10px;">Inseguro - Não usar</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-marker" style="background: linear-gradient(135deg, #ffa502, #ffb700);">
+                                2003</div>
+                            <div class="security-content">
+                                <div class="security-header-row">
+                                    <div class="security-name">
+                                        <i class="fas fa-check-circle"></i> WPA (Wi-Fi Protected Access)
+                                    </div>
+                                    <div class="security-year">2003</div>
+                                </div>
+                                <div class="security-description">
+                                    Introduziu TKIP (Temporal Key Integrity Protocol) e autenticação 802.1X. Melhoria
+                                    temporária sobre WEP.
+                                </div>
+                                <div class="security-features">
+                                    <span class="feature-tag">TKIP</span>
+                                    <span class="feature-tag">802.1X</span>
+                                    <span class="feature-tag">PSK</span>
+                                </div>
+                                <div class="status-indicator">
+                                    <div class="status-dot status-warning"></div>
+                                    <span style="color: #ffa502; font-size: 10px;">Legacy - Substituir</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-marker" style="background: linear-gradient(135deg, #2ed573, #26de81);">
+                                2004</div>
+                            <div class="security-content">
+                                <div class="security-header-row">
+                                    <div class="security-name">
+                                        <i class="fas fa-lock"></i> WPA2 (Wi-Fi Protected Access 2)
+                                    </div>
+                                    <div class="security-year">2004</div>
+                                </div>
+                                <div class="security-description">
+                                    Padrão atual por anos. Usa AES-CCMP para criptografia. Suporte a modo Pessoal (PSK)
+                                    e Enterprise (802.1X).
+                                </div>
+                                <div class="security-features">
+                                    <span class="feature-tag">AES-CCMP</span>
+                                    <span class="feature-tag">802.1X</span>
+                                    <span class="feature-tag">PSK</span>
+                                </div>
+                                <div class="status-indicator">
+                                    <div class="status-dot status-active"></div>
+                                    <span style="color: #2ed573; font-size: 10px;">Ativo - Recomendado</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-marker" style="background: linear-gradient(135deg, #4a90d9, #357abd);">
+                                2018</div>
+                            <div class="security-content">
+                                <div class="security-header-row">
+                                    <div class="security-name">
+                                        <i class="fas fa-shield-alt"></i> WPA3 (Wi-Fi Protected Access 3)
+                                    </div>
+                                    <div class="security-year">2018</div>
+                                </div>
+                                <div class="security-description">
+                                    Última geração. SAE (Simultaneous Authentication of Equals), criptografia
+                                    individualizada, proteção contra ataques de força bruta.
+                                </div>
+                                <div class="security-features">
+                                    <span class="feature-tag">SAE</span>
+                                    <span class="feature-tag">192-bit</span>
+                                    <span class="feature-tag">PMF</span>
+                                </div>
+                                <div class="status-indicator">
+                                    <div class="status-dot status-active"></div>
+                                    <span style="color: #4a90d9; font-size: 10px;">Recomendado - Alto nível de
+                                        segurança</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

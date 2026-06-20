@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Criando o Model Livro</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: 520px;
+            z-index: 10;
+            display: flex;
+            gap: 24px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-section {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: auto;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .code-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.35;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0px;
+        }
+
+        .line-number {
+            color: #64748b;
+            min-width: 24px;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-property {
+            color: #fbbf24;
+        }
+
+        .code-type {
+            color: #f472b6;
+        }
+
+        .info-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+        }
+
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon i {
+            font-size: 12px;
+            color: #3b82f6;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 4px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            font-size: 11px;
+            color: #3b82f6;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Criando o Model Livro</div>
+                    <div class="header-subtitle">Definição da estrutura da tabela com Sequelize</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(59, 130, 246, 0.1);">
+                    <i class="fas fa-code" style="color: #3b82f6; font-size: 20px;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">src/models/Livro.js</div>
+                    <div class="header-subtitle">Model Sequelize</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="code-card">
+                    <div class="code-header">
+                        <div>
+                            <div class="code-title">Model Livro - Estrutura Completa</div>
+                            <div class="code-subtitle">Definição de campos, tipos e configurações</div>
+                        </div>
+                        <div class="header-icon"
+                            style="background: rgba(59, 130, 246, 0.1); width: 32px; height: 32px;">
+                            <i class="fas fa-file-code" style="color: #3b82f6; font-size: 16px;"></i>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <span class="code-content"><span class="code-comment">// Arquivo: src/models/Livro.js</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <span class="code-content"><span class="code-keyword">const</span> { DataTypes } = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'sequelize'</span>);</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <span class="code-content"><span class="code-keyword">const</span> sequelize = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'../config/database'</span>);</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <span class="code-content"><span class="code-keyword">const</span> Livro = sequelize.<span
+                                    class="code-function">define</span>(<span class="code-string">'Livro'</span>, {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <span class="code-content"> id: {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <span class="code-content">   type: DataTypes.<span class="code-type">INTEGER</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <span class="code-content">   autoIncrement: <span class="code-keyword">true</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <span class="code-content">   primaryKey: <span class="code-keyword">true</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <span class="code-content"> },</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <span class="code-content"> titulo: {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            <span class="code-content">   type: DataTypes.<span class="code-type">STRING</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            <span class="code-content">   allowNull: <span class="code-keyword">false</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            <span class="code-content"> },</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            <span class="code-content"> autor: {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">16</span>
+                            <span class="code-content">   type: DataTypes.<span class="code-type">STRING</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">17</span>
+                            <span class="code-content">   allowNull: <span class="code-keyword">false</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">18</span>
+                            <span class="code-content"> },</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">19</span>
+                            <span class="code-content"> ano: {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">20</span>
+                            <span class="code-content">   type: DataTypes.<span class="code-type">INTEGER</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">21</span>
+                            <span class="code-content">   allowNull: <span class="code-keyword">false</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">22</span>
+                            <span class="code-content"> }</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">23</span>
+                            <span class="code-content">}, {</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">24</span>
+                            <span class="code-content"> tableName: <span class="code-string">'livros'</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">25</span>
+                            <span class="code-content"> timestamps: <span class="code-keyword">true</span> <span
+                                    class="code-comment">// Cria createdAt e updatedAt</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">26</span>
+                            <span class="code-content">});</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">27</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">28</span>
+                            <span class="code-content"><span class="code-keyword">module.exports</span> = Livro;</span>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-text">
+                            <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 8px;"></i>
+                            <strong>Importante:</strong> O Model define a estrutura da tabela, tipos de dados,
+                            validações e configurações.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-cog" style="color: #3b82f6; margin-right: 8px;"></i>
+                        Configurações
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-table"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>tableName:</strong> Define o nome físico da tabela no banco de dados
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>timestamps:</strong> Cria automaticamente createdAt e updatedAt
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>primaryKey:</strong> id como chave primária com autoIncrement
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>allowNull:</strong> Define se o campo pode ser nulo
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-database" style="color: #3b82f6; margin-right: 8px;"></i>
+                        DataTypes
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                        <span class="badge">INTEGER</span>
+                        <span class="badge">STRING</span>
+                        <span class="badge">BOOLEAN</span>
+                        <span class="badge">DATE</span>
+                        <span class="badge">DECIMAL</span>
+                        <span class="badge">TEXT</span>
+                        <span class="badge">JSON</span>
+                        <span class="badge">ENUM</span>
+                    </div>
+                    <div class="highlight-box" style="margin-top: 12px;">
+                        <div class="highlight-text" style="font-size: 11px;">
+                            <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 4px;"></i>
+                            Cada tipo de dado tem validações específicas
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

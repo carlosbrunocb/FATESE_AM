@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pergunta 1 — O que o delay() faz com o "cérebro" do ESP32?</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Evita barras de rolagem indesejadas */
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 5vh 5vw; /* Margens relativas para melhor adaptação */
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .question-icon-box {
+            min-width: 70px;
+            width: 70px;
+            height: 70px;
+            background-color: #1e40af;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .question-icon {
+            font-size: 36px;
+            color: #60a5fa;
+        }
+
+        .question-title {
+            flex: 1;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .interactive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #7c3aed;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .answer-section {
+            background-color: #1e293b;
+            border-radius: 14px;
+            padding: 24px 28px;
+            border-left: 6px solid #22c55e;
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .section-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .answer-icon {
+            background-color: #15803d;
+            color: #22c55e;
+        }
+
+        .explanation-icon {
+            background-color: #1e40af;
+            color: #60a5fa;
+        }
+
+        .section-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-content {
+            color: #e2e8f0;
+            font-size: 19px;
+            font-weight: 400;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .explanation-section {
+            background-color: #1e293b;
+            border-radius: 14px;
+            padding: 24px 28px;
+            border-left: 6px solid #3b82f6;
+            position: relative;
+            flex: 1;
+        }
+
+        .highlight-text {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .emphasis-text {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .warning-text {
+            color: #f87171;
+            font-weight: 600;
+        }
+
+        .quote-mark {
+            position: absolute;
+            font-size: 60px;
+            color: #334155;
+            opacity: 0.3;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        .quote-start {
+            top: 10px;
+            left: 15px;
+        }
+
+        .thinking-icon {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 42px;
+            color: #22c55e;
+            opacity: 0.15;
+        }
+
+        .teacher-icon {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 42px;
+            color: #60a5fa;
+            opacity: 0.15;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <div class="question-header">
+                <div class="question-icon-box">
+                    <i class="fas fa-question question-icon"></i>
+                </div>
+                <h1 class="question-title">
+                    <p>O que o delay() realmente faz com o "cérebro" do ESP32?</p>
+                </h1>
+                <div class="interactive-badge">
+                    <i class="fas fa-comments"></i>
+                    <p>Interativo</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="answer-section">
+                    <i class="fas fa-user-graduate thinking-icon"></i>
+                    <div class="section-header">
+                        <div class="section-icon answer-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <p class="section-label">Resposta Esperada do Aluno</p>
+                    </div>
+                    <p class="section-content">Ele faz o programa esperar ou pausar.</p>
+                </div>
+                <div class="explanation-section">
+                    <p class="quote-mark quote-start">"</p>
+                    <i class="fas fa-chalkboard-teacher teacher-icon"></i>
+                    <div class="section-header">
+                        <div class="section-icon explanation-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <p class="section-label">Explicação do Professor</p>
+                    </div>
+                    <p class="section-content">Exato, mas a palavra-chave aqui é <span class="highlight-text">bloqueio</span>. O delay() não diz apenas "espere", ele diz <span class="emphasis-text">"congele e não faça absolutamente mais nada"</span>. Se você colocar um delay(5000), o ESP32 fica <span class="warning-text">cego e surdo por 5 segundos</span>. Se um botão de emergência for apertado nesse intervalo, o sistema vai ignorar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

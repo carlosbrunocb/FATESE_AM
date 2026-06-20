@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hands-on: Browser DevTools e curl</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .method-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .method-get {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .method-post {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .method-put {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .method-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-200 {
+            color: #22c55e;
+        }
+
+        .status-404 {
+            color: #ef4444;
+        }
+
+        .status-401 {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-6">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-xs font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-1">Hands-on: DevTools e curl</h1>
+                    <p class="text-gray-400 text-sm">Prática com ferramentas de desenvolvimento e linha de comando</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-sm font-semibold">Prática</div>
+                        <div class="text-xs text-gray-400">Laboratório</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-terminal text-blue-400 text-lg"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-2 gap-4 flex-1 mb-4 min-h-0">
+                <!-- Left Column - DevTools Steps -->
+                <div class="flex flex-col gap-4 min-h-0">
+                    <div class="step-card flex-1 flex flex-col min-h-0">
+                        <div class="flex items-center justify-between mb-3 shrink-0">
+                            <h3 class="text-white text-base font-semibold">Browser DevTools</h3>
+                            <span class="text-xs text-gray-400">F12 → Network</span>
+                        </div>
+                        <div class="space-y-3 flex-1 overflow-hidden">
+                            <!-- Step 1 -->
+                            <div class="flex items-start gap-3">
+                                <div class="step-number shrink-0">1</div>
+                                <div class="flex-1">
+                                    <div class="text-white text-sm font-medium mb-1">Abrir DevTools</div>
+                                    <div class="text-xs text-gray-400 mb-1">Pressione F12 e vá para a aba Network</div>
+                                    <div
+                                        class="bg-slate-800/50 rounded-lg px-2 py-1 text-xs text-gray-300 border border-slate-700">
+                                        F12 → Network → Preserve log
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="flex items-start gap-3">
+                                <div class="step-number shrink-0">2</div>
+                                <div class="flex-1">
+                                    <div class="text-white text-sm font-medium mb-1">Recarregar página</div>
+                                    <div class="text-xs text-gray-400 mb-1">Pressione F5 para ver requisições</div>
+                                    <div
+                                        class="bg-slate-800/50 rounded-lg px-2 py-1 text-xs text-gray-300 border border-slate-700">
+                                        F5 → Analisar primeira requisição
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="flex items-start gap-3">
+                                <div class="step-number shrink-0">3</div>
+                                <div class="flex-1">
+                                    <div class="text-white text-sm font-medium mb-1">Identificar elementos</div>
+                                    <div class="text-xs text-gray-400 mb-1">Método, Status, Content-Type</div>
+                                    <div class="grid grid-cols-3 gap-2 text-[10px]">
+                                        <div class="bg-green-500/20 rounded px-2 py-1 text-green-400">GET</div>
+                                        <div class="bg-blue-500/20 rounded px-2 py-1 text-blue-400">200</div>
+                                        <div class="bg-purple-500/20 rounded px-2 py-1 text-purple-400">HTML</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Curl Commands -->
+                    <div class="step-card shrink-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-white text-sm font-semibold">Comandos curl</h4>
+                            <span class="text-xs text-gray-400">Terminal</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="code-block">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-green-400">$</span>
+                                    <span class="text-white">curl -i https://example.com</span>
+                                </div>
+                                <div class="text-[10px] text-gray-400">GET request com headers</div>
+                            </div>
+                            <div class="code-block">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-green-400">$</span>
+                                    <span class="text-white">curl -X POST -H "Content-Type: application/json" -d
+                                        '{"name":"Ana"}' https://api.example.com/users</span>
+                                </div>
+                                <div class="text-[10px] text-gray-400">POST com JSON</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Practical Tasks -->
+                <div class="flex flex-col gap-4 min-h-0">
+                    <div class="step-card flex-1 flex flex-col min-h-0">
+                        <div class="flex items-center justify-between mb-3 shrink-0">
+                            <h3 class="text-white text-base font-semibold">Tarefas Práticas</h3>
+                            <span class="text-xs text-gray-400">Exercícios</span>
+                        </div>
+                        <div class="space-y-2 flex-1 overflow-hidden">
+                            <!-- Task 1 -->
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-search text-blue-400 text-xs"></i>
+                                        <span class="text-white text-xs font-medium">Analisar Requisição</span>
+                                    </div>
+                                    <span class="text-[10px] text-green-400">Fácil</span>
+                                </div>
+                                <div class="text-xs text-gray-400 mb-1">Encontre a primeira requisição (documento HTML)
+                                </div>
+                                <div class="flex items-center gap-2 text-[10px]">
+                                    <span class="method-tag method-get">GET</span>
+                                    <span class="text-gray-400">/</span>
+                                    <span class="status-200">200 OK</span>
+                                </div>
+                            </div>
+                            <!-- Task 2 -->
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-filter text-purple-400 text-xs"></i>
+                                        <span class="text-white text-xs font-medium">Filtrar por Tipo</span>
+                                    </div>
+                                    <span class="text-[10px] text-yellow-400">Médio</span>
+                                </div>
+                                <div class="text-xs text-gray-400 mb-1">Filtre por XHR, JS, CSS, Img</div>
+                                <div class="flex items-center gap-2 text-[10px]">
+                                    <span class="method-tag method-post">POST</span>
+                                    <span class="text-gray-400">api/</span>
+                                    <span class="status-200">201</span>
+                                </div>
+                            </div>
+                            <!-- Task 3 -->
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-bug text-red-400 text-xs"></i>
+                                        <span class="text-white text-xs font-medium">Simular Erros</span>
+                                    </div>
+                                    <span class="text-[10px] text-red-400">Avançado</span>
+                                </div>
+                                <div class="text-xs text-gray-400 mb-1">Force 404 ou 401 via URL</div>
+                                <div class="flex items-center gap-2 text-[10px]">
+                                    <span class="method-tag method-delete">DELETE</span>
+                                    <span class="text-gray-400">/invalid</span>
+                                    <span class="status-404">404</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Quick Tips -->
+                    <div class="step-card shrink-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-white text-sm font-semibold">Dicas Rápidas</h4>
+                            <span class="text-xs text-gray-400">Atalhos</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-keyboard text-blue-400 text-[10px]"></i>
+                                <span class="text-gray-300">Ctrl+Shift+I → DevTools</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-network-wired text-green-400 text-[10px]"></i>
+                                <span class="text-gray-300">F5 → Recarregar</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-filter text-purple-400 text-[10px]"></i>
+                                <span class="text-gray-300">Ctrl+F → Buscar</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-eraser text-orange-400 text-[10px]"></i>
+                                <span class="text-gray-300">Ctrl+L → Limpar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Section -->
+            <div
+                class="flex justify-between items-center bg-slate-800/30 p-3 rounded-xl border border-slate-700/50 shrink-0">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-clock text-blue-400 text-xs"></i>
+                        <span class="text-white text-xs">Duração: 60 minutos</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar text-blue-400 text-xs"></i>
+                        <span class="text-white text-xs">Aula 12 de 20</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-400 text-xs">Progresso da aula:</span>
+                    <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-3/5 h-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <span class="text-white text-xs font-medium">60%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

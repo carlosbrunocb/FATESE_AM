@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Avaliação do Item II - Teste de Caixa Preta</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Montserrat:wght@400;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #1a202c 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .main-content {
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            width: 91%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .badge {
+            background: #ed8936;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            flex: 1;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 480px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ed8936;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .evaluation-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: rgba(237, 137, 54, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #ed8936;
+        }
+
+        .evaluation-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(237, 137, 54, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ed8936;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .evaluation-content {
+            flex: 1;
+        }
+
+        .evaluation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        .evaluation-subtitle {
+            font-size: 13px;
+            color: #a0aec0;
+        }
+
+        .justification-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .justification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ed8936;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .justification-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .metric-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .metric-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ed8936;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .comparison-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .comparison-icon {
+            color: #ed8936;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .comparison-text {
+            flex: 1;
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-incorrect {
+            background: rgba(237, 137, 54, 0.2);
+            color: #ed8936;
+        }
+
+        .status-correct {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 32px;
+            left: 80px;
+            width: 1120px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+
+        .info-item i {
+            color: #ed8936;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ed8936 0%, #dd6b20 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .warning-box {
+            background: rgba(237, 137, 54, 0.1);
+            border: 1px solid rgba(237, 137, 54, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .warning-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ed8936;
+            margin-bottom: 4px;
+        }
+
+        .warning-text {
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="badge">ENADE 2008</div>
+                <h1 class="main-title">Avaliação do Item II - Teste de Caixa Preta</h1>
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                    <span class="status-indicator status-incorrect">
+                        <i class="fas fa-times-circle"></i>
+                        INCORRETO
+                    </span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="card" style="flex: 1; padding: 24px;">
+                        <div class="card-title">
+                            <i class="fas fa-search"></i>
+                            Análise da Assertiva II
+                        </div>
+                        <div class="evaluation-header">
+                            <div class="evaluation-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="evaluation-content">
+                                <div class="evaluation-title">Item II: INCORRETO</div>
+                                <div class="evaluation-subtitle">Aplicar caixa preta forçando chamada a xis() e medir %
+                                    de sucesso</div>
+                            </div>
+                        </div>
+                        <div class="justification-box">
+                            <div class="justification-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Problema Fundamental
+                            </div>
+                            <div class="justification-text">
+                                <strong style="color: #ed8936;">Critério binário vs. métrica estatística:</strong> O
+                                critério de aceitação é <span style="color: #ed8936;">"não entrar em laço
+                                    infinito"</span> - um resultado binário (sim/não), não uma métrica probabilística.
+                                <br /><br />
+                                <strong style="color: #ed8936;">Problema:</strong> Medir "porcentagem de sucesso" é
+                                inadequado porque:
+                                <ul
+                                    style="margin-top: 6px; padding-left: 20px; color: #a0aec0; gap: 4px; display: flex; flex-direction: column;">
+                                    <li>Não garante ausência de hang em todos os casos</li>
+                                    <li>Um único travamento invalida todo o teste</li>
+                                    <li>Ignora a natureza determinística do problema</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="warning-box">
+                            <div class="warning-title">
+                                <i class="fas fa-clock"></i>
+                                Tempo de Execução
+                            </div>
+                            <div class="warning-text">
+                                Se a rotina entrar em loop, o programa travará (hang). Não existe "porcentagem" de laço
+                                infinito - ou termina em tempo hábil, ou não termina.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="card" style="flex: 1; padding: 24px;">
+                        <div class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Análise de Métricas
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-header">
+                                <i class="fas fa-percentage" style="color: #ed8936;"></i>
+                                <div class="metric-title">Porcentagem de Sucesso</div>
+                            </div>
+                            <div class="metric-value">99%</div>
+                            <div class="metric-label">Taxa de sucesso em testes</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 99%;"></div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 11px; color: #a0aec0;">
+                                <i class="fas fa-exclamation-circle" style="color: #ed8936;"></i>
+                                1% de falha = travamento total
+                            </div>
+                        </div>
+                        <div class="comparison-table">
+                            <div class="comparison-item">
+                                <div class="comparison-icon"><i class="fas fa-check"></i></div>
+                                <div class="comparison-text">
+                                    <strong>Teste de Terminação:</strong> Verifica se o programa termina
+                                </div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="comparison-icon"><i class="fas fa-times"></i></div>
+                                <div class="comparison-text">
+                                    <strong>Teste de Confiabilidade:</strong> Métrica estatística inadequada
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-info">
+            <div class="info-left">
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>FATESE - Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Tempo estimado: 45 minutos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

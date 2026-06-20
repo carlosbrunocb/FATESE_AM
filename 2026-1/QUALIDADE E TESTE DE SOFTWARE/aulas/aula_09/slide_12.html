@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo Prático - Cobertura de Condição</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 30px 50px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 17px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 10px 0;
+            flex-grow: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .line-number {
+            color: #64748b;
+            font-size: 13px;
+            min-width: 25px;
+            text-align: right;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+        }
+
+        .keyword {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #22c55e;
+        }
+
+        .comment {
+            color: #64748b;
+        }
+
+        .condition {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        /* Test Cases Section */
+        .test-section {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex-grow: 1;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .test-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .test-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .test-header-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .test-icon {
+            width: 24px;
+            height: 24px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .test-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .test-details {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .test-value {
+            font-family: monospace;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Coverage Analysis */
+        .coverage-section {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .coverage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .coverage-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .coverage-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .coverage-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .coverage-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .coverage-info {
+            flex: 1;
+        }
+
+        .coverage-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .coverage-value {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .coverage-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .coverage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 3px;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 4px;
+            width: 75%;
+        }
+
+        /* Condition Table */
+        .condition-table {
+            margin-top: 10px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .condition-table th {
+            background: #f8fafc;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .condition-table td {
+            padding: 8px;
+            font-size: 12px;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .condition-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .indent {
+            display: block;
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            display: block;
+            margin-left: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Cobertura de Condição:</span> Desconto VIP
+                    <span style="font-size: 16px; color: #64748b; font-weight: 500; margin-left: 15px;">Testando
+                        condições compostas</span>
+                </div>
+                <div class="subtitle">
+                    Exemplo prático: função calcular_desconto(valor, vip)
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <!-- Code Section -->
+                    <div class="code-section">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Código Python
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">def calcular_desconto(valor, vip):</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <span class="code-content"><span class="keyword">def</span> <span
+                                        class="string">calcular_desconto</span>(valor, vip):</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> <span
+                                        class="condition">valor &gt; 100</span> <span class="keyword">or</span> <span
+                                        class="condition">vip</span>:</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <span class="code-content indent-2"> <span class="keyword">return</span> valor * 0.9</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <span class="code-content indent"> <span class="keyword">return</span> valor</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 15px; margin-top: 10px;">
+                            <div
+                                style="flex: 1; padding: 8px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 12px; color: #1e293b; font-weight: 600;">C1: valor &gt; 100</div>
+                                <div style="font-size: 11px; color: #64748b;">Condição 1</div>
+                            </div>
+                            <div
+                                style="flex: 1; padding: 8px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 12px; color: #1e293b; font-weight: 600;">C2: vip</div>
+                                <div style="font-size: 11px; color: #64748b;">Condição 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Test Cases -->
+                    <div class="test-section">
+                        <div class="test-header">
+                            <div class="test-title">
+                                <i class="fas fa-vial"></i>
+                                Casos de Teste
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">3 testes mínimos</div>
+                        </div>
+                        <div class="test-grid">
+                            <div class="test-item">
+                                <div class="test-header-item">
+                                    <div class="test-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="test-name">CT1</div>
+                                </div>
+                                <div class="test-details">
+                                    valor=150, vip=False<br />
+                                    <span class="test-value">C1=T, C2=F</span>
+                                </div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-header-item">
+                                    <div class="test-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="test-name">CT2</div>
+                                </div>
+                                <div class="test-details">
+                                    valor=50, vip=True<br />
+                                    <span class="test-value">C1=F, C2=T</span>
+                                </div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-header-item">
+                                    <div class="test-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="test-name">CT3</div>
+                                </div>
+                                <div class="test-details">
+                                    valor=50, vip=False<br />
+                                    <span class="test-value">C1=F, C2=F</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <!-- Coverage Analysis -->
+                    <div class="coverage-section">
+                        <div class="coverage-header">
+                            <div class="coverage-title">
+                                <i class="fas fa-chart-line"></i>
+                                Análise de Cobertura
+                            </div>
+                            <div style="font-size: 13px; color: #64748b;">100% de condições</div>
+                        </div>
+                        <div class="coverage-grid">
+                            <div class="coverage-item">
+                                <div class="coverage-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                </div>
+                                <div class="coverage-info">
+                                    <div class="coverage-name">C1 (valor &gt; 100)</div>
+                                    <div class="coverage-value">T/F cobertos ✓</div>
+                                    <div class="coverage-bar">
+                                        <div class="coverage-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="coverage-item">
+                                <div class="coverage-icon">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div class="coverage-info">
+                                    <div class="coverage-name">C2 (vip)</div>
+                                    <div class="coverage-value">T/F cobertos ✓</div>
+                                    <div class="coverage-bar">
+                                        <div class="coverage-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Status Section -->
+                    <div class="test-section">
+                        <div class="test-header">
+                            <div class="test-title">
+                                <i class="fas fa-table"></i>
+                                Tabela de Cobertura
+                            </div>
+                            <div style="font-size: 13px; color: #22c55e; font-weight: 600;">✓ Condições cobertas</div>
+                        </div>
+                        <table class="condition-table">
+                            <tr>
+                                <th>Teste</th>
+                                <th>C1 (valor&gt;100)</th>
+                                <th>C2 (vip)</th>
+                                <th>Decisão</th>
+                                <th>Resultado</th>
+                            </tr>
+                            <tr>
+                                <td>CT1</td>
+                                <td><span class="status-badge status-success">T</span></td>
+                                <td><span class="status-badge status-warning">F</span></td>
+                                <td><span class="status-badge status-success">T</span></td>
+                                <td>135.0</td>
+                            </tr>
+                            <tr>
+                                <td>CT2</td>
+                                <td><span class="status-badge status-warning">F</span></td>
+                                <td><span class="status-badge status-success">T</span></td>
+                                <td><span class="status-badge status-success">T</span></td>
+                                <td>45.0</td>
+                            </tr>
+                            <tr>
+                                <td>CT3</td>
+                                <td><span class="status-badge status-warning">F</span></td>
+                                <td><span class="status-badge status-warning">F</span></td>
+                                <td><span class="status-badge status-warning">F</span></td>
+                                <td>50</td>
+                            </tr>
+                        </table>
+                        <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
+                            <i class="fas fa-info-circle"></i> <strong>Observação:</strong> Um 4º teste (valor=150,
+                            vip=True) cobre a combinação (T,T)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="status-info">
+                    <div class="status-dot"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-text">Progresso: 85%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

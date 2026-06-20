@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura IEEE 802.11 - Redes Sem Fio</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Architecture diagram */
+        .architecture-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            position: relative;
+        }
+
+        .diagram-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagram-title i {
+            color: #4a90d9;
+        }
+
+        /* Network visualization */
+        .network-viz {
+            position: relative;
+            height: calc(100% - 50px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Central AP */
+        .central-ap {
+            width: 130px;
+            height: 120px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(74, 144, 217, 0.3);
+            z-index: 10;
+        }
+
+        .ap-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .ap-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .ap-mac {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Connected devices */
+        .device-cluster {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .device {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            padding: 10px;
+        }
+
+        .device-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .device-label {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Connection lines */
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #4a90d9, transparent);
+            height: 2px;
+            opacity: 0.5;
+        }
+
+        /* Component cards */
+        .component-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .component-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .component-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(74, 144, 217, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 14px;
+        }
+
+        .component-title {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .component-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* BSS/ESS info */
+        .bss-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-sitemap"></i> Arquitetura IEEE 802.11
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="left-section">
+                    <div class="architecture-diagram">
+                        <div class="diagram-title">
+                            <i class="fas fa-project-diagram"></i>
+                            Estrutura da Rede 802.11
+                        </div>
+                        <div class="network-viz">
+                            <div class="central-ap">
+                                <div class="ap-icon">
+                                    <i class="fas fa-wifi"></i>
+                                </div>
+                                <div class="ap-label">Access Point</div>
+                                <div class="ap-mac">00:11:22:33:44:55</div>
+                            </div>
+                            <div class="device-cluster">
+                                <div class="device">
+                                    <div class="device-icon">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="device-label">STA 1</div>
+                                </div>
+                                <div class="device">
+                                    <div class="device-icon">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div class="device-label">STA 2</div>
+                                </div>
+                                <div class="device">
+                                    <div class="device-icon">
+                                        <i class="fas fa-tablet-alt"></i>
+                                    </div>
+                                    <div class="device-label">STA 3</div>
+                                </div>
+                            </div>
+                            <div
+                                style="margin-top: 30px; text-align: center; color: rgba(255,255,255,0.7); font-size: 13px;">
+                                <i class="fas fa-info-circle"></i> BSS: Basic Service Set | ESS: Extended Service Set
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="component-card">
+                        <div class="component-header">
+                            <div class="component-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="component-title">Componentes da Arquitetura</div>
+                        </div>
+                        <div class="component-description">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                                <div class="info-item">
+                                    <div class="info-label">STA (Estação)</div>
+                                    <div class="info-value">Dispositivos sem fio</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">AP (Access Point)</div>
+                                    <div class="info-value">Ponto de acesso</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">BSS</div>
+                                    <div class="info-value">Conjunto básico</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">ESS</div>
+                                    <div class="info-value">Conjunto estendido</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component-card">
+                        <div class="component-header">
+                            <div class="component-icon">
+                                <i class="fas fa-address-card"></i>
+                            </div>
+                            <div class="component-title">Identificadores de Rede</div>
+                        </div>
+                        <div class="component-description">
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">SSID:</span>
+                                    <span style="color: white; font-weight: 500;">MinhaRedeWiFi</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">BSSID:</span>
+                                    <span style="color: white; font-weight: 500;">00:11:22:33:44:55</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">Canal:</span>
+                                    <span style="color: white; font-weight: 500;">6 (2.4GHz)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component-card">
+                        <div class="component-header">
+                            <div class="component-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="component-title">Camada MAC</div>
+                        </div>
+                        <div class="component-description">
+                            <div
+                                style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 5px; line-height: 1.6;">
+                                Subcamada MAC gerencia o acesso ao meio, controle de quadros e endereçamento. Inclui DCF
+                                (Distributed Coordination Function) e PCF (Point Coordination Function).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

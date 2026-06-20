@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O que são Testes de Regressão?</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* Container Principal em Flexbox para gerenciar Header, Grid e Footer */
+        .slide-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            flex-shrink: 0;
+        }
+
+        /* Estrutura do CSS Grid */
+        .main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+            grid-template-rows: auto 1fr 1fr; /* Título auto ajustável, e os cards dividem o resto */
+            gap: 30px 40px; /* Espaçamento entre as linhas e colunas */
+            padding: 40px 50px; /* Margens internas */
+            min-height: 0; /* Permite que o grid não estoure a altura do flex */
+        }
+
+        /* Títulos */
+        .title-section {
+            grid-column: 1 / -1; /* Ocupa as duas colunas inteiras */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .badge {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .title-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(28px, 3vw, 36px);
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .title-section .subtitle {
+            font-size: clamp(16px, 1.5vw, 18px);
+            color: #64748b;
+        }
+
+        /* Configuração Geral dos Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            display: flex;
+        }
+
+        /* Card da Esquerda (Definição Principal) */
+        .card-left {
+            grid-column: 1;
+            grid-row: 2 / 4; /* Ocupa a linha 2 e 3 do grid */
+            border-top: 5px solid #004A8D;
+            flex-direction: column;
+        }
+
+        .icon-wrap-left {
+            width: 60px;
+            height: 60px;
+            background: #f0f9ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-wrap-left i {
+            color: #004A8D;
+            font-size: 24px;
+        }
+
+        .card-left h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .card-left p {
+            font-size: 18px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-left .highlight-box {
+            padding: 15px;
+            background: #f8fafc;
+            border-left: 4px solid #F7931E;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0;
+        }
+
+        /* Cards da Direita (Superior e Inferior) */
+        .card-right {
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .card-right-top {
+            grid-column: 2;
+            grid-row: 2;
+            border-left: 5px solid #10b981;
+        }
+
+        .card-right-bottom {
+            grid-column: 2;
+            grid-row: 3;
+            border-left: 5px solid #F7931E;
+        }
+
+        .icon-wrap-right {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .icon-green { background: #dcfce7; }
+        .icon-green i { color: #10b981; font-size: 18px; }
+
+        .icon-orange { background: #fff7ed; }
+        .icon-orange i { color: #F7931E; font-size: 18px; }
+
+        .card-right-content { flex: 1; }
+
+        .card-right-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .card-right-content ul { list-style-type: none; }
+
+        .card-right-content li {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .card-right-content li:last-child { margin-bottom: 0; }
+        .card-right-content li p { margin: 0; }
+
+        .bullet { font-size: 10px; margin-top: 5px; flex-shrink: 0; }
+        .bullet-green { color: #10b981; }
+        .bullet-orange { color: #F7931E; }
+
+        /* Rodapé */
+        .footer-bar {
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            flex-shrink: 0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-text, .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <!-- Barra de Cores do Topo -->
+        <div class="header-bar"></div>
+
+        <!-- Área Principal (CSS Grid) -->
+        <div class="main-grid">
+            
+            <!-- Seção de Título -->
+            <div class="title-section">
+                <div class="badge">AULA 11</div>
+                <h1>O que são Testes de Regressão?</h1>
+                <p class="subtitle">Conceitos e fundamentos</p>
+            </div>
+
+            <!-- Coluna da Esquerda (Definição) -->
+            <div class="card card-left">
+                <div class="icon-wrap-left">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="card-left-content">
+                    <h2>Definição Principal</h2>
+                    <p>O teste de regressão <strong>não é um novo nível de teste</strong>, mas sim uma estratégia de re-execução.</p>
+                    <p class="highlight-box">Seu objetivo principal é garantir que mudanças recentes no código não tenham causado <strong>efeitos colaterais</strong> em partes do sistema que já estavam funcionando corretamente.</p>
+                </div>
+            </div>
+
+            <!-- Coluna da Direita (Card Superior) -->
+            <div class="card card-right card-right-top">
+                <div class="icon-wrap-right icon-green">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="card-right-content">
+                    <h3>Por que importa? (A Proteção)</h3>
+                    <ul>
+                        <li>
+                            <span class="bullet bullet-green"><i class="fas fa-circle"></i></span>
+                            <p>Protege o <strong>valor entregue</strong> anteriormente pelo time de desenvolvimento.</p>
+                        </li>
+                        <li>
+                            <span class="bullet bullet-green"><i class="fas fa-circle"></i></span>
+                            <p>Reduz drasticamente o <strong>custo de falhas tardias</strong> (bugs encontrados em produção).</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Coluna da Direita (Card Inferior) -->
+            <div class="card card-right card-right-bottom">
+                <div class="icon-wrap-right icon-orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-right-content">
+                    <h3>Quando costuma ser necessário?</h3>
+                    <ul>
+                        <li>
+                            <span class="bullet bullet-orange"><i class="fas fa-circle"></i></span>
+                            <p>Após <strong>correções de defeitos</strong> (bug fixes).</p>
+                        </li>
+                        <li>
+                            <span class="bullet bullet-orange"><i class="fas fa-circle"></i></span>
+                            <p>Na introdução de <strong>novas funcionalidades</strong>.</p>
+                        </li>
+                        <li>
+                            <span class="bullet bullet-orange"><i class="fas fa-circle"></i></span>
+                            <p>Durante <strong>refatorações</strong> ou mudanças de ambiente (DB, Python).</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Rodapé -->
+        <div class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </div>
+        
+    </div>
+</body>
+
+</html>

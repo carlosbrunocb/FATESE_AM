@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Do Backlog à Sprint</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-title {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            width: 1160px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 2px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .left-panel {
+            flex: 0 0 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            flex: 0 0 44%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .process-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .process-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .process-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .process-steps {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #1e3a5f;
+        }
+
+        .step-item.active {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+
+        .step-item i {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .step-arrow {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .criteria-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .criteria-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .criteria-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .criteria-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .criteria-desc {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .kanban-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+        }
+
+        .kanban-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .kanban-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .kanban-columns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .kanban-column {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .column-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .column-count {
+            background: #3b82f6;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .task-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .task-priority {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .priority-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .priority-high {
+            background: #ef4444;
+        }
+
+        .priority-medium {
+            background: #f59e0b;
+        }
+
+        .priority-low {
+            background: #10b981;
+        }
+
+        .flow-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 auto 8px;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #1e3a5f;
+            font-weight: 600;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .flow-arrow {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            width: 75%;
+            border-radius: 0 2px 2px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                    <div class="header-title">Do Backlog à Sprint</div>
+                    <div class="header-subtitle">Processo de seleção de US para Sprint 01</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-calendar-alt"></i> 25/04/2026
+                </div>
+                <div class="badge">
+                    <i class="fas fa-clock"></i> 30 min
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section-title">Do Backlog à Sprint</div>
+            <div class="section-description">
+                Processo de seleção de User Stories para a Sprint 01, focando nas Killer Features e transformando-as em
+                tarefas no Kanban.
+            </div>
+            <div class="main-content">
+                <div class="left-panel">
+                    <div class="process-card">
+                        <div class="process-header">
+                            <div class="process-title">Critérios de Seleção para Sprint 01</div>
+                        </div>
+                        <div class="process-steps">
+                            <div class="step-item active">
+                                <i class="fas fa-filter"></i>
+                                <span>Filtrar por valor</span>
+                            </div>
+                            <div class="step-arrow">→</div>
+                            <div class="step-item active">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Verificar dependências</span>
+                            </div>
+                            <div class="step-arrow">→</div>
+                            <div class="step-item">
+                                <i class="fas fa-users"></i>
+                                <span>Capacidade do time</span>
+                            </div>
+                        </div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <div class="criteria-header">
+                                    <div class="criteria-icon">
+                                        <i class="fas fa-bullseye"></i>
+                                    </div>
+                                    <div class="criteria-title">Resolve problema central</div>
+                                </div>
+                                <div class="criteria-desc">A US deve resolver parte relevante do problema central agora
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-header">
+                                    <div class="criteria-icon">
+                                        <i class="fas fa-unlink"></i>
+                                    </div>
+                                    <div class="criteria-title">Independência</div>
+                                </div>
+                                <div class="criteria-desc">É independente o suficiente para entregar valor na sprint
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-header">
+                                    <div class="criteria-icon">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <div class="criteria-title">Critérios claros</div>
+                                </div>
+                                <div class="criteria-desc">Possui critérios de aceitação claros e testáveis</div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-header">
+                                    <div class="criteria-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="criteria-title">Estimável</div>
+                                </div>
+                                <div class="criteria-desc">Pode ser dimensionada pelo time com confiança</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-visual">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Backlog</div>
+                            <div class="step-desc">Priorizado por valor</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Seleção</div>
+                            <div class="step-desc">Killer Features</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Sprint 01</div>
+                            <div class="step-desc">Execução</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Kanban</div>
+                            <div class="step-desc">Monitoramento</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="kanban-preview">
+                        <div class="kanban-header">
+                            <div class="kanban-title">Kanban Sprint 01</div>
+                            <div style="font-size: 12px; color: #64748b;">
+                                <i class="fas fa-columns"></i> 3 colunas
+                            </div>
+                        </div>
+                        <div class="kanban-columns">
+                            <div class="kanban-column">
+                                <div class="column-header">
+                                    <div class="column-name">To Do</div>
+                                    <div class="column-count">3</div>
+                                </div>
+                                <div class="task-item">
+                                    <div style="font-weight: 600; color: #1e3a5f; margin-bottom: 4px;">US01</div>
+                                    <div>Quiz de Afinidade</div>
+                                    <div class="task-priority">
+                                        <div class="priority-dot priority-high"></div>
+                                        <span style="font-size: 10px;">Alta</span>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div style="font-weight: 600; color: #1e3a5f; margin-bottom: 4px;">US02</div>
+                                    <div>Relatório Match</div>
+                                    <div class="task-priority">
+                                        <div class="priority-dot priority-high"></div>
+                                        <span style="font-size: 10px;">Alta</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kanban-column">
+                                <div class="column-header">
+                                    <div class="column-name">Doing</div>
+                                    <div class="column-count">1</div>
+                                </div>
+                                <div class="task-item">
+                                    <div style="font-weight: 600; color: #1e3a5f; margin-bottom: 4px;">US03</div>
+                                    <div>Chat ONG</div>
+                                    <div class="task-priority">
+                                        <div class="priority-dot priority-medium"></div>
+                                        <span style="font-size: 10px;">Média</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kanban-column">
+                                <div class="column-header">
+                                    <div class="column-name">Done</div>
+                                    <div class="column-count">0</div>
+                                </div>
+                                <div style="text-align: center; color: #64748b; font-size: 11px; padding: 20px 0;">
+                                    Nenhuma tarefa
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>25/04/2026</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Carlos Bruno Oliveira Lopes</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <i class="fas fa-graduation-cap"></i> FATESE - ADS
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

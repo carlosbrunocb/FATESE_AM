@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Próximo Salto (Next Hop)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 34px 60px 28px 60px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 28px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 70px);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 18pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 14pt;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #e0e6ed;
+            font-size: 14pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .network-diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .diagram-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .network-node {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 24pt;
+            position: relative;
+            z-index: 2;
+        }
+
+        .network-node i {
+            color: #ff6b35;
+        }
+
+        .node-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e0e6ed;
+            font-size: 12pt;
+            white-space: nowrap;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 107, 53, 0.5);
+            z-index: 1;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 40%;
+            transition: width 0.3s ease;
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .key-concepts {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .concept-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .concept-item i {
+            color: #ff6b35;
+            font-size: 20pt;
+            margin-bottom: 5px;
+        }
+
+        .concept-item span {
+            color: #e0e6ed;
+            font-size: 12pt;
+            display: block;
+        }
+
+        .next-hop-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .hop-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hop-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b35;
+            font-size: 20px;
+        }
+
+        .hop-label {
+            color: #e0e6ed;
+            font-size: 12pt;
+            text-align: center;
+        }
+
+        .hop-arrow {
+            color: #ff6b35;
+            font-size: 24pt;
+        }
+
+        .ip-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .ip-info-text {
+            color: #e0e6ed;
+            font-size: 12pt;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="info-badge">
+                <i class="fas fa-network-wired"></i> Conceito Chave
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Próximo Salto (Next Hop)
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-question-circle"></i>
+                            O que é Próximo Salto?
+                        </h3>
+                        <div class="concept-text">
+                            O <span class="highlight">Próximo Salto (Next Hop)</span> é o endereço IP do roteador
+                            imediatamente à frente no caminho até o destino final. É o próximo ponto de passagem
+                            obrigatório para o pacote alcançar seu destino.
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-map-marker-alt"></i>
+                            Características Principais
+                        </h3>
+                        <div class="bullet-point">Identifica o roteador vizinho para encaminhamento</div>
+                        <div class="bullet-point">Entrada típica: destino/prefixo → IP do next hop → interface</div>
+                        <div class="bullet-point">Se destino é diretamente conectado, next hop é "direto"</div>
+                        <div class="bullet-point">Usado para resolver endereços MAC via ARP</div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-table"></i>
+                            Exemplo de Entrada
+                        </h3>
+                        <div class="ip-info">
+                            <div class="ip-info-text">
+                                192.168.1.0/24 → 10.0.0.1 (Next Hop) → Gi0/1
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="network-diagram">
+                        <div class="diagram-container">
+                            <div class="next-hop-diagram">
+                                <div class="hop-item">
+                                    <div class="hop-icon">
+                                        <i class="fas fa-desktop"></i>
+                                    </div>
+                                    <div class="hop-label">PC Origem<br /><span
+                                            style="color: #ff6b35; font-size: 10pt;">192.168.1.10</span></div>
+                                </div>
+                                <div class="hop-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="hop-item">
+                                    <div class="hop-icon" style="background: rgba(255, 107, 53, 0.4);">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="hop-label">Roteador A<br /><span
+                                            style="color: #ff6b35; font-size: 10pt;">10.0.0.1</span></div>
+                                </div>
+                                <div class="hop-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="hop-item">
+                                    <div class="hop-icon">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="hop-label">Destino<br /><span
+                                            style="color: #ff6b35; font-size: 10pt;">10.0.0.5</span></div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; text-align: center;">
+                                <div
+                                    style="display: inline-block; background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px 25px;">
+                                    <div style="color: #ffffff; font-size: 14pt; margin-bottom: 10px;">
+                                        <i class="fas fa-info-circle" style="color: #ff6b35; margin-right: 8px;"></i>
+                                        Processo de Next Hop
+                                    </div>
+                                    <div style="color: #e0e6ed; font-size: 12pt;">
+                                        Roteador consulta tabela → Identifica next hop → Encaminha pacote
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

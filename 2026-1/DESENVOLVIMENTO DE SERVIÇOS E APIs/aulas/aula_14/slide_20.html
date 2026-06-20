@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Componentes de Segurança JWT Bearer no Swagger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .security-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .security-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .security-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 18px;
+        }
+
+        .security-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .security-desc {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .code-keyword {
+            color: #3b82f6;
+        }
+
+        .code-string {
+            color: #10b981;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .right-section {
+            flex: 0 0 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .info-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .feature-item i {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .status-badge i {
+            font-size: 10px;
+        }
+
+        .security-flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .flow-step i {
+            color: #3b82f6;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .flow-step-text {
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+
+        .flow-arrow {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .decorative-element {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="left-section">
+                <div class="section-title">
+                    <i class="fas fa-lock"></i>
+                    Componentes de Segurança (JWT Bearer) no Swagger
+                </div>
+                <div class="security-card">
+                    <div class="security-header">
+                        <div class="security-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div>
+                            <div class="security-title">Configuração do Esquema de Segurança</div>
+                            <div class="security-desc">Defina o esquema BearerAuth para autenticação JWT no Swagger UI
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line"><span class="code-keyword">components:</span></div>
+                        <div class="code-line">  <span class="code-keyword">securitySchemes:</span></div>
+                        <div class="code-line">    <span class="code-keyword">BearerAuth:</span></div>
+                        <div class="code-line">      <span class="code-keyword">type:</span> <span
+                                class="code-string">http</span></div>
+                        <div class="code-line">      <span class="code-keyword">scheme:</span> <span
+                                class="code-string">bearer</span></div>
+                        <div class="code-line">      <span class="code-keyword">bearerFormat:</span> <span
+                                class="code-string">JWT</span></div>
+                        <div class="code-line">      <span class="code-keyword">description:</span> <span
+                                class="code-string">"Token JWT para acessar endpoints protegidos"</span></div>
+                    </div>
+                </div>
+                <div class="security-card">
+                    <div class="security-header">
+                        <div class="security-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div class="security-title">Aplicação de Segurança nas Rotas</div>
+                            <div class="security-desc">Aplique autenticação global ou por rota específica</div>
+                        </div>
+                    </div>
+                    <div class="security-flow">
+                        <div class="flow-step">
+                            <i class="fas fa-lock"></i>
+                            <div class="flow-step-text">Login</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-key"></i>
+                            <div class="flow-step-text">JWT Token</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="flow-step-text">Acesso</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="info-title">Configuração do Swagger</div>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Definição do esquema BearerAuth</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Configuração de segurança global</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Proteção por rota específica</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Validação de token JWT</span>
+                        </div>
+                    </div>
+                    <div class="status-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        Segurança Ativa
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="info-title">Pontos de Atenção</div>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Token deve ser válido e não expirado</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Role necessário para acesso</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Endpoints sensíveis protegidos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="decorative-element"></div>
+    </div>
+</body>
+
+</html>

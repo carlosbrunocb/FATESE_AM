@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Script de Automação - Parte 3</title>
+    <link rel="stylesheet" href="./assets/chrome.css">
+</head>
+
+<body>
+    <div class="slide-container" data-screen-label="14 Script Parte 3">
+
+        <!-- Header -->
+        <div class="chrome-header">
+            <span class="title">Desenvolvimento do Script (3/3)</span>
+            <span class="discipline">Qualidade e Teste de Software</span>
+        </div>
+
+        <div style="position: absolute; top: 150px; left: 120px; z-index: 10;" data-object="true"
+            data-object-type="textbox">
+            <h2 style="font-size: 56px; font-weight: 800; margin: 0; color: #ffffff;">Escrevendo o Script: Validação e
+                Encerramento</h2>
+            <p style="font-size: 22px; color: var(--text-secondary); margin: 5px 0 0 0;">Como aplicar asserções lógicas
+                fortes e encerrar o driver de forma segura na memória.</p>
+        </div>
+
+        <!-- Código da Parte 3 -->
+        <div class="card"
+            style="position: absolute; top: 280px; left: 120px; width: 1000px; height: 650px; z-index: 10; display: flex; flex-direction: column; justify-content: center;"
+            data-object="true" data-object-type="textbox">
+            <div class="code-container"
+                style="font-size: 16px; line-height: 1.45; height: 550px; box-sizing: border-box;">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment"># 5. Sincronismo pós-login:
+                    Aguardar carregamento da rota segura</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wait.until(EC.url_contains(<span
+                    class="code-string">"/secure"</span>))<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment"># 6. Validação (Assertiva de
+                    Interface) da mensagem de sucesso</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elemento_alerta =
+                wait.until(EC.visibility_of_element_located((By.ID, <span class="code-string">"flash"</span>)))<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">assert</span> <span
+                    class="code-string">"You logged into a secure area!"</span> <span class="code-keyword">in</span>
+                elemento_alerta.text<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">print</span>(<span
+                    class="code-string">"✔ Sucesso: Login efetuado e validado!"</span>)<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment"># 7. Fluxo Secundário: Clicar
+                    no botão de Logout</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;botao_logout = driver.find_element(By.CSS_SELECTOR,
+                <span class="code-string">"a.button.secondary.radius"</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;botao_logout.click()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wait.until(EC.url_contains(<span
+                    class="code-string">"/login"</span>))<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">print</span>(<span
+                    class="code-string">"✔ Sucesso: Logout validado com êxito."</span>)<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">except</span> Exception <span
+                    class="code-keyword">as</span> erro:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">print</span>(f<span
+                    class="code-string">"❌ Erro inesperado: {erro}"</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">raise</span> erro<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">finally</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment"># Fechamento seguro
+                    obrigatório do WebDriver</span>br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;driver.quit()
+            </div>
+        </div>
+
+        <!-- Detalhes Técnicos e Cuidados -->
+        <div style="position: absolute; top: 280px; left: 1210px; width: 590px; height: 650px; z-index: 10; display: flex; flex-direction: column; gap: 30px;"
+            data-object="true" data-object-type="textbox">
+
+            <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <h4 style="margin: 0 0 10px 0; font-size: 22px; color: var(--accent-success);">A asserção assert</h4>
+                <p style="margin: 0; font-size: 18px; color: var(--text-secondary); line-height: 1.6;">
+                    Avalia se uma expressão lógica é verdadeira. Se for falsa, interrompe o script gerando uma exceção
+                    de falha de teste imediata.
+                </p>
+            </div>
+
+            <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <h4 style="margin: 0 0 10px 0; font-size: 22px; color: var(--accent-error);">Bloco finally e
+                    driver.quit()</h4>
+                <p style="margin: 0; font-size: 18px; color: var(--text-secondary); line-height: 1.6;">
+                    Sempre execute o <code style="color: var(--accent-cyan);">driver.quit()</code> dentro de um bloco
+                    <code style="color: var(--accent-cyan);">finally</code>. Isso garante que o processo do navegador em
+                    segundo plano seja finalizado na memória do computador, mesmo se o teste falhar no meio do fluxo.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="chrome-footer">
+            <div class="logo">FATESE <span>•</span> ADS</div>
+            <div>Escrevendo o Script - Parte 3</div>
+            <div>Slide 14/16</div>
+        </div>
+
+    </div>
+</body>
+
+</html>

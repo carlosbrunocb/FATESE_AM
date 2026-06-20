@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pytest — Framework de Testes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            overflow: hidden; /* Garante que não haja barras de rolagem na janela principal */
+        }
+
+        .slide-container {
+            width: 100vw;  /* Ocupa 100% da largura da janela */
+            height: 100vh; /* Ocupa 100% da altura da janela */
+            background-color: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 30vw; /* Ajustado para % da tela */
+            height: 30vw;
+            top: -5vw;
+            right: -5vw;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 4vh 4vw; /* Padding dinâmico */
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: flex;
+            gap: 3rem;
+            flex: 1; /* Ocupa o restante da altura disponível */
+            min-height: 0; /* Crucial para o scroll interno funcionar se necessário */
+            margin-top: 10px;
+        }
+
+        .info-pane {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            justify-content: center; /* Centraliza verticalmente se houver espaço */
+        }
+
+        .code-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* Info Cards */
+        .concept-card {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
+            padding: 2.5vh 2vw;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .features-list {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 2.5vh 2vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2vh;
+            color: #cbd5e1;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            color: #10b981;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 10px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            height: 100%; /* Força ocupar altura total do pai */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 1.5vh 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0; /* Impede que o cabeçalho encolha */
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #64748b;
+            font-size: 0.85rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 50px;
+        }
+
+        .terminal-content {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 0.95rem; /* Levemente maior para leitura em tela cheia */
+            overflow-y: auto; /* Permite scroll se a tela for pequena */
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        /* Syntax Highlighting */
+        .cmd-prompt { color: #10b981; font-weight: bold; margin-right: 10px; }
+        .cmd-text { color: #f8fafc; font-weight: bold; }
+        .cmd-flag { color: #60a5fa; }
+        .cmd-arg { color: #facc15; }
+        .comment-line { color: #64748b; font-style: italic; margin-top: 12px; display: block; }
+        .output-line { color: #94a3b8; display: block; }
+        .output-success { color: #4ade80; }
+        .output-error { color: #f87171; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="content-area">
+            <div class="mb-4 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Automação de Testes</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Pytest — Framework de Testes</h1>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-layout">
+                <div class="info-pane">
+                    <div class="concept-card">
+                        <h3 class="text-blue-400 font-bold mb-2 uppercase text-sm tracking-wide">O que é?</h3>
+                        <p class="text-gray-200 leading-relaxed text-sm">
+                            O framework mais popular do ecossistema Python. Permite escrever testes pequenos e legíveis,
+                            mas escala para suportar testes funcionais complexos em aplicações e bibliotecas.
+                        </p>
+                    </div>
+                    <div class="features-list">
+                        <h3 class="text-white font-bold mb-4 flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-2 text-sm"></i> Vantagens Principais
+                        </h3>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            <p class="text-sm"><strong>Descoberta Automática:</strong> Encontra arquivos
+                                <code>test_*.py</code>.</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            <p class="text-sm"><strong>Assert Introspection:</strong> Mensagens de erro detalhadas sem
+                                boilerplate.</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            <p class="text-sm"><strong>Fixtures:</strong> Gerenciamento poderoso de setup/teardown.</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            <p class="text-sm"><strong>Parametrização:</strong> Rode o mesmo teste com múltiplas
+                                entradas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-pane">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-controls">
+                                <div class="control-dot dot-red"></div>
+                                <div class="control-dot dot-yellow"></div>
+                                <div class="control-dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">zsh — pytest execution</div>
+                        </div>
+                        <div class="terminal-content">
+                            <span class="comment-line"># 1. Executar todos os testes da pasta atual</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">pytest</span>
+                            </div>
+                            <div class="output-line">collected 3 items</div>
+                            <div class="output-line"><span class="output-success">tests/test_calc.py ... [100%]</span>
+                            </div>
+                            <div class="output-line"><span class="output-success">3 passed in 0.02s</span></div>
+                            <span class="comment-line"># 2. Modo Verboso (-vv) e filtrar por nome (-k)</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">pytest</span> <span class="cmd-flag">-vv</span> <span
+                                    class="cmd-flag">-k</span> <span class="cmd-arg">"desconto"</span>
+                            </div>
+                            <div class="output-line">collected 5 items / 2 deselected / 3 selected</div>
+                            <div class="output-line">tests/test_calc.py::test_desconto_10_porcento <span
+                                    class="output-success">PASSED [ 33%]</span></div>
+                            <div class="output-line">tests/test_calc.py::test_sem_desconto <span
+                                    class="output-success">PASSED [ 66%]</span></div>
+                            <div class="output-line">tests/test_calc.py::test_desconto_invalido <span
+                                    class="output-error">FAILED [100%]</span></div>
+                            <span class="comment-line"># 3. Parar na primeira falha (-x) e saída curta (-q)</span>
+                            <div>
+                                <span class="cmd-prompt">$</span>
+                                <span class="cmd-text">pytest</span> <span class="cmd-flag">-x</span> <span
+                                    class="cmd-flag">-q</span>
+                            </div>
+                            <div class="output-line"><span class="output-error">F</span></div>
+                            <div class="output-line"><span class="output-error">======================= 1 failed in
+                                    0.04s =======================</span></div>
+                            <div class="mt-4 border-t border-slate-700 pt-2">
+                                <span class="cmd-prompt">$</span><span class="cmd-text">_</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-2 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Framework Pytest</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

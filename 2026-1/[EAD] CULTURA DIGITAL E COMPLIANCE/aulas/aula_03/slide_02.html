@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Roteiro da Aula - 60 minutos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .time-badge i {
+            color: #3b82f6;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 170px);
+            display: flex;
+            padding: 20px 60px;
+            gap: 20px;
+            z-index: 2;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timeline-header {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .timeline-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .timeline-header .duration {
+            font-size: 14px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Timeline Items */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .timeline-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item.active {
+            background: #f8fafc;
+            border-left-color: #10b981;
+        }
+
+        .timeline-number {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .timeline-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .timeline-description {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .timeline-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .tag {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+        }
+
+        .tag.orange {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .tag.green {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .status-dot.pending {
+            background: #f59e0b;
+        }
+
+        .status-dot.completed {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Roteiro da Aula</h1>
+                        <p>60 minutos de conteúdo estratégico</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="time-badge">
+                        <i class="fas fa-calendar"></i>
+                        <span>2026-05-12</span>
+                    </div>
+                    <div class="time-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>60 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <h2>Linha do Tempo da Aula</h2>
+                    <div class="duration">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span>5 blocos principais</span>
+                    </div>
+                </div>
+                <div class="timeline-container">
+                    <div class="timeline-item active">
+                        <div class="timeline-number">1</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header-row">
+                                <div class="timeline-title">Introdução e Gancho</div>
+                                <div class="timeline-time">00-10min</div>
+                            </div>
+                            <div class="timeline-description">
+                                Recapitulação rápida do EAD: O que é viés em IA (Aula 4) e por que inclusão digital é
+                                responsabilidade social (Aula 5)
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="tag">Recapitulação</span>
+                                <span class="tag orange">Viés IA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">2</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header-row">
+                                <div class="timeline-title">O Perigo da "Caixa Preta" e os Vieses</div>
+                                <div class="timeline-time">10-25min</div>
+                            </div>
+                            <div class="timeline-description">
+                                Como o analista de dados/desenvolvedor pode inserir preconceitos no sistema sem querer
+                                (ex: bases de dados viciadas)
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="tag">Accountability</span>
+                                <span class="tag green">Transparência</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">3</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header-row">
+                                <div class="timeline-title">Acessibilidade Digital (WCAG) não é opcional</div>
+                                <div class="timeline-time">25-40min</div>
+                            </div>
+                            <div class="timeline-description">
+                                Compliance legal: No Brasil, a Lei Brasileira de Inclusão (LBI) exige acessibilidade em
+                                sites/apps
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="tag">WCAG</span>
+                                <span class="tag orange">LBI</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">4</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header-row">
+                                <div class="timeline-title">Estudo de Caso Rápido (Discussão)</div>
+                                <div class="timeline-time">40-55min</div>
+                            </div>
+                            <div class="timeline-description">
+                                Análise de um formulário que não aceita "Nomes Sociais" ou um app que não possui
+                                descrição de imagens
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="tag">Impacto Ético</span>
+                                <span class="tag green">Compliance</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">5</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header-row">
+                                <div class="timeline-title">Lançamento da Atividade Assíncrona 02</div>
+                                <div class="timeline-time">55-60min</div>
+                            </div>
+                            <div class="timeline-description">
+                                Diagnóstico de Inclusão e Ética Algorítmica - Entrega em Relatório Técnico
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="tag">Atividade</span>
+                                <span class="tag orange">Entrega</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Sidebar -->
+            <div class="right-sidebar">
+                <div class="sidebar-card">
+                    <h3>
+                        <i class="fas fa-chart-pie"></i>
+                        Progresso da Aula
+                    </h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="progress-label">
+                        <span>40 minutos</span>
+                        <span>65%</span>
+                    </div>
+                </div>
+                <div class="sidebar-card">
+                    <h3>
+                        <i class="fas fa-tasks"></i>
+                        Estatísticas
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Blocos</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Atividades</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">60</div>
+                            <div class="stat-label">Minutos</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Cobertura</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-card">
+                    <h3>
+                        <i class="fas fa-info-circle"></i>
+                        Status
+                    </h3>
+                    <div class="status-indicator">
+                        <div class="status-dot completed"></div>
+                        <span>Em andamento</span>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
+                        Próximo: Estudo de Caso Rápido
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer-section">
+            <div class="footer-text">
+                Faculdade de Tecnologia do Senac - FATESE
+            </div>
+            <div class="footer-right">
+                <div class="footer-item">
+                    <i class="fas fa-user"></i>
+                    <span>Prof. Carlos Bruno</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>carlos.lopes@am.senac.br</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

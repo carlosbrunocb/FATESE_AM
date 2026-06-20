@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Corrigindo a Regressão - Função Somar</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 60px;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .code-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-title i {
+            color: #22c55e;
+        }
+
+        .code-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .code-box {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13pt;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .code-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-box-title {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .code-status {
+            font-size: 11pt;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .status-error {
+            background: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+        }
+
+        .status-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .code-keyword {
+            color: #f472b6;
+            font-weight: bold;
+        }
+
+        .code-string {
+            color: #a5b4fc;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-variable {
+            color: #fbbf24;
+        }
+
+        .code-number {
+            color: #a78bfa;
+        }
+
+        .code-removed {
+            background: rgba(220, 38, 38, 0.3);
+            text-decoration: line-through;
+            padding: 1px 3px;
+        }
+
+        .code-added {
+            background: rgba(34, 197, 94, 0.3);
+            padding: 1px 3px;
+        }
+
+        .notes-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .note-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .note-icon i {
+            font-size: 12pt;
+        }
+
+        .note-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .note-content {
+            font-size: 13pt;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .note-highlight {
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .next-step {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .next-step-icon {
+            width: 32px;
+            height: 32px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .next-step-icon i {
+            color: white;
+            font-size: 14px;
+        }
+
+        .next-step-content {
+            flex: 1;
+        }
+
+        .next-step-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0c4a6e;
+            margin-bottom: 4px;
+        }
+
+        .next-step-text {
+            font-size: 13px;
+            color: #0369a1;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #166534;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Corrigindo a Regressão — Função Somar</div>
+                    <div class="aula-subtitle">Removendo a lógica incorreta com abs() para restaurar comportamento
+                        matemático correto</div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>Em progresso</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-code"></i>
+                            <span>Correção da Função somar()</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <div class="code-badge badge-success">Correção</div>
+                            <div class="code-badge badge-info">Regressão Fix</div>
+                        </div>
+                    </div>
+                    <div class="code-comparison">
+                        <div class="code-box" style="height: 200px;">
+                            <div class="code-box-header">
+                                <div class="code-box-title">❌ Código com Bug (Antes)</div>
+                                <div class="code-status status-error">Falha</div>
+                            </div>
+                            <span class="code-keyword">def</span> <span class="code-function">somar</span>(<span
+                                class="code-variable">a</span>, <span class="code-variable">b</span>):<br />
+                                <span class="code-comment"># Bug: soma falha para números negativos</span><br />
+                                <span class="code-keyword">if</span> <span class="code-variable">a</span> &lt; <span
+                                class="code-number">0</span> <span class="code-keyword">or</span> <span
+                                class="code-variable">b</span> &lt; <span class="code-number">0</span>:<br />
+                                    <span class="code-keyword">return</span> <span
+                                class="code-function">abs</span>(<span class="code-variable">a</span> + <span
+                                class="code-variable">b</span>)   <span class="code-comment"># Erro!</span><br />
+                                <span class="code-keyword">return</span> <span class="code-variable">a</span> + <span
+                                class="code-variable">b</span>
+                        </div>
+                        <div class="code-box" style="height: 200px;">
+                            <div class="code-box-header">
+                                <div class="code-box-title">✅ Código Corrigido (Depois)</div>
+                                <div class="code-status status-success">Pass</div>
+                            </div>
+                            <span class="code-keyword">def</span> <span class="code-function">somar</span>(<span
+                                class="code-variable">a</span>, <span class="code-variable">b</span>):<br />
+                                <span class="code-comment"># Correção: comportamento matemático correto</span><br />
+                                <span class="code-added">return a + b</span>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <div class="note-card" style="padding: 20px;">
+                            <div class="note-header" style="margin-bottom: 12px;">
+                                <div class="note-icon" style="background: #dcfce7;">
+                                    <i class="fas fa-check-circle" style="color: #166534;"></i>
+                                </div>
+                                <div class="note-title" style="font-size: 16px;">Correção Realizada</div>
+                            </div>
+                            <div class="note-content" style="font-size: 14px; line-height: 1.6;">
+                                Removemos a lógica <span class="note-highlight">if a &lt; 0 or b &lt; 0</span> e o uso
+                                de <span class="note-highlight">abs()</span> que estava causando a regressão. Agora
+                                <span class="note-highlight">somar(-2, -3)</span> retorna <span
+                                    class="note-highlight">-5</span> (comportamento correto).
+                            </div>
+                        </div>
+                        <div class="next-step" style="padding: 20px;">
+                            <div class="next-step-icon" style="width: 40px; height: 40px;">
+                                <i class="fas fa-arrow-right" style="font-size: 18px;"></i>
+                            </div>
+                            <div class="next-step-content">
+                                <div class="next-step-title" style="font-size: 16px;">Próximo Passo</div>
+                                <div class="next-step-text" style="font-size: 14px; line-height: 1.6;">Reexecutar suíte
+                                    para confirmar correção</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                <span style="font-size: 13px; color: #64748b;">|</span>
+                <span class="footer-text">19 de 30 slides</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

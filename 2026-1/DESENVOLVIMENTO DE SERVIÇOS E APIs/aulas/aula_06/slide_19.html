@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aplicando Validação nas Rotas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Elements */
+        .bg-element {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.05;
+        }
+
+        .bg-dots {
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            height: 400px;
+            background-image: radial-gradient(#fff 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .file-badge {
+            background-color: #333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #aaa;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Main Content Area - Split View */
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Left Column - Code */
+        .code-column {
+            flex: 0 0 65%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-window {
+            flex: 1;
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .window-header {
+            background-color: #252526;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 20px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .tab-active {
+            background-color: #1e1e1e;
+            padding: 5px 15px;
+            border-radius: 4px 4px 0 0;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            border-top: 2px solid #8CC84B;
+        }
+
+        .code-content {
+            flex: 1;
+            padding: 20px 0;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            display: flex;
+        }
+
+        .line-numbers {
+            padding: 0 15px;
+            text-align: right;
+            color: #555;
+            border-right: 1px solid #333;
+            user-select: none;
+            min-width: 40px;
+        }
+
+        .code-lines {
+            padding-left: 20px;
+            color: #d4d4d4;
+            flex: 1;
+        }
+
+        /* Right Column - Notes */
+        .notes-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .note-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #555;
+            border-radius: 0 8px 8px 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .note-card:hover {
+            transform: translateX(-5px);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .note-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+            border: 1px solid #555;
+        }
+
+        .note-title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .note-text {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #569cd6;
+            font-weight: bold;
+        }
+
+        .func {
+            color: #dcdcaa;
+        }
+
+        .str {
+            color: #ce9178;
+        }
+
+        .var {
+            color: #9cdcfe;
+        }
+
+        .cmt {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .op {
+            color: #d4d4d4;
+        }
+
+        /* Interactive Highlights */
+        .highlight-line {
+            background-color: rgba(140, 200, 75, 0.1);
+            display: inline-block;
+            width: 100%;
+        }
+
+        .marker {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: #8CC84B;
+            color: #000;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+            vertical-align: middle;
+            transform: translateY(-2px);
+        }
+
+        .arrow-connector {
+            position: absolute;
+            left: -45px;
+            top: 50%;
+            width: 40px;
+            height: 2px;
+            border-top: 2px dashed #555;
+            z-index: 0;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-element bg-dots"></div>
+        <div class="content-wrapper">
+            <!-- Header -->
+            <header class="header">
+                <div class="title-group">
+                    <p class="subtitle">Segurança e Integridade</p>
+                    <h1 class="title">Aplicando Validação nas Rotas</h1>
+                </div>
+                <div class="file-badge">
+                    <i class="fab fa-js mr-2 text-yellow-400"></i>
+                    src/routes/livroRoutes.js
+                </div>
+            </header>
+            <div class="main-content">
+                <!-- Left: Code -->
+                <div class="code-column">
+                    <div class="code-window">
+                        <div class="window-header">
+                            <div class="window-controls">
+                                <div class="control-dot dot-red"></div>
+                                <div class="control-dot dot-yellow"></div>
+                                <div class="control-dot dot-green"></div>
+                            </div>
+                            <div class="tab-active">
+                                <i class="fab fa-js mr-2 text-yellow-400"></i> livroRoutes.js
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <div class="line-numbers">
+                                1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14
+                            </div>
+                            <div class="code-lines">
+                                <div class="code-line"><span class="kwd">const</span> <span class="var">express</span>
+                                    <span class="op">=</span> <span class="func">require</span>(<span
+                                        class="str">'express'</span>);</div>
+                                <div class="code-line"><span class="kwd">const</span> <span class="var">router</span>
+                                    <span class="op">=</span> <span class="var">express</span>.<span
+                                        class="func">Router</span>();</div>
+                                <div class="code-line highlight-line"><span class="marker">1</span><span
+                                        class="kwd">const</span> <span class="var">validaLivro</span> <span
+                                        class="op">=</span> <span class="func">require</span>(<span
+                                        class="str">'../middlewares/validaLivro'</span>);</div>
+                                <div class="code-line"><span class="kwd">const</span> <span
+                                        class="var">controller</span> <span class="op">=</span> <span
+                                        class="func">require</span>(<span
+                                        class="str">'../controllers/livroController'</span>);</div>
+                                <div class="code-line"></div>
+                                <div class="code-line"><span class="cmt">// Rota pública (apenas leitura)</span></div>
+                                <div class="code-line"><span class="var">router</span>.<span
+                                        class="func">get</span>(<span class="str">'/livros'</span>, <span
+                                        class="var">controller</span>.<span class="func">listarLivros</span>);</div>
+                                <div class="code-line"></div>
+                                <div class="code-line"><span class="cmt">// Rotas protegidas que recebem dados</span>
+                                </div>
+                                <div class="code-line highlight-line"><span class="marker">2</span><span
+                                        class="var">router</span>.<span class="func">post</span>(<span
+                                        class="str">'/livros'</span>, <span class="var">validaLivro</span>, <span
+                                        class="var">controller</span>.<span class="func">criarLivro</span>);</div>
+                                <div class="code-line"></div>
+                                <div class="code-line highlight-line"><span class="marker">3</span><span
+                                        class="var">router</span>.<span class="func">put</span>(<span
+                                        class="str">'/livros/:id'</span>, <span class="var">validaLivro</span>, <span
+                                        class="var">controller</span>.<span class="func">atualizarLivro</span>);</div>
+                                <div class="code-line"></div>
+                                <div class="code-line"><span class="var">module</span>.<span class="var">exports</span>
+                                    <span class="op">=</span> <span class="var">router</span>;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Notes -->
+                <div class="notes-column">
+                    <!-- Note 1 -->
+                    <div class="note-card" style="border-color: #569cd6;">
+                        <div class="arrow-connector"></div>
+                        <div class="note-header">
+                            <div class="note-number" style="background-color: #569cd6;">1</div>
+                            <h3 class="note-title">Importação do Middleware</h3>
+                        </div>
+                        <p class="note-text">
+                            Trazemos o arquivo <code>validaLivro.js</code> para dentro do roteador. Diferente do Logger
+                            global, aqui queremos controle granular.
+                        </p>
+                    </div>
+                    <!-- Note 2 -->
+                    <div class="note-card" style="border-color: #8CC84B;">
+                        <div class="arrow-connector"></div>
+                        <div class="note-header">
+                            <div class="note-number" style="background-color: #8CC84B;">2</div>
+                            <h3 class="note-title">Injeção na Rota POST</h3>
+                        </div>
+                        <p class="note-text">
+                            O middleware é passado como <strong>segundo argumento</strong>. Ele será executado antes do
+                            <code>controller.criarLivro</code>. Se falhar, o controller nunca é chamado.
+                        </p>
+                    </div>
+                    <!-- Note 3 -->
+                    <div class="note-card" style="border-color: #EA4335;">
+                        <div class="arrow-connector"></div>
+                        <div class="note-header">
+                            <div class="note-number" style="background-color: #EA4335;">3</div>
+                            <h3 class="note-title">Reutilização no PUT</h3>
+                        </div>
+                        <p class="note-text">
+                            A mesma lógica de validação protege a atualização. O GET (leitura) permanece sem middleware,
+                            pois não recebe corpo de requisição.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

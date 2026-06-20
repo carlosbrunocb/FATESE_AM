@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agenda da Aula - Aula 08</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 130px;
+            left: 80px;
+            width: 90%;
+            height: 75%;
+            z-index: 10;
+        }
+
+        .timeline-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .timeline-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .timeline-item {
+            flex: 1;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-icon i {
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .item-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .item-content {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .time-badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #22c55e;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 33%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Agenda da Aula</div>
+                    <div class="header-subtitle">Cronograma e atividades planejadas</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-clock" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">180 min</div>
+                    <div class="header-subtitle">3 horas</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="timeline-container">
+                <div class="timeline-row">
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="item-title">Conceitos Fundamentais</div>
+                        </div>
+                        <div class="item-content">
+                            Bancos Relacionais, ORM, e introdução ao Sequelize no ecossistema Node.js
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">40 min</div>
+                            <div class="status-badge">Teoria</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="item-title">Preparação do Ambiente</div>
+                        </div>
+                        <div class="item-content">
+                            Instalação do Sequelize e drivers (pg/pg-hstore ou mysql2)
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">20 min</div>
+                            <div class="status-badge">Configuração</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-row">
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="item-title">Model Livro &amp; DataTypes</div>
+                        </div>
+                        <div class="item-content">
+                            Criação do Model Livro, definição de DataTypes e sync
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">15 min</div>
+                            <div class="status-badge">Modelagem</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="item-title">Refatoração de Services</div>
+                        </div>
+                        <div class="item-content">
+                            Adaptação para operações CRUD assíncronas com Sequelize
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">80 min</div>
+                            <div class="status-badge">Prática</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-row">
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="item-title">Scripts SQL &amp; Seed</div>
+                        </div>
+                        <div class="item-content">
+                            Preparação do banco PostgreSQL/MySQL com dados iniciais
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">15 min</div>
+                            <div class="status-badge">Setup</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div class="item-title">Testes com Postman</div>
+                        </div>
+                        <div class="item-content">
+                            Validação do CRUD persistindo dados no banco real
+                        </div>
+                        <div class="item-meta">
+                            <div class="time-badge">25 min</div>
+                            <div class="status-badge">Testes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

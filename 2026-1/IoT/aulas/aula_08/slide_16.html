@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Código Limpo em IoT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .principles-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .principle-item {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .principle-icon {
+            color: #2196F3;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .principle-title {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .principle-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .code-comparison {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-good {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .status-bad {
+            background: rgba(244, 67, 54, 0.3);
+            color: #F44336;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 12px;
+        }
+
+        .line-number {
+            color: rgba(255, 255, 255, 0.3);
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .code-comment {
+            color: #4CAF50;
+        }
+
+        .code-keyword {
+            color: #2196F3;
+        }
+
+        .code-string {
+            color: #FF9800;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .benefit-icon {
+            color: #00BCD4;
+            font-size: 18px;
+        }
+
+        .benefit-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Código Limpo em IoT</div>
+                    <div class="subtitle">Princípios de organização e boas práticas para ESP32</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 24px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-code" style="color: #00BCD4; font-size: 20px; margin-right: 12px;"></i>
+                    <span style="color: #fff; font-weight: 700; font-size: 15px; letter-spacing: 0.5px;">Clean
+                        Code</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="principles-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+                            <div class="card-title">Três Princípios Principais</div>
+                        </div>
+                        <div class="principles-grid">
+                            <div class="principle-item">
+                                <i class="fas fa-sitemap principle-icon"></i>
+                                <div class="principle-title">Organização</div>
+                                <div class="principle-desc">Separar responsabilidades em funções específicas</div>
+                            </div>
+                            <div class="principle-item">
+                                <i class="fas fa-comments principle-icon"></i>
+                                <div class="principle-title">Feedback</div>
+                                <div class="principle-desc">Mensagens Serial claras e contextuais</div>
+                            </div>
+                            <div class="principle-item">
+                                <i class="fas fa-shield-alt principle-icon"></i>
+                                <div class="principle-title">Tratamento de Erros</div>
+                                <div class="principle-desc">Verificar status e implementar retries</div>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 10px; padding: 14px; background: rgba(0, 188, 212, 0.1); border-radius: 10px; border: 1px solid rgba(0, 188, 212, 0.3);">
+                            <div style="font-size: 14px; color: rgba(255,255,255,0.95); font-weight: 600;">
+                                <i class="fas fa-check-circle" style="color: #00BCD4; margin-right: 10px;"></i>
+                                <span>Benefícios: Manutenção facilitada, menos falhas, melhor OTA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-comparison">
+                        <div class="code-header">
+                            <div class="code-label">Exemplo: Código Mal Estruturado (Anti-Padrão)</div>
+                            <div class="code-status">
+                                <span class="status-badge status-bad">❌ Evitar</span>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <span class="code-content"><span class="code-keyword">void</span> <span
+                                        class="code-string">setup</span>() {</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <span class="code-content" style="margin-left: 15px;"> <span class="code-keyword">while</span> (WiFi.status() !=
+                                    WL_CONNECTED) {</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <span class="code-content" style="margin-left: 30px;"> delay(500); <span class="code-comment">// Sem
+                                        timeout!</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <span class="code-content" style="margin-left: 15px;"> }</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <span class="code-content" style="margin-left: 15px;"> Serial.println(<span
+                                        class="code-string">"Conectado"</span>); <span class="code-comment">// Sem
+                                        contexto</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <span class="code-content">}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="code-comparison">
+                        <div class="code-header">
+                            <div class="code-label">Exemplo: Código Bem Estruturado (Padrão)</div>
+                            <div class="code-status">
+                                <span class="status-badge status-good">✓ Recomendado</span>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <span class="code-content"><span class="code-keyword">bool</span> <span
+                                        class="code-string">conectarWiFi</span>(<span class="code-keyword">const
+                                        char</span>* ssid, <span class="code-keyword">const char</span>* pass, <span
+                                        class="code-keyword">int</span> timeoutMs) {</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <span class="code-content" style="margin-left: 15px;"> WiFi.begin(ssid, pass);</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <span class="code-content"> <span class="code-keyword" style="margin-left: 15px;">int</span> tentativas = <span
+                                        class="code-string">0</span>;</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <span class="code-content" style="margin-left: 15px;"> <span class="code-keyword">while</span> (WiFi.status() !=
+                                    WL_CONNECTED &amp;&amp; tentativas &lt; timeoutMs/500) {</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <span class="code-content" style="margin-left: 30px;"> delay(500); tentativas++;</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <span class="code-content" style="margin-left: 15px;"> }</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <span class="code-content" style="margin-left: 15px;"> <span class="code-keyword">return</span> WiFi.status() ==
+                                    WL_CONNECTED;</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <span class="code-content">}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="principles-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-title">Boas Práticas</div>
+                        </div>
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <i class="fas fa-code-branch benefit-icon"></i>
+                                <span class="benefit-text">Funções com responsabilidade única</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-bug benefit-icon"></i>
+                                <span class="benefit-text">Tratamento de erros robusto</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-clock benefit-icon"></i>
+                                <span class="benefit-text">Timeouts e reconexão automática</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span style="font-weight: 500;">Aula em andamento</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                    <span style="font-weight: 500;">Próximo: Discussão de Problemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="far fa-clock" style="margin-right: 8px;"></i>
+                    <span style="font-weight: 500;">Duração: 1h 45min</span>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

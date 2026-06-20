@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Objetivos da Aula - Autenticação JWT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .header-text {
+            text-align: left;
+        }
+
+        .header-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1160px;
+        }
+
+        .objective-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            height: 140px;
+        }
+
+        .objective-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .objective-content {
+            flex: 1;
+        }
+
+        .objective-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objective-description {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .objective-icon {
+            color: #10b981;
+            font-size: 18px;
+        }
+
+        .highlight {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #60a5fa;
+        }
+
+        .footer {
+            margin-top: auto;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 16px 32px;
+        }
+
+        .footer-icon {
+            color: #10b981;
+            font-size: 22px;
+        }
+
+        .footer-text {
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+
+        .footer-highlight {
+            color: #10b981;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Objetivos da Aula</div>
+                    <div class="header-subtitle">O que você vai aprender sobre segurança e autenticação com JWT</div>
+                </div>
+            </div>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="objective-number">01</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-check-circle objective-icon"></i>
+                            Compreender Autenticação vs Autorização
+                        </div>
+                        <div class="objective-description">
+                            Entender a <span class="highlight">diferença fundamental</span> entre verificar quem é o
+                            usuário (autenticação) e o que ele pode fazer (autorização).
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">02</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-sync-alt objective-icon"></i>
+                            Entender Stateless vs Stateful
+                        </div>
+                        <div class="objective-description">
+                            Aprender sobre autenticação <span class="highlight">sem estado (JWT)</span> comparada à
+                            autenticação baseada em sessões.
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">03</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-lock objective-icon"></i>
+                            Criptografar Senhas com Bcrypt
+                        </div>
+                        <div class="objective-description">
+                            Implementar <span class="highlight">hashing seguro</span> de senhas antes de salvá-las no
+                            banco de dados.
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">04</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-key objective-icon"></i>
+                            Implementar Registro e Login
+                        </div>
+                        <div class="objective-description">
+                            Criar rotas de <span class="highlight">registro e login</span> gerando tokens de acesso
+                            estruturados.
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">05</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-shield-alt objective-icon"></i>
+                            Construir Middleware de Proteção
+                        </div>
+                        <div class="objective-description">
+                            Desenvolver <span class="highlight">middleware de autenticação</span> para proteger rotas
+                            sensíveis.
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-card">
+                    <div class="objective-number">06</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-vial objective-icon"></i>
+                            Testar com Postman
+                        </div>
+                        <div class="objective-description">
+                            Realizar <span class="highlight">testes práticos</span> capturando tokens e injetando em
+                            headers.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <i class="fas fa-lightbulb footer-icon"></i>
+                <div class="footer-text">
+                    <span class="footer-highlight">Dica:</span> Cada objetivo será praticado com exemplos reais na API
+                    da Livraria
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

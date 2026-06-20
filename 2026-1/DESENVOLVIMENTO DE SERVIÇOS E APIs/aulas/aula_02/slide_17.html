@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplos Práticos: Sistema de Biblioteca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Open+Sans:wght@400;600&family=Source+Code+Pro:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+        }
+
+        .code-window {
+            background-color: #1e293b;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .code-font {
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .method-get { color: #60a5fa; }
+        .method-post { color: #4ade80; }
+        .method-patch { color: #facc15; }
+        .resource { color: #e2e8f0; }
+        .param { color: #fbbf24; }
+        .query-key { color: #c084fc; }
+        .query-val { color: #94a3b8; }
+        .comment {
+            color: #64748b;
+            font-style: italic;
+        }
+        .json-key { color: #93c5fd; }
+        .json-val { color: #ce7e00; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="pt-10 px-16 pb-4 flex items-end justify-between z-10">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-widest rounded-full">Estudo de Caso</span>
+                    <span class="text-slate-400 text-xs font-semibold uppercase tracking-widest">Modelagem de API</span>
+                </div>
+                <h1 class="text-4xl font-['Montserrat'] font-extrabold text-slate-900 leading-tight">
+                    Exemplos Práticos: <span class="text-blue-700">Biblioteca</span>
+                </h1>
+            </div>
+            <div class="h-1 flex-1 bg-slate-100 ml-12 rounded-full relative top-[-10px]">
+                <div class="absolute right-0 top-0 h-full w-32 bg-blue-600 rounded-full"></div>
+            </div>
+        </header>
+        <div class="flex-1 px-16 pb-10 flex gap-10">
+            <div class="w-1/3 flex flex-col gap-6 pt-4">
+                <div class="p-6 bg-blue-50 rounded-xl border-l-4 border-blue-500">
+                    <h3 class="text-blue-800 font-bold mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-book"></i> Recursos Principais
+                    </h3>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        Identificamos as entidades principais do sistema como substantivos no plural: <span class="font-bold">Livros</span> e <span class="font-bold">Usuários</span>.
+                    </p>
+                </div>
+                <div class="p-6 bg-purple-50 rounded-xl border-l-4 border-purple-500">
+                    <h3 class="text-purple-800 font-bold mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-diagram-project"></i> Relacionamentos
+                    </h3>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        Para expressar relacionamentos, utilizamos a hierarquia da URI. Empréstimos pertencem a um usuário específico.
+                    </p>
+                </div>
+                <div class="mt-auto p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Antipattern vs Pattern</h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3 p-2 bg-red-50 rounded border border-red-100 opacity-70">
+                            <i class="fa-solid fa-xmark text-red-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="font-mono text-xs text-slate-500 line-through">/buscarLivroPorId?id=10</p>
+                                <p class="text-[10px] text-red-500 font-semibold uppercase">Verbo na URI (Evite)</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-center">
+                            <i class="fa-solid fa-arrow-down text-slate-300"></i>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-green-50 rounded border border-green-200 shadow-sm">
+                            <i class="fa-solid fa-check text-green-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="font-mono text-sm text-slate-800 font-bold">/livros/10</p>
+                                <p class="text-[10px] text-green-600 font-semibold uppercase">Identificador no Path (Prefira)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-2/3 flex flex-col" style="height: fit-content;">
+                <div class="code-window rounded-xl overflow-hidden flex flex-col flex-1 border border-slate-700">
+                    <div class="bg-slate-900 px-4 py-3 flex items-center gap-2 border-b border-slate-700">
+                        <div class="flex gap-2 mr-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="text-slate-400 text-xs font-mono flex items-center gap-2">
+                            <i class="fa-solid fa-terminal"></i> library-api.http
+                        </div>
+                    </div>
+                    <div class="p-8 overflow-y-auto code-font text-base leading-loose relative">
+                        <div class="absolute left-4 top-8 text-slate-600 text-right select-none opacity-50 text-sm font-mono flex flex-col gap-[1.15rem]">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+                        </div>
+                        <div class="pl-10">
+                            <div class="mb-4">
+                                <span class="comment"># 1. Catálogo: Listar todos os livros disponíveis</span><br />
+                                <span class="method-get font-bold">GET</span> <span class="resource">/v1/livros</span>
+                            </div>
+                            <div class="mb-4">
+                                <span class="comment"># 2. Detalhe: Buscar dados de um livro específico</span><br />
+                                <span class="method-get font-bold">GET</span> <span class="resource">/v1/livros/</span><span class="param">{livroId}</span>
+                            </div>
+                            <div class="mb-4">
+                                <span class="comment"># 3. Histórico: Listar todos os empréstimos de um leitor</span><br />
+                                <span class="method-get font-bold">GET</span> <span class="resource">/v1/usuarios/</span><span class="param">{usuarioId}</span><span class="resource">/emprestimos</span>
+                            </div>
+                            <div class="mb-4">
+                                <span class="comment"># 4. Ação: Realizar um novo empréstimo</span><br />
+                                <span class="method-post font-bold">POST</span> <span class="resource">/v1/emprestimos</span><br />
+                                <span class="text-slate-500">{</span> <span class="json-key">"usuario_id"</span><span class="text-slate-500">:</span> <span class="json-val">123</span><span class="text-slate-500">,</span> <span class="json-key">"livro_id"</span><span class="text-slate-500">:</span> <span class="json-val">456</span> <span class="text-slate-500">}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="comment"># 5. Processo: Registrar devolução (Atualização parcial)</span><br />
+                                <span class="method-patch font-bold">PATCH</span> <span class="resource">/v1/emprestimos/</span><span class="param">{emprestimoId}</span><br />
+                                <span class="text-slate-500">{</span> <span class="json-key">"status"</span><span class="text-slate-500">:</span> <span class="json-val">"devolvido"</span> <span class="text-slate-500">}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 px-4 py-1 flex justify-between items-center text-[10px] text-slate-500 font-mono border-t border-slate-700">
+                        <span>UTF-8</span>
+                        <span>HTTP/1.1</span>
+                        <span>JSON Payload</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-16 pb-6 flex justify-between items-center text-slate-400 text-sm font-['Montserrat']">
+            <p>Análise e Desenvolvimento de Sistemas</p>
+            <p>17</p>
+        </div>
+    </div>
+</body>
+</html>

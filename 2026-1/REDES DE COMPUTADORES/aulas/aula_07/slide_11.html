@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Conceito-Chave: Métrica</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 60px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 42pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 36pt;
+        }
+
+        .content-grid {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 28px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 22px;
+            border-left: 4px solid #4CAF50;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .metric-icon i {
+            color: #4CAF50;
+            font-size: 20pt;
+        }
+
+        .metric-content {
+            flex: 1;
+        }
+
+        .metric-title {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-description {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .metric-types {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-type {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-type:hover {
+            border-color: #ff6b35;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .metric-type-icon {
+            font-size: 24pt;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        .metric-type-name {
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .metric-type-desc {
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .cost-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .cost-label {
+            color: #e0e6ed;
+            font-size: 12pt;
+            width: 80px;
+        }
+
+        .cost-bar-bg {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cost-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+            border-radius: 4px;
+        }
+
+        .cost-value {
+            color: #ffffff;
+            font-size: 12pt;
+            font-weight: 600;
+            width: 40px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-calculator"></i> Métrica
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Conceito-Chave: Métrica
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="metric-title">
+                        <i class="fas fa-info-circle"></i> O que é Métrica?
+                    </div>
+                    <div class="metric-description">
+                        A <span class="highlight">métrica</span> define o "custo" de um caminho na rede, sendo
+                        fundamental para o roteador decidir qual rota seguir. Ela pode ser baseada em:
+                    </div>
+                    <div class="metric-types">
+                        <div class="metric-type">
+                            <div class="metric-type-icon"><i class="fas fa-stopwatch"></i></div>
+                            <div class="metric-type-name">Saltos</div>
+                            <div class="metric-type-desc">Número de roteadores</div>
+                        </div>
+                        <div class="metric-type">
+                            <div class="metric-type-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <div class="metric-type-name">Largura</div>
+                            <div class="metric-type-desc">Capacidade do link</div>
+                        </div>
+                        <div class="metric-type">
+                            <div class="metric-type-icon"><i class="fas fa-clock"></i></div>
+                            <div class="metric-type-name">Latência</div>
+                            <div class="metric-type-desc">Tempo de resposta</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; color: #e0e6ed; font-size: 13pt;">
+                        <strong style="color: #ff6b35;">ECMP:</strong> Equal-Cost Multi-Path permite balanceamento
+                        quando há múltiplos caminhos com mesmo custo.
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-title">
+                                <span class="highlight">RIP</span> - Saltos
+                            </div>
+                            <div class="metric-description">
+                                Métrica baseada no <span class="highlight">número de saltos</span> até o destino. Máximo
+                                de 15 saltos.
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-label">Custo</div>
+                                <div class="cost-bar-bg">
+                                    <div class="cost-bar-fill" style="width: 60%;"></div>
+                                </div>
+                                <div class="cost-value">6</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-title">
+                                <span class="highlight">OSPF</span> - Estado de Enlace
+                            </div>
+                            <div class="metric-description">
+                                Métrica baseada em <span class="highlight">largura de banda</span> e atraso, usando
+                                Dijkstra.
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-label">Custo</div>
+                                <div class="cost-bar-bg">
+                                    <div class="cost-bar-fill" style="width: 80%;"></div>
+                                </div>
+                                <div class="cost-value">8</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-title">
+                                <span class="highlight">BGP</span> - Política
+                            </div>
+                            <div class="metric-description">
+                                Métrica baseada em <span class="highlight">políticas</span> e atributos (AS-PATH,
+                                LOCAL_PREF).
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-label">Custo</div>
+                                <div class="cost-bar-bg">
+                                    <div class="cost-bar-fill" style="width: 90%;"></div>
+                                </div>
+                                <div class="cost-value">9</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

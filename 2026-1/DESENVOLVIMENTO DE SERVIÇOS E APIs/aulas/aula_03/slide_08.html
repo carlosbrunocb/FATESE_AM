@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 03 - Node.js vs Navegador</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b1220;
+            overflow: hidden; /* Evita barras de rolagem indesejadas */
+        }
+
+        .slide {
+            width: 100vw; /* Ocupa 100% da largura da tela */
+            height: 100vh; /* Ocupa 100% da altura da tela */
+        }
+
+        .font-title {
+            font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+        }
+
+        .font-body {
+            font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .muted {
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .muted2 {
+            color: rgba(255, 255, 255, 0.58);
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .line {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .chip {
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide flex items-stretch justify-center">
+        <div class="flex-1 flex items-stretch">
+            <div class="w-20 flex flex-col items-center justify-between py-10" style="background:#0f1b33;">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:#16a34a;">
+                    <i class="fa-solid fa-scale-balanced text-white text-xl"></i>
+                </div>
+                <div class="flex flex-col items-center space-y-3">
+                    <div class="w-2 h-14 rounded-full" style="background:#22c55e;"></div>
+                    <div class="w-2 h-10 rounded-full" style="background:#60a5fa;"></div>
+                    <div class="w-2 h-10 rounded-full" style="background:#a78bfa;"></div>
+                </div>
+                <div class="text-white text-xs font-body tracking-wide opacity-80" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                    <p>ADS • FATESE</p>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col px-16 py-14" style="background:#0b1220;">
+                <div class="flex items-start justify-between">
+                    <div class="flex flex-col">
+                        <div class="inline-flex items-center space-x-3">
+                            <div class="px-3 py-1 rounded-full pill">
+                                <p class="font-body text-xs text-white tracking-wider">AULA 03</p>
+                            </div>
+                            <div class="px-3 py-1 rounded-full pill">
+                                <p class="font-body text-xs text-white tracking-wider">AMBIENTES • COMPARAÇÃO</p>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <p class="font-title text-5xl text-white leading-tight" style="letter-spacing:-0.02em;">
+                                Node.js vs <span style="color:#22c55e;">Navegador</span>
+                            </p>
+                            <p class="font-body text-xl muted mt-3">
+                                Mesmo JavaScript, mas com <span class="text-white">APIs</span>, <span
+                                    class="text-white">globals</span> e <span class="text-white">restrições</span> bem
+                                diferentes.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card rounded-2xl px-6 py-4 w-96">
+                        <div class="flex items-center justify-between">
+                            <p class="font-body text-sm text-white opacity-90">Em 1 minuto</p>
+                            <div class="px-3 py-1 rounded-full"
+                                style="background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25);">
+                                <p class="font-body text-xs" style="color:#60a5fa;">RUNTIME</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-globe" style="color:#60a5fa;"></i>
+                                <p class="font-body text-sm text-white"><span class="muted2">Navegador:</span> DOM + Web
+                                    APIs</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-server" style="color:#22c55e;"></i>
+                                <p class="font-body text-sm text-white"><span class="muted2">Node.js:</span> FS + rede +
+                                    processos</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-triangle-exclamation" style="color:#a78bfa;"></i>
+                                <p class="font-body text-sm text-white"><span class="muted2">Implicação:</span> código
+                                    não é 100% portátil</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 flex items-center mt-3">
+                    <div class="w-full grid grid-cols-12 gap-8">
+                        <div class="col-span-6 flex flex-col">
+                            <div class="card rounded-2xl p-7 flex-1 flex flex-col justify-between">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                                            style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);">
+                                            <i class="fa-brands fa-node-js text-2xl" style="color:#22c55e;"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-body text-sm muted2">Ambiente</p>
+                                            <p class="font-body text-2xl text-white font-semibold">Node.js</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full"
+                                        style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);">
+                                        <p class="font-body text-xs" style="color:#22c55e;">Servidor / CLI</p>
+                                    </div>
+                                </div>
+                                <div class="mt-5 line"></div>
+                                <div class="mt-5 space-y-4 flex-1">
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-square-root-variable text-white opacity-90"></i>
+                                                <p class="font-body text-base text-white font-semibold">Objeto global
+                                                </p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white"><span class="muted2">Ex.:</span>
+                                                    global</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Possui <span
+                                                class="text-white">process</span>, <span
+                                                class="text-white">Buffer</span>, timers e APIs do runtime.</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-folder-open" style="color:#60a5fa;"></i>
+                                                <p class="font-body text-base text-white font-semibold">Acesso ao
+                                                    sistema</p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white"><span
+                                                        class="muted2">Core:</span> fs, path</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Pode ler/escrever arquivos, abrir
+                                            sockets e criar servidores HTTP.</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-boxes-stacked" style="color:#a78bfa;"></i>
+                                                <p class="font-body text-base text-white font-semibold">Módulos</p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white">CommonJS + ESM</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Suporta <span
+                                                class="text-white">require</span> (CJS) e <span
+                                                class="text-white">import</span> (ESM), dependendo da configuração.</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-shield-halved text-white opacity-90"></i>
+                                                <p class="font-body text-base text-white font-semibold">Modelo de
+                                                    segurança</p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white">Permissivo</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Executa com permissões do usuário do SO
+                                            (cuidado com dependências e credenciais).</p>
+                                    </div>
+                                </div>
+                                <div class="mt-5 flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                        style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);">
+                                        <i class="fa-solid fa-lightbulb" style="color:#22c55e;"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-body text-sm text-white font-semibold">Quando usar</p>
+                                        <p class="font-body text-sm muted2">APIs, microserviços, automação, CLIs,
+                                            integrações e streaming.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-6 flex flex-col">
+                            <div class="card rounded-2xl p-7 flex-1 flex flex-col justify-between">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                                            style="background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25);">
+                                            <i class="fa-brands fa-chrome text-2xl" style="color:#60a5fa;"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-body text-sm muted2">Ambiente</p>
+                                            <p class="font-body text-2xl text-white font-semibold">Navegador</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full"
+                                        style="background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25);">
+                                        <p class="font-body text-xs" style="color:#60a5fa;">Front-end</p>
+                                    </div>
+                                </div>
+                                <div class="mt-5 line"></div>
+                                <div class="mt-5 space-y-4 flex-1">
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-window-maximize text-white opacity-90"></i>
+                                                <p class="font-body text-base text-white font-semibold">Objeto global
+                                                </p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white"><span class="muted2">Ex.:</span>
+                                                    window</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Ambiente com <span
+                                                class="text-white">document</span>, eventos de UI e APIs visuais.</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-sitemap" style="color:#22c55e;"></i>
+                                                <p class="font-body text-base text-white font-semibold">DOM e Web APIs
+                                                </p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white">fetch, storage</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Manipula interface (DOM), faz
+                                            requisições e usa APIs como <span class="text-white">fetch</span>.</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-cube" style="color:#a78bfa;"></i>
+                                                <p class="font-body text-base text-white font-semibold">Módulos</p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white">ESM nativo</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Suporte nativo a <span
+                                                class="text-white">import/export</span> (com regras de origem/URL).</p>
+                                    </div>
+                                    <div class="chip rounded-2xl px-5 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-lock" style="color:#60a5fa;"></i>
+                                                <p class="font-body text-base text-white font-semibold">Sandbox</p>
+                                            </div>
+                                            <div class="tag rounded-xl px-3 py-1">
+                                                <p class="font-body text-xs text-white">Restrito</p>
+                                            </div>
+                                        </div>
+                                        <p class="font-body text-sm muted2 mt-2">Sem acesso direto ao sistema de
+                                            arquivos/local, com políticas como CORS e permissões.</p>
+                                    </div>
+                                </div>
+                                <div class="mt-5 flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                        style="background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25);">
+                                        <i class="fa-solid fa-lightbulb" style="color:#60a5fa;"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-body text-sm text-white font-semibold">Quando usar</p>
+                                        <p class="font-body text-sm muted2">Interfaces, SPA, consumo de APIs,
+                                            renderização e interação com o usuário.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-end justify-between mt-2">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);">
+                            <i class="fa-solid fa-user text-white opacity-90"></i>
+                        </div>
+                        <div>
+                            <p class="font-body text-sm muted2">Professor</p>
+                            <p class="font-body text-base text-white font-semibold">Carlos Bruno Oliveira Lopes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="px-4 py-2 rounded-xl"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                            <p class="font-body text-sm text-white"><span class="muted2">Regra prática:</span> no Node
+                                não existe <span class="text-white">window</span>; no navegador não existe <span
+                                    class="text-white">fs</span>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

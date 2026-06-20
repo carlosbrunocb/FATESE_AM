@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hierarquia dos Objetivos - Diagrama em Pirâmide</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 4px;
+        }
+
+        .main-content {
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: calc(100% - 70px);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .pyramid-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pyramid-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pyramid-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .pyramid-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .pyramid-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .pyramid-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 10px 0;
+            flex-grow: 1;
+        }
+
+        .pyramid-level {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            position: relative;
+        }
+
+        .level-box {
+            border-radius: 12px;
+            padding: 10px 20px;
+            /* Reduced padding to fit text better */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            position: relative;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            /* added min height to ensure text fits without flush padding */
+        }
+
+        .level-box:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-1 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            width: 100%;
+        }
+
+        .level-2 {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            width: 85%;
+        }
+
+        .level-3 {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            width: 70%;
+        }
+
+        .level-number {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .level-content {
+            flex: 1;
+            padding-right: 15px;
+        }
+
+        .level-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .level-description {
+            font-size: 12px;
+            /* Slightly reduced to avoid overflow */
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .level-icon {
+            font-size: 24px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+        .example-box {
+            background: #f0f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #3b82f6;
+            margin-top: auto;
+        }
+
+        .example-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .example-icon {
+            color: #3b82f6;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .rastreabilidade-box {
+            background: #fef3c7;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #f59e0b;
+        }
+
+        .rastreabilidade-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rastreabilidade-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rastreabilidade-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #92400e;
+        }
+
+        .rastreabilidade-icon {
+            color: #f59e0b;
+            font-size: 14px;
+        }
+
+        .kpi-box {
+            background: #f0fdf4;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #22c55e;
+        }
+
+        .kpi-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kpi-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .kpi-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #166534;
+        }
+
+        .kpi-icon {
+            color: #22c55e;
+            font-size: 14px;
+        }
+
+        .arrow-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0;
+        }
+
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div>
+                <div class="header-title">Hierarquia dos Objetivos</div>
+                <div class="header-subtitle">De geral para específico: rastreabilidade e impacto</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div
+                    style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; color: white; font-size: 14px;">
+                    <i class="fas fa-layer-group"></i> 3 Níveis
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="pyramid-container">
+                        <div class="pyramid-header">
+                            <div class="pyramid-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <div class="pyramid-title">Diagrama da Pirâmide de Objetivos</div>
+                                <div class="pyramid-subtitle">Base → Meio → Topo: Rastreabilidade completa</div>
+                            </div>
+                        </div>
+                        <div class="pyramid-visual">
+                            <!-- Nível 3: Valor/Impacto (Topo) -->
+                            <div class="pyramid-level">
+                                <div class="level-box level-3">
+                                    <div class="level-number">3</div>
+                                    <div class="level-content">
+                                        <div class="level-title">
+                                            <i class="fas fa-trophy" style="margin-right: 8px;"></i>
+                                            Valor/Impacto (KPIs)
+                                        </div>
+                                        <div class="level-description">
+                                            Indicadores que comprovam o resultado (ex: reduzir taxa de devolução em N%)
+                                        </div>
+                                    </div>
+                                    <div class="level-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="arrow-indicator">
+                                <div class="arrow-down"></div>
+                            </div>
+                            <!-- Nível 2: Objetivos Específicos (Meio) -->
+                            <div class="pyramid-level">
+                                <div class="level-box level-2">
+                                    <div class="level-number">2</div>
+                                    <div class="level-content">
+                                        <div class="level-title">
+                                            <i class="fas fa-tasks" style="margin-right: 8px;"></i>
+                                            Objetivos Específicos
+                                        </div>
+                                        <div class="level-description">
+                                            Principal: feature nuclear | Suporte: funcionalidade de sustentação |
+                                            Resultado: validação/piloto
+                                        </div>
+                                    </div>
+                                    <div class="level-icon">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="arrow-indicator">
+                                <div class="arrow-down"></div>
+                            </div>
+                            <!-- Nível 1: Objetivo Geral (Base) -->
+                            <div class="pyramid-level">
+                                <div class="level-box level-1">
+                                    <div class="level-number">1</div>
+                                    <div class="level-content">
+                                        <div class="level-title">
+                                            <i class="fas fa-bullseye" style="margin-right: 8px;"></i>
+                                            Objetivo Geral
+                                        </div>
+                                        <div class="level-description">
+                                            Desenvolver/Implementar [produto/serviço] para [público-alvo] que
+                                            [benefício/valor]
+                                        </div>
+                                    </div>
+                                    <div class="level-icon">
+                                        <i class="fas fa-flag"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="example-box">
+                            <div class="example-title">
+                                <i class="fas fa-paw"></i>
+                                Exemplo: AdoptMatch
+                            </div>
+                            <div class="example-content">
+                                <div class="example-item">
+                                    <i class="fas fa-check example-icon"></i>
+                                    <span><strong>Base:</strong> Desenvolver plataforma de afinidade para adoções</span>
+                                </div>
+                                <div class="example-item">
+                                    <i class="fas fa-check example-icon"></i>
+                                    <span><strong>Meio:</strong> Quiz de afinidade; Chat ONG–candidato; Triagem baseada
+                                        em dados</span>
+                                </div>
+                                <div class="example-item">
+                                    <i class="fas fa-check example-icon"></i>
+                                    <span><strong>Topo:</strong> Reduzir devoluções em abrigos parceiros</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="rastreabilidade-box">
+                        <div class="rastreabilidade-title">
+                            <i class="fas fa-link"></i>
+                            Rastreabilidade
+                        </div>
+                        <div class="rastreabilidade-content">
+                            <div class="rastreabilidade-item">
+                                <i class="fas fa-arrow-right rastreabilidade-icon"></i>
+                                <span>Cada objetivo específico aponta para o geral</span>
+                            </div>
+                            <div class="rastreabilidade-item">
+                                <i class="fas fa-arrow-right rastreabilidade-icon"></i>
+                                <span>Cada objetivo específico vincula-se a pelo menos 1 indicador no topo</span>
+                            </div>
+                            <div class="rastreabilidade-item">
+                                <i class="fas fa-arrow-right rastreabilidade-icon"></i>
+                                <span>Verbos no infinitivo e mensuráveis</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">
+                            <i class="fas fa-chart-bar"></i>
+                            KPIs de Impacto
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-item">
+                                <i class="fas fa-check kpi-icon"></i>
+                                <span>Reduzir taxa de devolução em N%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <i class="fas fa-check kpi-icon"></i>
+                                <span>Aumentar taxa de match em X%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <i class="fas fa-check kpi-icon"></i>
+                                <span>Tempo de triagem ≤ Y min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

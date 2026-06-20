@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ESLint e Pylint</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #F5F5F5;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header (Consistente) */
+        .header-bar {
+            background-color: #0055A4;
+            padding: 25px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 38px;
+            color: white;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Layout Principal */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: grid;
+            grid-template-columns: 40% 57%;
+            gap: 3%;
+            align-items: center;
+        }
+
+        /* Coluna Esquerda: Visual IDE Simulation */
+        .left-visuals {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .ide-window {
+            background-color: #1E1E1E; /* VS Code Dark */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .ide-header {
+            background-color: #252526;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background-color: #FF5F56; }
+        .yellow { background-color: #FFBD2E; }
+        .green { background-color: #27C93F; }
+        
+        .filename {
+            margin-left: 10px;
+            color: #9CA3AF;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+        }
+
+        .code-content {
+            padding: 20px;
+            color: #D4D4D4;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Syntax Highlighting Simples */
+        .kwd { color: #569CD6; } /* Keyword blue */
+        .var { color: #9CDCFE; } /* Variable blue */
+        .str { color: #CE9178; } /* String orange */
+        .fn { color: #DCDCAA; } /* Function yellow */
+
+        /* Linter Error Squiggles */
+        .error-wave {
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            text-decoration-color: #F44336;
+            text-decoration-thickness: 2px;
+            cursor: help;
+        }
+
+        /* Tooltip flutuante do erro */
+        .error-tooltip {
+            position: absolute;
+            background-color: #252526;
+            color: #F44336;
+            border: 1px solid #F44336;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: 'Roboto', sans-serif;
+            bottom: 10px;
+            right: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0.2;
+            font-size: 40px;
+            color: white;
+            transition: opacity 0.3s;
+        }
+        .ide-window:hover .tool-badge { opacity: 0.8; }
+
+        /* Coluna Direita: Informações */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            border-left: 5px solid #0055A4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0055A4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-text {
+            color: #4B5563;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .list-check li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .list-check i { color: #10B981; margin-top: 4px; }
+
+        /* Terminal Window for Commands */
+        .terminal-window {
+            background-color: #1F2937;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            color: #E5E7EB;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #374151;
+        }
+
+        .term-header {
+            color: #9CA3AF;
+            font-size: 12px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cmd-group { margin-bottom: 15px; }
+        .cmd-group:last-child { margin-bottom: 0; }
+        
+        .prompt { color: #10B981; margin-right: 8px; }
+        .cmd-text { color: white; }
+        .comment { color: #6B7280; font-style: italic; display: block; margin-bottom: 4px; font-size: 12px; }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div class="header-left">
+                <i class="fas fa-spell-check header-icon"></i>
+                <h1 class="title">ESLint e Pylint — Linters na Prática</h1>
+            </div>
+            <div class="logo-container">
+                <img src="imagens/Senac_logo.svg.png" alt="Senac Logo" class="logo-img">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            
+            <div class="left-visuals">
+                
+                <div class="ide-window">
+                    <div class="ide-header">
+                        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                        <span class="filename">app.ts</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="kwd">var</span> <span class="var error-wave">usuario</span> = <span class="str">"Maria"</span>;<br>
+                        <span class="kwd">if</span> (x == <span class="str">"1"</span>) { ... }
+                    </div>
+                    <i class="fab fa-js tool-badge" style="color:#F7DF1E;"></i>
+                    <div class="error-tooltip">
+                        <i class="fas fa-times-circle"></i> Unexpected var, use let or const
+                    </div>
+                </div>
+
+                <div class="ide-window">
+                    <div class="ide-header">
+                        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                        <span class="filename">script.py</span>
+                    </div>
+                    <div class="code-content">
+                        <span class="kwd">def</span> <span class="fn error-wave">CalcularSoma</span>(a, b):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">return</span> a + b
+                    </div>
+                    <i class="fab fa-python tool-badge" style="color:#3776AB;"></i>
+                    <div class="error-tooltip">
+                        <i class="fas fa-exclamation-triangle"></i> Method name "CalcularSoma" doesn't conform to snake_case
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="right-section">
+                
+                <div class="info-card">
+                    <h2 class="card-title"><i class="fas fa-question-circle"></i> O que são?</h2>
+                    <p class="card-text">
+                        Analisadores estáticos que "leem" o código sem executá-lo. Eles agem como um corretor gramatical para sua linguagem de programação, identificando desvios de padrão e erros antes do teste.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h2 class="card-title"><i class="fas fa-bullseye"></i> Benefícios</h2>
+                    <ul class="list-check card-text" style="list-style: none;">
+                        <li><i class="fas fa-check"></i> <strong>Padronização:</strong> Todo o time escreve código igual.</li>
+                        <li><i class="fas fa-check"></i> <strong>Prevenção:</strong> Pega bugs (variáveis não usadas, loops infinitos).</li>
+                        <li><i class="fas fa-check"></i> <strong>Qualidade:</strong> Reduz a complexidade ciclomática.</li>
+                    </ul>
+                </div>
+
+                <div class="terminal-window">
+                    <div class="term-header">
+                        <span>bash — terminal</span>
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    
+                    <div class="cmd-group">
+                        <span class="comment"># Instalar e configurar ESLint (Node.js)</span>
+                        <div><span class="prompt">$</span><span class="cmd-text">npm install eslint --save-dev</span></div>
+                        <div><span class="prompt">$</span><span class="cmd-text">npx eslint --init</span></div>
+                    </div>
+
+                    <div class="cmd-group" style="margin-top: 15px;">
+                        <span class="comment"># Instalar e rodar Pylint (Python)</span>
+                        <div><span class="prompt">$</span><span class="cmd-text">pip install pylint</span></div>
+                        <div><span class="prompt">$</span><span class="cmd-text">pylint meu_projeto/*.py</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Broker MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .section-badge span {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 160px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Broker Info */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .broker-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .broker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .icon-broker {
+            background: #e3f2fd;
+            color: #1976D2;
+        }
+
+        .icon-hivemq {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .icon-mosquitto {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Right Column - Broker Comparison */
+        .right-column {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .comparison-label {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .broker-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .broker-type-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .broker-type-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .broker-type-status {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="section-badge">
+                    <span><i class="fas fa-server" style="margin-right: 8px;"></i>Seção 6</span>
+                </div>
+                <div class="header-title">
+                    <i class="fas fa-network-wired" style="margin-right: 12px;"></i>
+                    Broker MQTT
+                </div>
+                <div class="header-subtitle">Configuração e gerenciamento de brokers MQTT para IoT</div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Ativo</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="broker-card">
+                    <div class="card-icon icon-broker">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">
+                            O que é um Broker MQTT?
+                            <span style="color: #1976D2; font-size: 14px;">●</span>
+                        </div>
+                        <div class="card-desc">
+                            O Broker é o servidor central que recebe mensagens de publishers e as entrega aos
+                            subscribers. Funciona como o "carteiro" da comunicação MQTT.
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Roteamento</span>
+                            <span class="feature-tag">Autenticação</span>
+                            <span class="feature-tag">QoS</span>
+                            <span class="feature-tag">Retenção</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="broker-card">
+                    <div class="card-icon icon-hivemq">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">
+                            HiveMQ
+                            <span style="color: #FF9800; font-size: 14px;">●</span>
+                        </div>
+                        <div class="card-desc">
+                            Broker enterprise com alta escalabilidade, suporte a clustering e extensões. Ideal para
+                            ambientes de produção.
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Escalável</span>
+                            <span class="feature-tag">Enterprise</span>
+                            <span class="feature-tag">Cloud</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="broker-card">
+                    <div class="card-icon icon-mosquitto">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">
+                            Mosquitto
+                            <span style="color: #4CAF50; font-size: 14px;">●</span>
+                        </div>
+                        <div class="card-desc">
+                            Broker open-source leve e eficiente. Ideal para desenvolvimento, testes e ambientes
+                            embarcados.
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Open Source</span>
+                            <span class="feature-tag">Leve</span>
+                            <span class="feature-tag">Embarcado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="comparison-card">
+                    <div class="comparison-header">
+                        <div class="comparison-title">
+                            <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
+                            Comparativo de Brokers
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-label">
+                            <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                            HiveMQ
+                        </div>
+                        <div class="comparison-value">Enterprise</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-label">
+                            <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                            Mosquitto
+                        </div>
+                        <div class="comparison-value">Open Source</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-label">
+                            <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                            EMQX
+                        </div>
+                        <div class="comparison-value">Cloud</div>
+                    </div>
+                    <div class="broker-type">
+                        <div class="broker-type-item">
+                            <div class="broker-type-name">Público</div>
+                            <div class="broker-type-status">broker.hivemq.com</div>
+                        </div>
+                        <div class="broker-type-item">
+                            <div class="broker-type-name">Porta</div>
+                            <div class="broker-type-status">1883</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">22/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

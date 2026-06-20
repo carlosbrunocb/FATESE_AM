@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>A Tabela de Regras do Windows - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .win-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .win-table th {
+            background-color: var(--senac-blue);
+            color: white;
+            text-align: left;
+            padding: 12px;
+            font-weight: 700;
+        }
+
+        .win-table td {
+            padding: 12px;
+            border-bottom: 1px solid #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .win-table tr:nth-child(even) {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">A Estrutura da Tabela de Regras do Windows</span>
+            <span class="slide-header-tag">Tabela de Regras</span>
+        </div>
+
+        <!-- Texto Conceitual (Esquerda) -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 38px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 25px;">
+                Critérios de Prioridade e Precedência</h2>
+            <p class="body-text" style="margin-bottom: 25px;">
+                No Windows Defender Firewall com Segurança Avançada, as regras de filtragem são organizadas em uma
+                tabela estruturada sob quatro critérios lógicos cruciais de precedência.
+            </p>
+
+            <div
+                style="background-color: rgba(0, 93, 164, 0.05); padding: 25px; border-radius: var(--border-radius); border-top: 4px solid var(--senac-blue); margin-bottom: 25px;">
+                <h4 style="font-size: 22px; font-weight: 700; color: var(--senac-dark-blue); margin: 0 0 15px 0;">
+                    Critérios de Avaliação Lógica:</h4>
+                <ol class="custom-list" style="list-style-type: decimal; padding-left: 20px; margin-bottom: 0;">
+                    <li style="font-size: 18px; margin-bottom: 8px; padding-left: 0;"><strong>Nome/Programa:</strong>
+                        Vincula a regra a um executável específico (ex: <code>chrome.exe</code>).
+                    </li>
+                    <li style="font-size: 18px; margin-bottom: 8px; padding-left: 0;"><strong>Protocolo e
+                            Porta:</strong> Porta TCP ou UDP que o serviço ou porta local utiliza (ex: porta 443 para
+                        HTTPS).</li>
+                    <li style="font-size: 18px; margin-bottom: 8px; padding-left: 0;"><strong>Perfil Associado:</strong>
+                        O perfil no qual a regra está ativa (Domínio, Privado, Público ou Qualquer).</li>
+                    <li style="font-size: 18px; margin-bottom: 0; padding-left: 0;"><strong>Ação de Conexão:</strong>
+                        Permitir, Bloquear ou Permitir apenas se a conexão for segura (IPsec).</li>
+                </ol>
+            </div>
+
+            <p class="body-text" style="color: var(--text-muted); font-size: 20px; line-height: 1.4; margin: 0;">
+                <strong>Conexão Crítica:</strong> Diferente de um firewall de rede pura (que analisa apenas cabeçalhos
+                lógicos de pacotes), o firewall de host tem <strong>consciência total do processo</strong>. Ele
+                sabe qual executável local está emitindo tráfego.
+            </p>
+        </div>
+
+        <!-- Simulação da Tabela de Regras (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--senac-orange); padding-bottom: 10px;">
+                Visualização de Regras de Entrada Cadastradas
+            </h3>
+
+            <p style="font-size: 20px; color: var(--text-muted); margin-bottom: 15px;">
+                Estrutura de regras visíveis ao analisar a console avançada (wf.msc):
+            </p>
+
+            <table class="win-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Software / Regra</th>
+                        <th>Protocolo</th>
+                        <th>Porta Local</th>
+                        <th>Perfil</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-dark-blue);">Google Chrome (HTTPS-Out)</td>
+                        <td>TCP</td>
+                        <td>443 (Saída)</td>
+                        <td>Qualquer</td>
+                        <td><span class="status-badge-permit">Permitir</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-dark-blue);">SQL Server (Inbound)</td>
+                        <td>TCP</td>
+                        <td>1433</td>
+                        <td>Domínio, Privado</td>
+                        <td><span class="status-badge-permit">Permitir</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-dark-blue);">Malware_Block_Outbound</td>
+                        <td>TCP/UDP</td>
+                        <td>Todas</td>
+                        <td>Público</td>
+                        <td><span class="status-badge-deny">Bloquear</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-dark-blue);">Compartilhamento de Arquivos</td>
+                        <td>UDP</td>
+                        <td>137, 138</td>
+                        <td>Privado</td>
+                        <td><span class="status-badge-permit">Permitir</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-dark-blue);">Inbound_Default_Rule</td>
+                        <td>Qualquer</td>
+                        <td>Todas</td>
+                        <td>Qualquer</td>
+                        <td><span class="status-badge-deny">Bloquear</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div
+                style="margin-top: 25px; padding: 15px 20px; background-color: #F8FAFC; border: 1px dashed var(--senac-orange); border-radius: 6px; font-size: 18px; line-height: 1.5; color: var(--text-main);">
+                <strong>Nota Importante:</strong> Se houver um conflito lógico onde uma regra de
+                <strong>Bloqueio</strong> e uma regra de <strong>Permissão</strong> se apliquem ao mesmo cenário exato,
+                o Windows Defender Firewall dará <strong>prioridade máxima e absoluta ao BLOQUEIO</strong>.
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 25/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

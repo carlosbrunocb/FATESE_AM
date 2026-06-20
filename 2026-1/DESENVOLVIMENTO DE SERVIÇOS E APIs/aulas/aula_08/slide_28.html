@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Persistência vs Memória</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comparison-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            font-size: 20px;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .feature-text {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .diagram-container {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .diagram-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .diagram-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .memory-side,
+        .db-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .memory-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .db-box {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .box-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .memory-box .box-title {
+            color: #ef4444;
+        }
+
+        .db-box .box-title {
+            color: #22c55e;
+        }
+
+        .box-content {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 80px;
+        }
+
+        .arrow {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            position: relative;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #8b5cf6;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-label {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 6px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 12px;
+        }
+
+        .comparison-table th {
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: #94a3b8;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .status-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .status-warning {
+            background: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+        }
+
+        .status-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            background: #0f172a;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 85%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Persistência vs Memória</div>
+                    <div class="header-subtitle">Comparação entre armazenamento volátil e persistente</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-server" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">Aula 08</div>
+                    <div class="header-subtitle">Persistência SQL</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="comparison-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <div class="card-title">Memória (Array Local)</div>
+                    </div>
+                    <div class="card-content">
+                        Armazenamento <strong style="color: #ef4444;">volátil</strong> - dados são perdidos ao reiniciar
+                        o servidor. Útil para protótipos e desenvolvimento inicial.
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-times-circle feature-icon" style="color: #ef4444;"></i>
+                            <span class="feature-text">Dados perdidos ao reiniciar</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bolt feature-icon" style="color: #eab308;"></i>
+                            <span class="feature-text">Acesso rápido (RAM)</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users feature-icon" style="color: #eab308;"></i>
+                            <span class="feature-text">Concorrência limitada</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-filter feature-icon" style="color: #eab308;"></i>
+                            <span class="feature-text">Filtros/ordenação manuais</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="card-title">Banco de Dados (Sequelize)</div>
+                    </div>
+                    <div class="card-content">
+                        Armazenamento <strong style="color: #22c55e;">persistente</strong> - dados sobrevivem ao
+                        reinício. Ideal para ambientes de produção.
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon" style="color: #22c55e;"></i>
+                            <span class="feature-text">Dados duráveis</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt feature-icon" style="color: #22c55e;"></i>
+                            <span class="feature-text">Consistência transacional</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-search feature-icon" style="color: #22c55e;"></i>
+                            <span class="feature-text">Consultas expressivas</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line feature-icon" style="color: #22c55e;"></i>
+                            <span class="feature-text">Escalável e auditável</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="diagram-container">
+                    <div class="diagram-title">Comparação Visual</div>
+                    <div class="diagram-visual">
+                        <div class="memory-side">
+                            <div class="memory-box">
+                                <div class="box-title">Array em Memória</div>
+                                <div class="box-content">Volátil</div>
+                            </div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="arrow-label">vs</div>
+                        </div>
+                        <div class="db-side">
+                            <div class="db-box">
+                                <div class="box-title">Banco de Dados</div>
+                                <div class="box-content">Persistente</div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Característica</th>
+                            <th>Memória</th>
+                            <th>Banco</th>
+                        </tr>
+                        <tr>
+                            <td>Persistência</td>
+                            <td><span class="status-badge status-danger">Não</span></td>
+                            <td><span class="status-badge status-success">Sim</span></td>
+                        </tr>
+                        <tr>
+                            <td>Concorrência</td>
+                            <td><span class="status-badge status-warning">Limitada</span></td>
+                            <td><span class="status-badge status-success">Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td>Escalabilidade</td>
+                            <td><span class="status-badge status-warning">Baixa</span></td>
+                            <td><span class="status-badge status-success">Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td>Consultas</td>
+                            <td><span class="status-badge status-warning">Manuais</span></td>
+                            <td><span class="status-badge status-success">SQL</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

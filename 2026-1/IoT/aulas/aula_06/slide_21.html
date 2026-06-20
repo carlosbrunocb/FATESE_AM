@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Código - Bibliotecas e Configurações</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Open+Sans:wght@400;600&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #f8fafc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 30px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 110px;
+            box-sizing: border-box;
+            border-bottom: 4px solid #3b82f6;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            color: #93c5fd;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        /* Main Content */
+        .content-area {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            gap: 40px;
+            overflow: hidden;
+        }
+
+        /* Code Editor Window */
+        .code-window {
+            flex: 3;
+            background-color: #1e1e1e;
+            /* VS Code Dark */
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Roboto Mono', monospace;
+            border: 1px solid #4b5563;
+        }
+
+        .window-header {
+            background-color: #2d2d2d;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 20px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .file-tab {
+            background-color: #1e1e1e;
+            color: #e5e7eb;
+            padding: 5px 15px;
+            border-radius: 5px 5px 0 0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            border-top: 2px solid #3b82f6;
+        }
+
+        .code-content {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: hidden;
+            /* Static slide, no scroll */
+            color: #d4d4d4;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .line {
+            display: flex;
+            padding: 0 20px;
+        }
+
+        .line:hover {
+            background-color: #2a2d2e;
+        }
+
+        .line-num {
+            color: #858585;
+            min-width: 30px;
+            text-align: right;
+            margin-right: 20px;
+            user-select: none;
+        }
+
+        .code-text {
+            white-space: pre;
+        }
+
+        /* Syntax Highlighting Colors */
+        .c-purple {
+            color: #c586c0;
+        }
+
+        /* Keywords: include, define */
+        .c-blue {
+            color: #569cd6;
+        }
+
+        /* Types, const */
+        .c-green {
+            color: #4ec9b0;
+        }
+
+        /* Classes */
+        .c-orange {
+            color: #ce9178;
+        }
+
+        /* Strings */
+        .c-yellow {
+            color: #dcdcaa;
+        }
+
+        /* Functions */
+        .c-light-blue {
+            color: #9cdcfe;
+        }
+
+        /* Variables */
+        .c-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Comments */
+        .c-number {
+            color: #b5cea8;
+        }
+
+        /* Numbers */
+
+        /* Annotations Sidebar */
+        .annotations {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .annotation-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #cbd5e1;
+            transition: transform 0.2s;
+        }
+
+        .annotation-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .annotation-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .card-libs {
+            border-left-color: #c586c0;
+        }
+
+        .card-objects {
+            border-left-color: #4ec9b0;
+        }
+
+        .card-vars {
+            border-left-color: #569cd6;
+        }
+
+        .line-connector {
+            position: absolute;
+            height: 1px;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <p class="header-subtitle">Estrutura do Projeto</p>
+                <h1>Bibliotecas e Configurações</h1>
+            </div>
+            <div class="text-white opacity-80">
+                <i class="fas fa-file-code text-4xl"></i>
+            </div>
+        </div>
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Code Editor -->
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <div class="control-dot dot-red"></div>
+                        <div class="control-dot dot-yellow"></div>
+                        <div class="control-dot dot-green"></div>
+                    </div>
+                    <div class="file-tab">
+                        <i class="fab fa-cuttlefish mr-2 text-blue-400"></i> main.cpp
+                    </div>
+                </div>
+                <div class="code-content">
+                    <div class="line"><span class="line-num">1</span><span class="code-text"><span
+                                class="c-purple">#include</span> <span class="c-orange">&lt;Wire.h&gt;</span></span>
+                    </div>
+                    <div class="line"><span class="line-num">2</span><span class="code-text"><span
+                                class="c-purple">#include</span> <span
+                                class="c-orange">&lt;Adafruit_GFX.h&gt;</span></span></div>
+                    <div class="line"><span class="line-num">3</span><span class="code-text"><span
+                                class="c-purple">#include</span> <span
+                                class="c-orange">&lt;Adafruit_SSD1306.h&gt;</span></span></div>
+                    <div class="line"><span class="line-num">4</span><span class="code-text"><span
+                                class="c-purple">#include</span> <span class="c-orange">&lt;DHT.h&gt;</span></span>
+                    </div>
+                    <div class="line"><span class="line-num">5</span><span class="code-text"></span></div>
+                    <div class="line"><span class="line-num">6</span><span class="code-text"><span class="c-comment">// Configurações do Display OLED</span></span></div>
+                    <div class="line"><span class="line-num">7</span><span class="code-text"><span
+                                class="c-purple">#define</span> <span class="c-blue">LARGURA_TELA</span> <span
+                                class="c-number">128</span></span></div>
+                    <div class="line"><span class="line-num">8</span><span class="code-text"><span
+                                class="c-purple">#define</span> <span class="c-blue">ALTURA_TELA</span> <span
+                                class="c-number">64</span></span></div>
+                    <div class="line"><span class="line-num">9</span><span class="code-text"><span
+                                class="c-green">Adafruit_SSD1306</span> <span class="c-yellow">display</span>(<span
+                                class="c-blue">LARGURA_TELA</span>, <span class="c-blue">ALTURA_TELA</span>, &amp;<span
+                                class="c-light-blue">Wire</span>, -<span class="c-number">1</span>);</span></div>
+                    <div class="line"><span class="line-num">10</span><span class="code-text"></span></div>
+                    <div class="line"><span class="line-num">11</span><span class="code-text"><span class="c-comment">// Configurações do DHT22</span></span></div>
+                    <div class="line"><span class="line-num">12</span><span class="code-text"><span
+                                class="c-purple">#define</span> <span class="c-blue">PINO_DHT</span> <span
+                                class="c-number">4</span></span></div>
+                    <div class="line"><span class="line-num">13</span><span class="code-text"><span
+                                class="c-purple">#define</span> <span class="c-blue">TIPO_DHT</span> <span
+                                class="c-blue">DHT22</span></span></div>
+                    <div class="line"><span class="line-num">14</span><span class="code-text"><span
+                                class="c-green">DHT</span> <span class="c-yellow">dht</span>(<span
+                                class="c-blue">PINO_DHT</span>, <span class="c-blue">TIPO_DHT</span>);</span></div>
+                    <div class="line"><span class="line-num">15</span><span class="code-text"></span></div>
+                    <div class="line"><span class="line-num">16</span><span class="code-text"><span class="c-comment">// Timer para não travar o loop</span></span></div>
+                    <div class="line"><span class="line-num">17</span><span class="code-text"><span
+                                class="c-blue">unsigned long</span> <span class="c-light-blue">tempoAnterior</span> = <span class="c-number">0</span>;</span></div>
+                    <div class="line"><span class="line-num">18</span><span class="code-text"><span class="c-blue">const long</span> <span class="c-light-blue">intervaloLeitura</span> = <span
+                                class="c-number">2000</span>;</span></div>
+                </div>
+            </div>
+            <!-- Explanatory Notes -->
+            <div class="annotations">
+                <div class="annotation-card card-libs">
+                    <h3><i class="fas fa-book mr-2 text-purple-600"></i> Bibliotecas (Libraries)</h3>
+                    <p>Importamos <code>Wire.h</code> para comunicação I2C, as bibliotecas da Adafruit para desenhar
+                        gráficos e controlar o driver SSD1306, e a biblioteca padronizada para sensores DHT.</p>
+                </div>
+                <div class="annotation-card card-objects">
+                    <h3><i class="fas fa-cubes mr-2 text-teal-500"></i> Objetos Globais</h3>
+                    <p>Instanciamos os objetos <code>display</code> e <code>dht</code>. Eles servem como nossa
+                        "interface" de software para controlar o hardware físico conectado aos pinos.</p>
+                </div>
+                <div class="annotation-card card-vars">
+                    <h3><i class="fas fa-clock mr-2 text-blue-500"></i> Multitarefa (Millis)</h3>
+                    <p>Definimos variáveis para controlar o tempo. O DHT22 é lento e precisa de pelo menos <strong>2
+                            segundos</strong> entre leituras. Usar <code>millis()</code> evita congelar o processador
+                        com <code>delay()</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

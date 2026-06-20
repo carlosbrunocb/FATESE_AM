@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade Prática - Passo 1</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #333;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background-color: #8CC84B;
+            box-shadow: 0 0 10px rgba(140, 200, 75, 0.5);
+        }
+
+        /* Main Content Layout */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Left Column: Instructions */
+        .instructions-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .task-card {
+            background-color: #252526;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #8CC84B;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .task-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            background-color: #8CC84B;
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #1e1e1e;
+        }
+
+        .task-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+            padding-left: 15px;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            color: #ccc;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .task-icon {
+            color: #8CC84B;
+            margin-right: 12px;
+            margin-top: 4px;
+        }
+
+        /* Right Column: Code/Visual */
+        .visual-col {
+            flex: 0 0 620px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-preview {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            border: 1px solid #444;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            background-color: #333;
+            padding: 8px 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-content {
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+            flex: 1;
+            overflow: hidden;
+            background-color: #1e1e1e;
+        }
+
+        .kwd {
+            color: #569cd6;
+        }
+
+        .str {
+            color: #ce9178;
+        }
+
+        .func {
+            color: #dcdcaa;
+        }
+
+        .var {
+            color: #9cdcfe;
+        }
+
+        .cmt {
+            color: #6a9955;
+        }
+
+        .acceptance-box {
+            background-color: rgba(66, 133, 244, 0.1);
+            border: 1px solid #4285F4;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .acceptance-title {
+            color: #4285F4;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .acceptance-text {
+            color: #ccc;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Decoration */
+        .bg-shape {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(140, 200, 75, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            bottom: -50px;
+            right: -50px;
+            z-index: 0;
+        }
+        
+        .indent-1 {
+            padding-left: 20px;
+        }
+
+        .indent-2 {
+            padding-left: 40px;
+        }
+
+        .indent-3 {
+            padding-left: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-shape"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <div>
+                    <p class="subtitle">Atividade Prática</p>
+                    <h1 class="title">Passo 1: Implementar Logger</h1>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                </div>
+            </header>
+            <div class="main-layout">
+                <!-- Left: Instructions -->
+                <div class="instructions-col">
+                    <div class="task-card">
+                        <div class="task-number">1</div>
+                        <h3 class="task-title">Objetivo: Registrar Requisições</h3>
+                        <ul class="task-list">
+                            <li class="task-item">
+                                <i class="fas fa-folder-plus task-icon"></i>
+                                <p>Crie a pasta <code>src/middlewares</code> caso não exista.</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-file-code task-icon"></i>
+                                <p>Crie o arquivo <code>logger.js</code> dentro dessa pasta.</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-plug task-icon"></i>
+                                <p>Importe e registre o middleware no <code>server.js</code> usando
+                                    <code>app.use()</code>.</p>
+                            </li>
+                            <li class="task-item">
+                                <i class="fas fa-sort-amount-up task-icon"></i>
+                                <p><strong>Atenção:</strong> Certifique-se de registrar ANTES das rotas!</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="acceptance-box">
+                        <p class="acceptance-title">
+                            <i class="fas fa-check-circle mr-2"></i> Critério de Aceitação
+                        </p>
+                        <p class="acceptance-text">
+                            Ao fazer qualquer requisição (GET, POST, etc.) via Postman ou navegador, o terminal do
+                            servidor deve exibir uma linha com: <code>[DATA_HORA] METODO URL</code>.
+                        </p>
+                    </div>
+                </div>
+                <!-- Right: Visual Guide -->
+                <div class="visual-col">
+                    <!-- File 1: logger.js -->
+                    <div class="code-preview">
+                        <div class="preview-header">
+                            <span>src/middlewares/logger.js</span>
+                            <i class="fab fa-js text-yellow-400"></i>
+                        </div>
+                        <div class="preview-content">
+                            <span class="kwd">const</span> <span class="func">logger</span> = (<span
+                                class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>)
+                            =&gt; { <br>
+                            <span class="var indent-1">console</span>.<span class="func">log</span>(
+                            <span class="str">`[${new Date().toISOString()}] ${req.method} ${req.url}`</span>
+                            ); <br>
+                            <span class="func indent-1">next</span>(); <span class="cmt">// Não esqueça!</span> <br>
+                            };
+                            <br> <br>
+                            <span class="var">module</span>.<span class="var">exports</span> = <span
+                                class="var">logger</span>;
+                        </div>
+                    </div>
+                    <!-- File 2: server.js -->
+                    <div class="code-preview" style="flex: 1.2;">
+                        <div class="preview-header">
+                            <span>src/server.js</span>
+                            <i class="fab fa-js text-yellow-400"></i>
+                        </div>
+                        <div class="preview-content">
+                            <span class="kwd">const</span> <span class="var">express</span> = <span
+                                class="func">require</span>(<span class="str">'express'</span>); <br>
+                            <span class="kwd">const</span> <span class="var">logger</span> = <span
+                                class="func">require</span>(<span class="str">'./middlewares/logger'</span>); <br>
+
+                            <span class="kwd">const</span> <span class="var">app</span> = <span
+                                class="func">express</span>(); <br><br>
+
+                            <span class="cmt">// 1. Logger (Primeiro de tudo)</span> <br>
+                            <span class="var">app</span>.<span class="func">use</span>(<span class="var">logger</span>); <br><br>
+
+                            <span class="cmt">// 2. Body Parser</span> <br>
+                            <span class="var">app</span>.<span class="func">use</span>(<span
+                                class="var">express</span>.<span class="func">json</span>());<br><br>
+
+                            <span class="cmt">// 3. Rotas</span><br>
+                            <span class="var">app</span>.<span class="func">use</span>(<span class="str">'/api'</span>,
+                            <span class="var">routes</span>);
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

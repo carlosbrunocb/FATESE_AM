@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo Prático: Interpretando a Tabela</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 14px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 60px);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .scenario-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 18px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .scenario-box h3 {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scenario-box h3 i {
+            color: #ff6b35;
+        }
+
+        .scenario-text {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .decision-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .decision-text {
+            color: #ffffff;
+            font-size: 14pt;
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .decision-text i {
+            color: #ff6b35;
+            margin-top: 3px;
+        }
+
+        .routing-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .table-title {
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-title i {
+            color: #ff6b35;
+        }
+
+        .routing-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .routing-table th {
+            background: rgba(255, 107, 53, 0.3);
+            color: #ffffff;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 12pt;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .routing-table td {
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .routing-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .routing-table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .metric-badge {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10pt;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-active {
+            background: #4CAF50;
+        }
+
+        .status-inactive {
+            background: #f44336;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: #ffffff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 12pt;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 107, 53, 0.3);
+        }
+
+        .action-btn i {
+            color: #ff6b35;
+        }
+
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11pt;
+            color: #ff6b35;
+        }
+
+        .arrow-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .arrow-icon {
+            color: #ff6b35;
+            font-size: 16pt;
+        }
+
+        .step-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12pt;
+            color: #e0e6ed;
+        }
+
+        .step-number {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10pt;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .decision-path {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px dashed rgba(255, 107, 53, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .decision-path-text {
+            color: #ffffff;
+            font-size: 13pt;
+            text-align: center;
+        }
+
+        .decision-path-text i {
+            color: #ff6b35;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="main-title" style="margin-bottom: 50px;">
+                <i class="fas fa-table"></i>
+                Exemplo Prático: Interpretando a Tabela
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="scenario-box">
+                        <h3>
+                            <i class="fas fa-question-circle"></i>
+                            Cenário do Problema
+                        </h3>
+                        <div class="scenario-text">
+                            Um pacote chega ao roteador com destino ao <span class="highlight">IP 172.16.10.5</span>. O
+                            roteador precisa decidir por qual interface enviar o pacote.
+                        </div>
+                        <div class="decision-box">
+                            <div class="decision-text">
+                                <i class="fas fa-search"></i>
+                                <div>
+                                    <strong>Análise:</strong> O roteador consulta sua tabela de roteamento para
+                                    encontrar a melhor correspondência.
+                                </div>
+                            </div>
+                            <div class="decision-text">
+                                <i class="fas fa-filter"></i>
+                                <div>
+                                    <strong>Regra:</strong> Usa <span class="highlight">Longest Prefix Match</span> para
+                                    encontrar a rota mais específica.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-box">
+                        <h3>
+                            <i class="fas fa-route"></i>
+                            Decisão de Encaminhamento
+                        </h3>
+                        <div class="scenario-text">
+                            Analisando as entradas da tabela:
+                        </div>
+                        <div class="decision-path">
+                            <div class="decision-path-text">
+                                <i class="fas fa-check-circle"></i> Correspondência específica encontrada: <span
+                                    class="highlight">172.16.10.0/24</span>
+                                <br />
+                                <i class="fas fa-arrow-right"></i> Interface: <span
+                                    class="highlight">GigabitEthernet0/1</span>
+                                <br />
+                                <i class="fas fa-clock"></i> Métrica: <span class="highlight">1</span> (melhor caminho)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="routing-table">
+                        <div class="table-header">
+                            <div class="table-title">
+                                <i class="fas fa-network-wired"></i>
+                                Tabela de Roteamento
+                            </div>
+                            <div style="color: #e0e6ed; font-size: 12pt;">
+                                <span class="status-indicator status-active"></span> Ativo
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rede de Destino</th>
+                                    <th>Próximo Salto</th>
+                                    <th>Interface</th>
+                                    <th>Métrica</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="ip-address">172.16.10.0/24</span></td>
+                                    <td>192.168.1.1</td>
+                                    <td>Gi0/1</td>
+                                    <td><span class="metric-badge">1</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="ip-address">10.0.0.0/8</span></td>
+                                    <td>10.0.0.1</td>
+                                    <td>S0/0/0</td>
+                                    <td><span class="metric-badge">10</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="ip-address">0.0.0.0/0</span></td>
+                                    <td>192.168.1.254</td>
+                                    <td>S0/0/0</td>
+                                    <td><span class="metric-badge">10</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div
+                            style="margin-top: 10px; padding: 10px; background: rgba(255, 107, 53, 0.1); border-radius: 8px;">
+                            <div style="color: #ffffff; font-size: 13pt;">
+                                <i class="fas fa-info-circle" style="color: #ff6b35; margin-right: 5px;"></i>
+                                <strong>Resultado:</strong> O pacote será enviado via <span
+                                    class="highlight">GigabitEthernet0/1</span> para o próximo salto <span
+                                    class="highlight">192.168.1.1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

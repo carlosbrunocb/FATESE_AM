@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Cronograma da Aula - 180 minutos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-title i {
+            color: #3b82f6;
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+
+        .timeline-container {
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+            flex: 1;
+        }
+
+        .timeline-left {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .timeline-number {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .timeline-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .timeline-time {
+            font-size: 13px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .activity-list {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 2;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .activity-text {
+            flex: 1;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .activity-status {
+            font-size: 13px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-title">
+                    <i class="fas fa-clock"></i>
+                    Cronograma da Aula - 180 minutos
+                </div>
+                <div class="header-subtitle">Distribuição do tempo de aula entre teoria, prática e avaliação</div>
+            </div>
+            <div class="timeline-container">
+                <!-- Left Sidebar: Chronology -->
+                <div class="timeline-left">
+                    <div class="timeline-item">
+                        <div class="timeline-number">1</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Exposição Teórica</div>
+                            <div class="timeline-desc">45 minutos</div>
+                            <div class="timeline-time">09:00 - 09:45</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">2</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Setup de Segurança</div>
+                            <div class="timeline-desc">20 minutos</div>
+                            <div class="timeline-time">09:45 - 10:05</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">3</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Intervalo</div>
+                            <div class="timeline-desc">15 minutos</div>
+                            <div class="timeline-time">10:05 - 10:20</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">4</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Laboratório Prático</div>
+                            <div class="timeline-desc">80 minutos</div>
+                            <div class="timeline-time">10:20 - 11:40</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">5</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Validação e Testes</div>
+                            <div class="timeline-desc">20 minutos</div>
+                            <div class="timeline-time">11:40 - 12:00</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Main Content: Detailed Activities & Stats -->
+                <div class="timeline-right">
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-book"></i></div>
+                            <div class="activity-text">Conceitos de Segurança, Criptografia Hash, funcionamento do JWT
+                            </div>
+                            <div class="activity-status status-pending">Pendente</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-cog"></i></div>
+                            <div class="activity-text">Instalação das bibliotecas jsonwebtoken e bcryptjs</div>
+                            <div class="activity-status status-pending">Pendente</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-code"></i></div>
+                            <div class="activity-text">Modelagem de Usuário, criação do fluxo de Login/Registro</div>
+                            <div class="activity-status status-pending">Pendente</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="activity-text">Desenvolvimento do Middleware de Proteção</div>
+                            <div class="activity-status status-pending">Pendente</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="activity-text">Testes no Postman com tokens JWT</div>
+                            <div class="activity-status status-pending">Pendente</div>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">45%</div>
+                            <div class="stat-label">Teoria</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">40%</div>
+                            <div class="stat-label">Prática</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">15%</div>
+                            <div class="stat-label">Testes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

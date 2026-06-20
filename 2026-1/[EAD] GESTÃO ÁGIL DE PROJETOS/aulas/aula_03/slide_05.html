@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Visualização do Fluxo - Exemplo de Board Kanban</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 3px;
+        }
+
+        .header-text p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 25px;
+            height: calc(100% - 120px);
+        }
+
+        .left-section {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-section {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .kanban-board {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .board-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .board-header i {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .board-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .board-columns {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            overflow-x: auto;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 180px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .column-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-count {
+            background: #3b82f6;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .column-cards {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .kanban-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .card-id {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .card-priority {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .priority-high {
+            background: #ef4444;
+        }
+
+        .priority-medium {
+            background: #f59e0b;
+        }
+
+        .priority-low {
+            background: #22c55e;
+        }
+
+        .card-title {
+            font-size: 12px;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-assignee {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .assignee-avatar {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        .card-labels {
+            display: flex;
+            gap: 4px;
+        }
+
+        .label {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+        .label-bug {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .label-feature {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .wip-limit {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .wip-limit i {
+            color: #f59e0b;
+        }
+
+        .swimlane {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .swimlane-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .swimlane-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .detail-item i {
+            color: #3b82f6;
+            font-size: 10px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .info-card-header i {
+            font-size: 16px;
+            color: #3b82f6;
+            margin-right: 8px;
+        }
+
+        .info-card-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-columns"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Visualização do Fluxo - Exemplo de Board Kanban</h1>
+                    <p>Colunas típicas, anatomia de cards, limites WIP e swimlanes</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="kanban-board">
+                        <div class="board-header">
+                            <i class="fas fa-project-diagram"></i>
+                            <h2>Board Kanban - Projeto Integrador</h2>
+                        </div>
+                        <div class="board-columns">
+                            <div class="column">
+                                <div class="column-header">
+                                    <div class="column-title">
+                                        <i class="fas fa-clipboard-list"></i>
+                                        Backlog
+                                    </div>
+                                    <div class="column-count">12</div>
+                                </div>
+                                <div class="column-cards">
+                                    <div class="kanban-card">
+                                        <div class="card-header">
+                                            <div class="card-id">#123</div>
+                                            <div class="card-priority priority-high"></div>
+                                        </div>
+                                        <div class="card-title">Implementar autenticação</div>
+                                        <div class="card-footer">
+                                            <div class="card-assignee">
+                                                <div class="assignee-avatar">JD</div>
+                                            </div>
+                                            <div class="card-labels">
+                                                <div class="label label-feature">Feature</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kanban-card">
+                                        <div class="card-header">
+                                            <div class="card-id">#124</div>
+                                            <div class="card-priority priority-medium"></div>
+                                        </div>
+                                        <div class="card-title">Configurar ambiente</div>
+                                        <div class="card-footer">
+                                            <div class="card-assignee">
+                                                <div class="assignee-avatar">AS</div>
+                                            </div>
+                                            <div class="card-labels">
+                                                <div class="label label-bug">Bug</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wip-limit">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Limite: 15</span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="column-header">
+                                    <div class="column-title">
+                                        <i class="fas fa-play"></i>
+                                        To Do
+                                    </div>
+                                    <div class="column-count">5</div>
+                                </div>
+                                <div class="column-cards">
+                                    <div class="kanban-card">
+                                        <div class="card-header">
+                                            <div class="card-id">#125</div>
+                                            <div class="card-priority priority-high"></div>
+                                        </div>
+                                        <div class="card-title">Criar API REST</div>
+                                        <div class="card-footer">
+                                            <div class="card-assignee">
+                                                <div class="assignee-avatar">MR</div>
+                                            </div>
+                                            <div class="card-labels">
+                                                <div class="label label-feature">Feature</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wip-limit">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Limite: 8</span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="column-header">
+                                    <div class="column-title">
+                                        <i class="fas fa-spinner"></i>
+                                        In Progress
+                                    </div>
+                                    <div class="column-count">3</div>
+                                </div>
+                                <div class="column-cards">
+                                    <div class="kanban-card">
+                                        <div class="card-header">
+                                            <div class="card-id">#126</div>
+                                            <div class="card-priority priority-medium"></div>
+                                        </div>
+                                        <div class="card-title">Desenvolver frontend</div>
+                                        <div class="card-footer">
+                                            <div class="card-assignee">
+                                                <div class="assignee-avatar">CL</div>
+                                            </div>
+                                            <div class="card-labels">
+                                                <div class="label label-feature">Feature</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wip-limit">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Limite: 5</span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="column-header">
+                                    <div class="column-title">
+                                        <i class="fas fa-check-circle"></i>
+                                        Done
+                                    </div>
+                                    <div class="column-count">8</div>
+                                </div>
+                                <div class="column-cards">
+                                    <div class="kanban-card">
+                                        <div class="card-header">
+                                            <div class="card-id">#127</div>
+                                            <div class="card-priority priority-low"></div>
+                                        </div>
+                                        <div class="card-title">Testes unitários</div>
+                                        <div class="card-footer">
+                                            <div class="card-assignee">
+                                                <div class="assignee-avatar">TS</div>
+                                            </div>
+                                            <div class="card-labels">
+                                                <div class="label label-bug">Bug</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wip-limit">
+                                    <i class="fas fa-check"></i>
+                                    <span>Concluído</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swimlane">
+                            <div class="swimlane-header">
+                                <i class="fas fa-flag"></i>
+                                <div class="swimlane-title">Prioridade Alta - Expedite</div>
+                            </div>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Lead Time: 2 dias</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Responsável: João</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Anatomia do Card</h3>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">ID da Issue</span>
+                            <span class="info-value">#123</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Título</span>
+                            <span class="info-value">Implementar...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Prioridade</span>
+                            <span class="info-value">Alta</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Responsável</span>
+                            <span class="info-value">João</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Métricas de Fluxo</h3>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Lead Time</span>
+                            <span class="info-value">2.5 dias</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Cycle Time</span>
+                            <span class="info-value">1.8 dias</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-user"></i>
+                        <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>carlos.lopes@am.senac.br</span>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Aula 03 - Gestão de Fluxo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

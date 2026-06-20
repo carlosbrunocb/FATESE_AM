@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Three-Way Handshake - Introdução</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            right: 50px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: #2c5282;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .highlight {
+            background: #ebf8ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2c5282;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .three-way-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .flow-step.active {
+            border-color: #2c5282;
+            background: #ebf8ff;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #2c5282;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 auto 10px;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .flow-arrow {
+            color: #2c5282;
+            font-size: 20px;
+        }
+
+        .seq-numbers {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .seq-item {
+            text-align: center;
+        }
+
+        .seq-label {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .seq-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .connection-state {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .state-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #48bb78;
+        }
+
+        .state-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div>
+                    <div class="header-title">Three-Way Handshake do TCP</div>
+                    <div class="header-subtitle">Estabelecimento de conexão confiável entre processos</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Protocolo</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">TCP</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="left-section">
+                <!-- O que é Three-Way Handshake -->
+                <div class="card" style="padding-bottom: 20px;">
+                    <div class="card-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        O que é o Three-Way Handshake?
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 15px;">O <strong>Three-Way Handshake</strong> é o processo de
+                            estabelecimento de conexão TCP que sincroniza números de sequência entre cliente e servidor,
+                            verificando a capacidade bidirecional de comunicação.</p>
+                        <div class="three-way-flow">
+                            <div class="flow-step active">
+                                <div class="step-number">1</div>
+                                <div class="step-title">SYN</div>
+                                <div class="step-desc">Cliente envia pedido de sincronização</div>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step active">
+                                <div class="step-number">2</div>
+                                <div class="step-title">SYN-ACK</div>
+                                <div class="step-desc">Servidor responde aceitando</div>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step active">
+                                <div class="step-number">3</div>
+                                <div class="step-title">ACK</div>
+                                <div class="step-desc">Cliente confirma recebimento</div>
+                            </div>
+                        </div>
+                        <div class="highlight">
+                            <div class="highlight-text">
+                                <i class="fas fa-info-circle"></i> <strong>Resultado:</strong> Conexão ESTABLISHED e
+                                início do byte-stream ordenado e confiável
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Propósito -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-bullseye"></i>
+                        Propósito do Handshake
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-sync-alt"></i></div>
+                            <div class="info-text">
+                                <div class="info-label">Sincronização</div>
+                                <div class="info-value">Números de sequência (ISN)</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-check-double"></i></div>
+                            <div class="info-text">
+                                <div class="info-label">Verificação</div>
+                                <div class="info-value">Reachability bidirecional</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="info-text">
+                                <div class="info-label">Negociação</div>
+                                <div class="info-value">Opções TCP (MSS, SACK)</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="info-text">
+                                <div class="info-label">Segurança</div>
+                                <div class="info-value">Mitiga SYN flood</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <!-- Fluxo de Dados -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-project-diagram"></i>
+                        Fluxo de Estabelecimento
+                    </div>
+                    <div class="card-content">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 15px;">
+                            <div
+                                style="flex: 1; text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 14px; font-weight: 600; color: #1e3a5f; margin-bottom: 5px;">
+                                    Cliente</div>
+                                <div style="font-size: 12px; color: #718096;">SYN_SENT</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <i class="fas fa-arrow-right" style="color: #2c5282; font-size: 20px;"></i>
+                            </div>
+                            <div
+                                style="flex: 1; text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 14px; font-weight: 600; color: #1e3a5f; margin-bottom: 5px;">
+                                    Servidor</div>
+                                <div style="font-size: 12px; color: #718096;">SYN_RECEIVED</div>
+                            </div>
+                        </div>
+                        <div class="seq-numbers">
+                            <div class="seq-item">
+                                <div class="seq-label">Seq Cliente</div>
+                                <div class="seq-value">ISNc = 100</div>
+                            </div>
+                            <div class="seq-item">
+                                <div class="seq-label">Seq Servidor</div>
+                                <div class="seq-value">ISNs = 300</div>
+                            </div>
+                        </div>
+                        <div class="connection-state">
+                            <div class="state-indicator"></div>
+                            <div class="state-text"><strong>Estado:</strong> Conexão estabelecida</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Detalhes Técnicos -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        Detalhes Técnicos
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="padding: 12px; background: #f8fafc; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #718096; margin-bottom: 3px;">ISN (Cliente)</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #1e3a5f;">100</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8fafc; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #718096; margin-bottom: 3px;">ISN (Servidor)</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #1e3a5f;">300</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8fafc; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #718096; margin-bottom: 3px;">ACK</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #1e3a5f;">101</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8fafc; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #718096; margin-bottom: 3px;">ACK</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #1e3a5f;">301</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Duração: 40 min</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso: 45%</span>
+                </div>
+                <div class="progress-bar"
+                    style="width: 150px; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 5px;">
+                    <div class="progress-fill"
+                        style="height: 100%; background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%); border-radius: 3px; width: 45%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

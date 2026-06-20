@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O que é UAT (User Acceptance Testing)?</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        /* Content grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        /* Left column - Definition and purpose */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .card-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Right column - Comparison and deliverables */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .table-cell.highlight {
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+            background: #1a1a2e;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Feature list */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #3b82f6;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .progress-fill {
+            width: 33%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>O que é</span> UAT (User Acceptance Testing)?
+                </div>
+                <div class="subtitle">
+                    Entenda o papel do Teste de Aceitação do Usuário na validação final do software
+                </div>
+            </div>
+            <!-- Content grid -->
+            <div class="content-grid">
+                <!-- Left column -->
+                <div class="left-column">
+                    <!-- Definition card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Definição Completa</div>
+                        </div>
+                        <div class="card-content">
+                            O <strong style="color: #3b82f6;">User Acceptance Testing (UAT)</strong> é a fase final do
+                            ciclo de testes de software em que o sistema é validado por usuários finais ou
+                            representantes do cliente. O objetivo é verificar se a solução atende aos requisitos de
+                            negócio e está pronta para ser colocada em produção.
+                        </div>
+                    </div>
+                    <!-- Purpose card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="card-title">Propósito do UAT</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-check"></i></div>
+                                    <span>Validar que o software atende aos requisitos de negócio</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-check"></i></div>
+                                    <span>Verificar usabilidade em cenários reais de uso</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-check"></i></div>
+                                    <span>Confirmar prontidão para go-live</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right column -->
+                <div class="right-column">
+                    <!-- Comparison table -->
+                    <div class="comparison-table">
+                        <div class="table-header">
+                            <div class="table-title">UAT vs Outros Testes</div>
+                            <i class="fas fa-table" style="color: #94a3b8;"></i>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">Teste de Sistema</div>
+                            <div class="table-cell highlight">Técnico</div>
+                            <div class="table-cell">Código, bugs</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">Teste de Integração</div>
+                            <div class="table-cell highlight">Técnico</div>
+                            <div class="table-cell">Conexões</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell"><strong style="color: #3b82f6;">UAT</strong></div>
+                            <div class="table-cell highlight">Negócio</div>
+                            <div class="table-cell">Valor, usabilidade</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">Teste Alfa</div>
+                            <div class="table-cell highlight">Interno</div>
+                            <div class="table-cell">Equipe</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">Teste Beta</div>
+                            <div class="table-cell highlight">Externo</div>
+                            <div class="table-cell">Usuários reais</div>
+                        </div>
+                    </div>
+                    <!-- Deliverables card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="card-title">Entregáveis do UAT</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-file-contract"></i></div>
+                                    <span>Termo/Contrato de Aceite</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-bug"></i></div>
+                                    <span>Relatório de Defeitos</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-check-square"></i></div>
+                                    <span>Checklist de Validação</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>3 conceitos principais</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>5 tipos de testes</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>4 entregáveis</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

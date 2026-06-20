@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boas Práticas em Testes de Regressão</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 50px;
+            padding: 35px 45px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 15px;
+        }
+
+        .practice-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            height: auto;
+        }
+
+        .practice-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .practice-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .practice-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .practice-icon i {
+            font-size: 18pt;
+        }
+
+        .practice-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15pt;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.3;
+        }
+
+        .practice-content {
+            font-size: 13pt;
+            color: #475569;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .practice-content ul {
+            margin: 0;
+            padding-left: 16px;
+        }
+
+        .practice-content li {
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        .practice-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 45px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            border-radius: 14px;
+            font-size: 12pt;
+            color: #166534;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Boas Práticas em Testes de Regressão</div>
+                    <div class="aula-subtitle">Estratégias para manter qualidade e eficiência na suíte de testes</div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>Em andamento</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="practices-grid">
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #fee2e2;">
+                                <i class="fas fa-sync-alt" style="color: #dc2626;"></i>
+                            </div>
+                            <div class="practice-title">Manutenção Contínua</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Revisar e podar testes obsoletos</li>
+                                <li>Remover duplicatas</li>
+                                <li>Tratar flaky tests (quarentena + correção)</li>
+                                <li>Atualizar testes conforme mudanças</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #dbeafe;">
+                                <i class="fas fa-code-branch" style="color: #2563eb;"></i>
+                            </div>
+                            <div class="practice-title">Versionamento e Rastreabilidade</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Commits atômicos</li>
+                                <li>PRs com evidências de teste</li>
+                                <li>Changelog com mapa de impacto</li>
+                                <li>Histórico de execuções</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #d1fae5;">
+                                <i class="fas fa-shield-alt" style="color: #059669;"></i>
+                            </div>
+                            <div class="practice-title">CI/CD como Guardião</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Gates de qualidade (pytest -v)</li>
+                                <li>Execução em PRs</li>
+                                <li>Suíte completa em releases</li>
+                                <li>Paralelismo para feedback rápido</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #fef3c7;">
+                                <i class="fas fa-database" style="color: #d97706;"></i>
+                            </div>
+                            <div class="practice-title">Dados e Isolamento</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Fixtures determinísticas</li>
+                                <li>Mocks/stubs para dependências</li>
+                                <li>Reset de estado entre testes</li>
+                                <li>Isolamento de ambiente</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #e0e7ff;">
+                                <i class="fas fa-filter" style="color: #4f46e5;"></i>
+                            </div>
+                            <div class="practice-title">Seleção Inteligente</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Markers (regressao, smoke, critico)</li>
+                                <li>-m/-k para filtrar</li>
+                                <li>Priorização por risco/criticidade</li>
+                                <li>Execução seletiva</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #fce7f3;">
+                                <i class="fas fa-chart-line" style="color: #db2777;"></i>
+                            </div>
+                            <div class="practice-title">Cobertura Orientada a Risco</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Foco em contratos públicos</li>
+                                <li>Fluxos de negócio críticos</li>
+                                <li>Limites/edge cases</li>
+                                <li>Integrações importantes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="practices-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="practice-card" style="height: auto;">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #f0fdf4;">
+                                <i class="fas fa-file-alt" style="color: #16a34a;"></i>
+                            </div>
+                            <div class="practice-title">Documentação de Impacto</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>Anexar mapa de impacto por mudança (git diff → módulos tocados → testes
+                                    relacionados)</li>
+                                <li>Manter documentação atualizada sobre dependências e fluxos críticos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="practice-card" style="height: auto;">
+                        <div class="practice-header">
+                            <div class="practice-icon" style="background: #f8fafc;">
+                                <i class="fas fa-cogs" style="color: #64748b;"></i>
+                            </div>
+                            <div class="practice-title">Automação e Ferramentas</div>
+                        </div>
+                        <div class="practice-content">
+                            <ul>
+                                <li>pytest-xdist para paralelismo, pytest-html para relatórios, pytest-cov para
+                                    cobertura</li>
+                                <li>Integração com CI/CD para execução automática</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="footer-bar">
+                <div class="footer-left">
+                    <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                    <span style="font-size: 13px; color: #64748b;">|</span>
+                    <span class="footer-text">26 de 30 slides</span>
+                </div>
+                <div class="footer-right">
+                    <span class="date-info">28/04/2026</span>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

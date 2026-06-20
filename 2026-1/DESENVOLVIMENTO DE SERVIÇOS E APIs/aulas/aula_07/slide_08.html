@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estrutura e Sintaxe XML - Exemplos Práticos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 145px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            color: #1a365d;
+        }
+
+        .code-block {
+            background: #1a365d;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12pt;
+            color: #e2e8f0;
+            overflow: hidden;
+            flex-grow: 1;
+            line-height: 1.35;
+        }
+
+        .code-line {
+            margin-bottom: 2px;
+            white-space: pre;
+        }
+
+        .code-comment {
+            color: #68d391;
+        }
+
+        .code-string {
+            color: #f6e05e;
+        }
+
+        .code-number {
+            color: #fc8181;
+        }
+
+        .code-key {
+            color: #63b3ed;
+        }
+
+        .code-function {
+            color: #f6ad55;
+        }
+
+        .code-tag {
+            color: #f687b3;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 22px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12pt;
+            color: #4a5568;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item i {
+            color: #3182ce;
+            font-size: 12pt;
+            margin-top: 3px;
+        }
+
+        .feature-item strong {
+            color: #1a365d;
+        }
+
+        .xml-preview {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12pt;
+            color: #2d3748;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .xml-tag {
+            color: #e53e3e;
+        }
+
+        .xml-attr {
+            color: #3182ce;
+        }
+
+        .xml-value {
+            color: #38a169;
+        }
+
+        .warning-box {
+            background: #fffaf0;
+            border-left: 4px solid #ed8936;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .warning-text {
+            font-size: 10.5pt;
+            color: #744210;
+            line-height: 1.4;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+
+        .check-item i {
+            color: #48bb78;
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-file-code"></i> Estrutura e Sintaxe XML
+                </div>
+                <div class="page-subtitle">
+                    Exemplos práticos de documentos XML - Regras de bem-formação e boas práticas
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Formatos de Dados</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-file-code"></i></div>
+                            <div class="card-title">Exemplo Prático - Documento XML</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-comment">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></div>
+                            <div class="code-line"><span class="code-tag">&lt;biblioteca&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;livro</span> <span
+                                    class="code-key">id</span>=<span class="code-string">"1"</span> <span
+                                    class="code-key">categoria</span>=<span class="code-string">"ficcao"</span><span
+                                    class="code-tag">&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;titulo&gt;</span><span
+                                    class="code-string">1984</span><span class="code-tag">&lt;/titulo&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;autor&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;nome&gt;</span><span
+                                    class="code-string">George Orwell</span><span class="code-tag">&lt;/nome&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;nacionalidade&gt;</span><span
+                                    class="code-string">Britânico</span><span
+                                    class="code-tag">&lt;/nacionalidade&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;/autor&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;ano&gt;</span><span
+                                    class="code-number">1949</span><span class="code-tag">&lt;/ano&gt;</span></div>
+                            <div class="code-line"> <span class="code-tag">&lt;/livro&gt;</span></div>
+                            <div class="code-line"><span class="code-tag">&lt;/biblioteca&gt;</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="card-title">Regras de Bem-formação</div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #48bb78;"></i>
+                                <span><strong>Elemento raiz único:</strong> Todo documento XML deve ter um elemento
+                                    raiz</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #48bb78;"></i>
+                                <span><strong>Tags fechadas:</strong> Todas as tags devem ser fechadas
+                                    corretamente</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle" style="color: #48bb78;"></i>
+                                <span><strong>Atributos entre aspas:</strong> Valores de atributos devem estar entre
+                                    aspas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="card-title">Elementos vs Atributos</div>
+                        </div>
+                        <div class="xml-preview">
+                            <div style="margin-bottom: 8px;"><span class="xml-tag">&lt;livro</span> <span 
+                                    class="xml-attr">id</span>=<span class="xml-value">"1"</span> <span
+                                    class="xml-attr">categoria</span>=<span class="xml-value">"ficcao"</span><span
+                                    class="xml-tag">&gt;</span></div>
+                            <div style="margin-bottom: 8px;">  <span class="xml-tag">&lt;titulo&gt;</span><span
+                                    class="xml-value">1984</span><span class="xml-tag">&lt;/titulo&gt;</span></div>
+                            <div style="margin-bottom: 8px;">  <span class="xml-tag">&lt;autor&gt;</span><span
+                                    class="xml-value">George Orwell</span><span class="xml-tag">&lt;/autor&gt;</span>
+                            </div>
+                            <div><span class="xml-tag">&lt;/livro&gt;</span></div>
+                        </div>
+                        <div class="warning-box">
+                            <div class="warning-text">
+                                <i class="fas fa-info-circle" style="color: #ed8936; margin-right: 8px;"></i>
+                                <strong>Dica:</strong> Use atributos para metadados curtos e elementos para dados
+                                hierárquicos
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-title">Boas Práticas XML</div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Validação:</strong> Use DTD ou XSD para validação</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Encoding:</strong> Defina UTF-8 para caracteres especiais</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Namespaces:</strong> Use namespaces para evitar conflitos</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span><strong>Escaping:</strong> Escape caracteres especiais (&amp;amp;, &amp;lt;,
+                                    &amp;gt;)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boas Práticas de Tópicos MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            bottom: 90px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Checklist */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .checklist-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checklist-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checklist-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            color: #1976d2;
+        }
+
+        .checklist-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            justify-content: space-around;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e8f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #4CAF50;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-text {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .checklist-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Right Column - Best Practices */
+        .right-column {
+            width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .practices-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .practices-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .practices-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff3e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            color: #FF9800;
+        }
+
+        .practices-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #2196F3;
+        }
+
+        .practice-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #1976d2;
+            flex-shrink: 0;
+        }
+
+        .practice-content {
+            flex: 1;
+        }
+
+        .practice-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .practice-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-check-double" style="margin-right: 12px; color: #667eea;"></i>
+                    Boas Práticas de Tópicos MQTT
+                </div>
+                <div class="header-subtitle">Checklist de recomendações para design de tópicos</div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-clipboard-check" style="margin-right: 8px;"></i>
+                    Checklist
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="checklist-card">
+                    <div class="checklist-header">
+                        <div class="checklist-icon">
+                            <i class="fas fa-list-check"></i>
+                        </div>
+                        <div class="checklist-title">Checklist de Verificação</div>
+                    </div>
+                    <div class="checklist-items">
+                        <div class="checklist-item">
+                            <div class="check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-text">Use nomes curtos e descritivos</div>
+                                <div class="checklist-desc">Evite tópicos muito longos que aumentam overhead</div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-text">Evite espaços e caracteres especiais</div>
+                                <div class="checklist-desc">Use apenas caracteres ASCII válidos</div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-text">Inclua ID único no tópico</div>
+                                <div class="checklist-desc">Ex: RA do aluno para evitar conflitos</div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-text">Evite barra inicial "/"</div>
+                                <div class="checklist-desc">Não crie tópicos começando com /</div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-text">Use hierarquia lógica</div>
+                                <div class="checklist-desc">Estruture de forma organizada</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="practices-card">
+                    <div class="practices-header">
+                        <div class="practices-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="practices-title">Práticas Recomendadas</div>
+                    </div>
+                    <div class="practices-grid">
+                        <div class="practice-item">
+                            <div class="practice-icon">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="practice-content">
+                                <div class="practice-text">Sensível a maiúsculas</div>
+                                <div class="practice-desc">Cuidado com case</div>
+                            </div>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="practice-content">
+                                <div class="practice-text">Evite wildcards #</div>
+                                <div class="practice-desc">Risco de sobrecarga</div>
+                            </div>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                            <div class="practice-content">
+                                <div class="practice-text">Planeje crescimento</div>
+                                <div class="practice-desc">Estruture para escalar</div>
+                            </div>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="practice-content">
+                                <div class="practice-text">Segurança</div>
+                                <div class="practice-desc">Controle de acesso</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">15/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplos Práticos: Smart Home com ESP32</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 70px);
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            flex: 1;
+        }
+
+        .scenario-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scenario-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .scenario-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .scenario-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .routes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .route-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 15px;
+        }
+
+        .route-method {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .route-get {
+            background: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .route-post {
+            background: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        .route-path {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            flex: 1;
+        }
+
+        .route-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            flex: 1;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tip-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #22c55e;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .tip-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.3;
+        }
+
+        .arch-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .arch-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arch-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .arch-text {
+            flex: 1;
+        }
+
+        .arch-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .arch-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Exemplos Práticos: Smart Home com ESP32</h1>
+                        <p>Cenários de uso, rotas e arquitetura multi-dispositivo</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span style="font-size: 14px; color: #94a3b8;">
+                        <i class="fas fa-server" style="margin-right: 8px;"></i>
+                        WebServer Local
+                    </span>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="section-card" style="flex: 1.2;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="section-title">Cenários de Uso</div>
+                        </div>
+                        <div class="scenarios-grid">
+                            <div class="scenario-item">
+                                <div class="scenario-header">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="scenario-title">Iluminação</div>
+                                </div>
+                                <div class="scenario-desc">Ligar/desligar luzes e cenas (GPIO/relé) via /ligar e
+                                    /desligar</div>
+                            </div>
+                            <div class="scenario-item">
+                                <div class="scenario-header">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-door-open"></i>
+                                    </div>
+                                    <div class="scenario-title">Portão/Fechadura</div>
+                                </div>
+                                <div class="scenario-desc">Pulso temporizado para travamento/destravamento</div>
+                            </div>
+                            <div class="scenario-item">
+                                <div class="scenario-header">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-temperature-high"></i>
+                                    </div>
+                                    <div class="scenario-title">Clima e Conforto</div>
+                                </div>
+                                <div class="scenario-desc">Ventilador/exaustor; controle IR via relé</div>
+                            </div>
+                            <div class="scenario-item">
+                                <div class="scenario-header">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="scenario-title">Monitoramento</div>
+                                </div>
+                                <div class="scenario-desc">Exibir temperatura/umidade em /status (JSON)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card" style="flex: 1;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="section-title">Rotas Sugeridas</div>
+                        </div>
+                        <div class="routes-list">
+                            <div class="route-item">
+                                <div class="route-method route-get">GET</div>
+                                <div class="route-path">/</div>
+                                <div class="route-desc">Painel principal</div>
+                            </div>
+                            <div class="route-item">
+                                <div class="route-method route-get">GET</div>
+                                <div class="route-path">/ligar</div>
+                                <div class="route-desc">Acionar dispositivo</div>
+                            </div>
+                            <div class="route-item">
+                                <div class="route-method route-get">GET</div>
+                                <div class="route-path">/desligar</div>
+                                <div class="route-desc">Desligar dispositivo</div>
+                            </div>
+                            <div class="route-item">
+                                <div class="route-method route-get">GET</div>
+                                <div class="route-path">/status</div>
+                                <div class="route-desc">Estado atual (JSON)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="section-card" style="flex: 0.8;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <div class="section-title">Dicas de UX</div>
+                        </div>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="tip-text">Adicionar atalho do painel à tela inicial do celular</div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-qrcode"></i>
+                                </div>
+                                <div class="tip-text">Exibir QR Code com o IP local na página</div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="tip-text">mDNS: acessar por http://esp32.local</div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-sync"></i>
+                                </div>
+                                <div class="tip-text">Atualização automática do estado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card" style="flex: 1.4;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="section-title">Arquitetura Multi-Dispositivo</div>
+                        </div>
+                        <div class="arch-diagram">
+                            <div class="arch-item">
+                                <div class="arch-icon">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="arch-text">
+                                    <div class="arch-title">ESP32 Iluminação</div>
+                                    <div class="arch-desc">IP: 192.168.1.10 - sala-luz.local</div>
+                                </div>
+                            </div>
+                            <div class="arch-item">
+                                <div class="arch-icon">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="arch-text">
+                                    <div class="arch-title">ESP32 Portão</div>
+                                    <div class="arch-desc">IP: 192.168.1.11 - garagem-portao.local</div>
+                                </div>
+                            </div>
+                            <div class="arch-item">
+                                <div class="arch-icon">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="arch-text">
+                                    <div class="arch-title">ESP32 Jardim</div>
+                                    <div class="arch-desc">IP: 192.168.1.12 - jardim-irriga.local</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

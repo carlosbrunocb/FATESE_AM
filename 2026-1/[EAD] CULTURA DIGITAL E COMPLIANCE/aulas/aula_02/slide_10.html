@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vulnerabilidades e CVEs: Identificação e Gestão</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecef 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #3b5998 50%, #1e3a5f 100%);
+            z-index: 100;
+        }
+
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 0;
+            width: 80px;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+        }
+
+        .sidebar-icon {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            padding: 5px;
+            width: 44px;
+            text-align: center;
+        }
+
+        .sidebar-icon:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            z-index: 100;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+            text-align: right;
+        }
+
+        .logo-subtext {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 120px;
+            top: 80px;
+            right: 60px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .highlight {
+            color: #3b5998;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f4f8;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: #3b5998;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+            flex: 1;
+        }
+
+        .concept-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .concept-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .concept-title i {
+            color: #3b5998;
+            font-size: 12px;
+        }
+
+        .concept-desc {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .sources-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .source-item {
+            background: #f0f4f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .source-item i {
+            color: #3b5998;
+            font-size: 12px;
+        }
+
+        .detection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+            flex: 1;
+        }
+
+        .detection-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detection-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 6px;
+        }
+
+        .detection-desc {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .process-step {
+            background: #f0f4f8;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .process-step i {
+            color: #3b5998;
+            font-size: 12px;
+        }
+
+        .arrow {
+            color: #3b5998;
+            font-size: 16px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .priority-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .priority-high {
+            background: #ef4444;
+        }
+
+        .priority-medium {
+            background: #f59e0b;
+        }
+
+        .priority-low {
+            background: #22c55e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="sidebar">
+            <div class="sidebar-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-bug"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-search"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        </div>
+        <div class="logo-container">
+            <div class="logo-text">FATESE</div>
+            <div class="logo-subtext">Faculdade de Tecnologia do Senac</div>
+        </div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <i class="fas fa-bug" style="margin-right: 15px; color: #3b5998;"></i>
+                    Vulnerabilidades e <span class="highlight">CVEs</span>: Identificação e <span
+                        class="highlight">Gestão</span>
+                </div>
+                <div class="subtitle">Como identificar, classificar e mitigar vulnerabilidades de segurança no pipeline
+                    de desenvolvimento</div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="card-title">Conceitos Fundamentais</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="concept-grid">
+                                <div class="concept-item">
+                                    <div class="concept-title"><i class="fas fa-hashtag"></i> CVE (Common Vulnerabilities and Exposures)</div>
+                                    <div class="concept-desc">Identificador único para vulnerabilidades públicas</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-title"><i class="fas fa-calculator"></i> CVSS (Common Vulnerability Scoring System)</div>
+                                    <div class="concept-desc">Métrica de severidade (0-10)</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-title"><i class="fas fa-database"></i> NVD (National Vulnerability Database)</div>
+                                    <div class="concept-desc">Base de dados de vulnerabilidades</div>
+                                </div>
+                                <div class="concept-item">
+                                    <div class="concept-title"><i class="fas fa-fire"></i> KEV (Known Exploited Vulnerabilities)</div>
+                                    <div class="concept-desc">Vulnerabilidades exploradas ativamente</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: auto; font-size: 14px; color: #64748b; padding-top: 12px;">
+                                <strong>Fontes oficiais:</strong>
+                                <div class="sources-list">
+                                    <div class="source-item"><i class="fas fa-globe"></i> cve.org</div>
+                                    <div class="source-item"><i class="fas fa-globe"></i> nvd.nist.gov</div>
+                                    <div class="source-item"><i class="fas fa-globe"></i> cisa.gov</div>
+                                    <div class="source-item"><i class="fas fa-globe"></i> osv.dev</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-search"></i></div>
+                            <div class="card-title">Detecção no Pipeline</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="detection-grid">
+                                <div class="detection-item">
+                                    <div class="detection-title">SCA</div>
+                                    <div class="detection-desc">Análise de dependências e CVEs</div>
+                                </div>
+                                <div class="detection-item">
+                                    <div class="detection-title">SAST/DAST</div>
+                                    <div class="detection-desc">Análise estática e dinâmica</div>
+                                </div>
+                                <div class="detection-item">
+                                    <div class="detection-title">Secrets Scan</div>
+                                    <div class="detection-desc">Detecção de credenciais expostas</div>
+                                </div>
+                                <div class="detection-item">
+                                    <div class="detection-title">IaC Scan</div>
+                                    <div class="detection-desc">Validação de infraestrutura</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-filter"></i></div>
+                            <div class="card-title">Processo de Triagem</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="process-flow">
+                                <div class="process-step">
+                                    <i class="fas fa-search"></i>
+                                    <span>Identificar</span>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step">
+                                    <i class="fas fa-calculator"></i>
+                                    <span>Classificar</span>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step">
+                                    <i class="fas fa-check"></i>
+                                    <span>Priorizar</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: auto; font-size: 14px; color: #64748b; padding-top: 12px;">
+                                <strong>Critérios:</strong> CVSS, exploitabilidade, impacto no negócio
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="card-title">SBOM e Evidências</div>
+                        </div>
+                        <div class="card-content">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 10px;">
+                                <span style="font-size: 14px; color: #475569;">SBOM (Software Bill of Materials)</span>
+                                <span style="font-size: 13px; color: #3b5998; font-weight: 500;">CycloneDX/SPDX</span>
+                            </div>
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
+                                <strong>Benefícios:</strong> Rastreabilidade, resposta rápida a incidentes, auditoria
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <div class="stat-value">95%</div>
+                                    <div class="stat-label">Cobertura</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">24h</div>
+                                    <div class="stat-label">MTTR</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

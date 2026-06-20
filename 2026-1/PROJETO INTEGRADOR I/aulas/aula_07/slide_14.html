@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Como Usar a Matriz para Priorizar o Backlog</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%);
+            clip-path: polygon(30% 0%, 100% 0, 100% 100%, 0% 100%);
+            z-index: 0;
+        }
+
+        .decorative-dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .dot-1 {
+            width: 140px;
+            height: 140px;
+            background: #3498db;
+            top: -20px;
+            left: -20px;
+        }
+
+        .dot-2 {
+            width: 180px;
+            height: 180px;
+            background: #2ecc71;
+            bottom: -40px;
+            right: -40px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 30px 45px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 34px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .title-sub {
+            font-size: 15px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 780px 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .left-column {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .step-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            min-height: 130px;
+            transition: all 0.2s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: #5d6d7e;
+            line-height: 1.4;
+        }
+
+        .decision-box {
+            background: #fff3e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        .decision-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e65100;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .decision-text {
+            font-size: 14px;
+            color: #5d6d7e;
+            line-height: 1.5;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .pattern-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            border-left: 4px solid #e74c3c;
+            height: 100%;
+        }
+
+        .pattern-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pattern-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fee2e2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e74c3c;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .pattern-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .pattern-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pattern-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #5d6d7e;
+            line-height: 1.4;
+        }
+
+        .pattern-item i {
+            color: #e74c3c;
+            margin-top: 3px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .bottom-section {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 100px;
+        }
+
+        .info-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 4px 0;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .footer-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .highlight {
+            background: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1976d2;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="decorative-dot dot-1"></div>
+        <div class="decorative-dot dot-2"></div>
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-sort-amount-down"></i>
+                    </div>
+                    <div>
+                        <h1 class="title-text">Como Usar a Matriz para Priorizar o Backlog</h1>
+                        <div class="title-sub">Passos práticos, políticas de decisão e anti-padrões a evitar</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <span
+                        style="background: #e3f2fd; color: #1976d2; padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(25, 118, 210, 0.1);">
+                        <i class="fas fa-clock"></i> 35 min
+                    </span>
+                    <span
+                        style="background: #fff3e0; color: #f57c00; padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(245, 124, 0, 0.1);">
+                        <i class="fas fa-tasks"></i> Prática
+                    </span>
+                </div>
+            </div>
+            <!-- Content grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <div>
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-list-ol"></i>
+                            </div>
+                            <div class="section-title">Passos Práticos para Priorização</div>
+                        </div>
+                        <div class="steps-container">
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <div class="step-title">Listar User Stories</div>
+                                <div class="step-desc">Com critérios de aceitação (DoR) claros e bem definidos</div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <div class="step-title">Estimar Esforço</div>
+                                <div class="step-desc">Usar Planning Poker: Story Points ou T-shirt sizing</div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">3</div>
+                                <div class="step-title">Estimar Valor</div>
+                                <div class="step-desc">Impacto em usuário, negócio e aprendizado</div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">4</div>
+                                <div class="step-title">Plotar na Matriz</div>
+                                <div class="step-desc">Definir corte para a Sprint atual</div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">5</div>
+                                <div class="step-title">Fatiar Tarefas</div>
+                                <div class="step-desc">Dividir épicos para caber em 1 Sprint</div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">6</div>
+                                <div class="step-title">Revisar Prioridades</div>
+                                <div class="step-desc">Ajustar após Review/feedback</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="decision-box">
+                        <div class="decision-title">
+                            <i class="fas fa-check-circle"></i> Políticas de Decisão
+                        </div>
+                        <div class="decision-text">
+                            <span class="highlight">Só entra na Sprint se:</span> Alto/Médio valor e Baixo/Médio
+                            esforço. Vincular cada issue a tags [Principal]/[Secundária]/[Documentação] e aos RFs
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="pattern-card">
+                        <div class="pattern-header">
+                            <div class="pattern-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="pattern-title">Anti-padrões a Evitar</div>
+                        </div>
+                        <ul class="pattern-list">
+                            <li class="pattern-item">
+                                <i class="fas fa-times"></i>
+                                <div><strong>Superestimar "nice-to-have"</strong> - Priorizar funcionalidades essenciais
+                                </div>
+                            </li>
+                            <li class="pattern-item">
+                                <i class="fas fa-times"></i>
+                                <div><strong>Ignorar esforço técnico/risco</strong> - Considerar complexidade</div>
+                            </li>
+                            <li class="pattern-item">
+                                <i class="fas fa-times"></i>
+                                <div><strong>Inflar To Do com itens "NASA"</strong> - Manter backlog enxuto</div>
+                            </li>
+                            <li class="pattern-item">
+                                <i class="fas fa-times"></i>
+                                <div><strong>Priorização sem critérios</strong> - Usar matriz de valor</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom section -->
+            <div class="bottom-section">
+                <div class="info-box">
+                    <div class="info-icon"><i class="fas fa-filter"></i></div>
+                    <div class="info-content">
+                        <div class="info-title">Critérios de Priorização</div>
+                        <div class="info-text">Valor de negócio, urgência, risco técnico e dependências</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-icon"><i class="fas fa-sync-alt"></i></div>
+                    <div class="info-content">
+                        <div class="info-title">Revisão Contínua</div>
+                        <div class="info-text">Ajustar prioridades após cada Sprint Review</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-icon"><i class="fas fa-users"></i></div>
+                    <div class="info-content">
+                        <div class="info-title">Colaboração</div>
+                        <div class="info-text">Envolver todo o time na priorização conjunta</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-text">
+                    <i class="fas fa-info-circle" style="margin-right: 6px; color: #3498db;"></i>
+                    Use a matriz para tomar decisões baseadas em dados e evidências, não apenas em intuição
+                </div>
+                <div class="footer-icons">
+                    <div class="footer-icon"><i class="fas fa-question"></i></div>
+                    <div class="footer-icon"><i class="fas fa-cog"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Data Types do Sequelize - Aula 08</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            font-size: 16px;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .data-types-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .type-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .type-icon {
+            font-size: 12px;
+            color: #3b82f6;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .code-line {
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .code-keyword {
+            color: #f472b6;
+        }
+
+        .code-string {
+            color: #34d399;
+        }
+
+        .code-number {
+            color: #fbbf24;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: #3b82f6;
+            margin-right: 4px;
+        }
+
+        .code-keyword {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Data Types do Sequelize</div>
+                    <div class="header-subtitle">Tipos de dados disponíveis para mapeamento de tabelas</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-code" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">16+ tipos</div>
+                    <div class="header-subtitle">Suportados</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content"
+            style="top: 140px; left: 80px; width: 90%; height: auto;">
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="card-title">Tipos de Dados Principais</div>
+                        </div>
+                        <div class="data-types-grid">
+                            <div class="type-item">
+                                <i class="fas fa-font type-icon"></i>
+                                <span><strong>STRING</strong> - Texto</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-hashtag type-icon"></i>
+                                <span><strong>INTEGER</strong> - Inteiros</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-calendar type-icon"></i>
+                                <span><strong>DATE</strong> - Datas</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-toggle-on type-icon"></i>
+                                <span><strong>BOOLEAN</strong> - True/False</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-brackets-curly type-icon"></i>
+                                <span><strong>JSON</strong> - JSON/JSONB</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-fingerprint type-icon"></i>
+                                <span><strong>UUID</strong> - Identificadores</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-list type-icon"></i>
+                                <span><strong>ENUM</strong> - Valores fixos</span>
+                            </div>
+                            <div class="type-item">
+                                <i class="fas fa-binary type-icon"></i>
+                                <span><strong>BLOB</strong> - Binários</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="card-title">Dicas Importantes</div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <i class="fas fa-lightbulb" style="color: #fbbf24; margin-right: 8px;"></i>
+                                Use <strong>DataTypes.STRING(255)</strong> para limitar o tamanho e
+                                <strong>DataTypes.INTEGER</strong> para campos numéricos inteiros.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="card-title">Exemplo de Model com DataTypes</div>
+                        </div>
+                        <div class="code-block" style="padding: 12px; font-size: 12pt;">
+                            <div class="code-line">
+                                <span class="code-keyword">const</span> Livro = sequelize.define(<span
+                                    class="code-string">'Livro'</span>, {
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                id: {
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                type: DataTypes.<span class="code-keyword">INTEGER</span>,
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                autoIncrement: <span class="code-keyword">true</span>,
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                primaryKey: <span class="code-keyword">true</span>
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                },
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                titulo: {
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                type: DataTypes.<span class="code-keyword">STRING</span>(<span
+                                    class="code-number">255</span>),
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                allowNull: <span class="code-keyword">false</span>
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                },
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                ano: {
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                type: DataTypes.<span class="code-keyword">INTEGER</span>,
+                            </div>
+                            <div class="code-line" style="margin-left: 40px;">
+                                validate: { min: <span class="code-number">0</span> }
+                            </div>
+                            <div class="code-line" style="margin-left: 20px;">
+                                }
+                            </div>
+                            <div class="code-line">
+                                }, { tableName: <span class="code-string">'livros'</span>, timestamps: <span
+                                    class="code-keyword">true</span> });
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="height: 104px;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Validações Disponíveis</div>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="tag">allowNull</span>
+                            <span class="tag">unique</span>
+                            <span class="tag">defaultValue</span>
+                            <span class="tag">validate</span>
+                            <span class="tag">primaryKey</span>
+                            <span class="tag">autoIncrement</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

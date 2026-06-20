@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação HTTP POST - ESP32 → Cloud</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a8a5e6;
+        }
+
+        .code-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+            height: 520px;
+        }
+
+        .code-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #e0e0e0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .code-line {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .line-number {
+            color: #6b7280;
+            margin-right: 16px;
+            min-width: 28px;
+            text-align: right;
+            font-size: 11px;
+        }
+
+        .code-content {
+            flex: 1;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-size: 13px;
+        }
+
+        .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #c678dd;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .function {
+            color: #61afef;
+        }
+
+        .variable {
+            color: #e06c75;
+        }
+
+        .type {
+            color: #56b6c2;
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .step-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .step-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 12px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .step-content {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .status-success {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .status-warning {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .http-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: rgba(120, 119, 198, 0.1);
+            border-radius: 4px;
+            font-size: 12px;
+            color: #a8a5e6;
+        }
+
+        .flow-arrow {
+            color: #a8a5e6;
+            font-size: 14px;
+        }
+
+        .bottom-info {
+            position: absolute;
+            top: 652px;
+            left: 60px;
+            width: 1160px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Implementação HTTP POST - ESP32 → Cloud</div>
+                    <div class="header-subtitle">Envio de telemetria com headers de autenticação e tratamento de
+                        respostas</div>
+                </div>
+            </div>
+            <div class="code-container">
+                <div class="code-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="section-title">Código HTTP POST Completo</div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <div class="code-content"><span class="comment">// Inicializa cliente HTTP</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <div class="code-content"><span class="variable">HTTPClient</span> <span
+                                    class="function">http</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <div class="code-content"><span class="function">http.begin</span>(server_url);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <div class="code-content"></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <div class="code-content"><span class="comment">// Configura headers obrigatórios</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <div class="code-content"><span class="function">http.addHeader</span>(<span
+                                    class="string">"Content-Type"</span>, <span
+                                    class="string">"application/json"</span>);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <div class="code-content"><span class="function">http.addHeader</span>(<span
+                                    class="string">"Device-Token"</span>, device_token);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <div class="code-content"></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <div class="code-content"><span class="comment">// Envia requisição POST</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <div class="code-content"><span class="keyword">int</span> <span
+                                    class="variable">statusCode</span> = <span
+                                    class="function">http.POST</span>(payloadJson);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <div class="code-content"></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            <div class="code-content"><span class="comment">// Processa resposta</span></div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            <div class="code-content"><span class="keyword">if</span> (statusCode &gt; <span
+                                    class="number">0</span>) {</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            <div class="code-content"> <span class="keyword">String</span> response = <span
+                                    class="function">http.getString</span>();</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            <div class="code-content"> <span class="function">Serial.printf</span>(<span
+                                    class="string">"[Cloud] HTTP: %d\n"</span>, statusCode);</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">16</span>
+                            <div class="code-content">} <span class="keyword">else</span> {</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">17</span>
+                            <div class="code-content"> <span class="function">Serial.printf</span>(<span
+                                    class="string">"[Erro] %s\n"</span>, <span
+                                    class="function">http.errorToString</span>(statusCode).<span
+                                    class="function">c_str</span>());</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">18</span>
+                            <div class="code-content">}</div>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">19</span>
+                            <div class="code-content"><span class="function">http.end</span>(); <span class="comment">//
+                                    Libera recursos</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-stream"></i>
+                        </div>
+                        <div class="section-title">Fluxo de Comunicação</div>
+                    </div>
+                    <div class="step-section">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-1"></i>
+                            </div>
+                            <div class="step-title">Preparação <span class="status-badge status-success">OK</span></div>
+                        </div>
+                        <div class="step-content">
+                            <p>• Montar payload JSON com variáveis de telemetria</p>
+                            <p>• Configurar headers (Content-Type, Device-Token)</p>
+                        </div>
+                    </div>
+                    <div class="step-section">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-2"></i>
+                            </div>
+                            <div class="step-title">Envio HTTP POST <span
+                                    class="status-badge status-success">Enviar</span></div>
+                        </div>
+                        <div class="step-content">
+                            <p>• Método POST para http://api.tago.io/data</p>
+                            <p>• Incluir payload JSON no corpo da requisição</p>
+                        </div>
+                    </div>
+                    <div class="step-section">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-3"></i>
+                            </div>
+                            <div class="step-title">Tratamento de Resposta <span
+                                    class="status-badge status-warning">Verificar</span></div>
+                        </div>
+                        <div class="step-content">
+                            <p>• Código HTTP &gt; 0: Sucesso (2xx)</p>
+                            <p>• Código &lt; 0: Erro de conexão</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-info">
+            <div class="info-item">
+                <i class="fas fa-check-circle" style="color: #4ade80; margin-right: 8px;"></i>
+                <span><span class="info-label">Status:</span> Implementação pronta</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-info-circle" style="color: #a8a5e6; margin-right: 8px;"></i>
+                <span><span class="info-label">Próximo passo:</span> Validar resposta do servidor</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock" style="color: #a8a5e6; margin-right: 8px;"></i>
+                <span><span class="info-label">Timeout:</span> 30 segundos</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

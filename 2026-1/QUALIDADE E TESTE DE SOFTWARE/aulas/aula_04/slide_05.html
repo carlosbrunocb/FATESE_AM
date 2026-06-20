@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O Custo do Erro e a Prevenção</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            /* Ajuste para tela cheia */
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            background-color: #0055A4;
+            padding: 35px 60px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .logo-small {
+            position: absolute;
+            top: 25px;
+            right: 60px;
+            width: 70px;
+            height: 70px;
+            background-color: white;
+            
+            /* Estilo circular padronizado */
+            border-radius: 100%;
+            padding: 12px;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-img-small {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            padding: 50px 60px;
+            background-color: #F5F5F5;
+            gap: 40px;
+            /* Importante para o posicionamento do VS */
+            position: relative;
+            /* Centraliza verticalmente */
+            justify-content: center; 
+            align-items: stretch;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 16px;
+            padding: 35px 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .column-left {
+            border-top: 6px solid #10B981;
+        }
+
+        .column-right {
+            border-top: 6px solid #EF4444;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .icon-circle-left {
+            background-color: rgba(16, 185, 129, 0.15);
+        }
+
+        .icon-circle-right {
+            background-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .icon-circle i {
+            font-size: 28px;
+        }
+
+        .icon-circle-left i {
+            color: #10B981;
+        }
+
+        .icon-circle-right i {
+            color: #EF4444;
+        }
+
+        .column-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1F2937;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            font-weight: 400;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px; /* Espaço para o badge de custo */
+        }
+
+        .item {
+            display: flex;
+            align-items: flex-start;
+            padding-left: 10px;
+        }
+
+        .bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 8px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .bullet-left {
+            background-color: #10B981;
+        }
+
+        .bullet-right {
+            background-color: #EF4444;
+        }
+
+        .item-text {
+            flex: 1;
+        }
+
+        .item-text p {
+            font-size: 17px;
+            font-weight: 400;
+            color: #374151;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        .item-text strong {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #0055A4;
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            padding: 12px 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0, 85, 164, 0.4);
+            z-index: 10;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cost-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .cost-low {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #059669;
+        }
+
+        .cost-high {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #DC2626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <h1 class="title">
+                <p>O Custo do Erro e a Prevenção</p>
+            </h1>
+            <div class="logo-small">
+                <img src="imagens/Senac_logo.svg.png" alt="Logo SENAC" class="logo-img-small">
+            </div>
+        </div>
+        <div class="content-wrapper">
+            <div class="column column-left">
+                <div class="column-header">
+                    <div class="icon-circle icon-circle-left">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h2 class="column-title">
+                            <p>Antes de Codificar</p>
+                        </h2>
+                        <p class="subtitle">Teste Estático - Prevenção</p>
+                    </div>
+                </div>
+                <div class="item-list">
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Ajuste rápido</strong> de texto e diagramas em documentos de requisitos</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Baixo retrabalho:</strong> correção de inconsistências antes da implementação</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Revisão por pares:</strong> detecção precoce de problemas de design</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Registro de lições aprendidas</strong> para prevenir erros futuros</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Custo de correção:</strong> minutos a poucas horas</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-left"></div>
+                        <div class="item-text">
+                            <p><strong>Impacto:</strong> evita cascata de erros no desenvolvimento</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cost-badge cost-low">
+                    <p>💰 Custo Baixo</p>
+                </div>
+            </div>
+
+            <div class="vs-badge">
+                <p>VS</p>
+            </div>
+
+            <div class="column column-right">
+                <div class="column-header">
+                    <div class="icon-circle icon-circle-right">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h2 class="column-title">
+                            <p>Depois de Codificar</p>
+                        </h2>
+                        <p class="subtitle">Teste Dinâmico / Produção</p>
+                    </div>
+                </div>
+                <div class="item-list">
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Refatoração ampla:</strong> reescrita de código e lógica de negócio</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Retestes completos:</strong> bateria de testes unitários, integração e E2E</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Reversão de deploy</strong> e gerenciamento de incidentes</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Custo de suporte</strong> e atendimento a clientes impactados</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Danos à imagem da marca</strong> e perda de confiança</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="bullet bullet-right"></div>
+                        <div class="item-text">
+                            <p><strong>Custo de correção:</strong> dias a semanas de trabalho</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cost-badge cost-high">
+                    <p>💸 Custo Alto</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 04 - Resolução 12 bits</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" id="slide">
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 40px; top: 40px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 40px; top: 680px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 0; top: 40px; width: 150px; height: 4px; background-color: #004080; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 1200px; top: 640px; width: 40px; height: 30px; z-index: 10; text-align: right;">
+            <p style="font-family: 'Open Sans', sans-serif; font-size: 14px; color: #999;">09</p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 80px; width: 1000px; height: 80px; z-index: 10;">
+            <p style="font-family: 'Roboto', sans-serif; font-size: 48px; color: #004080; font-weight: 700;">
+                Resolução de 12 bits na Prática
+            </p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 160px; width: 1000px; height: 40px; z-index: 10;">
+            <p style="font-family: 'Open Sans', sans-serif; font-size: 20px; color: #555; font-weight: 400;">
+                Entendendo a precisão, os níveis de quantização e o LSB (Least Significant Bit).
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 100px; top: 220px; width: 700px; height: 400px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 120px; top: 230px; width: 660px; height: 30px; z-index: 10; text-align: center;">
+            <p style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #666; font-weight: 500;">
+                Curva de Transferência ADC (Zoom Ilustrativo)
+            </p>
+        </div>
+        <div data-object="true" data-object-type="chart"
+            style="position: absolute; left: 120px; top: 260px; width: 660px; height: 340px; z-index: 5;">
+            <canvas id="adcChart"></canvas>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 840px; top: 220px; width: 340px; height: 120px; background-color: #e3f2fd; border-left: 5px solid #1976d2; border-radius: 4px; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 860px; top: 240px; width: 40px; height: 40px; z-index: 10; color: #1976d2;">
+            <i class="fa-solid fa-calculator" style="font-size: 30px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 910px; top: 235px; width: 250px; height: 105px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #0d47a1; font-weight: 700; margin-bottom: 5px;">
+                A Matemática</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #333;">
+                12 bits = 2<sup>12</sup> níveis<br />
+                <strong>Total: 4096 valores</strong><br />
+                <span style="font-size: 14px; color: #555;">(Inteiros de 0 a 4095)</span>
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 840px; top: 360px; width: 340px; height: 120px; background-color: #fff3e0; border-left: 5px solid #f57c00; border-radius: 4px; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 860px; top: 380px; width: 40px; height: 40px; z-index: 10; color: #f57c00;">
+            <i class="fa-solid fa-ruler-combined" style="font-size: 30px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 910px; top: 375px; width: 250px; height: 105px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #e65100; font-weight: 700; margin-bottom: 5px;">
+                Precisão (LSB)</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #333;">
+                LSB = V<sub>ref</sub> / 4095<br />
+                3.3V / 4095 ≈ <strong>0.8 mV</strong><br />
+                <span style="font-size: 14px; color: #555;">(Menor degrau possível)</span>
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 840px; top: 500px; width: 340px; height: 120px; background-color: #e8f5e9; border-left: 5px solid #43a047; border-radius: 4px; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 860px; top: 520px; width: 40px; height: 40px; z-index: 10; color: #43a047;">
+            <i class="fa-solid fa-check-circle" style="font-size: 30px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 910px; top: 515px; width: 250px; height: 105px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #2e7d32; font-weight: 700; margin-bottom: 5px;">
+                Na Prática</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #333;">
+                Alta sensibilidade para sensores.<br />
+                Detecta mudanças sutis de luz ou temperatura.
+            </p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 630px; width: 700px; height: 40px; z-index: 10; text-align: center;">
+            <p style="font-family: 'Roboto', sans-serif; font-size: 14px; color: #777; font-style: italic;">
+                * O gráfico exibe um "zoom" em uma pequena faixa de tensão para ilustrar os degraus de quantização.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const ctx = document.getElementById('adcChart').getContext('2d');
+
+        // Generate data for a zoomed-in view (staircase effect)
+        // Let's simulate 0 to ~10mV range
+        const dataPoints = [];
+        const labels = [];
+        const steps = 10;
+        const voltagePerStep = 0.8; // roughly 0.8mV
+
+        for (let i = 0; i <= steps; i++) {
+            // Voltage (X)
+            const v = i * voltagePerStep;
+            labels.push(v.toFixed(1) + ' mV');
+            // Digital Value (Y) - The ideal step function
+            dataPoints.push(i);
+        }
+
+        // We need 'stepped' line for digital, 'linear' for analog reference
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Sinal Digital (Quantizado)',
+                        data: dataPoints,
+                        borderColor: '#f57c00', // Orange
+                        backgroundColor: 'rgba(245, 124, 0, 0.1)',
+                        borderWidth: 3,
+                        stepped: true, // This creates the staircase effect
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Sinal Analógico (Ideal)',
+                        data: dataPoints,
+                        borderColor: '#1976d2', // Blue
+                        borderWidth: 2,
+                        borderDash: [5, 5], // Dashed line
+                        tension: 0,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { family: 'Roboto', size: 14 } }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ': ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tensão de Entrada (mV)',
+                            font: { family: 'Open Sans', size: 14, weight: 'bold' },
+                            color: '#555'
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Valor Digital (0-4095)',
+                            font: { family: 'Open Sans', size: 14, weight: 'bold' },
+                            color: '#555'
+                        },
+                        grid: { color: '#f0f0f0' },
+                        suggestedMin: 0,
+                        suggestedMax: 11 // Just a bit above our data range
+                    }
+                }
+            }
+        });
+
+        // Script para Redimensionamento Responsivo
+        function resizeSlide() {
+            const slide = document.getElementById('slide');
+            const scale = window.innerWidth / 1280;
+            
+            slide.style.transform = `scale(${scale})`;
+            slide.style.transformOrigin = 'top left';
+
+            document.body.style.height = `${720 * scale}px`;
+        }
+
+        window.addEventListener('load', resizeSlide);
+        window.addEventListener('resize', resizeSlide);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalho: Implementação Web App - Calculadora</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 25px 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-info {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .header-info p {
+            margin: 4px 0;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #343a40;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            text-align: center;
+            color: #0056b3;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #17a2b8;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            /* background-color: #e9ecef; */
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background-color: lightgray;
+            color: black;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .note-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .task-box {
+            background-color: #e6f7ff;
+            border-left: 5px solid #007bff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .code-comment {
+            color: #246705;
+            font-style: italic;
+        }
+
+        .log-suggestion {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .log-suggestion-ui {
+            flex: 1;
+            padding: 15px;
+            border: 1px dashed #ced4da;
+            border-radius: 5px;
+            background: #fdfdfd;
+        }
+
+        .log-suggestion-ui h4 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="header-info">
+                <p>FACULDADE DE TECNOLOGIA SENAC - FATESE</p>
+                <p>Curso de Análise e Desenvolvimento de Sistemas</p>
+                <p>Disciplina: Desenvolvimento Web I</p>
+                <p>Professor: Carlos Bruno Oliveira Lopes.</p>
+            </div>
+        </div>
+
+        <h1>Implementação do Web App - Calculadora Simples</h1>
+
+        <h2>Informações:</h2>
+        <p></p>
+        <ol>
+            <li><strong>Data de entrega:</strong> 15/11/2025.</li>
+            <ul>
+                <li>Entrega da implementação e apresentação do trabalho.</li>
+            </ul>
+            <li><strong>Trabalho em equipe:</strong> 3 a 2 membros por equipe.</li>
+            <ul>
+                <li>Entregar uma calculadora por equipe.</li>
+            </ul>
+        </ol>
+
+        <h2>1. Objetivo</h2>
+        <p>Este trabalho consiste em implementar a lógica (back-end) em JavaScript para a calculadora simples cujo
+            front-end (HTML e CSS) já foi desenvolvido. A calculadora deve ser capaz de lidar com as quatro operações
+            matemáticas básicas (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>) e respeitar o uso de
+            parênteses <code>(</code> <code>)</code> para definir a ordem das operações.</p>
+        <p>O desafio central é implementar um parser que entenda a precedência de operadores corretamente, e para isso,
+            utilizaremos como base o algoritmo de <strong>Notação Polonesa Reversa (RPN)</strong>.</p>
+
+        <h2>2. O Desafio: A Ordem das Operações</h2>
+        <p>Uma calculadora simples não pode simplesmente calcular da esquerda para a direita. Por exemplo, a expressão
+            <code>2 + 3 * 4</code> não é <code>(2 + 3) * 4 = 20</code>, e sim <code>2 + (3 * 4) = 14</code>. A
+            multiplicação tem <strong>precedência</strong> sobre a adição.
+        </p>
+        <p>O método mais robusto para resolver isso é transformar a expressão que digitamos (infixa) em uma fila que o
+            computador entenda (pós-fixa ou RPN) e, em seguida, calcular essa fila.</p>
+
+        <h3>Fundamentos: Notação Polonesa Reversa (RPN)</h3>
+        <p>A RPN, ou notação pós-fixa, remove a ambiguidade e a necessidade de parênteses ao colocar o operador *depois*
+            dos seus operandos.
+        <ul>
+            <li><code>3 + 4</code> (Infixa) torna-se <code>3 4 +</code> (RPN)</li>
+            <li><code>(3 + 4) * 2</code> (Infixa) torna-se <code>3 4 + 2 *</code> (RPN)</li>
+        </ul>
+        </p>
+        <p>Para implementar nossa calculadora, o processo tem duas etapas:</p>
+        <ol>
+            <li><strong>Conversão (Algoritmo Shunting-Yard):</strong> Transforma a string infixa (ex:
+                <code>"(3+4)*2"</code>) em uma fila de tokens RPN (ex: <code>['3', '4', '+', '2', '*']</code>).
+            </li>
+            <li><strong>Avaliação (Calculadora RPN):</strong> Lê a fila RPN e usa uma pilha para calcular o resultado
+                final.</li>
+        </ol>
+
+        <p>Abaixo, apresentamos duas formas de implementar essa lógica em JavaScript. Para este trabalho, o 
+            <strong>Caminho 1 (DIY)</strong> é o foco principal, pois o objetivo é aprender o algoritmo. O Caminho 2 é apresentado como
+            referência profissional.</p>
+
+        <hr>
+
+        <h3>Caminho 1: Implementação "Pura" em JavaScript (DIY)</h3>
+        <p>Esta é a implementação direta dos algoritmos de Shunting-Yard e Avaliação RPN. É mais complexa, mas oferece
+            um entendimento completo do processo.</p>
+
+        <pre><code><span class="code-comment">/*
+ * ==========================================================
+ * ALGORITMO DE CALCULADORA RPN COMPLETO EM JAVASCRIPT
+ * (Este código serve como exemplo de implementação)
+ * ==========================================================
+ */</span>
+
+<span class="code-comment">/**
+ * Função principal que o seu botão "=" deve chamar.
+ * Recebe a string da expressão e retorna o resultado.
+ * @param {string} expressionString - Ex: "2+(3*4)/9+50-(34/2)"
+ * @returns {number|string} - O resultado ou uma mensagem de erro.
+ */</span>
+function calcularExpressao(expressionString) {
+    try {
+        <span class="code-comment">// 1. Tokenizar: Transforma a string em um array de "tokens"</span>
+        const tokens = tokenizar(expressionString);
+        
+        <span class="code-comment">// 2. Converter: Transforma os tokens infixos em RPN (pós-fixos)</span>
+        const rpnTokens = infixToRpn(tokens);
+        
+        <span class="code-comment">// 3. Avaliar: Calcula o resultado a partir dos tokens RPN</span>
+        const resultado = avaliarRpn(rpnTokens);
+        
+        return resultado;
+    } catch (error) {
+        console.error("Erro no cálculo:", error.message);
+        return "Erro"; <span class="code-comment">// Retorna 'Erro' para o visor da calculadora</span>
+    }
+}
+
+<span class="code-comment">/**
+ * Etapa 1: Tokenizar a expressão
+ * Transforma "2.5+3" em ["2.5", "+", "3"]
+ */</span>
+function tokenizar(expression) {
+    <span class="code-comment">// Regex para encontrar números (incluindo decimais) OU operadores/parênteses</span>
+    const regex = /(\d+\.?\d*|\.\d+|[+\-*/()])/g;
+    const tokens = expression.match(regex);
+    
+    if (!tokens) {
+        throw new Error("Expressão inválida");
+    }
+    return tokens;
+}
+
+<span class="code-comment">/**
+ * Etapa 2: Algoritmo Shunting-Yard (Infixo para RPN)
+ */</span>
+function infixToRpn(tokens) {
+    const filaSaida = [];
+    const pilhaOperadores = [];
+    
+    <span class="code-comment">// Precedência dos operadores</span>
+    const precedencia = {
+        '*': 2,
+        '/': 2,
+        '+': 1,
+        '-': 1
+    };
+
+    const isOperador = (token) => ['+', '-', '*', '/'].includes(token);
+    const isNumero = (token) => !isNaN(parseFloat(token));
+
+    for (const token of tokens) {
+        if (isNumero(token)) {
+            filaSaida.push(token);
+        } 
+        else if (isOperador(token)) {
+            <span class="code-comment">// Enquanto houver operador no topo da pilha com precedência maior ou igual</span>
+            while (
+                pilhaOperadores.length > 0 &&
+                isOperador(pilhaOperadores[pilhaOperadores.length - 1]) &&
+                precedencia[pilhaOperadores[pilhaOperadores.length - 1]] >= precedencia[token]
+            ) {
+                filaSaida.push(pilhaOperadores.pop());
+            }
+            pilhaOperadores.push(token);
+        } 
+        else if (token === '(') {
+            pilhaOperadores.push(token);
+        } 
+        else if (token === ')') {
+            <span class="code-comment">// Desempilha operadores para a saída até encontrar o "("</span>
+            while (pilhaOperadores.length > 0 && pilhaOperadores[pilhaOperadores.length - 1] !== '(') {
+                filaSaida.push(pilhaOperadores.pop());
+            }
+            
+            if (pilhaOperadores.length === 0) {
+                throw new Error("Parênteses desbalanceados");
+            }
+            
+            <span class="code-comment">// Descarta o "("</span>
+            pilhaOperadores.pop();
+        }
+    }
+
+    <span class="code-comment">// Desempilha todos os operadores restantes</span>
+    while (pilhaOperadores.length > 0) {
+        const op = pilhaOperadores.pop();
+        if (op === '(') {
+            throw new Error("Parênteses desbalanceados");
+        }
+        filaSaida.push(op);
+    }
+    
+    return filaSaida;
+}
+
+<span class="code-comment">/**
+ * Etapa 3: Avaliar a expressão RPN
+ */</span>
+function avaliarRpn(rpnTokens) {
+    const pilha = [];
+
+    for (const token of rpnTokens) {
+        if (!isNaN(parseFloat(token))) {
+            <span class="code-comment">// Se for um número, empilha</span>
+            pilha.push(parseFloat(token));
+        } else {
+            <span class="code-comment">// Se for um operador, desempilha os dois últimos números</span>
+            if (pilha.length < 2) {
+                throw new Error("Expressão mal formada");
+            }
+            const b = pilha.pop();
+            const a = pilha.pop();
+
+            <span class="code-comment">// Realiza a operação e empilha o resultado</span>
+            switch (token) {
+                case '+':
+                    pilha.push(a + b);
+                    break;
+                case '-':
+                    pilha.push(a - b);
+                    break;
+                case '*':
+                    pilha.push(a * b);
+                    break;
+                case '/':
+                    if (b === 0) {
+                        throw new Error("Divisão por zero");
+                    }
+                    pilha.push(a / b);
+                    break;
+                default:
+                    throw new Error("Operador desconhecido: " + token);
+            }
+        }
+    }
+
+    if (pilha.length !== 1) {
+        throw new Error("Expressão mal formada");
+    }
+    
+    return pilha[0];
+}
+
+<span class="code-comment">// --- Exemplo de uso ---</span>
+const expressaoExemplo = "2+(3*4)/9+50-(34/2)";
+const resultadoExemplo = calcularExpressao(expressaoExemplo);
+console.log(`A expressão "${expressaoExemplo}"`);
+console.log(`Resultado: ${resultadoExemplo}`); <span class="code-comment">// Deve ser 36.333...</span>
+
+const expressaoSimples = "(3 + 4) * 2";
+console.log(`Resultado: ${calcularExpressao(expressaoSimples)}`); <span class="code-comment">// Deve ser 14</span>
+</code></pre>
+
+        <hr>
+
+        <h3>Caminho 2: Usando uma Biblioteca (Referência)</h3>
+        <p>No mercado de trabalho, raramente reimplementamos essa lógica. Usamos bibliotecas testadas e seguras como a
+            <strong><code>expr-eval</code></strong>. O código fica muito mais simples.
+        </p>
+        <p><strong>1. Adicione a biblioteca ao seu HTML (no <code>&lt;head&gt;</code>):</strong></p>
+        <pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/expr-eval@2.0.2/dist/expr-eval.js"&gt;&lt;/script&gt;</code></pre>
+
+        <p><strong>2. Use-a no seu JavaScript:</strong></p>
+        <pre><code><span class="code-comment">/**
+ * Função que o seu botão "=" deve chamar (VERSÃO COM BIBLIOTECA)
+ */</span>
+function calcularComBiblioteca(expressionString) {
+    try {
+        <span class="code-comment">// 1. Cria uma instância do Parser da biblioteca</span>
+        const parser = new exprEval.Parser();
+        
+        <span class="code-comment">// 2. Avalia a expressão</span>
+        const resultado = parser.evaluate(expressionString);
+        
+        return resultado;
+
+    } catch (error) {
+        console.error("Erro no cálculo:", error.message);
+        return "Erro";
+    }
+}
+
+<span class="code-comment">// --- Exemplo de uso ---</span>
+const expressaoExemplo = "2+(3*4)/9+50-(34/2)";
+const resultadoExemplo = calcularComBiblioteca(expressaoExemplo);
+console.log(`(Com Biblioteca) Resultado: ${resultadoExemplo}`); <span class="code-comment">// 36.333...</span>
+</code></pre>
+
+        <div class="note-box">
+            <strong>Foco do Trabalho:</strong> Embora o Caminho 2 seja mais prático, o objetivo deste trabalho é que
+            você implemente o <strong>Caminho 1 (DIY)</strong>. Você deve criar as funções <code>tokenizar</code>,
+            <code>infixToRpn</code> e <code>avaliarRpn</code> no seu arquivo JavaScript e integrá-las ao front-end.
+        </div>
+
+        <h2>3. Seu Trabalho: Implementando a Calculadora</h2>
+
+        <div class="task-box">
+            <strong>Tarefa Principal:</strong> Conectar o front-end (HTML/CSS) existente à lógica de cálculo
+            (JavaScript) usando a abordagem RPN (Caminho 1).
+        </div>
+
+        <p>Em seu arquivo <code>script.js</code> (ou como preferir chamá-lo), você precisará estruturar seu código para
+            "ouvir" os eventos de clique nos botões e gerenciar o estado do visor.</p>
+
+        <h3>Estrutura Sugerida para seu <code>script.js</code>:</h3>
+
+        <ol>
+            <li>
+                <strong>Setup Inicial (<code>DOMContentLoaded</code>):</strong>
+                <p>Espere o HTML ser totalmente carregado para anexar seus eventos. Você precisará pegar a referência do
+                    visor e de todos os botões.</p>
+                <pre><code>document.addEventListener('DOMContentLoaded', () => {
+    const visor = document.getElementById('seu-id-do-visor');
+    
+    <span class="code-comment">// Pegue todos os botões de números e operadores</span>
+    const botoes = document.querySelectorAll('.btn-calc'); <span class="code-comment">// Assumindo que seus botões têm uma classe comum</span>
+    
+    const btnIgual = document.getElementById('btn-igual');
+    const btnLimpar = document.getElementById('btn-limpar');
+
+    <span class="code-comment">// Adicione os ouvintes de evento (event listeners)</span>
+    botoes.forEach(btn => {
+        btn.addEventListener('click', () => {
+            adicionarAoVisor(btn.value); <span class="code-comment">// ou btn.textContent</span>
+        });
+    });
+
+    btnLimpar.addEventListener('click', limparVisor);
+    btnIgual.addEventListener('click', calcular);
+});
+</code></pre>
+            </li>
+
+            <li>
+                <strong>Funções de Gerenciamento do Visor:</strong>
+                <p>Você precisará de funções para manipular a string no visor.</p>
+                <ul>
+                    <li><code>function adicionarAoVisor(valor)</code>: Esta função deve concatenar o <code>valor</code>
+                        (número ou operador) ao texto atual do visor.
+                        <ul>
+                            <li><strong>Desafio:</strong> Adicione uma lógica para impedir pontos flutuantes múltiplos,
+                                como <code>2..5</code> ou <code>2.5.3</code>.</li>
+                        </ul>
+                    </li>
+                    <li><code>function limparVisor()</code>: Esta função deve simplesmente limpar o visor (ex:
+                        <code>visor.value = '';</code>).
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <strong>Função de Cálculo Principal:</strong>
+                <p>Esta é a função mais importante, chamada pelo botão <code>=</code>.</p>
+                <pre><code>function calcular() {
+    const visor = document.getElementById('seu-id-do-visor');
+    const expressao = visor.value;
+
+    if (!expressao) return; <span class="code-comment">// Não faz nada se o visor estiver vazio</span>
+
+    <span class="code-comment">// 1. Chame sua implementação do Caminho 1</span>
+    <span class="code-comment">// (Você deve copiar/implementar as funções tokenizar, infixToRpn, avaliarRpn)</span>
+    const resultado = calcularExpressao(expressao); <span class="code-comment">// A função 'wrapper' do exemplo</span>
+
+    <span class="code-comment">// 2. Mostre o resultado no visor</span>
+    visor.value = resultado;
+
+    <span class="code-comment">// 3. Chame a função de Log (ver próxima etapa)</span>
+    if (String(resultado) !== "Erro") {
+        salvarNoLog(expressao, resultado);
+    }
+}
+</code></pre>
+            </li>
+        </ol>
+
+        <h2>4. Funcionalidade Extra: Histórico de Cálculos (Log)</h2>
+
+        <div class="task-box">
+            <strong>Tarefa Bônus:</strong> Implementar um sistema de log que salva e exibe os cálculos anteriores.
+        </div>
+
+        <h3>4.1. Requisitos do Log</h3>
+        <ul>
+            <li>Cada cálculo bem-sucedido deve ser salvo.</li>
+            <li>O formato da entrada do log deve ser:
+                <strong><code>[&lt;Data&gt; &lt;hora&gt;] &lt;expressão&gt; = &lt;resultado&gt;</code></strong>
+                <br><strong>Exemplo:</strong> <code>[24/10/2025 17:25] 2 + 3 = 5</code>
+            </li>
+
+        </ul>
+
+        <h3>4.2. Implementação (Backend) - Armazenamento</h3>
+        <p>No desenvolvimento web, não podemos salvar um "arquivo local" no computador do usuário por razões de
+            segurança. A ferramenta correta para isso é o <strong><code>localStorage</code></strong> do navegador, um
+            pequeno banco de dados que persiste mesmo após fechar a aba.</p>
+
+        <p>Você deve criar uma função <code>salvarNoLog(expressao, resultado)</code> que será chamada pela sua função
+            <code>calcular()</code>.
+        </p>
+
+        <pre><code>function salvarNoLog(expressao, resultado) {
+    <span class="code-comment">// 1. Formatar a data e hora</span>
+    const agora = new Date();
+    const dataFormatada = agora.toLocaleDateString('pt-BR'); <span class="code-comment">// ex: "24/10/2025"</span>
+    const horaFormatada = agora.toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    }); <span class="code-comment">// ex: "17:34"</span>
+
+    <span class="code-comment">// 2. Criar a string de log</span>
+    const logEntry = `[${dataFormatada} ${horaFormatada}] ${expressao} = ${resultado}`;
+
+    <span class="code-comment">// 3. Obter logs antigos do localStorage (se existirem)</span>
+    <span class="code-comment">// Usamos JSON para salvar um array de strings, e não apenas uma string</span>
+    let logs = JSON.parse(localStorage.getItem('calculadora_logs')) || [];
+
+    <span class="code-comment">// 4. Adicionar o novo log (no início do array)</span>
+    logs.unshift(logEntry);
+
+    <span class="code-comment">// 5. Limitar a, por exemplo, 50 entradas (opcional)</span>
+    if (logs.length > 50) {
+        logs.pop(); <span class="code-comment">// Remove o item mais antigo</span>
+    }
+
+    <span class="code-comment">// 6. Salvar o array atualizado de volta no localStorage</span>
+    localStorage.setItem('calculadora_logs', JSON.stringify(logs));
+}
+</code></pre>
+
+        <h3>4.3. Implementação (Frontend) - Exibição</h3>
+        <p>O log deve ser exibido ou escondido ao clicar em um botão "Log" ou "Histórico".</p>
+
+        <ol>
+            <li><strong>No <code>index.html</code>:</strong> Adicione o botão e a <code>div</code> que conterá o log.
+                Coloque-os <strong>fora</strong> da <code>div</code> principal da calculadora, mas próximos a ela.</li>
+            <pre><code><span class="code-comment">&lt;!-- ... sua calculadora ... --&gt;</span>
+&lt;/div&gt; <span class="code-comment">&lt;!-- Fim da div da calculadora --&gt;</span>
+
+&lt;div class="log-section"&gt;
+    &lt;button id="btn-toggle-log"&gt;Ver Histórico&lt;/button&gt;
+    &lt;div id="log-container" style="display: none;"&gt;
+        &lt;h3&gt;Histórico de Cálculos&lt;/h3&gt;
+        &lt;ul id="log-lista"&gt;&lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+            <li><strong>No <code>style.css</code>:</strong> Adicione estilos para o contêiner do log.</li>
+            <pre><code><span class="code-comment">/* Sugestão de CSS */</span>
+.log-section {
+    max-width: 400px; <span class="code-comment">/* Mesma largura da calculadora? */</span>
+    margin: 20px auto;
+}
+
+#btn-toggle-log {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#log-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+#log-lista li {
+    font-family: monospace;
+    font-size: 0.9em;
+    padding: 5px 0;
+    border-bottom: 1px dashed #ddd;
+}
+</code></pre>
+
+            <li><strong>No <code>script.js</code>:</strong> Adicione a lógica para o botão de toggle.</li>
+            <pre><code><span class="code-comment">// Dentro do 'DOMContentLoaded'</span>
+document.addEventListener('DOMContentLoaded', () => {
+    <span class="code-comment">// ... seu código anterior da calculadora ...</span>
+    
+    const btnToggleLog = document.getElementById('btn-toggle-log');
+    
+    btnToggleLog.addEventListener('click', () => {
+        toggleLog();
+    });
+});
+
+<span class="code-comment">/**
+ * Mostra ou esconde o contêiner do log e o popula.
+ */</span>
+function toggleLog() {
+    const logContainer = document.getElementById('log-container');
+    const btnToggleLog = document.getElementById('btn-toggle-log');
+
+    const estaVisivel = logContainer.style.display === 'block';
+
+    if (estaVisivel) {
+        logContainer.style.display = 'none';
+        btnToggleLog.textContent = 'Ver Histórico';
+    } else {
+        logContainer.style.display = 'block';
+        btnToggleLog.textContent = 'Esconder Histórico';
+        carregarLogs(); <span class="code-comment">// Popula o log toda vez que é aberto</span>
+    }
+}
+
+<span class="code-comment">/**
+ * Lê os logs do localStorage e os exibe na lista <ul>.
+ */</span>
+function carregarLogs() {
+    const logLista = document.getElementById('log-lista');
+    const logs = JSON.parse(localStorage.getItem('calculadora_logs')) || [];
+
+    <span class="code-comment">// Limpa a lista antiga para não duplicar</span>
+    logLista.innerHTML = '';
+
+    if (logs.length === 0) {
+        logLista.innerHTML = '&lt;li&gt;Nenhum histórico salvo.&lt;/li&gt;';
+        return;
+    }
+
+    <span class="code-comment">// Adiciona cada entrada de log como um item de lista (<li>)</span>
+    logs.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = entry;
+        logLista.appendChild(li);
+    });
+}
+</code></pre>
+        </ol>
+
+        <h2>Conclusão</h2>
+        <p>Ao final deste trabalho, você terá uma calculadora web totalmente funcional que respeita a ordem matemática
+            das operações e ainda salva um histórico para o usuário. Bom trabalho!</p>
+
+    </div>
+
+</body>
+
+</html>

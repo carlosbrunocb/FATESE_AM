@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Complexidade Ciclomática de McCabe</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 600px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 25px 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 17px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 10px 0;
+            flex-grow: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-card-icon {
+            width: 42px;
+            height: 42px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .info-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .info-card-content {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .code-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .line-number {
+            color: #64748b;
+            font-size: 14px;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+        }
+
+        .keyword {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #22c55e;
+        }
+
+        .comment {
+            color: #64748b;
+        }
+
+        /* Complexity Analysis */
+        .complexity-analysis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .complexity-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .complexity-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .complexity-label {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .complexity-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .status-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .progress-bar {
+            width: 250px;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 5px;
+            width: 75%;
+        }
+
+        .indent {
+            display: block;
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            display: block;
+            margin-left: 40px;
+        }
+
+        .indent-3 {
+            display: block;
+            margin-left: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Complexidade Ciclomática</span> de McCabe
+                    <span style="font-size: 18px; color: #64748b; font-weight: 500; margin-left: 20px;">Métrica de
+                        complexidade de código</span>
+                </div>
+                <div class="subtitle">
+                    Mede o número de caminhos independentes em um grafo de fluxo de controle
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <!-- Definition Card -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="info-card-title">Definição e Fórmulas</div>
+                        </div>
+                        <div class="info-card-content">
+                            <p style="margin-bottom: 16px;"><strong>Complexidade Ciclomática (M):</strong> Métrica que
+                                estima o número de caminhos independentes de um grafo de fluxo de controle.</p>
+                            <div style="display: flex; gap: 16px; margin-top: 16px;">
+                                <div
+                                    style="flex: 1; padding: 16px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                    <div style="font-size: 14px; color: #64748b; margin-bottom: 8px;">Fórmula 1</div>
+                                    <div style="font-size: 16px; color: #1e293b; font-weight: 600; margin-bottom: 4px;">
+                                        M = E - N + 2P</div>
+                                    <div style="font-size: 13px; color: #64748b;">E=arestas, N=nós, P=componentes</div>
+                                </div>
+                                <div
+                                    style="flex: 1; padding: 16px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                    <div style="font-size: 14px; color: #64748b; margin-bottom: 8px;">Fórmula 2</div>
+                                    <div style="font-size: 16px; color: #1e293b; font-weight: 600; margin-bottom: 4px;">
+                                        M = Pn + 1</div>
+                                    <div style="font-size: 13px; color: #64748b;">Pn=nós predicados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Interpretation -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="info-card-title">Interpretação Prática</div>
+                        </div>
+                        <div class="info-card-content">
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 14px; height: 14px; background: #22c55e; border-radius: 50%;">
+                                    </div>
+                                    <span style="font-size: 16px; color: #1e293b;"><strong>M ≤ 10:</strong> Baixa
+                                        complexidade (manutenível)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 14px; height: 14px; background: #f59e0b; border-radius: 50%;">
+                                    </div>
+                                    <span style="font-size: 16px; color: #1e293b;"><strong>11-20:</strong> Média
+                                        (atenção/redesign)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 14px; height: 14px; background: #ef4444; border-radius: 50%;">
+                                    </div>
+                                    <span style="font-size: 16px; color: #1e293b;"><strong>&gt; 20:</strong> Alta
+                                        (refatorar)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <!-- Code Section -->
+                    <div class="code-section">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Exemplo: Cálculo de Caminhos
+                            </div>
+                            <div style="font-size: 15px; color: #64748b;">Python</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <span class="code-content"><span class="keyword">def</span> <span
+                                        class="string">calcular_bonus</span>(salario, tempo):</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <span class="code-content indent"> <span class="keyword">if</span> salario &gt; 5000: <span
+                                        class="comment"># D1</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <span class="code-content indent-2"> <span class="keyword">if</span> tempo &gt; 5: <span
+                                        class="comment"># D2</span></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <span class="code-content indent-3"> <span class="keyword">return</span> salario * 1.1</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <span class="code-content indent-2"> <span class="keyword">return</span> salario * 1.05</span>
+                            </div>
+                        </div>
+                        <div class="complexity-analysis">
+                            <div class="complexity-item">
+                                <div class="complexity-value">3</div>
+                                <div class="complexity-label">Caminhos</div>
+                                <div class="complexity-status status-low">Baixa</div>
+                            </div>
+                            <div class="complexity-item">
+                                <div class="complexity-value">2</div>
+                                <div class="complexity-label">Decisões</div>
+                                <div class="complexity-status status-low">Ótimo</div>
+                            </div>
+                            <div class="complexity-item">
+                                <div class="complexity-value">100%</div>
+                                <div class="complexity-label">Cobertura</div>
+                                <div class="complexity-status status-low">Alta</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="status-info">
+                    <div class="status-dot"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-text">Progresso: 75%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

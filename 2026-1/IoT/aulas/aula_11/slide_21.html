@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Código Completo - Parte 2: Requisição HTTP GET e Parsing JSON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+        }
+
+        /* Container principal usando Grid para dividir as áreas horizontais */
+        .slide-container {
+            width: 100%;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: 70px 1fr auto; /* Header, Main, Footer */
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            box-sizing: border-box;
+            padding-bottom: 25px;
+        }
+
+        /* Classes de layout responsivo */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-sizing: border-box;
+        }
+
+        .slide-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 5% 0 5%;
+            box-sizing: border-box;
+        }
+
+        /* Grid para as colunas de conteúdo */
+        .grid-columns {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr; /* Mantendo a proporção original */
+            gap: 25px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5% 0 5%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Empilha as colunas em telas de tablets e celulares */
+        @media (max-width: 800px) {
+            .grid-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .code-container {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px; /* Ajuste leve para melhor legibilidade */
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: auto;
+        }
+
+        .syntax-key { color: #fbbf24; }
+        .syntax-string { color: #34d399; }
+        .syntax-number { color: #60a5fa; }
+        .syntax-comment { color: #94a3b8; font-style: italic; }
+        .syntax-type { color: #93c5fd; }
+        .syntax-function { color: #a78bfa; }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-code" style="font-size: 24px; color: #3b82f6;"></i>
+                <span style="font-size: clamp(14px, 1.8vw, 20px); color: #ffffff; font-weight: 600;">
+                    Código Completo - Parte 2: Requisição HTTP GET e Parsing JSON
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                <span style="font-size: 14px; color: #94a3b8;">Aula 11</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">|</span>
+                <span style="font-size: 14px; color: #94a3b8;">ESP32 + HTTPClient + ArduinoJson</span>
+            </div>
+        </div>
+
+        <div class="slide-main">
+            
+            <div class="grid-columns">
+                <div style="display: flex; flex-direction: column; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; height: 100%; box-sizing: border-box;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                            <i class="fas fa-file-code" style="font-size: 20px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Código Fonte - Parte 2</div>
+                            <div style="font-size: 13px; color: #94a3b8;">Loop, HTTP GET, Parsing JSON</div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-container" style="flex: 1;">
+                        <div style="margin-bottom: 4px;"><span class="syntax-type">void</span> <span class="syntax-function">loop</span>() {</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;<span class="syntax-type">unsigned long</span> tempoAtual = <span class="syntax-function">millis</span>();</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;<span class="syntax-comment">// Requisição periódica</span></div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;<span class="syntax-key">if</span> (tempoAtual - tempoAnterior &gt;= intervaloRequisicao) {</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;tempoAnterior = tempoAtual;</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">if</span> (WiFi.<span class="syntax-function">status</span>() == WL_CONNECTED) {</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTTPClient http; http.<span class="syntax-function">setTimeout</span>(<span class="syntax-number">5000</span>);</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http.<span class="syntax-function">begin</span>(urlApi);</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-type">int</span> codigoHttp = http.<span class="syntax-function">GET</span>();</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">if</span> (codigoHttp == HTTP_CODE_OK) {</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String payload = http.<span class="syntax-function">getString</span>();</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JsonDocument doc;</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DeserializationError erro = <span class="syntax-function">deserializeJson</span>(doc, payload);</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-key">if</span> (!erro) {</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-type">float</span> temp = doc[<span class="syntax-string">"current"</span>][<span class="syntax-string">"temperature_2m"</span>];</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-type">int</span> umid = doc[<span class="syntax-string">"current"</span>][<span class="syntax-string">"relative_humidity_2m"</span>];</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="syntax-type">Serial.printf</span>(<span class="syntax-string">"Temp: %.1f °C, Umid: %d %%\n"</span>, temp, umid);</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http.<span class="syntax-function">end</span>();</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-bottom: 4px;">&nbsp;&nbsp;}</div>
+                        <div style="margin-bottom: 0px;">}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <i class="fas fa-check-circle" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Status HTTP</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Códigos de resposta</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                                <span style="font-size: 13px; color: #cbd5e1;"><strong>200:</strong> OK - Sucesso</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></div>
+                                <span style="font-size: 13px; color: #cbd5e1;"><strong>404:</strong> Não encontrado</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></div>
+                                <span style="font-size: 13px; color: #cbd5e1;"><strong>500:</strong> Erro servidor</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                <i class="fas fa-code-branch" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Parsing JSON</div>
+                                <div style="font-size: 13px; color: #94a3b8;">ArduinoJson v7+</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">
+                            <div style="margin-bottom: 6px;"><strong>1.</strong> Criar JsonDocument</div>
+                            <div style="margin-bottom: 6px;"><strong>2.</strong> deserializeJson()</div>
+                            <div style="margin-bottom: 6px;"><strong>3.</strong> Extrair valores</div>
+                            <div style="margin-bottom: 0px;"><strong>4.</strong> Tratar erros</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; padding: 15px; border-radius: 6px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                            <span style="font-size: 14px; font-weight: 600; color: #ffffff;">Critérios de Sucesso</span>
+                        </div>
+                        <div style="font-size: 13px; color: #cbd5e1; line-height: 1.5;">
+                            • Requisição a cada 15s<br />
+                            • Parsing bem-sucedido<br />
+                            • Tratamento de erros
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-info-circle" style="font-size: 16px; color: #3b82f6;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">Parte 2: Loop, HTTP GET, Parsing JSON - ESP32 como Cliente HTTP</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="font-size: 16px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">16 de Maio de 2026</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

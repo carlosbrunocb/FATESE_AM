@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 11 - Testes de Regressão</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .left-panel {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 0;
+            width: 380px;
+            background: linear-gradient(180deg, #004A8D 0%, #003366 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 30px;
+            z-index: 50;
+        }
+
+        .institution-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #F7931E;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: #94a3b8;
+        }
+
+        .course-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #F7931E;
+        }
+
+        .course-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .course-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .professor-card {
+            margin-top: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .professor-avatar {
+            width: 60px;
+            height: 60px;
+            background: #F7931E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .professor-avatar i {
+            color: white;
+            font-size: 28px;
+        }
+
+        .professor-name {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .professor-title {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .professor-contact {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .professor-contact a {
+            color: #F7931E;
+            text-decoration: none;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 380px;
+            top: 8px;
+            right: 0;
+            bottom: 0;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .discipline-name {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .discipline-code {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .key-concepts {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .concept-card {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .concept-icon {
+            width: 44px;
+            height: 44px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .concept-icon i {
+            color: #004A8D;
+            font-size: 20px;
+        }
+
+        .concept-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .concept-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .objectives-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: #004A8D;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .section-icon i {
+            color: white;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .objective-check {
+            width: 24px;
+            height: 24px;
+            background: #10b981;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .objective-check i {
+            color: white;
+            font-size: 12px;
+        }
+
+        .objective-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 380px;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-icon i {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #166534;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="left-panel">
+            <div class="institution-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia<br />Senac</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <div class="course-label">Disciplina</div>
+                <div class="course-name">Qualidade e Teste de Software</div>
+            </div>
+            <div class="course-info">
+                <div class="course-label">Curso</div>
+                <div class="course-name">Análise e Desenvolvimento de Sistemas</div>
+            </div>
+            <div class="professor-card">
+                <div class="professor-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="professor-name">Carlos Bruno Oliveira Lopes</div>
+                <div class="professor-title">Professor de Qualidade e Teste de Software</div>
+                <div class="professor-contact">
+                    <i class="fas fa-envelope"></i> carlos.lopes@am.senac.br<br />
+                    <i class="fab fa-github"></i> github.com/carlosbrunocb<br />
+                    <i class="fab fa-linkedin"></i> linkedin.com/in/carlosbruno-lopes/
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Testes de Regressão</div>
+                    <div class="aula-subtitle">Quando e o que testar novamente?</div>
+                </div>
+                <div class="header-right">
+                    <div class="discipline-name">Qualidade e Teste de Software</div>
+                    <div class="discipline-code">ADS-2024</div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="key-concepts">
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="concept-title">Re-execução</div>
+                        <div class="concept-desc">Estratégia de re-teste para garantir que mudanças não quebrem
+                            funcionalidades existentes</div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="concept-title">Proteção</div>
+                        <div class="concept-desc">Previne efeitos colaterais em partes do sistema que já estavam
+                            funcionando</div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <div class="concept-title">Detecção</div>
+                        <div class="concept-desc">Identifica regressões causadas por alterações no código</div>
+                    </div>
+                </div>
+                <div class="objectives-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="section-title">Objetivos da Aula</div>
+                    </div>
+                    <div class="objectives-grid">
+                        <div class="objective-item">
+                            <div class="objective-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="objective-text">Definir o conceito de teste de regressão e sua importância no
+                                ciclo de vida de software</div>
+                        </div>
+                        <div class="objective-item">
+                            <div class="objective-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="objective-text">Identificar os gatilhos que exigem a execução de testes de
+                                regressão</div>
+                        </div>
+                        <div class="objective-item">
+                            <div class="objective-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="objective-text">Aplicar estratégias de seleção de casos de teste para otimizar o
+                                tempo</div>
+                        </div>
+                        <div class="objective-item">
+                            <div class="objective-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="objective-text">Executar uma suite de testes de regressão automatizada com
+                                Pytest</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="footer-bar">
+                <div class="footer-left">
+                    <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                    <span class="status-badge">
+                        <span class="status-dot"></span>
+                        Em andamento
+                    </span>
+                </div>
+                <div class="footer-right">
+                    <span class="date-info">28/04/2026</span>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

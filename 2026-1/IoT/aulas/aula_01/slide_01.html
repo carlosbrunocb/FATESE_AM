@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 01 - Introdução à IoT e Ecossistema ESP32</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* --- ESTILOS CORE --- */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Evita barras de rolagem */
+        }
+
+        .slide-container {
+            width: 100vw; /* 100% da largura da tela */
+            height: 100vh; /* 100% da altura da tela */
+            display: flex;
+            flex-direction: column;
+            background-color: #1e3a5f;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4% 6%; /* Padding relativo para telas diferentes */
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TIPOGRAFIA E TEXTOS --- */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(36px, 4vw, 56px); /* Escala suavemente dependendo da tela */
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .highlight {
+            color: #ff9933;
+        }
+
+        .subtitle {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(18px, 2vw, 24px);
+            font-weight: 500;
+            color: #e0e0e0;
+            margin: 0 0 10px 0;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: #ff9933;
+            color: #1e3a5f;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: clamp(14px, 1.5vw, 18px);
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        /* --- CARD DO PROFESSOR --- */
+        .professor-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px 50px;
+            margin-top: 50px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .professor-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(20px, 2.5vw, 28px);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(14px, 1.2vw, 16px);
+            color: #e0e0e0;
+        }
+
+        .contact-item i {
+            color: #ff9933;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* --- ELEMENTOS DE FUNDO --- */
+        .background-decoration {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: clamp(300px, 40vw, 500px); /* Ajusta tamanho da imagem de fundo */
+            height: clamp(300px, 40vw, 500px);
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .circuit-pattern {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: clamp(200px, 30vw, 300px);
+            height: clamp(200px, 30vw, 300px);
+            opacity: 0.08;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="background-decoration">
+            <img alt="ESP32" src="https://page.gensparksite.com/slides_images/9021f53f3faecdcb16698a80b932695c.webp"
+                style="width: 100%; height: 100%; object-fit: contain;" />
+        </div>
+        
+        <div class="circuit-pattern">
+            <svg height="100%" viewbox="0 0 300 300" width="100%" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" fill="#ffffff" r="5"></circle>
+                <circle cx="150" cy="50" fill="#ffffff" r="5"></circle>
+                <circle cx="250" cy="50" fill="#ffffff" r="5"></circle>
+                <circle cx="50" cy="150" fill="#ffffff" r="5"></circle>
+                <circle cx="150" cy="150" fill="#ffffff" r="5"></circle>
+                <circle cx="250" cy="150" fill="#ffffff" r="5"></circle>
+                <circle cx="50" cy="250" fill="#ffffff" r="5"></circle>
+                <circle cx="150" cy="250" fill="#ffffff" r="5"></circle>
+                <circle cx="250" cy="250" fill="#ffffff" r="5"></circle>
+                <line stroke="#ffffff" stroke-width="2" x1="50" x2="150" y1="50" y2="50"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="150" x2="250" y1="50" y2="50"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="50" x2="150" y1="150" y2="150"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="150" x2="250" y1="150" y2="150"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="50" x2="150" y1="250" y2="250"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="150" x2="250" y1="250" y2="250"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="50" x2="50" y1="50" y2="150"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="50" x2="50" y1="150" y2="250"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="150" x2="150" y1="50" y2="150"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="150" x2="150" y1="150" y2="250"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="250" x2="250" y1="50" y2="150"></line>
+                <line stroke="#ffffff" stroke-width="2" x1="250" x2="250" y1="150" y2="250"></line>
+            </svg>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="title-section">
+                <h1 class="main-title">
+                    <p>Aula 01 — Introdução à <span class="highlight">IoT</span></p>
+                    <p>e Ecossistema <span class="highlight">ESP32</span></p>
+                </h1>
+                <p class="subtitle">Faculdade de Tecnologia do Senac (FATESE)</p>
+                <p class="subtitle">Curso: Análise e Desenvolvimento de Sistemas</p>
+                <div class="module-tag">
+                    <p>Módulo I — Fundamentos e Hardware</p>
+                </div>
+            </div>
+            
+            <div class="professor-card">
+                <h2 class="professor-name">
+                    <p>Professor: Carlos Bruno Oliveira Lopes</p>
+                </h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>carlos.lopes@am.senac.br</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <p>github.com/carlosbrunocb</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <p>in/carlosbruno-lopes/</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+
+</html>

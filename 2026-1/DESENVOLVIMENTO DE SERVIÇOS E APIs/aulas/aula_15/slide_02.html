@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Objetivos da Aula</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* --- Container Principal (Grid Responsivo) --- */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Elementos precisam ficar sobre o background */
+        .header,
+        .main-content,
+        .footer {
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-height: 100px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            padding: 25px 40px;
+            overflow-y: auto;
+            /* Permite rolagem caso a tela seja muito pequena */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Centraliza o conteúdo verticalmente */
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            /* Grid responsivo interno */
+            column-gap: 25px;
+            row-gap: 15px;
+            width: 100%;
+            max-width: 1400px;
+            /* Limite opcional para telas ultrawide */
+            margin: 0 auto;
+        }
+
+        .objective-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 155px;
+            /* Trocado de height para min-height para fluidez */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .objective-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .objective-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .objective-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .objective-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+            line-height: 1.2;
+        }
+
+        .objective-subtitle {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .objective-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 4px;
+            margin-bottom: 15px;
+        }
+
+        .objective-icon {
+            width: 24px;
+            height: 24px;
+            background: #f0f9ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .objective-text {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .objective-text strong {
+            color: #1e40af;
+        }
+
+        .progress-bar-container {
+            margin-top: auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            border-radius: 2px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .priority-medium {
+            background: #fff7ed;
+            color: #f97316;
+            border: 1px solid #fed7aa;
+        }
+
+        .footer {
+            /* Removido position absolute e adicionado margins no fluxo do Grid */
+            margin: 0 40px 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div>
+                    <div class="header-title">Objetivos da Aula</div>
+                    <div class="header-subtitle">Metas de aprendizagem e habilidades a serem desenvolvidas</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Versionamento</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <div class="priority-badge priority-high">Alta</div>
+                    <div class="objective-header">
+                        <div class="objective-number">1</div>
+                        <div>
+                            <div class="objective-title">Compreender Breaking Changes</div>
+                            <div class="objective-subtitle">Quebra de contrato e mitigação</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Entender</strong> o conceito de quebra de contrato e <strong>implementar</strong>
+                            estratégias para evitá-las em APIs REST.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="progress-text">85% - Em andamento</div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="priority-badge priority-high">Alta</div>
+                    <div class="objective-header">
+                        <div class="objective-number">2</div>
+                        <div>
+                            <div class="objective-title">Analisar Estratégias de Versionamento</div>
+                            <div class="objective-subtitle">URI, Query e Headers</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Avaliar</strong> diferentes estratégias de versionamento (URI, Query, Headers) e
+                            <strong>escolher</strong> a mais adequada para cada cenário.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 70%;"></div>
+                        </div>
+                        <div class="progress-text">70% - Em andamento</div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="priority-badge priority-medium">Média</div>
+                    <div class="objective-header">
+                        <div class="objective-number">3</div>
+                        <div>
+                            <div class="objective-title">Implementar Versionamento por URI</div>
+                            <div class="objective-subtitle">API da Livraria</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Implementar</strong> versionamento por URI na API da Livraria com
+                            <strong>/api/v1</strong> e <strong>/api/v2</strong>.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;"></div>
+                        </div>
+                        <div class="progress-text">60% - Em andamento</div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="priority-badge priority-medium">Média</div>
+                    <div class="objective-header">
+                        <div class="objective-number">4</div>
+                        <div>
+                            <div class="objective-title">Refatorar Estrutura de Pastas</div>
+                            <div class="objective-subtitle">Múltiplas versões</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-folder-tree"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Reorganizar</strong> a estrutura de pastas e responsabilidades para <strong>suportar
+                                múltiplas versões</strong> simultaneamente.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                        <div class="progress-text">45% - Em andamento</div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="priority-badge priority-high">Alta</div>
+                    <div class="objective-header">
+                        <div class="objective-number">5</div>
+                        <div>
+                            <div class="objective-title">Conhecer Semantic Versioning</div>
+                            <div class="objective-subtitle">SemVer e depreciação</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Entender</strong> o padrão Semantic Versioning (SemVer) e as <strong>políticas de
+                                depreciação</strong>.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="progress-text">75% - Em andamento</div>
+                    </div>
+                </div>
+
+                <div class="objective-card">
+                    <div class="priority-badge priority-medium">Média</div>
+                    <div class="objective-header">
+                        <div class="objective-number">6</div>
+                        <div>
+                            <div class="objective-title">Testar e Validar</div>
+                            <div class="objective-subtitle">Postman e simulação</div>
+                        </div>
+                    </div>
+                    <div class="objective-content">
+                        <div class="objective-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="objective-text">
+                            <strong>Executar</strong> testes lado a lado das duas versões no <strong>Postman</strong> e
+                            simular depreciação.
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                        <div class="progress-text">30% - Pendente</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-completed">
+                <i class="fas fa-check-circle"></i>
+                <span>6 objetivos definidos</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

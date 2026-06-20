@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vulnerabilidade: Injection (SQL/NoSQL)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            flex: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .vulnerability-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .card-content {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .attack-vector {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #f59e0b;
+            margin-bottom: 20px;
+        }
+
+        .vector-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #92400e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vector-content {
+            font-size: 15px;
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        .symptom-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .symptom-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: #475569;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .symptom-item i {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .mitigation-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .mitigation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #166534;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mitigation-content {
+            font-size: 15px;
+            color: #166534;
+            line-height: 1.7;
+        }
+
+        .code-snippet {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-line {
+            margin: 6px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .code-keyword {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .severity-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .severity-bar {
+            width: 120px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .severity-fill {
+            height: 100%;
+            background: #ef4444;
+            border-radius: 4px;
+        }
+
+        .severity-text {
+            font-size: 14px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .protection-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .protection-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #475569;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .protection-item i {
+            color: #22c55e;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-bug"></i> Vulnerabilidade: Injection (SQL/NoSQL)</h1>
+                    <div class="subtitle">Análise de vetores de ataque, sintomas e mitigações</div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Alta Severidade</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="vulnerability-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-crosshairs"></i>
+                            </div>
+                            <div class="card-title">Vetor de Ataque</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="attack-vector">
+                                <div class="vector-title">
+                                    <i class="fas fa-virus"></i> SQL/NoSQL Injection
+                                </div>
+                                <div class="vector-content">
+                                    O atacante envia <span class="highlight">comandos maliciosos</span> em campos de
+                                    entrada para manipular o banco de dados. Exemplo: <code>' OR '1'='1</code> ou
+                                    <code>{ "$ne": null }</code>
+                                </div>
+                            </div>
+                            <div class="severity-indicator">
+                                <div class="severity-bar">
+                                    <div class="severity-fill" style="width: 85%;"></div>
+                                </div>
+                                <span class="severity-text">Severidade: Crítica</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vulnerability-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div class="card-title">Sintomas Comuns</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="symptom-list">
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Consultas lentas ou falhas</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Dados inconsistentes</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Erros de sintaxe SQL</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Acesso não autorizado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="vulnerability-card" style="height: 100%;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="card-title">Mitigações</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="mitigation-box">
+                                <div class="mitigation-title">
+                                    <i class="fas fa-check-circle"></i> Proteções Recomendadas
+                                </div>
+                                <div class="mitigation-content">
+                                    <strong>1. Validação de Entrada:</strong> Sanitizar todos os inputs<br />
+                                    <strong>2. Queries Parametrizadas:</strong> Usar prepared statements<br />
+                                    <strong>3. ORM/ODM:</strong> Utilizar frameworks de mapeamento<br />
+                                    <strong>4. Princípio do Menor Privilégio:</strong> Limitar permissões do DB
+                                </div>
+                            </div>
+                            <div class="code-snippet">
+                                <div class="code-line"><span class="code-comment">// Exemplo de proteção contra SQL
+                                        Injection</span></div>
+                                <div class="code-line"><span class="code-keyword">const</span> query = <span
+                                        class="code-string">'SELECT * FROM users WHERE id = ?'</span>;</div>
+                                <div class="code-line"><span class="code-keyword">const</span> result = <span
+                                        class="code-keyword">await</span> db.query(query, [userId]);</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

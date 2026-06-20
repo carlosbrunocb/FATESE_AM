@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Roteamento Dinâmico</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 60px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 38pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            color: #ff6b35;
+            font-size: 20pt;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-size: 18pt;
+            font-weight: 700;
+        }
+
+        .card-content {
+            color: #e0e6ed;
+            font-size: 14pt;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #e0e6ed;
+            font-size: 13px;
+        }
+
+        .feature-list li i {
+            color: #4CAF50;
+            font-size: 14pt;
+            margin-top: 3px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+
+        .protocol-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .protocol-tag {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-sync-alt"></i> Dinâmico
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Roteamento Dinâmico
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="card-title">Características Principais</div>
+                        </div>
+                        <div class="card-content">
+                            O roteamento dinâmico utiliza <span class="highlight">protocolos</span> para trocar
+                            informações de roteamento automaticamente entre roteadores, permitindo que a rede se adapte
+                            a mudanças de topologia.
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Convergência
+                                        automática</span> - Adaptação a falhas de link</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Escalabilidade</span>
+                                    - Ideal para redes grandes</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Resiliência</span> -
+                                    Redirecionamento automático</span></li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="card-title">Protocolos de Roteamento</div>
+                        </div>
+                        <div class="protocol-tags">
+                            <span class="protocol-tag">RIP</span>
+                            <span class="protocol-tag">OSPF</span>
+                            <span class="protocol-tag">BGP</span>
+                            <span class="protocol-tag">EIGRP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="card-title">Vantagens</div>
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Automático</span> -
+                                    Menos configuração manual</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Adaptativo</span> -
+                                    Reage a mudanças de topologia</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Balanceamento</span> -
+                                    Distribuição de carga</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span><span class="highlight">Redundância</span> -
+                                    Múltiplos caminhos</span></li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-title">Considerações</div>
+                        </div>
+                        <div class="card-content">
+                            <span class="highlight">Complexidade:</span> Maior consumo de CPU/memória<br />
+                            <span class="highlight">Segurança:</span> Requer autenticação de roteadores
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

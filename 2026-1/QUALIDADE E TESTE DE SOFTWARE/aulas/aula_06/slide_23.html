@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Padrão AAA — Arrange, Act, Assert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements - Solid colors only */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            top: -200px;
+            right: -100px;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+        }
+
+        /* Two Column Layout */
+        .columns-container {
+            display: flex;
+            gap: 50px;
+            flex: 1;
+            min-height: 0; /* Permite scroll interno se necessario */
+            margin-top: 20px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centraliza verticalmente se houver espaço */
+            gap: 20px;
+            overflow-y: auto; /* Rolagem se a tela for muito pequena */
+            padding-right: 10px; /* Espaço para scrollbar se aparecer */
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+        }
+
+        /* Text Styles */
+        .info-box {
+            background-color: rgba(30, 41, 59, 0.4);
+            border-left: 4px solid #3b82f6;
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+            transition: transform 0.2s;
+        }
+
+        .info-box:hover {
+            background-color: rgba(30, 41, 59, 0.6);
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #60a5fa;
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-text {
+            color: #cbd5e1;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Code Terminal Styles */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            height: 100%; /* Preenche a coluna da direita */
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 16px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 40px;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 0.95rem; /* Levemente ajustado */
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        /* Syntax Highlighting Mock */
+        .kwd { color: #c678dd; }
+        .func { color: #61afef; }
+        .str { color: #98c379; }
+        .num { color: #d19a66; }
+        .com { color: #7f848e; font-style: italic; }
+        .op { color: #56b6c2; }
+        .var { color: #e06c75; }
+        .cls { color: #e5c07b; }
+
+        .step-highlight {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 2px solid #60a5fa;
+            padding-left: 10px;
+            margin: 5px -12px 5px -12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="content-area">
+            <div class="mb-4 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Metodologia de Teste</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Padrão AAA — Arrange, Act, Assert
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <div class="columns-container">
+                <div class="left-column">
+                    <div class="info-box" style="border-color: #60a5fa;">
+                        <div class="info-title" style="color: #60a5fa;">
+                            <i class="fas fa-tools mr-3 text-sm"></i> 1. Arrange (Preparação)
+                        </div>
+                        <p class="info-text">
+                            Configuração do cenário de teste. É onde instanciamos objetos, preparamos dados de entrada
+                            (mocks) e definimos o valor esperado. O terreno é preparado aqui.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-color: #818cf8;">
+                        <div class="info-title" style="color: #818cf8;">
+                            <i class="fas fa-play mr-3 text-sm"></i> 2. Act (Ação)
+                        </div>
+                        <p class="info-text">
+                            Execução do método ou função que está sendo testada. Aqui ocorre a chamada real ao código de
+                            produção com os parâmetros definidos anteriormente.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-color: #34d399;">
+                        <div class="info-title" style="color: #34d399;">
+                            <i class="fas fa-check-circle mr-3 text-sm"></i> 3. Assert (Verificação)
+                        </div>
+                        <p class="info-text">
+                            Validação do resultado. Compara-se o retorno da ação com o resultado esperado. Se forem
+                            iguais, o teste passa (Green); se não, falha (Red).
+                        </p>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 mt-2">
+                        <p class="text-slate-300 text-sm flex items-start">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                            <span><strong>Dica:</strong> Mantenha seus testes limpos. Idealmente, tenha apenas um
+                                objetivo (asserção lógica) por teste.</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <div class="dot dot-red"></div>
+                                <div class="dot dot-yellow"></div>
+                                <div class="dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">test_calculadora.py</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="code-line">
+                                <span class="kwd">def</span> <span
+                                    class="func">test_deve_aplicar_desconto_padrao</span><span class="op">():</span>
+                            </div>
+                            <div class="step-highlight">
+                                <div class="code-line">
+                                    <span class="com"># 1. Arrange (Preparar)</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="var">valor_compra</span> <span class="op">=</span> <span
+                                        class="num">200.00</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="var">esperado</span> <span class="op">=</span> <span
+                                        class="num">180.00</span>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="step-highlight">
+                                <div class="code-line">
+                                    <span class="com"># 2. Act (Agir)</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="var">resultado</span> <span class="op">=</span> <span
+                                        class="func">calcular_preco_final</span><span class="op">(</span><span
+                                        class="var">valor_compra</span><span class="op">)</span>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="step-highlight">
+                                <div class="code-line">
+                                    <span class="com"># 3. Assert (Verificar)</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="kwd">assert</span> <span class="var">resultado</span> <span
+                                        class="op">==</span> <span class="var">esperado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-3 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Boas Práticas</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

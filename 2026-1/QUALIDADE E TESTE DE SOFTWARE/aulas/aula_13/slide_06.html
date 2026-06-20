@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ecossistema Selenium: IDE, WebDriver e Grid</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8f9fa;
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100% - 130px);
+        }
+
+        .intro-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #1a5fb4;
+        }
+
+        .intro-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro-text {
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+            height: calc(100% - 110px);
+        }
+
+        .component-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid #1a5fb4;
+            transition: transform 0.2s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .component-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .component-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .component-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+        }
+
+        .component-subtitle {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .component-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .component-description {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-bottom: auto;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .features-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .features-list li i {
+            color: #28a745;
+            margin-top: 2px;
+            font-size: 11px;
+        }
+
+        .use-case {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .use-case-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1a5fb4;
+            margin-bottom: 3px;
+        }
+
+        .use-case-text {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Ecossistema Selenium</h1>
+                    <p>IDE, WebDriver e Grid - Componentes do framework de automação</p>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Em produção</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="intro-section">
+                <div class="intro-title">
+                    <i class="fas fa-info-circle"></i>
+                    O que é o Selenium?
+                </div>
+                <div class="intro-text">
+                    O Selenium é o framework mais utilizado mundialmente para automação de navegadores. Ele é composto
+                    por três componentes principais que trabalham em conjunto para oferecer uma solução completa de
+                    automação de testes web.
+                </div>
+            </div>
+            <div class="components-grid">
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-icon">
+                            <i class="fas fa-record-vinyl"></i>
+                        </div>
+                        <div>
+                            <div class="component-title">Selenium IDE</div>
+                            <div class="component-subtitle">Record &amp; Playback</div>
+                        </div>
+                    </div>
+                    <div class="component-content">
+                        <div class="component-description">
+                            Ferramenta de "record and playback" para prototipagem rápida. Permite gravar ações do
+                            usuário e reproduzi-las posteriormente.
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Gravação automática de ações</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Edição de scripts</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Exportação para múltiplas linguagens</span>
+                            </li>
+                        </ul>
+                        <div class="use-case">
+                            <div class="use-case-title">Uso Ideal:</div>
+                            <div class="use-case-text">Prototipagem rápida e testes simples</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="component-title">Selenium WebDriver</div>
+                            <div class="component-subtitle">API Principal</div>
+                        </div>
+                    </div>
+                    <div class="component-content">
+                        <div class="component-description">
+                            O componente principal que fornece uma interface para enviar comandos diretamente ao
+                            navegador de forma nativa.
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Controle nativo do navegador</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Suporte a múltiplos navegadores</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Execução em modo headless</span>
+                            </li>
+                        </ul>
+                        <div class="use-case">
+                            <div class="use-case-title">Uso Ideal:</div>
+                            <div class="use-case-text">Automação de testes funcionais</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="component-card">
+                    <div class="component-header">
+                        <div class="component-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div>
+                            <div class="component-title">Selenium Grid</div>
+                            <div class="component-subtitle">Execução Distribuída</div>
+                        </div>
+                    </div>
+                    <div class="component-content">
+                        <div class="component-description">
+                            Utilizado para executar testes em diferentes máquinas e navegadores em paralelo, otimizando
+                            o tempo de execução.
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Execução paralela</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Distribuição em múltiplos nós</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check"></i>
+                                <span>Escalabilidade</span>
+                            </li>
+                        </ul>
+                        <div class="use-case">
+                            <div class="use-case-title">Uso Ideal:</div>
+                            <div class="use-case-text">Testes em larga escala</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-user" style="margin-right: 5px;"></i> Prof. Carlos Bruno Oliveira Lopes</span>
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+            </div>
+            <div class="footer-right">
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

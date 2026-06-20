@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pytest — Comandos e Assertivas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;family=Roboto:wght@300;400;500;700&amp;family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        .slide-container {
+            width: 100vw;   /* Ocupa 100% da largura da janela */
+            height: 100vh;  /* Ocupa 100% da altura da janela */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* Header Styling */
+        .header {
+            padding: 30px 60px 20px 60px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        /* Left Column: Commands & Concepts */
+        .concepts-column {
+            flex: 4;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .command-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #cbd5e1;
+            transition: all 0.2s ease;
+        }
+
+        .command-card:hover {
+            transform: translateX(5px);
+            border-left-color: #2563EB;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .cmd-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .cmd-text {
+            background-color: #e2e8f0;
+            color: #334155;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .cmd-desc {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Right Column: Code Examples */
+        .code-column {
+            flex: 6;
+            padding: 40px 50px;
+            background-color: #0f172a;
+            /* Slate 950 */
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+        }
+
+        .code-window {
+            background-color: #1e293b;
+            /* Slate 800 */
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .window-bar {
+            background-color: #0f172a;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-yellow {
+            background-color: #eab308;
+        }
+
+        .dot-green {
+            background-color: #22c55e;
+        }
+
+        .window-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .code-content {
+            padding: 15px 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #c678dd;
+        }
+
+        /* keyword */
+        .func {
+            color: #61afef;
+        }
+
+        /* function */
+        .str {
+            color: #98c379;
+        }
+
+        /* string */
+        .num {
+            color: #d19a66;
+        }
+
+        /* number/bool */
+        .cls {
+            color: #e5c07b;
+        }
+
+        /* class */
+        .com {
+            color: #7f848e;
+            font-style: italic;
+        }
+
+        /* comment */
+        .op {
+            color: #56b6c2;
+        }
+
+        /* operator */
+        .dec {
+            color: #e06c75;
+        }
+
+        /* decorator */
+
+        .section-label {
+            position: relative;
+            top: 0;
+            background: #2563EB;
+            color: white;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="flex items-center space-x-3 mb-1">
+                    <span
+                        class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Aula
+                        05</span>
+                    <span class="text-slate-500 text-sm font-medium tracking-wide uppercase">Python &amp; Pytest</span>
+                </div>
+                <h1 class="text-4xl font-black text-slate-900 font-['Montserrat']">
+                    Comandos e Assertivas
+                </h1>
+            </div>
+            <div class="text-slate-400 text-5xl opacity-30">
+                <i class="fab fa-python"></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="concepts-column">
+                <h2 class="text-xl font-bold text-slate-800 mb-2 font-['Montserrat'] flex items-center">
+                    <i class="fas fa-terminal mr-2 text-blue-600"></i> CLI do Pytest
+                </h2>
+                <div class="command-card">
+                    <div class="cmd-wrapper">
+                        <span class="cmd-text">pytest</span>
+                    </div>
+                    <p class="cmd-desc">Executa todos os testes encontrados (arquivos <code>test_*.py</code> ou
+                        <code>*_test.py</code>).</p>
+                </div>
+                <div class="command-card">
+                    <div class="cmd-wrapper">
+                        <span class="cmd-text">pytest -v</span>
+                    </div>
+                    <p class="cmd-desc"><strong>Verbose:</strong> Mostra detalhes de cada teste executado (passou/falhou
+                        individualmente).</p>
+                </div>
+                <div class="command-card">
+                    <div class="cmd-wrapper">
+                        <span class="cmd-text">pytest -x</span>
+                    </div>
+                    <p class="cmd-desc">Interrompe a execução imediatamente após a <strong>primeira falha</strong>.</p>
+                </div>
+                <div class="command-card">
+                    <div class="cmd-wrapper">
+                        <span class="cmd-text">pytest -k "nome"</span>
+                    </div>
+                    <p class="cmd-desc">Executa apenas testes que contenham "nome" (filtro por string).</p>
+                </div>
+                <div class="command-card" style="border-left-color: #22c55e;">
+                    <div class="cmd-wrapper">
+                        <span class="cmd-text bg-green-100 text-green-800">pytest --cov=src</span>
+                    </div>
+                    <p class="cmd-desc">Gera relatório de cobertura de código (requer plugin <code>pytest-cov</code>).
+                    </p>
+                </div>
+            </div>
+            <div class="code-column">
+
+                <div class="code-window">
+                    <div class="section-label">Assertivas Nativas</div>
+                    <div class="window-bar">                        
+                        <div class="window-dots">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <span class="window-title">tests/test_basico.py</span>
+                    </div>
+                    <div class="code-content"><span class="kwd">def</span> <span class="func">test_assertivas_comuns</span>():
+    <span class="com"># Verificando igualdade</span>
+    <span class="kwd">assert</span> 1 + 1 == <span class="num">2</span>
+    <span class="com"># Verificando strings</span>
+    <span class="kwd">assert</span> <span class="str">"Pytest"</span> <span class="op">in</span> <span class="str">"Curso de Pytest"</span>
+    <span class="com"># Verificando listas e tamanho</span>
+    lista = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+    <span class="kwd">assert</span> <span class="func">len</span>(lista) == <span class="num">3</span>
+    <span class="kwd">assert</span> lista != [<span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>] <span class="com"># Ordem importa</span>
+        
+                    </div>
+                </div>
+                <div class="code-window">
+                    <div class="section-label">Avançado</div>
+                    <div class="window-bar">
+                        <div class="window-dots">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <span class="window-title">tests/test_avancado.py</span>
+                    </div>
+                    <div class="code-content"><span class="kwd">import</span> pytest
+
+<span class="com"># Testando se uma exceção é lançada</span>
+<span class="kwd">def</span> <span class="func">test_deve_falhar_com_zero</span>():
+    <span class="kwd">with</span> pytest.<span class="func">raises</span>(<span class="cls">ValueError</span>):
+        <span class="func">dividir</span>(<span class="num">10</span>, <span class="num">0</span>)
+
+<span class="com"># Parametrização (Testar múltiplos casos)</span>
+<span class="dec">@pytest.mark.parametrize</span>(<span class="str">"entrada, esperado"</span>, [(<span class="num">2</span>, <span class="num">True</span>), (<span 
+class="num">3</span>, <span class="num">False</span>), (<span class="num">4</span>, <span class="num">True</span>)])
+
+<span class="kwd">def</span> <span class="func">test_eh_par</span>(entrada, esperado):
+    <span class="kwd">assert</span> <span class="func">eh_par</span>(entrada) == esperado
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

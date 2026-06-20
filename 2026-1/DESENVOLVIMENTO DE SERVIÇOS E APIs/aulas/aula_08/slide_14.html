@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia de um Model</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-section {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .concept-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            font-size: 20px;
+            color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .card-content {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .diagram-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .diagram-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .db-side,
+        .js-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .db-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .db-box-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .db-box-content {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 80px;
+        }
+
+        .arrow {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            position: relative;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #8b5cf6;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .mapping-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mapping-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .mapping-key {
+            font-size: 15px;
+            color: #3b82f6;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .mapping-arrow {
+            color: #8b5cf6;
+            font-size: 14px;
+        }
+
+        .mapping-value {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .model-structure {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .structure-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .structure-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .structure-icon i {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .structure-text {
+            flex: 1;
+            font-size: 15px;
+            color: #f8fafc;
+        }
+
+        .structure-desc {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Anatomia de um Model</div>
+                    <div class="header-subtitle">Estrutura, componentes e mapeamento tabela-model</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-layer-group" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">Aula 08</div>
+                    <div class="header-subtitle">Modelos Sequelize</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="card-title">Conceito Central</div>
+                    </div>
+                    <div class="card-content">
+                        Um <strong style="color: #3b82f6;">Model</strong> representa uma <strong
+                            style="color: #8b5cf6;">tabela</strong> do banco de dados e define sua <strong
+                            style="color: #3b82f6;">estrutura</strong> (colunas, tipos, validações) e <strong
+                            style="color: #8b5cf6;">comportamento</strong> (métodos, hooks).
+                    </div>
+                    <div class="model-structure">
+                        <div class="structure-item">
+                            <div class="structure-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="structure-text">Tabela: <span style="color: #3b82f6;">livros</span></div>
+                            <div class="structure-desc">Representação física no BD</div>
+                        </div>
+                        <div class="structure-item">
+                            <div class="structure-icon">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="structure-text">Model: <span style="color: #3b82f6;">Livro</span></div>
+                            <div class="structure-desc">Classe JavaScript</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="card-title">Componentes do Model</div>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
+                                <span style="font-size: 15px; color: #f8fafc;"><strong>Campos (Fields):</strong> definem
+                                    as colunas da tabela</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%;"></div>
+                                <span style="font-size: 15px; color: #f8fafc;"><strong>Tipos (DataTypes):</strong>
+                                    STRING, INTEGER, DATE, etc.</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></div>
+                                <span style="font-size: 15px; color: #f8fafc;"><strong>Restrições:</strong> allowNull,
+                                    unique, defaultValue</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></div>
+                                <span style="font-size: 15px; color: #f8fafc;"><strong>Opções:</strong> timestamps,
+                                    paranoid, tableName</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="diagram-container">
+                    <div class="diagram-title">Mapeamento Visual</div>
+                    <div class="diagram-visual">
+                        <div class="db-side">
+                            <div class="db-box">
+                                <div class="db-box-title">Tabela: livros</div>
+                                <div class="db-box-content">id, titulo, autor, ano</div>
+                            </div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="arrow-label">mapeia para</div>
+                        </div>
+                        <div class="js-side">
+                            <div class="db-box">
+                                <div class="db-box-title">Model: Livro</div>
+                                <div class="db-box-content">id, titulo, autor, ano</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mapping-list">
+                        <div class="mapping-item">
+                            <div class="mapping-key">Tabela</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Model/Classe</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-key">Linha</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Instância/Objeto</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-key">Coluna</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-value">Propriedade/Atributo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ciclo Request-Response HTTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .step-box {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-box:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .connection-line {
+            position: absolute;
+            border: 2px dashed rgba(59, 130, 246, 0.4);
+            z-index: 1;
+        }
+
+        .flow-arrow {
+            position: absolute;
+            color: #3b82f6;
+            font-size: 20px;
+            z-index: 2;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-8">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                        <span class="text-blue-400 text-sm font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-2">Ciclo Request-Response HTTP</h1>
+                    <p class="text-gray-400 text-lg">Fluxo completo de comunicação cliente-servidor</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-lg font-semibold">HTTP/1.1</div>
+                        <div class="text-sm text-gray-400">Stateless</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-exchange-alt text-blue-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Area -->
+            <div class="flex-1 grid grid-cols-5 gap-6 h-[550px]">
+                <!-- Left Column - Process Flow -->
+                <div class="col-span-3 flex flex-col gap-4 h-full">
+                    <!-- Process Steps -->
+                    <div class="grid grid-cols-3 gap-4 flex-1">
+                        <!-- Step 1: DNS Resolution -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">1</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">DNS Resolution</div>
+                                        <div class="text-sm text-gray-400">Resolução de nome</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-globe text-blue-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Resolve IP do servidor</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-clock text-blue-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">~50-200ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-success">OK</div>
+                            </div>
+                        </div>
+                        <!-- Step 2: TCP/TLS Handshake -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">2</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">TCP/TLS Handshake</div>
+                                        <div class="text-sm text-gray-400">Conexão segura</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-handshake text-green-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Estabelece conexão</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-lock text-green-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">TLS encryption</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-success">OK</div>
+                            </div>
+                        </div>
+                        <!-- Step 3: HTTP Request -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">3</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">HTTP Request</div>
+                                        <div class="text-sm text-gray-400">Envio da requisição</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-paper-plane text-purple-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">GET/POST/PUT</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-file-alt text-purple-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Headers + Body</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-info">Pending</div>
+                            </div>
+                        </div>
+                        <!-- Step 4: Server Processing -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">4</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">Server Processing</div>
+                                        <div class="text-sm text-gray-400">Processamento</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-cogs text-orange-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Valida request</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-database text-orange-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Busca dados</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-warning">Processing</div>
+                            </div>
+                        </div>
+                        <!-- Step 5: HTTP Response -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">5</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">HTTP Response</div>
+                                        <div class="text-sm text-gray-400">Resposta do servidor</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-download text-cyan-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Status + Headers</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-file-code text-cyan-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Body (HTML/JSON)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-success">200 OK</div>
+                            </div>
+                        </div>
+                        <!-- Step 6: Browser Rendering -->
+                        <div class="step-box flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="step-number mb-0">6</div>
+                                    <div>
+                                        <div class="text-white text-base font-semibold">Browser Rendering</div>
+                                        <div class="text-sm text-gray-400">Renderização</div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-desktop text-pink-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Parse HTML/CSS</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-js text-pink-400 text-sm"></i>
+                                        <span class="text-gray-300 text-sm">Execute JS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-sm text-gray-400">Status:</span>
+                                <div class="status-badge status-success">Done</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Connection Flow -->
+                    <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-arrow-right text-blue-400"></i>
+                                    <span class="text-white text-sm">Request Flow</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-arrow-left text-green-400"></i>
+                                    <span class="text-white text-sm">Response Flow</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-gray-400 text-sm">Total Time:</span>
+                                <span class="text-white text-sm font-semibold">~200-500ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Details -->
+                <div class="col-span-2 flex flex-col gap-4 h-full">
+                    <!-- Request Details -->
+                    <div
+                        class="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50 flex-1 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-5">
+                            <i class="fas fa-file-code text-blue-400 text-xl"></i>
+                            <span class="text-white text-lg font-semibold">Request Details</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">Method:</span>
+                                <span class="text-white text-base font-mono">GET</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">URL:</span>
+                                <span class="text-white text-base font-mono text-right">/api/users/123</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">Headers:</span>
+                                <span class="text-white text-base font-mono">8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Response Details -->
+                    <div
+                        class="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50 flex-1 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-5">
+                            <i class="fas fa-server text-green-400 text-xl"></i>
+                            <span class="text-white text-lg font-semibold">Response Details</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">Status:</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <span class="text-green-400 text-base font-semibold">200 OK</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">Content-Type:</span>
+                                <span class="text-white text-base font-mono">application/json</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-base">Size:</span>
+                                <span class="text-white text-base font-mono">2.4 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Performance Metrics -->
+                    <div
+                        class="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50 flex-1 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-5">
+                            <i class="fas fa-chart-line text-purple-400 text-xl"></i>
+                            <span class="text-white text-lg font-semibold">Performance</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-base">DNS:</span>
+                                <span class="text-white text-base">50ms</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-base">TCP:</span>
+                                <span class="text-white text-base">30ms</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-base">TTFB:</span>
+                                <span class="text-white text-base">120ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

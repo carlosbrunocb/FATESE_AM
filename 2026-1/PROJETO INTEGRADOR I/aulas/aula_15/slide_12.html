@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Fluxo de Valor</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        /* Reset e Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow-x: hidden;
+            background: #0A0E1A;
+            font-family: 'Inter', sans-serif;
+            color: #94A3B8;
+        }
+
+        /* Container Principal do Slide */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0A0E1A;
+            
+            /* Background Grid Pattern */
+            background-image:
+                linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            
+            /* Layout Macro Responsivo */
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 4rem 6vw;
+            gap: 2rem;
+            position: relative;
+        }
+
+        /* Nuvem de brilho de fundo */
+        .glow-orb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vw;
+            height: 50vw;
+            max-width: 800px;
+            max-height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.18) 0%, transparent 60%);
+            filter: blur(100px);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- Cabeçalho --- */
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 10;
+        }
+
+        .header-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #22D3EE;
+            letter-spacing: 0.3em;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(48px, 4vw, 72px);
+            color: #FFFFFF;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .header-title span {
+            color: #22D3EE;
+        }
+
+        .header-desc {
+            font-size: clamp(18px, 1.5vw, 22px);
+        }
+
+        /* --- Main Content (Etapas Verticais) --- */
+        .stages-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 10;
+            width: 100%;
+        }
+
+        /* Cartão da Etapa - Usando Grid Interno */
+        .stage-card {
+            display: grid;
+            grid-template-columns: 120px 1.2fr 60px 1.8fr;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1E293B;
+            border-radius: 12px;
+            padding: 1.8rem 2rem 1.8rem 3rem;
+            position: relative;
+            gap: 1.5rem;
+        }
+
+        /* Borda Lateral Esquerda */
+        .stage-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            border-radius: 12px 0 0 12px;
+        }
+
+        /* Modificadores Visuais por Etapa */
+        .stage-1::before { background: #22D3EE; }
+        .stage-1 .accent-text { color: #22D3EE; }
+
+        .stage-2::before { background: #4ADE80; }
+        .stage-2 .accent-text { color: #4ADE80; }
+
+        .stage-3::before { background: #FBBF24; }
+        .stage-3 .accent-text { color: #FBBF24; }
+
+        .stage-final {
+            background: linear-gradient(90deg, #111827 0%, #1A2233 100%);
+            border: 1px solid #22D3EE;
+        }
+        .stage-final::before { background: #22D3EE; }
+        .stage-final .accent-text { color: #22D3EE; }
+        .stage-final .result-text { color: #FFFFFF; font-weight: 500; }
+
+        /* Blocos do Cartão */
+        .block-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .block-icon .step-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.25em;
+        }
+
+        .block-icon .emoji {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(36px, 3vw, 48px);
+            line-height: 1;
+            color: #FFFFFF;
+        }
+
+        .block-info h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(24px, 2vw, 32px);
+            color: #FFFFFF;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .block-info p {
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        .block-arrow {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+        }
+
+        .block-dest .dest-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .block-dest .dest-text {
+            font-size: 18px;
+            color: #E5E7EB;
+            line-height: 1.4;
+        }
+
+        .block-dest .dest-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Rodapé --- */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #475569;
+            letter-spacing: 0.2em;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" data-screen-label="12 Fluxo Valor">
+
+        <div class="glow-orb" data-object="true" data-object-type="shape"></div>
+
+        <header class="header-section" data-object="true" data-object-type="textbox">
+            <div class="header-tag">// FUNDAMENTO 05 · DA IDEIA AO ENTREGÁVEL</div>
+            <h1 class="header-title">
+                O <span style="color:#22D3EE;">fluxo de valor</span> prático
+            </h1>
+            <p class="header-desc">Como uma ideia sai do papel, passa pelo design e vira um entregável auditável.</p>
+        </header>
+
+        <main class="stages-list">
+
+            <div class="stage-card stage-1" data-object="true" data-object-type="group">
+                <div class="block-icon">
+                    <span class="step-label accent-text">ETAPA 01</span>
+                    <span class="emoji">📋</span>
+                </div>
+                <div class="block-info">
+                    <h3>Requisito (ideia)</h3>
+                    <p>História de usuário extraída do problema mapeado no Cap. 1.</p>
+                </div>
+                <div class="block-arrow accent-text">→</div>
+                <div class="block-dest">
+                    <div class="dest-label">DEPOSITÁRIO</div>
+                    <p class="dest-text">
+                        <span class="dest-code accent-text">GitHub Projects</span> → Issue na coluna <em>To Do</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="stage-card stage-2" data-object="true" data-object-type="group">
+                <div class="block-icon">
+                    <span class="step-label accent-text">ETAPA 02</span>
+                    <span class="emoji">🎨</span>
+                </div>
+                <div class="block-info">
+                    <h3>Design &amp; UX</h3>
+                    <p>Wireframes navegáveis, fluxos de tela e testes de usabilidade.</p>
+                </div>
+                <div class="block-arrow accent-text">→</div>
+                <div class="block-dest">
+                    <div class="dest-label">DEPOSITÁRIO</div>
+                    <p class="dest-text">
+                        <span class="dest-code accent-text">Figma</span> → Frame de alta fidelidade + protótipo interativo
+                    </p>
+                </div>
+            </div>
+
+            <div class="stage-card stage-3" data-object="true" data-object-type="group">
+                <div class="block-icon">
+                    <span class="step-label accent-text">ETAPA 03</span>
+                    <span class="emoji">⚙️</span>
+                </div>
+                <div class="block-info">
+                    <h3>Execução técnica</h3>
+                    <p>Dev escreve código, abre branch e move o cartão de status.</p>
+                </div>
+                <div class="block-arrow accent-text">→</div>
+                <div class="block-dest">
+                    <div class="dest-label">DEPOSITÁRIO</div>
+                    <p class="dest-text">
+                        <span class="dest-code accent-text">GitHub</span> → Pull Request + cartão em <em>In Progress</em> / <em>In Review</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="stage-card stage-final" data-object="true" data-object-type="group">
+                <div class="block-icon">
+                    <span class="step-label accent-text">ETAPA 04</span>
+                    <span class="emoji">🎯</span>
+                </div>
+                <div class="block-info">
+                    <h3>Entregável funcional</h3>
+                    <p>Feature validada, integrada e disponível para a banca verificar.</p>
+                </div>
+                <div class="block-arrow accent-text">✓</div>
+                <div class="block-dest">
+                    <div class="dest-label accent-text">RESULTADO</div>
+                    <p class="dest-text result-text">
+                        Issue fechada · coluna <em>Done</em> · valor entregue ao usuário final
+                    </p>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="footer-section">
+            <span data-object="true" data-object-type="textbox">
+                AULA 15 · BASE TEÓRICA
+            </span>
+            <span data-object="true" data-object-type="textbox">
+                12 / 35
+            </span>
+        </footer>
+
+    </div>
+</body>
+
+</html>

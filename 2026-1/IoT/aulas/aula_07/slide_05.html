@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ISRs: Regras de Ouro e Modos de Disparo</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        }
+
+        .slide-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 50%, #10b981 100%);
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 40px;
+            min-height: 0;
+        }
+
+        .top-section {
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .course-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .course-code {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(22px, 2.2vw, 26px);
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 0;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13pt;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Regras de Ouro Grid */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .rule-item i {
+            color: #3b82f6;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .rule-text {
+            font-size: 10.5pt;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .rule-text strong {
+            color: #1e293b;
+        }
+
+        /* Modos de Disparo */
+        .interrupt-types {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .type-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .type-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: #e0f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .type-content { flex: 1; }
+        .type-name { font-size: 11pt; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+        .type-desc { font-size: 9.5pt; color: #64748b; line-height: 1.2; }
+
+        /* Padrão ISR -> Task */
+        .communication-pattern {
+            background: #f0fdf4;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #86efac;
+            margin-bottom: 10px;
+        }
+
+        .pattern-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pattern-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .pattern-flow {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pattern-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .pattern-box strong { font-size: 10pt; color: #1e293b; display: block; }
+        .pattern-box span { font-size: 8.5pt; color: #64748b; }
+
+        .arrow-icon { color: #94a3b8; font-size: 10px; }
+
+        /* Code Snippet */
+        .code-snippet {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        .code-text {
+            font-family: 'Consolas', monospace;
+            font-size: 9.5pt;
+            color: #e2e8f0;
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        .code-keyword { color: #60a5fa; }
+        .code-function { color: #f59e0b; }
+        .code-comment { color: #94a3b8; font-style: italic; }
+
+        .footer-main {
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .footer-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <main class="main-content">
+            <header class="top-section">
+                <div class="course-info">
+                    <span class="course-badge">IoT - Internet das Coisas</span>
+                    <span class="course-code">ADS-2026 | Aula 07</span>
+                </div>
+                <h1 class="main-title">
+                    <span class="highlight">ISRs:</span> Regras de Ouro e Padrão FreeRTOS
+                </h1>
+            </header>
+
+            <div class="content-grid">
+                <div class="column">
+                    <section class="content-card" style="flex: 1.2;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                            <h2 class="card-title">As 6 Regras de Ouro da ISR</h2>
+                        </div>
+                        <div class="rules-grid">
+                            <div class="rule-item">
+                                <i class="fas fa-check"></i>
+                                <div class="rule-text"><strong>Curta e rápida:</strong> Apenas limpe flags ou defina notificações.</div>
+                            </div>
+                            <div class="rule-item">
+                                <i class="fas fa-times" style="color: #ef4444;"></i>
+                                <div class="rule-text"><strong>Sem delay():</strong> NUNCA use delays ou bloqueios.</div>
+                            </div>
+                            <div class="rule-item">
+                                <i class="fas fa-times" style="color: #ef4444;"></i>
+                                <div class="rule-text"><strong>Evite Serial:</strong> Serial.print() pode causar travamentos.</div>
+                            </div>
+                            <div class="rule-item">
+                                <i class="fas fa-check"></i>
+                                <div class="rule-text"><strong>Volatile:</strong> Use em variáveis alteradas pela ISR e lidas fora.</div>
+                            </div>
+                            <div class="rule-item">
+                                <i class="fas fa-check"></i>
+                                <div class="rule-text"><strong>IRAM_ATTR:</strong> Garante execução rápida a partir da RAM.</div>
+                            </div>
+                            <div class="rule-item">
+                                <i class="fas fa-times" style="color: #ef4444;"></i>
+                                <div class="rule-text"><strong>Sem malloc/free:</strong> Evite alocação dinâmica (heap).</div>
+                            </div>
+                        </div>
+                        <div class="code-snippet" style="padding: 8px;">
+                            <div class="code-text"><span class="code-comment">// Exemplo simples e rápido (Sem RTOS)</span>
+<span class="code-keyword">volatile bool</span> flag_botao = <span class="code-keyword">false</span>;
+
+<span class="code-keyword">void</span> <span class="code-function">IRAM_ATTR</span> isrHandler() {
+  flag_botao = <span class="code-keyword">true</span>;
+}</div>
+                        </div>
+                    </section>
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                            <h2 class="card-title">Modos de Disparo (Triggers)</h2>
+                        </div>
+                        <div class="interrupt-types">
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-arrow-up"></i></div>
+                                <div class="type-content">
+                                    <div class="type-name">RISING</div>
+                                    <div class="type-desc">Dispara na borda de subida (LOW → HIGH)</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-arrow-down"></i></div>
+                                <div class="type-content">
+                                    <div class="type-name">FALLING</div>
+                                    <div class="type-desc">Dispara na borda de descida (HIGH → LOW)</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-arrows-alt-v"></i></div>
+                                <div class="type-content">
+                                    <div class="type-name">CHANGE</div>
+                                    <div class="type-desc">Dispara em qualquer mudança de estado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="column">
+                    <section class="content-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
+                            <h2 class="card-title">Padrão ISR → Task (FreeRTOS)</h2>
+                        </div>
+                        
+                        <div class="communication-pattern">
+                            <div class="pattern-header">
+                                <i class="fas fa-project-diagram"></i>
+                                <span class="pattern-title">Processamento Adiado (Deferred Processing)</span>
+                            </div>
+                            <div class="pattern-flow">
+                                <div class="pattern-box">
+                                    <strong>1. Evento de HW</strong>
+                                    <span>Pino dispara</span>
+                                </div>
+                                <i class="fas fa-arrow-right arrow-icon"></i>
+                                <div class="pattern-box">
+                                    <strong>2. ISR IRAM_ATTR</strong>
+                                    <span>xTaskNotifyFromISR</span>
+                                </div>
+                                <i class="fas fa-arrow-right arrow-icon"></i>
+                                <div class="pattern-box">
+                                    <strong>3. Task no Loop</strong>
+                                    <span>Executa ação</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+                            <div class="code-text"><span class="code-comment">// Task Handle Global</span>
+TaskHandle_t TaskProcessaHandle = <span class="code-keyword">NULL</span>;
+
+<span class="code-comment">// 1. A ISR (Executa rápido e acorda a Task)</span>
+<span class="code-keyword">void</span> <span class="code-function">IRAM_ATTR</span> isrHandler() {
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+  
+  <span class="code-comment">// Notifica a Task enviando sinal (0) e ação definida</span>
+  <span class="code-function">xTaskNotifyFromISR</span>(TaskProcessaHandle, 0, eSetValueWithoutOverwrite, &amp;xHigherPriorityTaskWoken);
+  
+  <span class="code-comment">// Força a troca de contexto se a Task for prioritária</span>
+  <span class="code-keyword">if</span> (xHigherPriorityTaskWoken) {
+    <span class="code-function">portYIELD_FROM_ISR</span>();
+  }
+}
+
+<span class="code-comment">// 2. A Tarefa (Fica bloqueada até receber o sinal)</span>
+<span class="code-keyword">void</span> <span class="code-function">vTaskProcessa</span>(<span class="code-keyword">void</span> *pvParameters) {
+  <span class="code-keyword">uint32_t</span> valorRecebido;
+  <span class="code-keyword">while</span>(1) {
+    <span class="code-comment">// Aguarda a notificação da ISR (Consome 0% CPU)</span>
+    <span class="code-function">xTaskNotifyWait</span>(0x00, ULONG_MAX, &amp;valorRecebido, portMAX_DELAY);
+    
+    <span class="code-comment">// Aqui fazemos o trabalho pesado (Serial, Wi-Fi, etc)</span>
+    <span class="code-function">Serial.println</span>(<span class="code-keyword">"Interrupcao tratada na Task!"</span>);
+  }
+}</div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-main">
+            <div class="footer-item"><i class="fas fa-university"></i> FATESE - Análise e Desenvolvimento de Sistemas</div>
+            <div class="footer-item">
+                <div class="status-dot"></div>
+                <span style="color: #059669;">Sistema Ativo</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

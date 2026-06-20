@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estratégia Top-Down</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .text-senac-blue { color: #004587; }
+        .bg-senac-blue { background-color: #004587; }
+        .text-senac-orange { color: #f68b1f; }
+        .bg-senac-orange { background-color: #f68b1f; }
+        .border-senac-blue { border-color: #004587; }
+
+        /* Diagram Styles */
+        .node-box {
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .node-real {
+            background-color: #004587;
+            color: white;
+            border: 2px solid #004587;
+        }
+
+        .node-stub {
+            background-color: #f9fafb;
+            color: #6b7280;
+            border: 2px dashed #9ca3af;
+        }
+
+        .stub-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #f68b1f;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Connectors (Responsive Setup) */
+        .connector {
+            width: 2px;
+            background-color: #cbd5e1;
+            position: relative;
+            z-index: 0;
+        }
+
+        .connector-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #cbd5e1;
+        }
+
+        .info-card {
+            background-color: white;
+            border-left: 4px solid #e5e7eb;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-left-width: 8px;
+            background-color: #f9fafb;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="px-16 pt-10 pb-4 flex justify-between items-end border-b border-gray-100 bg-white z-20">
+            <div>
+                <p class="text-senac-orange font-bold uppercase tracking-widest text-sm mb-2">Estratégias de Integração
+                </p>
+                <h1 class="text-5xl font-extrabold text-gray-800">Top-Down <span
+                        class="text-gray-400 font-light text-3xl">(Descendente)</span></h1>
+            </div>
+            <div class="text-right">
+                <p class="text-gray-500 font-medium">Uso de Stubs</p>
+            </div>
+        </div>
+        
+        <div class="flex-1 flex px-16 py-8 gap-12 relative bg-gray-50">
+            
+            <div class="w-7/12 flex flex-col items-center justify-center relative p-4">
+                
+                <div class="node-box node-real w-64 h-20 rounded-lg flex flex-col items-center justify-center relative">
+                    <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-gray-400 font-bold text-xs uppercase tracking-widest -rotate-90">
+                        <p>Alto Nível</p>
+                    </div>
+                    <i class="fas fa-desktop text-2xl mb-1"></i>
+                    <p class="font-bold uppercase tracking-wide">Interface (UI)</p>
+                    <div class="absolute -right-24 top-1/2 transform -translate-y-1/2 bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold">
+                        <p>Desenvolvido</p>
+                    </div>
+                </div>
+
+                <div class="connector connector-arrow" style="height: 64px;"></div>
+
+                <div class="node-box node-real w-64 h-20 rounded-lg flex flex-col items-center justify-center">
+                    <i class="fas fa-cogs text-2xl mb-1"></i>
+                    <p class="font-bold uppercase tracking-wide">Lógica de Negócio</p>
+                </div>
+
+                <div class="flex flex-col items-center z-0">
+                    <div style="width: 2px; height: 32px; background-color: #cbd5e1;"></div>
+                    <div style="width: 256px; height: 2px; background-color: #cbd5e1;"></div>
+                    <div class="flex justify-between" style="width: 256px;">
+                        <div class="connector connector-arrow" style="height: 32px;"></div>
+                        <div class="connector connector-arrow" style="height: 32px;"></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-8 w-full justify-center">
+                    <div class="node-box node-stub w-56 h-24 rounded-lg flex flex-col items-center justify-center relative">
+                        <div class="stub-badge">
+                            <p>STUB</p>
+                        </div>
+                        <i class="fas fa-database text-3xl mb-2 opacity-50"></i>
+                        <p class="font-bold text-sm">Banco de Dados</p>
+                        <p class="text-xs italic mt-1">(Simulado)</p>
+                    </div>
+                    <div class="node-box node-stub w-56 h-24 rounded-lg flex flex-col items-center justify-center relative">
+                        <div class="stub-badge">
+                            <p>STUB</p>
+                        </div>
+                        <i class="fas fa-cloud text-3xl mb-2 opacity-50"></i>
+                        <p class="font-bold text-sm">API Externa</p>
+                        <p class="text-xs italic mt-1">(Simulado)</p>
+                    </div>
+                </div>
+
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2 h-64 border-l-2 border-dashed border-gray-300 flex flex-col justify-between py-2 pl-4 text-xs text-gray-400 font-bold uppercase tracking-widest">
+                    <p>Início dos Testes</p>
+                    <p>Fim dos Testes</p>
+                </div>
+            </div>
+
+            <div class="w-5/12 flex flex-col justify-center space-y-5">
+                <div class="info-card border-l-blue-600 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-arrow-down text-blue-600 mr-3"></i>
+                        Fluxo Descendente
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Começa pelos módulos de <strong>alto nível</strong> (Interface e Regras de Negócio). O foco é validar o fluxo principal e a usabilidade antes de ter toda a infraestrutura pronta.
+                    </p>
+                </div>
+                <div class="info-card border-l-orange-500 rounded-lg shadow-sm bg-orange-50">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-mask text-orange-500 mr-3"></i>
+                        O Papel dos Stubs
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        <strong>Stubs</strong> são códigos provisórios que substituem módulos de baixo nível (como Banco de Dados ou APIs) que ainda não existem ou não estão integrados. Eles retornam dados fixos para que o teste continue.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-2">
+                    <div class="bg-green-50 p-3 rounded border border-green-100">
+                        <p class="text-green-800 font-bold text-xs uppercase mb-1"><i class="fas fa-thumbs-up mr-1"></i> Vantagens</p>
+                        <p class="text-xs text-gray-600">Valida requisitos de negócio cedo; demonstração visual rápida para o cliente.</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded border border-red-100">
+                        <p class="text-red-800 font-bold text-xs uppercase mb-1"><i class="fas fa-thumbs-down mr-1"></i> Riscos</p>
+                        <p class="text-xs text-gray-600">Pode mascarar erros técnicos na camada de dados; criar Stubs complexos é custoso.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="h-10 bg-white border-t border-gray-200 px-16 flex items-center justify-between text-gray-400 text-xs font-semibold uppercase tracking-wider">
+            <p>Qualidade e Teste de Software</p>
+            <p>Slide 09</p>
+        </div>
+    </div>
+</body>
+</html>

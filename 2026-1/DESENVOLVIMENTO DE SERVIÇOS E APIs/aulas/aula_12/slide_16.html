@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Criptografia: Hash vs Encriptação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            max-height: 560px;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-column {
+            width: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.hash {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.encrypt {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .card-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .feature-icon {
+            color: #3b82f6;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 13.5px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .feature-label {
+            font-weight: 600;
+            color: #ffffff;
+            margin-right: 6px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 13.5px;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: #e2e8f0;
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-icon {
+            color: #3b82f6;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .info-text {
+            font-size: 13.5px;
+            color: #e2e8f0;
+            line-height: 1.45;
+        }
+
+        .hash-visual {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .input-box,
+        .output-box {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .input-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .output-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            font-family: 'Consolas', monospace;
+            color: #60a5fa;
+            word-break: break-all;
+        }
+
+        .arrow-icon {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Criptografia: Hash vs Encriptação</h1>
+                        <p class="subtitle">Entenda as diferenças fundamentais entre hash e encriptação</p>
+                    </div>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Segurança de Dados</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="comparison-card">
+                        <div class="card-header">
+                            <div class="card-icon hash">
+                                <i class="fas fa-hashtag"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Hash (Unidirecional)</div>
+                                <div class="card-subtitle">Processo que converte dados em valor fixo</div>
+                            </div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Características:</span>
+                                    Transforma dados em uma string de tamanho fixo (ex: 64 caracteres)
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Uso principal:</span>
+                                    Verificação de integridade e armazenamento de senhas
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Vantagem:</span>
+                                    Não pode ser revertido (unidirecional)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hash-visual">
+                            <div class="input-box">
+                                <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">Senha original:</div>
+                                <div>minhaSenha123</div>
+                            </div>
+                            <div class="arrow-icon"><i class="fas fa-arrow-right"></i></div>
+                            <div class="output-box">
+                                <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">Hash SHA-256:</div>
+                                <div>5f4dcc3b5aa765d61d8327deb882cf99...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comparison-card">
+                        <div class="card-header">
+                            <div class="card-icon encrypt">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Encriptação (Bidirecional)</div>
+                                <div class="card-subtitle">Processo que protege dados para leitura posterior</div>
+                            </div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item" style="border-left-color: #10b981;">
+                                <div class="feature-icon" style="color: #10b981;"><i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Características:</span>
+                                    Transforma dados em formato ilegível que pode ser revertido
+                                </div>
+                            </div>
+                            <div class="feature-item" style="border-left-color: #10b981;">
+                                <div class="feature-icon" style="color: #10b981;"><i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Uso principal:</span>
+                                    Proteção de dados sensíveis em trânsito ou armazenados
+                                </div>
+                            </div>
+                            <div class="feature-item" style="border-left-color: #10b981;">
+                                <div class="feature-icon" style="color: #10b981;"><i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <span class="feature-label">Vantagem:</span>
+                                    Pode ser descriptografado com a chave correta
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="comparison-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon hash" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Comparação Direta</div>
+                                <div class="card-subtitle">Diferenças principais</div>
+                            </div>
+                        </div>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Aspecto</th>
+                                    <th>Hash</th>
+                                    <th>Encriptação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Direção</td>
+                                    <td>Unidirecional</td>
+                                    <td>Bidirecional</td>
+                                </tr>
+                                <tr>
+                                    <td>Reversível</td>
+                                    <td>Não</td>
+                                    <td>Sim</td>
+                                </tr>
+                                <tr>
+                                    <td>Uso</td>
+                                    <td>Integridade</td>
+                                    <td>Confidencialidade</td>
+                                </tr>
+                                <tr>
+                                    <td>Chave</td>
+                                    <td>Não necessária</td>
+                                    <td>Obrigatória</td>
+                                </tr>
+                                <tr>
+                                    <td>Tamanho</td>
+                                    <td>Fixo</td>
+                                    <td>Variável</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-icon"><i class="fas fa-lightbulb"></i></div>
+                        <div class="info-text">
+                            <strong>Quando usar:</strong><br />
+                            • <strong>Hash:</strong> Para verificar integridade (senhas, checksums)<br />
+                            • <strong>Encriptação:</strong> Para proteger dados que precisam ser lidos posteriormente
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

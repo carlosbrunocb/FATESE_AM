@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modelo V-Model</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* ALTERAÇÃO: Ocupa toda a largura e altura da janela */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafb;
+        }
+
+        .senac-blue {
+            color: #004A97;
+        }
+
+        .bg-senac-blue {
+            background-color: #004A97;
+        }
+
+        .senac-orange {
+            color: #F37021;
+        }
+
+        .bg-senac-orange {
+            background-color: #F37021;
+        }
+
+        .border-senac-blue {
+            border-color: #004A97;
+        }
+
+        .border-senac-orange {
+            border-color: #F37021;
+        }
+
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* V-Model Specific Styles */
+        .v-step {
+            width: 170px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            position: absolute;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+        }
+
+        .v-left {
+            background-color: #004A97;
+        }
+
+        /* Blue for Dev */
+        .v-right {
+            background-color: #F37021;
+        }
+
+        /* Orange for Test */
+        .v-bottom {
+            background-color: #4B5563;
+        }
+
+        /* Gray for Code */
+
+        .connector-line {
+            position: absolute;
+            background-color: #CBD5E0;
+            z-index: 0;
+        }
+
+        .traceability-line {
+            position: absolute;
+            border-top: 2px dashed #9CA3AF;
+            height: 0;
+            z-index: 0;
+        }
+
+        .traceability-label {
+            position: absolute;
+            background-color: #F3F4F6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            color: #6B7280;
+            font-weight: 600;
+            z-index: 5;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .info-card {
+            border-left-width: 5px;
+            transition: transform 0.2s;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col relative bg-gray-50">
+    <div class="absolute top-0 left-0 w-full h-2 bg-senac-blue"></div>
+    <div class="absolute top-0 right-0 w-1/4 h-2 bg-senac-orange"></div>
+    
+    <div class="pt-10 px-16 pb-4">
+        <div class="flex items-center justify-between">
+            <div class="border-l-8 border-senac-orange pl-6">
+                <p class="text-senac-blue font-bold uppercase tracking-widest text-sm mb-1">Bloco A: Modelos de SDLC</p>
+                <h1 class="text-4xl font-montserrat font-extrabold text-gray-800">
+                    Modelo <span class="text-senac-blue">V-Model</span>
+                </h1>
+            </div>
+            <div class="flex items-center gap-3 bg-white px-5 py-2 rounded-lg shadow-sm border border-gray-100">
+                <i class="fas fa-code-branch text-senac-blue text-xl"></i>
+                <div class="text-right">
+                    <p class="text-xs text-gray-400 font-bold uppercase">Foco Principal</p>
+                    <p class="text-sm font-bold text-gray-700">Verificação &amp; Validação</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex-1 px-16 py-4 flex gap-10 relative z-10 items-stretch">
+        
+        <div class="w-7/12 pt-2 pb-4 relative flex flex-col">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex-1 relative overflow-hidden flex flex-col justify-center">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-100 to-orange-100"></div>
+                
+                <h3 class="text-center font-montserrat font-bold text-gray-700 mb-8 text-sm uppercase tracking-wide absolute top-6 w-full left-0">
+                    Fluxo de Desenvolvimento (Esq.) vs. Teste (Dir.)
+                </h3>
+                
+                <div class="relative w-full mx-auto mt-8" style="max-width: 600px; height: 400px;">
+                    <div class="v-step v-left" style="top: 0; left: 0;">
+                        <i class="fas fa-file-contract"></i> Req. de Negócio
+                    </div>
+                    <div class="traceability-line" style="top: 22px; left: 170px; right: 170px;"></div>
+                    <div class="traceability-label" style="top: 10px;">Validação de Aceite</div>
+                    <div class="v-step v-right" style="top: 0; right: 0;">
+                        <i class="fas fa-check-circle"></i> Teste de Aceite (UAT)
+                    </div>
+                    <div class="v-step v-left" style="top: 70px; left: 40px;">
+                        <i class="fas fa-cogs"></i> Req. de Sistema
+                    </div>
+                    <div class="traceability-line" style="top: 92px; left: 210px; right: 210px;"></div>
+                    <div class="traceability-label" style="top: 80px;">Validação Funcional</div>
+                    <div class="v-step v-right" style="top: 70px; right: 40px;">
+                        <i class="fas fa-desktop"></i> Teste de Sistema
+                    </div>
+                    <div class="v-step v-left" style="top: 140px; left: 80px;">
+                        <i class="fas fa-sitemap"></i> Arquitetura
+                    </div>
+                    <div class="traceability-line" style="top: 162px; left: 250px; right: 250px;"></div>
+                    <div class="traceability-label" style="top: 120px;">Validação de Interface</div>
+                    <div class="v-step v-right" style="top: 140px; right: 80px;">
+                        <i class="fas fa-puzzle-piece"></i> Teste de Integração
+                    </div>
+                    <div class="v-step v-left" style="top: 210px; left: 120px;">
+                        <i class="fas fa-pencil-ruler"></i> Design Detalhado
+                    </div>
+                    <div class="traceability-line" style="top: 232px; left: 290px; right: 290px;"></div>
+                    <div class="traceability-label" style="top: 190px;">Validação Lógica</div>
+                    <div class="v-step v-right" style="top: 210px; right: 120px;">
+                        <i class="fas fa-code"></i> Teste de Unidade
+                    </div>
+                    <div class="connector-line"
+                        style="top: 44px; left: 85px; width: 2px; height: 260px; transform: rotate(-25deg); transform-origin: top;">
+                    </div>
+                    <div class="connector-line"
+                        style="top: 44px; right: 85px; width: 2px; height: 260px; transform: rotate(25deg); transform-origin: top;">
+                    </div>
+                    <div class="v-step v-bottom"
+                        style="top: 280px; left: 50%; transform: translateX(-50%); width: 200px;">
+                        <i class="fas fa-keyboard"></i> Implementação (Código)
+                    </div>
+                    <div
+                        class="absolute bottom-4 left-4 text-xs font-bold text-senac-blue opacity-80 uppercase transform -rotate-45">
+                        <i class="fas fa-arrow-down mr-1"></i> Verificação (Construção)
+                    </div>
+                    <div
+                        class="absolute bottom-4 right-4 text-xs font-bold text-senac-orange opacity-80 uppercase transform rotate-45">
+                        Validação (Teste) <i class="fas fa-arrow-up ml-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="w-5/12 flex flex-col gap-5 pb-16">
+            <div
+                class="info-card bg-white p-5 rounded-lg shadow-sm border-l-senac-blue flex gap-4 border border-gray-100">
+                <div class="flex-shrink-0 mt-1">
+                    <div
+                        class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-senac-blue text-lg">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-md font-bold font-montserrat text-gray-800 mb-1">Conceito Formal</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Extensão do modelo cascata que enfatiza que para cada fase de desenvolvimento existe uma
+                        <strong>fase de teste correspondente</strong>. Garante alta rastreabilidade entre o que foi
+                        pedido e o que foi testado.
+                    </p>
+                </div>
+            </div>
+            
+            <div
+                class="info-card bg-white p-5 rounded-lg shadow-sm border-l-green-500 flex gap-4 border border-gray-100">
+                <div class="flex-shrink-0 mt-1">
+                    <div
+                        class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-lg">
+                        <i class="fas fa-university"></i>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-md font-bold font-montserrat text-gray-800 mb-1">Exemplo: Sistema Bancário</h3>
+                    <p class="text-xs text-gray-500 font-mono mb-2 bg-gray-50 inline-block px-2 py-1 rounded border">
+                        Contexto: Core Banking (Compensação)</p>
+                    <ul class="text-sm text-gray-600 space-y-2 mt-1">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <p class="text-xs">Regras BCB ↔ <strong>Teste de Aceite</strong></p>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <p class="text-xs">Fluxo de Transação ↔ <strong>Teste de Sistema</strong></p>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <p class="text-xs">API de Saldo ↔ <strong>Teste de Integração</strong></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div
+                class="info-card bg-orange-50 p-5 rounded-lg border-l-senac-orange flex gap-4 border border-orange-100 mt-auto">
+                <div class="flex-shrink-0 mt-1">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-senac-orange text-lg shadow-sm">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-md font-bold font-montserrat text-gray-800 mb-1">Ponto de Atenção: Rigidez</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        Assim como o Cascata, é difícil acomodar mudanças de escopo no meio do caminho. Exige
+                        documentação robusta desde o início.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="absolute bottom-6 right-16 flex items-center gap-3 opacity-60">
+        <span class="text-sm font-medium text-gray-400">Qualidade e Teste de Software</span>
+        <span class="block w-px h-4 bg-gray-400"></span>
+        <span class="text-sm font-bold text-senac-blue">7/14</span>
+    </div>
+</body>
+
+</html>

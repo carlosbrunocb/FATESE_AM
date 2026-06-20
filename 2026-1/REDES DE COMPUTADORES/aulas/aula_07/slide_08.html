@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tabela de Roteamento - Estrutura e Campos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 40px 20px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 32pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 28pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 25px;
+            height: calc(100% - 78px);
+        }
+
+        .left-panel {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 15pt;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 12pt;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: start;
+            gap: 6px;
+            margin-bottom: 5px;
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .routing-table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #ff6b35;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-header {
+            display: flex;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 12pt;
+            font-weight: 700;
+        }
+
+        .table-row {
+            display: flex;
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 6px;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 11pt;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .col-destino {
+            flex: 1.5;
+        }
+
+        .col-mascara {
+            flex: 1;
+        }
+
+        .col-next-hop {
+            flex: 1.2;
+        }
+
+        .col-interface {
+            flex: 1;
+        }
+
+        .col-metrica {
+            flex: 0.8;
+            text-align: center;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .key-info {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .info-item i {
+            color: #ff6b35;
+            font-size: 14pt;
+            margin-bottom: 4px;
+        }
+
+        .info-item span {
+            color: #e0e6ed;
+            font-size: 11pt;
+            display: block;
+        }
+
+        .field-description {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+
+        .field-description .field-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 11pt;
+            color: #e0e6ed;
+        }
+
+        .field-description .field-item i {
+            color: #ff6b35;
+            font-size: 10pt;
+        }
+
+        .field-description .field-item span {
+            flex: 1;
+        }
+
+        .field-description .field-item .field-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-table"></i> Estrutura
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Tabela de Roteamento - Estrutura e Campos
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-table"></i>
+                            Estrutura da Tabela de Roteamento
+                        </h3>
+                        <div class="concept-text">
+                            A <span class="highlight">Tabela de Roteamento</span> é o "mapa" que os roteadores usam para
+                            decidir por qual interface enviar pacotes.
+                        </div>
+                        <div class="routing-table">
+                            <div class="table-header">
+                                <div class="col-destino">Destino</div>
+                                <div class="col-mascara">Máscara</div>
+                                <div class="col-next-hop">Próximo Salto</div>
+                                <div class="col-interface">Interface</div>
+                                <div class="col-metrica">Métrica</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-destino">192.168.1.0/24</div>
+                                <div class="col-mascara">255.255.255.0</div>
+                                <div class="col-next-hop">192.168.1.1</div>
+                                <div class="col-interface">Gi0/1</div>
+                                <div class="col-metrica">1</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-destino">10.0.0.0/8</div>
+                                <div class="col-mascara">255.0.0.0</div>
+                                <div class="col-next-hop">10.0.0.1</div>
+                                <div class="col-interface">S0/0/0</div>
+                                <div class="col-metrica">10</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-destino">172.16.0.0/16</div>
+                                <div class="col-mascara">255.255.0.0</div>
+                                <div class="col-next-hop">172.16.0.1</div>
+                                <div class="col-interface">Gi0/2</div>
+                                <div class="col-metrica">5</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-destino">0.0.0.0/0</div>
+                                <div class="col-mascara">0.0.0.0</div>
+                                <div class="col-next-hop">192.168.1.254</div>
+                                <div class="col-interface">Gi0/0</div>
+                                <div class="col-metrica">1</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-key"></i>
+                            Campos Principais
+                        </h3>
+                        <div class="field-description">
+                            <div class="field-item">
+                                <i class="fas fa-network-wired"></i>
+                                <span class="field-name">Rede de Destino:</span>
+                                <span>Endereço da rede destino (ex: 192.168.1.0/24)</span>
+                            </div>
+                            <div class="field-item">
+                                <i class="fas fa-mask"></i>
+                                <span class="field-name">Máscara:</span>
+                                <span>Define o tamanho da rede (ex: 255.255.255.0)</span>
+                            </div>
+                            <div class="field-item">
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="field-name">Próximo Salto:</span>
+                                <span>Endereço IP do próximo roteador</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-info-circle"></i>
+                            Como Funciona
+                        </h3>
+                        <div class="concept-text">
+                            O roteador consulta a tabela para cada pacote recebido:
+                        </div>
+                        <div class="bullet-point">Verifica o IP de destino</div>
+                        <div class="bullet-point">Busca a melhor correspondência</div>
+                        <div class="bullet-point">Determina a interface de saída</div>
+                        <div class="bullet-point">Encaminha o pacote</div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-calculator"></i>
+                            Métricas
+                        </h3>
+                        <div class="key-info">
+                            <div class="info-item">
+                                <i class="fas fa-sort-numeric-down"></i>
+                                <span>Salto</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Largura</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Latência</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-route"></i>
+                            Tipos de Rotas
+                        </h3>
+                        <div class="bullet-point"><span class="highlight">Diretamente conectadas:</span> Redes locais
+                        </div>
+                        <div class="bullet-point"><span class="highlight">Estáticas:</span> Configuradas manualmente
+                        </div>
+                        <div class="bullet-point"><span class="highlight">Dinâmicas:</span> Aprendidas via protocolos
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

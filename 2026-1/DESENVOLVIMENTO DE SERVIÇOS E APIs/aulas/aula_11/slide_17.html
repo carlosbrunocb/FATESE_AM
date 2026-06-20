@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercício Prático - Sistema de Vendas</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            position: absolute;
+            top: 105px;
+            left: 50px;
+            width: 95%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Exercise Section */
+        .exercise-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .exercise-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Scenario Box */
+        .scenario-box {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #63b3ed;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .scenario-icon {
+            width: 54px;
+            height: 54px;
+            background: #63b3ed;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .scenario-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .scenario-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .scenario-text {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Steps Grid */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            min-height: 160px;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            width: 26px;
+            height: 26px;
+            background: #63b3ed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            margin-top: 5px;
+        }
+
+        .step-icon.model {
+            background: #63b3ed;
+        }
+
+        .step-icon.repository {
+            background: #48bb78;
+        }
+
+        .step-icon.service {
+            background: #ed8936;
+        }
+
+        .step-icon.controller {
+            background: #9f7aea;
+        }
+
+        .step-icon.route {
+            background: #fc8181;
+        }
+
+        .step-title {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .step-description {
+            font-size: 12pt;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+
+        /* Code Example */
+        .code-example {
+            background: #1a202c;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13pt;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .code-comment {
+            color: #718096;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            width: 95%;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-shopping-cart header-icon"></i>
+                <span>Exercício Prático - Sistema de Vendas</span>
+            </div>
+            <div class="header-subtitle">Implementação de controle de estoque e vendas</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- Exercise Section -->
+            <div class="exercise-section">
+                <div class="exercise-header">
+                    <div class="exercise-title">
+                        <i class="fas fa-tasks" style="color: #63b3ed;"></i>
+                        <span>Desafio: Sistema de Vendas e Controle de Estoque</span>
+                    </div>
+                    <div style="font-size: 14px; color: #718096; font-weight: 500;">Tempo estimado: 40 minutos</div>
+                </div>
+                <!-- Scenario Box -->
+                <div class="scenario-box">
+                    <div class="scenario-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="scenario-content">
+                        <div class="scenario-title">Cenário</div>
+                        <div class="scenario-text">
+                            A nossa livraria agora faz vendas! Precisamos de um endpoint onde o cliente informa o ID do
+                            livro que deseja comprar.
+                            A API deve verificar se há estoque disponível. Se houver, a venda é concluída e o estoque
+                            diminui.
+                            Se não houver, a API deve retornar um erro avisando que o livro está esgotado.
+                        </div>
+                    </div>
+                </div>
+                <!-- Steps Grid -->
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-icon model"><i class="fas fa-database"></i></div>
+                        <div class="step-title">Atualizar Model</div>
+                        <div class="step-description">Adicionar campo estoque no modelo de Livro</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-icon repository"><i class="fas fa-server"></i></div>
+                        <div class="step-title">Criar Repository</div>
+                        <div class="step-description">Função atualizarEstoque para persistência</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-icon service"><i class="fas fa-cogs"></i></div>
+                        <div class="step-title">Implementar Service</div>
+                        <div class="step-description">Regra de negócio realizarVenda</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-icon controller"><i class="fas fa-code"></i></div>
+                        <div class="step-title">Criar Controller</div>
+                        <div class="step-description">Controlador comprarLivro</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <div class="step-icon route"><i class="fas fa-route"></i></div>
+                        <div class="step-title">Configurar Rota</div>
+                        <div class="step-description">POST /api/livros/:id/comprar</div>
+                    </div>
+                </div>
+                <!-- Code Example -->
+                <div class="code-example">
+                    <div class="code-line"><span class="code-comment">// Fluxo completo da venda</span></div>
+                    <div class="code-line"><span class="code-comment">// 1. Cliente faz POST para
+                            /api/livros/:id/comprar</span></div>
+                    <div class="code-line"><span class="code-comment">// 2. Controller extrai ID da URL</span></div>
+                    <div class="code-line"><span class="code-comment">// 3. Service verifica estoque e aplica regra de
+                            negócio</span></div>
+                    <div class="code-line"><span class="code-comment">// 4. Repository atualiza estoque no banco</span>
+                    </div>
+                    <div class="code-line"><span class="code-comment">// 5. Retorna resposta de sucesso ou erro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Implementação do Repository</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>5 Passos</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    <span>40 min</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

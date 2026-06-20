@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Alvo 3: Linha de Impedimento do Escopo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2d5a87 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon i {
+            color: #ff6b35;
+            font-size: 24px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 60px;
+            right: 60px;
+            bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #90caf9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .definition-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .definition-text {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .risk-item {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .risk-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 4px;
+        }
+
+        .risk-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .step-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .check-icon {
+            color: #4CAF50;
+            font-size: 14px;
+        }
+
+        .check-text {
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 1px solid #ffcc80;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            flex: 1;
+        }
+
+        .highlight-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .scope-example {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .scope-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .scope-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .scope-status {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .scope-content {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .in-out-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .in-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .out-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .in-out-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .in-out-text {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header Section -->
+        <div class="header-section" data-object="true" data-object-type="header">
+            <div>
+                <div class="header-title">Alvo 3: Linha de Impedimento do Escopo</div>
+                <div class="header-subtitle">Definição, riscos e passos para delimitar o MVP</div>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-ruler-combined"></i>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Definition -->
+                <div class="card" data-object="true" data-object-type="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(33, 150, 243, 0.1); color: #2196F3;">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">O que é a Linha de Impedimento?</div>
+                            <div class="card-subtitle">Fronteira entre In e Out do MVP</div>
+                        </div>
+                    </div>
+                    <div class="definition-box">
+                        <div class="definition-title">
+                            <i class="fas fa-ruler text-blue-500"></i>
+                            <span>Definição</span>
+                        </div>
+                        <div class="definition-text">
+                            A <strong>linha de impedimento do escopo</strong> é a fronteira explícita entre o que entra
+                            (In) e o que fica fora (Out) do MVP no semestre. É a declaração clara do que será
+                            desenvolvido e o que será excluído, garantindo viabilidade e foco.
+                        </div>
+                    </div>
+                    <div class="risk-grid">
+                        <div class="risk-item">
+                            <div class="risk-title">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Efeito NASA
+                            </div>
+                            <div class="risk-text">
+                                Atrasos, baixa qualidade e reprovação por viabilidade
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-title">
+                                <i class="fas fa-times-circle mr-1"></i>
+                                Misfit com Banca
+                            </div>
+                            <div class="risk-text">
+                                Promessas não entregues na apresentação
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Steps -->
+                <div class="card" data-object="true" data-object-type="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(76, 175, 80, 0.1); color: #4CAF50;">
+                            <i class="fas fa-list-ol"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Como Definir o Escopo</div>
+                            <div class="card-subtitle">Passo a passo para delimitação</div>
+                        </div>
+                    </div>
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Liste entregáveis essenciais</div>
+                                <div class="step-text">Identifique o que é necessário para provar a Killer Feature</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Classifique: Essencial vs. Desejável</div>
+                                <div class="step-text">Diferencie MVP (In) de funcionalidades futuras (Out)</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Redija blocos In/Out</div>
+                                <div class="step-text">Declare explicitamente o que inclui e exclui</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Criteria -->
+                <div class="card" data-object="true" data-object-type="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(255, 107, 53, 0.1); color: #ff6b35;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Critérios de Corte</div>
+                            <div class="card-subtitle">Heurísticas para decisão</div>
+                        </div>
+                    </div>
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="check-text">Tempo &lt; 6 semanas</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="check-text">Dependência mínima</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="check-text">Valor direto</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="check-text">Viabilidade técnica</span>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb text-orange-500"></i>
+                            <span>Dica Prática</span>
+                        </div>
+                        <div class="highlight-text">
+                            Use o critério <strong>"Se removermos isso, a solução ainda funciona?"</strong> para
+                            identificar o essencial do opcional.
+                        </div>
+                    </div>
+                </div>
+                <!-- Example -->
+                <div class="card" data-object="true" data-object-type="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(156, 39, 176, 0.1); color: #9C27B0;">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Exemplo de Formulação</div>
+                            <div class="card-subtitle">In/Out para projeto AdoptMatch</div>
+                        </div>
+                    </div>
+                    <div class="in-out-grid">
+                        <div class="in-box">
+                            <div class="in-out-title">
+                                <i class="fas fa-check text-green-500 mr-1"></i>
+                                INCLUI
+                            </div>
+                            <div class="in-out-text">
+                                Módulo de triagem e algoritmo de match comportamental
+                            </div>
+                        </div>
+                        <div class="out-box">
+                            <div class="in-out-title">
+                                <i class="fas fa-times text-red-500 mr-1"></i>
+                                EXCLUI
+                            </div>
+                            <div class="in-out-text">
+                                E-commerce, telemedicina, fórum e redes sociais
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

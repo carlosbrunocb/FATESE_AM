@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bibliotecas ESP32 para WebServer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 4px 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .libraries-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .library-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .library-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .library-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .library-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .library-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+        }
+
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .code-highlight {
+            color: #22c55e;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .features-row {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .features-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .features-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .features-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22c55e;
+            font-size: 18px;
+        }
+
+        .features-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-check {
+            width: 18px;
+            height: 18px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22c55e;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .routes-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .routes-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .routes-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .routes-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .routes-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .routes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .route-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .route-method {
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .get {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        .post {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .put {
+            background: rgba(245, 158, 11, 0.3);
+        }
+
+        .delete {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .route-path {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .route-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Bibliotecas ESP32 para WebServer</h1>
+                        <p>WiFi.h e WebServer.h - Conexão, Rotas e Respostas</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="status-bar">
+                        <div class="status-dot"></div>
+                        <span class="status-text text-gray-400 text-sm">Pronto para uso</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Libraries Grid -->
+                <div class="libraries-grid">
+                    <!-- WiFi.h Card -->
+                    <div class="library-card">
+                        <div class="library-header">
+                            <div class="library-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div class="library-title">WiFi.h</div>
+                        </div>
+                        <div class="library-desc">Conexão à rede WiFi, verificação de status e obtenção de IP local
+                        </div>
+                        <div class="code-snippet">
+                            <span class="code-highlight">WiFi.begin</span>(ssid, password);<br />
+                            <span class="code-highlight">WiFi.status</span>() == WL_CONNECTED<br />
+                            <span class="code-highlight">WiFi.localIP</span>()
+                        </div>
+                    </div>
+                    <!-- WebServer.h Card -->
+                    <div class="library-card">
+                        <div class="library-header">
+                            <div class="library-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="library-title">WebServer.h</div>
+                        </div>
+                        <div class="library-desc">Servidor HTTP na porta 80, loop de atendimento e manipulação de
+                            requisições</div>
+                        <div class="code-snippet">
+                            <span class="code-highlight">WebServer</span> server(80);<br />
+                            <span class="code-highlight">server.handleClient</span>();<br />
+                            <span class="code-highlight">server.send</span>(200, "text/html", html)
+                        </div>
+                    </div>
+                    <!-- Rotas Card -->
+                    <div class="library-card">
+                        <div class="library-header">
+                            <div class="library-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="library-title">Rotas</div>
+                        </div>
+                        <div class="library-desc">Definição de rotas e handlers para diferentes URLs</div>
+                        <div class="code-snippet">
+                            <span class="code-highlight">server.on</span>("/", HTTP_GET, handler);<br />
+                            <span class="code-highlight">server.on</span>("/ligar", HTTP_GET, ligarLED);<br />
+                            <span class="code-highlight">server.onNotFound</span>(handler404)
+                        </div>
+                    </div>
+                </div>
+                <!-- Features Row -->
+                <div class="features-row">
+                    <div class="features-card">
+                        <div class="features-header">
+                            <div class="features-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="features-title">Funcionalidades Principais</div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Conexão WiFi automática</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Servidor HTTP embutido</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Manipulação de rotas</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Respostas JSON/HTML</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Controle de GPIO</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-check"><i class="fas fa-check"></i></div>
+                                <div class="feature-text">Monitoramento Serial</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="routes-card">
+                        <div class="routes-header">
+                            <div class="routes-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="routes-title">Rotas HTTP</div>
+                        </div>
+                        <div class="routes-list">
+                            <div class="route-item">
+                                <span class="route-method get">GET</span>
+                                <span class="route-path">/</span>
+                                <span class="route-desc">Página inicial</span>
+                            </div>
+                            <div class="route-item">
+                                <span class="route-method get">GET</span>
+                                <span class="route-path">/ligar</span>
+                                <span class="route-desc">Ligar LED</span>
+                            </div>
+                            <div class="route-item">
+                                <span class="route-method get">GET</span>
+                                <span class="route-path">/desligar</span>
+                                <span class="route-desc">Desligar LED</span>
+                            </div>
+                            <div class="route-item">
+                                <span class="route-method post">POST</span>
+                                <span class="route-path">/config</span>
+                                <span class="route-desc">Configurar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

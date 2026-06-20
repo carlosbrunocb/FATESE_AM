@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comandos de Teste de Conectividade</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            background-color: #00264d;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #00264d;
+            color: white;
+            overflow: hidden;
+        }
+
+        .bg-binary {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 1.2vw;
+            line-height: 1.5;
+            color: rgba(0, 188, 235, 0.03);
+            z-index: 0;
+            pointer-events: none;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .header {
+            padding: 2vh 4vw;
+            z-index: 10;
+            background-color: #00264d;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            color: #00bceb;
+            margin-right: 20px;
+            background-color: rgba(0, 188, 235, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.5rem, 4vh, 2.8rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .header-line {
+            height: 4px;
+            width: 100px;
+            background-color: #f59e0b;
+            margin-top: 5px;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            padding: 2vh 4vw 4vh 4vw;
+            gap: 2vw;
+            position: relative;
+            z-index: 10;
+            min-height: 0; /* Essencial para scroll interno se necessário */
+        }
+
+        .terminal-column {
+            flex: 1.1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .terminal-window {
+            background-color: #0f172a;
+            border-radius: 8px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid #334155;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .window-bar {
+            background-color: #1e293b;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .window-title { font-size: 0.9rem; color: #94a3b8; margin-left: 10px; }
+        .window-controls { display: flex; gap: 8px; margin-left: auto; }
+        .control { width: 12px; height: 12px; border-radius: 50%; }
+        .control-close { background-color: #ef4444; }
+        .control-min { background-color: #f59e0b; }
+        .control-max { background-color: #22c55e; }
+
+        .terminal-body {
+            flex: 1;
+            padding: 1.5vw;
+            color: #e2e8f0;
+            font-size: clamp(0.8rem, 1.8vh, 1rem);
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        .prompt { color: #22c55e; font-weight: 700; }
+        .cmd-text { color: #f59e0b; }
+        .output { color: #cbd5e1; margin-bottom: 15px; display: block; }
+        .cursor { display: inline-block; width: 8px; height: 18px; background-color: #e2e8f0; vertical-align: middle; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .reference-column {
+            flex: 1.4;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1.5vw;
+        }
+
+        .cmd-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5vw;
+            border-left: 4px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cmd-card.primary { border-left-color: #00bceb; }
+        .cmd-card.secondary { border-left-color: #f59e0b; }
+        .cmd-card.tertiary { border-left-color: #22c55e; }
+        .cmd-card.quaternary { border-left-color: #ec4899; }
+
+        .cmd-name {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .card-desc { font-size: 0.95rem; color: #cbd5e1; margin: 10px 0; flex-grow: 1; }
+        .syntax-box { background-color: rgba(0, 0, 0, 0.4); padding: 5px 10px; border-radius: 4px; font-family: 'Source Code Pro', monospace; font-size: 0.85rem; color: #a5f3fc; }
+        .syntax-label { font-size: 0.7rem; text-transform: uppercase; color: #64748b; margin-bottom: 2px; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="bg-binary">
+            01010101 00101010 11010101 01010011 01010101 00101010 11010101 01010011
+            10101010 11001100 00110011 10101010 10101010 11001100 00110011 10101010
+            00110011 10101010 11110000 00001111 00110011 10101010 11110000 00001111
+        </div>
+        <header class="header">
+            <div class="header-icon"><i class="fas fa-terminal"></i></div>
+            <div>
+                <h1 class="main-title">Comandos de Conectividade</h1>
+                <div class="header-line"></div>
+            </div>
+        </header>
+        <main class="content-area">
+            <div class="terminal-column">
+                <div class="terminal-window">
+                    <div class="window-bar">
+                        <div class="window-controls">
+                            <div class="control control-close"></div>
+                            <div class="control control-min"></div>
+                            <div class="control control-max"></div>
+                        </div>
+                        <span class="window-title">Command Prompt - PC0</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div><span class="prompt">PC&gt;</span> <span class="cmd-text">ipconfig</span></div>
+                        <div class="output">
+                            IPv4 Address....................: 192.168.1.1<br />
+                            Subnet Mask.....................: 255.255.255.0
+                        </div>
+                        <div><span class="prompt">PC&gt;</span> <span class="cmd-text">ping 192.168.1.2</span></div>
+                        <div class="output">
+                            Reply from 192.168.1.2: bytes=32 time=1ms TTL=128<br />
+                            Reply from 192.168.1.2: bytes=32 time&lt;1ms TTL=128
+                        </div>
+                        <div><span class="prompt">PC&gt;</span> <span class="cursor"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="reference-column">
+                <div class="cmd-card primary">
+                    <div class="flex items-center border-b border-white border-opacity-10 pb-2 mb-2">
+                        <span class="cmd-name">ipconfig</span>
+                        <i class="fas fa-info-circle ml-auto opacity-50"></i>
+                    </div>
+                    <p class="card-desc">Exibe a configuração atual de IP e interfaces.</p>
+                    <span class="syntax-label">Exemplo:</span>
+                    <div class="syntax-box">ipconfig /all</div>
+                </div>
+                <div class="cmd-card secondary">
+                    <div class="flex items-center border-b border-white border-opacity-10 pb-2 mb-2">
+                        <span class="cmd-name">ping</span>
+                        <i class="fas fa-exchange-alt ml-auto opacity-50"></i>
+                    </div>
+                    <p class="card-desc">Testa conectividade via pacotes ICMP.</p>
+                    <span class="syntax-label">Exemplo:</span>
+                    <div class="syntax-box">ping 192.168.1.2</div>
+                </div>
+                <div class="cmd-card tertiary">
+                    <div class="flex items-center border-b border-white border-opacity-10 pb-2 mb-2">
+                        <span class="cmd-name">tracert</span>
+                        <i class="fas fa-road ml-auto opacity-50"></i>
+                    </div>
+                    <p class="card-desc">Rastreia a rota e saltos até o destino.</p>
+                    <span class="syntax-label">Exemplo:</span>
+                    <div class="syntax-box">tracert google.com</div>
+                </div>
+                <div class="cmd-card quaternary">
+                    <div class="flex items-center border-b border-white border-opacity-10 pb-2 mb-2">
+                        <span class="cmd-name">arp</span>
+                        <i class="fas fa-list ml-auto opacity-50"></i>
+                    </div>
+                    <p class="card-desc">Exibe a tabela de mapeamento IP/MAC.</p>
+                    <span class="syntax-label">Exemplo:</span>
+                    <div class="syntax-box">arp -a</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

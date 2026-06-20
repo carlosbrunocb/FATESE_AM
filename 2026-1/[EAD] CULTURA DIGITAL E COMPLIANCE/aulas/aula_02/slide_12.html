@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ética dos Dados sob Pressão por Entregas</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecef 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #3b5998 50%, #1e3a5f 100%);
+            z-index: 100;
+        }
+
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 0;
+            width: 80px;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+        }
+
+        .sidebar-icon {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            padding: 5px;
+            width: 44px;
+            /* Increased to fix tight padding */
+            text-align: center;
+        }
+
+        .sidebar-icon:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            z-index: 100;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            text-align: right;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 120px;
+            top: 80px;
+            right: 60px;
+            bottom: 60px;
+            /* Reduced from 80px to shift content down */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            margin-bottom: 25px;
+            /* Increased from 20px */
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            /* Increased from 28px */
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .highlight {
+            color: #3b5998;
+            font-weight: 600;
+        }
+
+        .provocation-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            /* Increased from 15px */
+            margin-bottom: 25px;
+            /* Increased from 20px */
+            border-left: 4px solid #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .provocation-icon {
+            font-size: 36px;
+            /* Increased from 32px */
+            color: #f59e0b;
+            flex-shrink: 0;
+            width: 50px;
+            /* Increased from 45px to fix text fitting */
+            text-align: center;
+        }
+
+        .provocation-text {
+            flex: 1;
+        }
+
+        .provocation-question {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            /* Increased from 16px */
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 6px;
+            /* Increased from 4px */
+        }
+
+        .provocation-subtext {
+            font-size: 14px;
+            /* Increased from 13px */
+            color: #475569;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            /* Increased from 20px */
+            flex: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            /* Increased from 15px */
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            /* Increased from 15px */
+        }
+
+        .principles-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            /* Increased from 15px */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            /* Added flex to fill space */
+        }
+
+        .principles-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            /* Increased from 12px */
+        }
+
+        .principles-icon {
+            width: 32px;
+            /* Increased from 28px */
+            height: 32px;
+            /* Increased from 28px */
+            background: #e0f2fe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            /* Increased from 10px */
+            font-size: 16px;
+            /* Increased from 14px */
+            color: #0369a1;
+        }
+
+        .principles-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            /* Increased from 14px */
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .principles-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            /* Increased from 8px */
+        }
+
+        .principle-tag {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 6px 14px;
+            /* Increased from 4px 10px */
+            font-size: 14px;
+            /* Increased from 12px */
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            /* Increased from 4px */
+        }
+
+        .principle-dot {
+            width: 8px;
+            /* Increased from 6px */
+            height: 8px;
+            /* Increased from 6px */
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .practices-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            /* Increased from 15px */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            flex: 1.5;
+            /* Added flex to fill space */
+        }
+
+        .practices-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            /* Increased from 12px */
+        }
+
+        .practices-icon {
+            width: 32px;
+            /* Increased from 28px */
+            height: 32px;
+            /* Increased from 28px */
+            background: #fef3c7;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            /* Increased from 10px */
+            font-size: 16px;
+            /* Increased from 14px */
+            color: #f59e0b;
+        }
+
+        .practices-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            /* Increased from 14px */
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .practices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* Increased from 8px */
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Increased from 8px */
+            font-size: 14px;
+            /* Increased from 12px */
+            color: #475569;
+        }
+
+        .practice-check {
+            color: #22c55e;
+            font-size: 14px;
+            /* Increased from 12px */
+        }
+
+        .metrics-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            /* Increased from 15px */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            flex: 1.5;
+            /* Added flex to fill space */
+        }
+
+        .metrics-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            /* Increased from 12px */
+        }
+
+        .metrics-icon {
+            width: 32px;
+            /* Increased from 28px */
+            height: 32px;
+            /* Increased from 28px */
+            background: #f0fdf4;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            /* Increased from 10px */
+            font-size: 16px;
+            /* Increased from 14px */
+            color: #166534;
+        }
+
+        .metrics-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            /* Increased from 14px */
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            /* Increased from 10px */
+        }
+
+        .metric-item {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 12px;
+            /* Increased from 8px */
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            /* Increased from 16px */
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+            /* Increased from 2px */
+        }
+
+        .metric-label {
+            font-size: 13px;
+            /* Increased from 11px */
+            color: #64748b;
+        }
+
+        .tools-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            /* Increased from 15px */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            /* Added flex to fill space */
+        }
+
+        .tools-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            /* Increased from 12px */
+        }
+
+        .tools-icon {
+            width: 32px;
+            /* Increased from 28px */
+            height: 32px;
+            /* Increased from 28px */
+            background: #fef2f2;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            /* Increased from 10px */
+            font-size: 16px;
+            /* Increased from 14px */
+            color: #dc2626;
+        }
+
+        .tools-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            /* Increased from 14px */
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .tools-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            /* Increased from 8px */
+        }
+
+        .tool-tag {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 6px 14px;
+            /* Increased from 4px 10px */
+            font-size: 13px;
+            /* Increased from 11px */
+            color: #475569;
+        }
+
+        .warning-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 15px;
+            /* Increased from 10px */
+            margin-top: 25px;
+            /* Increased from 10px */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            /* Increased from 8px */
+        }
+
+        .warning-icon {
+            color: #dc2626;
+            font-size: 18px;
+            /* Increased from 14px */
+        }
+
+        .warning-text {
+            font-size: 14px;
+            /* Increased from 12px */
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="sidebar">
+            <div class="sidebar-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-code"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-lock"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-balance-scale"></i></div>
+        </div>
+        <div class="logo-container">
+            <div class="logo-text">FATESE</div>
+            <div class="logo-subtext">Faculdade de Tecnologia do Senac</div>
+        </div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <i class="fas fa-heart-pulse" style="margin-right: 15px; color: #3b5998;"></i>
+                    Ética dos Dados sob <span class="highlight">Pressão por Entregas</span>
+                </div>
+            </div>
+            <div class="provocation-box">
+                <div class="provocation-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="provocation-text">
+                    <div class="provocation-question">Como equilibrar velocidade e responsabilidade sem comprometer
+                        usuários?</div>
+                    <div class="provocation-subtext">A pressão por entregas rápidas não pode justificar atalhos que
+                        violam princípios éticos de privacidade e segurança.</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="principles-card">
+                        <div class="principles-header">
+                            <div class="principles-icon">
+                                <i class="fas fa-scale-balanced"></i>
+                            </div>
+                            <div class="principles-title">Princípios Éticos</div>
+                        </div>
+                        <div class="principles-list">
+                            <div class="principle-tag">
+                                <div class="principle-dot"></div>
+                                <span>Privacy by Design</span>
+                            </div>
+                            <div class="principle-tag">
+                                <div class="principle-dot"></div>
+                                <span>Minimização</span>
+                            </div>
+                            <div class="principle-tag">
+                                <div class="principle-dot"></div>
+                                <span>Transparência</span>
+                            </div>
+                            <div class="principle-tag">
+                                <div class="principle-dot"></div>
+                                <span>Autonomia</span>
+                            </div>
+                            <div class="principle-tag">
+                                <div class="principle-dot"></div>
+                                <span>Responsabilidade</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="practices-card">
+                        <div class="practices-header">
+                            <div class="practices-icon">
+                                <i class="fas fa-list-check"></i>
+                            </div>
+                            <div class="practices-title">Práticas do Dia a Dia</div>
+                        </div>
+                        <div class="practices-list">
+                            <div class="practice-item">
+                                <i class="fas fa-check practice-check"></i>
+                                <span>Critérios de aceitação de segurança nas histórias</span>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-check practice-check"></i>
+                                <span>Definition of Done inclui SAST/SCA</span>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-check practice-check"></i>
+                                <span>Testes com dados sintéticos</span>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-check practice-check"></i>
+                                <span>Revisão de risco por sprint</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="metrics-card">
+                        <div class="metrics-header">
+                            <div class="metrics-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metrics-title">Métricas Saudáveis</div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-value">85%</div>
+                                <div class="metric-label">PRs com checks</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2.5d</div>
+                                <div class="metric-label">MTTR vulnerabilidades</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">12h</div>
+                                <div class="metric-label">Lead time</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">0.5%</div>
+                                <div class="metric-label">Taxa incidentes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tools-card">
+                        <div class="tools-header">
+                            <div class="tools-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="tools-title">Ferramentas de Apoio</div>
+                        </div>
+                        <div class="tools-grid">
+                            <div class="tool-tag">OPA/Rego</div>
+                            <div class="tool-tag">Sentinel</div>
+                            <div class="tool-tag">Snyk</div>
+                            <div class="tool-tag">SonarQube</div>
+                            <div class="tool-tag">Checkmarx</div>
+                            <div class="tool-tag">FOSSA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle warning-icon"></i>
+                <div class="warning-text">Ignorar a ética acumula "dívida ética" e técnica, resultando em incidentes,
+                    multas e desgaste da marca.</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

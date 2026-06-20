@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Encapsulamento de Pacotes IP</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 70px);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 18px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: #e0e6ed;
+            font-size: 13pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .encapsulation-diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .process-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .process-step:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 14pt;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-name {
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .step-desc {
+            color: #e0e6ed;
+            font-size: 12pt;
+            text-align: right;
+        }
+
+        .arrow-down {
+            text-align: center;
+            color: #ff6b35;
+            font-size: 20pt;
+            margin: 5px 0;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .layer-info {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .layer-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .layer-item i {
+            color: #ff6b35;
+            font-size: 16pt;
+            margin-bottom: 4px;
+        }
+
+        .layer-item span {
+            color: #e0e6ed;
+            font-size: 11pt;
+            display: block;
+        }
+
+        .packet-structure {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .packet-layer {
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .packet-layer span {
+            color: #ffffff;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+
+        .packet-layer div {
+            color: #e0e6ed;
+            font-size: 10pt;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-layer-group"></i> Camada 3
+            </div>
+            <div class="main-title">
+                <i class="fas fa-boxes"></i>
+                Encapsulamento de Pacotes IP
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Processo de Encapsulamento
+                        </h3>
+                        <div class="concept-text">
+                            O <span class="highlight">encapsulamento</span> é o processo de adicionar cabeçalhos de
+                            controle aos dados em cada camada do modelo OSI.
+                        </div>
+                        <div class="bullet-point">Dados → Segmento (Camada 4) → Pacote IP (Camada 3) → Quadro (Camada 2)
+                        </div>
+                        <div class="bullet-point">Cada camada adiciona informações de controle específicas</div>
+                        <div class="bullet-point">Endereços IP permanecem constantes durante o roteamento</div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-cube"></i>
+                            Estrutura do Pacote IP
+                        </h3>
+                        <div class="layer-info">
+                            <div class="layer-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>IP Origem</span>
+                            </div>
+                            <div class="layer-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>IP Destino</span>
+                            </div>
+                            <div class="layer-item">
+                                <i class="fas fa-clock"></i>
+                                <span>TTL</span>
+                            </div>
+                            <div class="layer-item">
+                                <i class="fas fa-list"></i>
+                                <span>Protocolo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-info-circle"></i>
+                            Cabeçalho IP
+                        </h3>
+                        <div class="concept-text">
+                            O cabeçalho IP contém: <span class="highlight">Versão</span>, <span
+                                class="highlight">Tamanho</span>, <span class="highlight">Identificação</span>, <span
+                                class="highlight">Flags</span>, <span class="highlight">Checksum</span> e outras
+                            informações.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="encapsulation-diagram">
+                        <div class="process-flow">
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-name">Dados da Aplicação</div>
+                                    <div class="step-desc">Payload original</div>
+                                </div>
+                            </div>
+                            <div class="arrow-down">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-name">Segmento TCP (Camada 4)</div>
+                                    <div class="step-desc">Portas origem/destino</div>
+                                </div>
+                            </div>
+                            <div class="arrow-down">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="process-step"
+                                style="background: rgba(255, 107, 53, 0.3); border: 2px solid #ff6b35;">
+                                <div class="step-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-name">Pacote IP (Camada 3)</div>
+                                    <div class="step-desc">Endereçamento IP, TTL</div>
+                                </div>
+                            </div>
+                            <div class="arrow-down">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-ethernet"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-name">Quadro Ethernet (Camada 2)</div>
+                                    <div class="step-desc">MAC origem/destino</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; text-align: center;">
+                            <div
+                                style="display: inline-block; background: rgba(255, 107, 53, 0.2); border-radius: 10px; padding: 10px 20px;">
+                                <div style="color: #ff6b35; font-size: 12pt; font-weight: 600;">
+                                    <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                                    Camada 3: Pacote IP
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

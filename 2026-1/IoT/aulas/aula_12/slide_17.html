@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Visão Geral de QoS</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 130px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* QoS Levels Grid */
+        .qos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .qos-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            height: 280px;
+        }
+
+        .qos-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .qos-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .qos-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qos-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .qos-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .qos-badge {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .qos-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .qos-desc {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .qos-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: auto;
+        }
+
+        .feature-tag {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #f8f9fa;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .qos-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item:first-child {
+            text-align: left;
+        }
+
+        .stat-item:last-child {
+            text-align: right;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        /* Color Coding */
+        .qos-0 {
+            border-top-color: #4CAF50;
+        }
+
+        .qos-0 .qos-icon {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .qos-0 .qos-badge {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .qos-1 {
+            border-top-color: #FF9800;
+        }
+
+        .qos-1 .qos-icon {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .qos-1 .qos-badge {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .qos-2 {
+            border-top-color: #2196F3;
+        }
+
+        .qos-2 .qos-icon {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .qos-2 .qos-badge {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        /* Negotiation Section */
+        .negotiation-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .negotiation-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .negotiation-content {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .negotiation-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .negotiation-desc {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .negotiation-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .flow-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .flow-label {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .flow-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-layer-group" style="margin-right: 12px; color: #667eea;"></i>
+                    Visão Geral de QoS
+                </div>
+                <div class="header-subtitle">Quality of Service: Níveis de garantia de entrega de mensagens</div>
+            </div>
+            <div class="header-right">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="progress-text">65%</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="qos-grid">
+                <div class="qos-card qos-0">
+                    <div class="qos-header">
+                        <div class="qos-level">
+                            <div class="qos-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="qos-title">QoS 0</div>
+                        </div>
+                        <span class="qos-badge">At most once</span>
+                    </div>
+                    <div class="qos-content">
+                        <div class="qos-desc">
+                            "Fire and forget" - Mensagem enviada sem confirmação de entrega. Ideal para dados não
+                            críticos.
+                        </div>
+                        <div class="qos-features">
+                            <span class="feature-tag">Sem ACK</span>
+                            <span class="feature-tag">Rápido</span>
+                            <span class="feature-tag">Baixo overhead</span>
+                        </div>
+                        <div class="qos-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">0%</div>
+                                <div class="stat-label">Garantia</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1</div>
+                                <div class="stat-label">Handshake</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="qos-card qos-1">
+                    <div class="qos-header">
+                        <div class="qos-level">
+                            <div class="qos-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="qos-title">QoS 1</div>
+                        </div>
+                        <span class="qos-badge">At least once</span>
+                    </div>
+                    <div class="qos-content">
+                        <div class="qos-desc">
+                            Garante entrega da mensagem, mas pode haver duplicatas. Requer confirmação PUBACK.
+                        </div>
+                        <div class="qos-features">
+                            <span class="feature-tag">Com ACK</span>
+                            <span class="feature-tag">Possíveis duplicatas</span>
+                            <span class="feature-tag">2 passos</span>
+                        </div>
+                        <div class="qos-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">100%</div>
+                                <div class="stat-label">Garantia</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">Handshake</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="qos-card qos-2">
+                    <div class="qos-header">
+                        <div class="qos-level">
+                            <div class="qos-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="qos-title">QoS 2</div>
+                        </div>
+                        <span class="qos-badge">Exactly once</span>
+                    </div>
+                    <div class="qos-content">
+                        <div class="qos-desc">
+                            Entrega garantida sem duplicatas. Handshake completo de 4 passos.
+                        </div>
+                        <div class="qos-features">
+                            <span class="feature-tag">Sem duplicatas</span>
+                            <span class="feature-tag">Máxima confiabilidade</span>
+                            <span class="feature-tag">4 passos</span>
+                        </div>
+                        <div class="qos-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">100%</div>
+                                <div class="stat-label">Garantia</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">4</div>
+                                <div class="stat-label">Handshake</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="negotiation-section">
+                <div class="negotiation-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="negotiation-content">
+                    <div class="negotiation-title">Negociação de QoS</div>
+                    <div class="negotiation-desc">
+                        O nível final de QoS é determinado pelo menor valor entre o QoS definido pelo publisher e o QoS
+                        solicitado pelo subscriber.
+                        <span style="color: #667eea; font-weight: 600;">Exemplo: Publisher (QoS 2) + Subscriber (QoS 1)
+                            = Entrega com QoS 1</span>
+                    </div>
+                </div>
+                <div class="negotiation-flow">
+                    <div class="flow-item">
+                        <div class="flow-label">Publisher</div>
+                        <div class="flow-value">QoS 2</div>
+                    </div>
+                    <i class="fas fa-arrow-right" style="color: #888; font-size: 14px;"></i>
+                    <div class="flow-item">
+                        <div class="flow-label">Broker</div>
+                        <div class="flow-value">Min</div>
+                    </div>
+                    <i class="fas fa-arrow-right" style="color: #888; font-size: 14px;"></i>
+                    <div class="flow-item">
+                        <div class="flow-label">Subscriber</div>
+                        <div class="flow-value">QoS 1</div>
+                    </div>
+                    <i class="fas fa-equals" style="color: #888; font-size: 14px;"></i>
+                    <div class="flow-item">
+                        <div class="flow-label">Resultado</div>
+                        <div class="flow-value" style="color: #4CAF50;">QoS 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">17/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

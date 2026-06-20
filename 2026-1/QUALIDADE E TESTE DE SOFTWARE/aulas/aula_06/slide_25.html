@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Testes Avançados — Implementação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;   /* Ocupa toda a largura */
+            height: 100vh;  /* Ocupa toda a altura */
+            background-color: #0f172a;
+            /* Slate 900 */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 4vh 5vw;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%; /* Garante altura total */
+        }
+
+        /* Layout */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            flex: 1; /* Ocupa o espaço restante verticalmente */
+            margin-top: 10px;
+            min-height: 0; /* Importante para o scroll interno funcionar no flexbox */
+            padding-bottom: 20px;
+        }
+
+        .info-pane {
+            flex: 0 0 35%;
+            /* 35% width */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0; /* Permite scroll se necessário */
+        }
+
+        .code-pane {
+            flex: 1;
+            /* Remaining width */
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Permite scroll se necessário */
+        }
+
+        /* Info Cards */
+        .concept-card {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; /* Não deixa encolher demais */
+        }
+
+        .features-list {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Scroll se a tela for pequena */
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            color: #10b981;
+            /* Emerald 500 */
+            margin-right: 12px;
+            font-size: 1.1rem;
+            margin-top: 4px;
+        }
+
+        /* Terminal/Editor Window */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 10px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            height: 100%; /* Altura total do pai */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-yellow {
+            background-color: #f59e0b;
+        }
+
+        .dot-green {
+            background-color: #10b981;
+        }
+
+        .terminal-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 50px;
+            font-weight: 500;
+        }
+
+        .terminal-content {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            overflow-y: auto; /* Scroll no código */
+            flex: 1;
+            line-height: 1.6;
+            background-color: #1a1b26;
+            /* Darker editor background */
+        }
+
+        /* Syntax Highlighting Classes for Python */
+        .py-keyword {
+            color: #c084fc;
+            font-weight: bold;
+        }
+
+        /* Purple - def, return, import */
+        .py-function {
+            color: #60a5fa;
+        }
+
+        /* Blue - func names */
+        .py-class {
+            color: #facc15;
+        }
+
+        /* Yellow - Class/Exceptions */
+        .py-string {
+            color: #4ade80;
+        }
+
+        /* Green - strings, numbers */
+        .py-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Gray - comments */
+        .py-decorator {
+            color: #fbbf24;
+        }
+
+        /* Amber - @decorators */
+        .py-built-in {
+            color: #2dd4bf;
+        }
+
+        /* Teal - self, print */
+
+        .line-number {
+            display: inline-block;
+            width: 25px;
+            color: #475569;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+            font-size: 0.85rem;
+        }
+        
+        /* Scrollbar customizada para webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        <div class="content-area">
+            <div class="mb-6 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Prática de TDD</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Testes Avançados — Implementação
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <div class="main-layout">
+                <div class="info-pane">
+                    <div class="concept-card">
+                        <h3 class="text-blue-400 font-bold mb-2 uppercase text-sm tracking-wide">Desafios Extras</h3>
+                        <p class="text-gray-200 leading-relaxed text-sm">
+                            Expanda a cobertura de testes para garantir a robustez do sistema em situações críticas,
+                            evitando bugs comuns de lógica e segurança.
+                        </p>
+                    </div>
+                    <div class="features-list">
+                        <h3 class="text-white font-bold mb-4 flex items-center">
+                            <i class="fas fa-list-check text-yellow-400 mr-2 text-sm"></i> Casos de Teste
+                        </h3>
+                        <div class="feature-item">
+                            <i class="fas fa-arrows-left-right-to-line feature-icon"></i>
+                            <div>
+                                <p class="text-sm font-bold text-white mb-1">Valor Limite (Boundary)</p>
+                                <p class="text-xs text-slate-400">Testa o ponto exato da regra (100). Evita erros de
+                                    <code>&gt;</code> vs <code>&gt;=</code>.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-triangle-exclamation feature-icon"></i>
+                            <div>
+                                <p class="text-sm font-bold text-white mb-1">Entrada Inválida</p>
+                                <p class="text-xs text-slate-400">Garante que valores negativos disparem um erro
+                                    controlado (Exception).</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-0 feature-icon"></i>
+                            <div>
+                                <p class="text-sm font-bold text-white mb-1">Elemento Neutro</p>
+                                <p class="text-xs text-slate-400">Verifica se o 0 (zero) é processado corretamente sem
+                                    quebrar a lógica.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-pane">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-controls">
+                                <div class="control-dot dot-red"></div>
+                                <div class="control-dot dot-yellow"></div>
+                                <div class="control-dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">tests/test_calculadora.py</div>
+                        </div>
+                        <div class="terminal-content">
+                            <div><span class="line-number">1</span><span class="py-keyword">import</span> pytest</div>
+                            <div><span class="line-number">2</span><span class="py-keyword">from</span> src.calculadora
+                                <span class="py-keyword">import</span> calcular_preco_final</div>
+                            <div><span class="line-number">3</span></div>
+                            <div><span class="line-number">4</span><span class="py-comment"># Desafio 1: Exatamente no
+                                    limite (sem desconto)</span></div>
+                            <div><span class="line-number">5</span><span class="py-keyword">def</span> <span
+                                    class="py-function">test_valor_exatamente_cem_nao_deve_ter_desconto</span>():</div>
+                            <div><span class="line-number">6</span> <span class="py-keyword">assert</span>
+                                calcular_preco_final(<span class="py-string">100</span>) == <span
+                                    class="py-string">100</span></div>
+                            <div><span class="line-number">7</span></div>
+                            <div><span class="line-number">8</span><span class="py-comment"># Desafio 2: Valor Negativo
+                                    (Lançamento de Erro)</span></div>
+                            <div><span class="line-number">9</span><span class="py-keyword">def</span> <span
+                                    class="py-function">test_valor_negativo_deve_lancar_erro</span>():</div>
+                            <div><span class="line-number">10</span> <span class="py-keyword">with</span>
+                                pytest.raises(<span class="py-class">ValueError</span>):</div>
+                            <div><span class="line-number">11</span> calcular_preco_final(<span
+                                    class="py-string">-10</span>)</div>
+                            <div><span class="line-number">12</span></div>
+                            <div><span class="line-number">13</span><span class="py-comment"># Desafio 3: Valor Zero
+                                    (Elemento Neutro)</span></div>
+                            <div><span class="line-number">14</span><span class="py-keyword">def</span> <span
+                                    class="py-function">test_valor_zero_deve_retornar_zero</span>():</div>
+                            <div><span class="line-number">15</span> <span class="py-keyword">assert</span>
+                                calcular_preco_final(<span class="py-string">0</span>) == <span
+                                    class="py-string">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-6 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Prática TDD Avançada</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

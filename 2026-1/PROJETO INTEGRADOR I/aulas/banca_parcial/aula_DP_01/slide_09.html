@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Jornada de Valor - AdoptMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #333; /* Fundo externo escuro para destacar o slide */
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT GRID PRINCIPAL --- */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: grid;
+            grid-template-rows: 90px 1fr;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #0066CC 0%, #004080 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icon i { font-size: 24pt; color: white; }
+
+        .header-text { font-family: 'Montserrat', sans-serif; }
+        .header-text .title { font-size: 24pt; font-weight: 700; }
+        .header-text .subtitle { font-size: 13pt; }
+
+        .header-right { text-align: right; }
+        .header-right .title { font-size: 14pt; font-weight: 600; }
+        .header-right .subtitle { font-size: 11pt; }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- COLUNA ESQUERDA (DIAGRAMA E MÉTRICAS) --- */
+        .left-column {
+            width: 60%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title-wrap { display: flex; align-items: center; gap: 10px; }
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background: #0066CC;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-box i { font-size: 18pt; color: white; }
+        .section-title { font-size: 16pt; font-weight: 700; color: #1e293b; }
+        .section-subtitle { font-size: 12pt; color: #64748b; }
+
+        .meta-badge {
+            background: #fef3c7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #f59e0b;
+        }
+        .meta-badge span { font-size: 12pt; font-weight: 600; color: #92400e; }
+
+        /* Diagram Flow */
+        .diagram-flow {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .diagram-step {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-main-box {
+            border-radius: 12px;
+            height: 170px;
+            padding: 15px;
+            color: white;
+            position: relative;
+            border: 3px solid #FF6600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .step-main-box.bg-1 { background: linear-gradient(135deg, #0066CC 0%, #004080 100%); }
+        .step-main-box.bg-2 { background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); }
+        .step-main-box.bg-3 { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+        .step-main-box.bg-4 { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: #FF6600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .step-main-box i { font-size: 20pt; margin-bottom: 8px; }
+        .step-title { font-size: 13pt; font-weight: 600; }
+        .step-subtitle { font-size: 11pt; opacity: 0.9; margin-top: 5px; }
+
+        .step-sub-box {
+            margin-top: 8px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .step-sub-box p { font-size: 10pt; color: #64748b; }
+
+        .diagram-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .diagram-arrow i { font-size: 20pt; color: #0066CC; }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #0066CC;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .metric-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .metric-header p { font-size: 13pt; font-weight: 600; color: #1e293b; }
+        
+        .metric-val-wrap { display: flex; align-items: baseline; gap: 5px; }
+        .metric-val { font-size: 18pt; font-weight: 700; }
+        .metric-label { font-size: 11pt; color: #64748b; }
+
+        /* Evidence */
+        .evidence-box {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #FF6600;
+        }
+        .evidence-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .evidence-header i { color: #FF6600; font-size: 14pt; }
+        .evidence-header p { font-size: 13pt; font-weight: 600; color: #1e293b; }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .evidence-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        .evidence-item p { font-size: 11pt; color: #64748b; }
+        .evidence-item i { color: #10B981; margin-right: 5px; font-size: 11pt; }
+
+        /* --- COLUNA DIREITA (DETALHES DO PROCESSO) --- */
+        .right-column {
+            width: 39%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .right-icon-box {
+            width: 40px;
+            height: 40px;
+            background: #FF6600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-icon-box i { font-size: 18pt; color: white; }
+        .right-title { font-size: 16pt; font-weight: 700; color: #1e293b; }
+        .right-subtitle { font-size: 12pt; color: #64748b; }
+
+        /* Process Steps List */
+        .process-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .process-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .process-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+        .process-num.bg-1 { background: #0066CC; }
+        .process-num.bg-2 { background: #3B82F6; }
+        .process-num.bg-3 { background: #10B981; }
+        .process-num.bg-4 { background: #F59E0B; }
+        
+        .process-text-wrap p.title { font-size: 12pt; font-weight: 600; color: #1e293b; }
+        .process-text-wrap p.subtitle { font-size: 11pt; color: #64748b; margin-top: 5px; }
+
+        /* Success Metrics Right */
+        .success-box {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #FF6600;
+        }
+        .success-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .success-header i { color: #FF6600; font-size: 14pt; }
+        .success-header p { font-size: 13pt; font-weight: 600; color: #1e293b; }
+
+        .success-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .success-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        .success-item p.label { font-size: 11pt; color: #64748b; }
+        .success-item p.val { font-size: 14pt; font-weight: 600; margin-top: 5px; }
+        .success-item p.val.blue { color: #0066CC; }
+        .success-item p.val.green { color: #10B981; }
+
+        /* Next Steps */
+        .next-steps-box {
+            background: #dbeafe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .next-steps-header { display: flex; align-items: center; gap: 10px; }
+        .next-steps-header i { color: #0066CC; font-size: 14pt; }
+        .next-steps-header p { font-size: 12pt; font-weight: 600; color: #1e293b; }
+        .next-steps-box p.desc { font-size: 11pt; color: #64748b; margin-top: 5px; }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="header-text">
+                    <p class="title">JORNADA DE VALOR</p>
+                    <p class="subtitle">AdoptMatch - Quiz → Match → Chat → Adoção</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <p class="title">AdoptMatch</p>
+                <p class="subtitle">Adoção por Afinidade</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <section class="left-column">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <div class="icon-box">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div>
+                            <p class="section-title">Fluxo da Jornada de Valor</p>
+                            <p class="section-subtitle">Processo completo de adoção consciente</p>
+                        </div>
+                    </div>
+                    <div class="meta-badge">
+                        <span>Meta: -40% devolução</span>
+                    </div>
+                </div>
+
+                <div class="diagram-flow">
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-1">
+                            <div class="step-number">1</div>
+                            <i class="fas fa-question-circle"></i>
+                            <p class="step-title">Quiz de Afinidade</p>
+                            <p class="step-subtitle">10 perguntas</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Entrada do usuário</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-2">
+                            <div class="step-number">2</div>
+                            <i class="fas fa-brain"></i>
+                            <p class="step-title">Algoritmo de Match</p>
+                            <p class="step-subtitle">RF01 - Match inteligente</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Processamento</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-3">
+                            <div class="step-number">3</div>
+                            <i class="fas fa-comments"></i>
+                            <p class="step-title">Chat Interno</p>
+                            <p class="step-subtitle">RF02 - Validar visita</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Suporte</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-4">
+                            <div class="step-number">4</div>
+                            <i class="fas fa-heart"></i>
+                            <p class="step-title">Adoção Consciente</p>
+                            <p class="step-subtitle">Resultado</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Valor gerado</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <i class="fas fa-chart-line" style="color: #0066CC; font-size: 14pt;"></i>
+                            <p>Taxa de Devolução</p>
+                        </div>
+                        <div class="metric-val-wrap">
+                            <span class="metric-val" style="color: #0066CC;">40%</span>
+                            <span class="metric-label">redução</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <i class="fas fa-clock" style="color: #10B981; font-size: 14pt;"></i>
+                            <p>Tempo até Visita</p>
+                        </div>
+                        <div class="metric-val-wrap">
+                            <span class="metric-val" style="color: #10B981;">2 dias</span>
+                            <span class="metric-label">média</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <i class="fas fa-check-circle" style="color: #F59E0B; font-size: 14pt;"></i>
+                            <p>Match Concluído</p>
+                        </div>
+                        <div class="metric-val-wrap">
+                            <span class="metric-val" style="color: #F59E0B;">85%</span>
+                            <span class="metric-label">sucesso</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="evidence-box">
+                    <div class="evidence-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <p>Evidência de Sucesso</p>
+                    </div>
+                    <div class="evidence-grid">
+                        <div class="evidence-item">
+                            <p><i class="fas fa-check"></i>Visita agendada após match</p>
+                        </div>
+                        <div class="evidence-item">
+                            <p><i class="fas fa-check"></i>Taxa de conclusão do quiz</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="right-column">
+                <div class="right-header">
+                    <div class="right-icon-box">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div>
+                        <p class="right-title">Detalhes do Processo</p>
+                        <p class="right-subtitle">Métricas e validação</p>
+                    </div>
+                </div>
+
+                <div class="process-list">
+                    <div class="process-item">
+                        <div class="process-num bg-1">1</div>
+                        <div class="process-text-wrap">
+                            <p class="title">Quiz de Afinidade</p>
+                            <p class="subtitle">10 perguntas sobre estilo de vida</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <div class="process-num bg-2">2</div>
+                        <div class="process-text-wrap">
+                            <p class="title">Algoritmo de Match</p>
+                            <p class="subtitle">RF01 - Match inteligente</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <div class="process-num bg-3">3</div>
+                        <div class="process-text-wrap">
+                            <p class="title">Chat Interno</p>
+                            <p class="subtitle">RF02 - Validar visita</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <div class="process-num bg-4">4</div>
+                        <div class="process-text-wrap">
+                            <p class="title">Adoção Consciente</p>
+                            <p class="subtitle">Resultado final</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <div class="success-header">
+                        <i class="fas fa-trophy"></i>
+                        <p>Métricas de Sucesso</p>
+                    </div>
+                    <div class="success-grid">
+                        <div class="success-item">
+                            <p class="label">Devoluções</p>
+                            <p class="val blue">-40%</p>
+                        </div>
+                        <div class="success-item">
+                            <p class="label">Match</p>
+                            <p class="val green">85%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="next-steps-box">
+                    <div class="next-steps-header">
+                        <i class="fas fa-forward"></i>
+                        <p>Próximos Passos</p>
+                    </div>
+                    <p class="desc">Teste com 10 usuários reais</p>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+</body>
+
+</html>

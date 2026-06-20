@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>JWT: Header (Cabeçalho)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .jwt-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-column {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .concept-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .concept-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .concept-text {
+            font-size: 17px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 16px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .code-key {
+            color: #93c5fd;
+            font-weight: 600;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .jwt-structure {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            padding: 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            justify-content: center;
+        }
+
+        .jwt-part {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .jwt-header {
+            background: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        .jwt-payload {
+            background: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .jwt-signature {
+            background: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+
+        .jwt-dot {
+            color: #94a3b8;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .field-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .field-content {
+            flex: 1;
+        }
+
+        .field-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .field-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .highlight-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .highlight-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .warning-icon {
+            color: #ef4444;
+            font-size: 24px;
+        }
+
+        .warning-content {
+            flex: 1;
+        }
+
+        .warning-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 8px;
+        }
+
+        .warning-text {
+            font-size: 15px;
+            color: #fca5a5;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">JWT: Header (Cabeçalho)</h1>
+                        <p class="subtitle">Estrutura e campos do cabeçalho JWT</p>
+                    </div>
+                </div>
+                <div class="jwt-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>JWT Header</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="concept-title">O que é o Header?</div>
+                        </div>
+                        <div class="concept-text">
+                            O Header é a primeira parte do token JWT e contém metadados sobre o token, incluindo o tipo
+                            de token e o algoritmo de assinatura utilizado. É codificado em Base64Url.
+                        </div>
+                        <div class="jwt-structure">
+                            <div class="jwt-part jwt-header">Header</div>
+                            <div class="jwt-dot">.</div>
+                            <div class="jwt-part jwt-payload">Payload</div>
+                            <div class="jwt-dot">.</div>
+                            <div class="jwt-part jwt-signature">Signature</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="code-key">{</span>
+                            </div>
+                            <div class="code-line" style="padding-left: 30px;">
+                                <span class="code-key">"alg"</span>: <span class="code-string">"HS256"</span><span
+                                    class="code-key">,</span>
+                            </div>
+                            <div class="code-line" style="padding-left: 30px;">
+                                <span class="code-key">"typ"</span>: <span class="code-string">"JWT"</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="code-key">}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Campos Principais</span>
+                        </div>
+                        <div class="highlight-text">
+                            O header contém dois campos essenciais: <strong>alg</strong> (algoritmo de assinatura) e
+                            <strong>typ</strong> (tipo de token).
+                            O campo "alg" deve corresponder ao algoritmo usado para assinar o token.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="concept-card" style="display: flex; flex-direction: column;">
+                        <div class="concept-header">
+                            <div class="concept-icon">
+                                <i class="fas fa-list-ul"></i>
+                            </div>
+                            <div class="concept-title">Campos do Header</div>
+                        </div>
+                        <div class="field-grid" style="margin-bottom: 30px;">
+                            <div class="field-item">
+                                <div class="field-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="field-content">
+                                    <div class="field-name">alg (Algorithm)</div>
+                                    <div class="field-desc">Algoritmo de assinatura</div>
+                                </div>
+                            </div>
+                            <div class="field-item">
+                                <div class="field-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="field-content">
+                                    <div class="field-name">typ (Type)</div>
+                                    <div class="field-desc">Tipo do token</div>
+                                </div>
+                            </div>
+                            <div class="field-item">
+                                <div class="field-icon">
+                                    <i class="fas fa-fingerprint"></i>
+                                </div>
+                                <div class="field-content">
+                                    <div class="field-name">kid (Key ID)</div>
+                                    <div class="field-desc">ID da chave</div>
+                                </div>
+                            </div>
+                            <div class="field-item">
+                                <div class="field-icon">
+                                    <i class="fas fa-link"></i>
+                                </div>
+                                <div class="field-content">
+                                    <div class="field-name">cty (Content Type)</div>
+                                    <div class="field-desc">Tipo de conteúdo</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="warning-box">
+                            <i class="fas fa-exclamation-triangle warning-icon"></i>
+                            <div class="warning-content">
+                                <div class="warning-title">Atenção!</div>
+                                <div class="warning-text">
+                                    Nunca use "none" como algoritmo em produção, pois isso desativa a verificação de
+                                    assinatura.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

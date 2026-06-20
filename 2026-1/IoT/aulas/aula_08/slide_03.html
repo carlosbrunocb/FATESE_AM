@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Por que Wi-Fi para IoT?</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            width: 93.5%;
+            height: auto;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 54px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 60% 37.8%;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .comparison-table th {
+            background: rgba(33, 150, 243, 0.2);
+            color: #ffffff;
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table td {
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .protocol-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .wifi-badge {
+            background: rgba(33, 150, 243, 0.3);
+            color: #2196F3;
+        }
+
+        .bluetooth-badge {
+            background: rgba(0, 188, 212, 0.3);
+            color: #00BCD4;
+        }
+
+        .lora-badge {
+            background: rgba(156, 39, 176, 0.3);
+            color: #9C27B0;
+        }
+
+        .esp32-specs {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .spec-item {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spec-icon {
+            color: #2196F3;
+            font-size: 20px;
+        }
+
+        .spec-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .spec-value {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .advantages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .advantage-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .advantage-icon {
+            color: #00BCD4;
+            font-size: 18px;
+        }
+
+        .advantage-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Por que Wi-Fi para IoT?</div>
+                    <div class="subtitle">Comparação de protocolos e especificações do ESP32</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 20px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-wifi" style="color: #00BCD4; font-size: 24px; margin-right: 10px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 16px;">Conectividade</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="comparison-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-network-wired"></i></div>
+                            <div class="card-title">Comparação de Protocolos</div>
+                        </div>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Protocolo</th>
+                                    <th>Largura de Banda</th>
+                                    <th>Alcance</th>
+                                    <th>Consumo</th>
+                                    <th>Ideal para</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="protocol-badge wifi-badge">Wi-Fi</span></td>
+                                    <td>10-100+ Mbps</td>
+                                    <td>Curto/Médio</td>
+                                    <td>Moderado/Alto</td>
+                                    <td>IoT com dados</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="protocol-badge bluetooth-badge">Bluetooth LE</span></td>
+                                    <td>~1 Mbps</td>
+                                    <td>Curto</td>
+                                    <td>Baixo</td>
+                                    <td>Periféricos locais</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="protocol-badge lora-badge">LoRaWAN</span></td>
+                                    <td>kbps</td>
+                                    <td>Muito longo</td>
+                                    <td>Muito baixo</td>
+                                    <td>Telemetria esparsa</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 25px; display: flex; gap: 30px;">
+                            <div style="flex: 1;">
+                                <div
+                                    style="font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 8px; font-weight: 500;">
+                                    Wi-Fi: Alta largura de banda</div>
+                                <div
+                                    style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    <div
+                                        style="width: 85%; height: 100%; background: linear-gradient(90deg, #2196F3, #00BCD4); border-radius: 4px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div
+                                    style="font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 8px; font-weight: 500;">
+                                    LoRaWAN: Baixa taxa</div>
+                                <div
+                                    style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    <div
+                                        style="width: 25%; height: 100%; background: linear-gradient(90deg, #9C27B0, #E91E63); border-radius: 4px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comparison-card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 5px;">
+                            <i class="fas fa-check-circle" style="color: #00BCD4; font-size: 20px;"></i>
+                            <span style="color: #ffffff; font-weight: 700; font-size: 20px;">Vantagens do Wi-Fi para
+                                IoT</span>
+                        </div>
+                        <div class="advantages-list">
+                            <div class="advantage-item">
+                                <i class="fas fa-home advantage-icon"></i>
+                                <span class="advantage-text">Usa infraestrutura existente (roteadores
+                                    residenciais/industriais)</span>
+                            </div>
+                            <div class="advantage-item">
+                                <i class="fas fa-cloud advantage-icon"></i>
+                                <span class="advantage-text">Pilha TCP/IP pronta: HTTP, MQTT e WebSocket
+                                    diretamente</span>
+                            </div>
+                            <div class="advantage-item">
+                                <i class="fas fa-sync advantage-icon"></i>
+                                <span class="advantage-text">Atualização OTA e integração com nuvem facilitadas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="esp32-specs">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-microchip"></i></div>
+                            <div class="card-title">ESP32 - Especificações</div>
+                        </div>
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <i class="fas fa-wifi spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Frequência</div>
+                                    <div class="spec-value">2.4 GHz</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-broadcast-tower spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Potência</div>
+                                    <div class="spec-value">~20 dBm</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-shield-alt spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Segurança</div>
+                                    <div class="spec-value">WPA/WPA2</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fab fa-bluetooth spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Bluetooth</div>
+                                    <div class="spec-value">Sim</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 30px; padding: 15px; background: rgba(0,188,212,0.1); border-radius: 12px; border: 1px solid rgba(0,188,212,0.3);">
+                            <div style="font-size: 14px; color: rgba(255,255,255,0.9); font-weight: 600;">
+                                <i class="fas fa-info-circle" style="color: #00BCD4; margin-right: 8px;"></i>
+                                <span>Modos: STA, AP, STA+AP</span>
+                            </div>
+                            <p
+                                style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 8px; line-height: 1.4;">
+                                O ESP32 permite operar como cliente (STA), ponto de acesso (AP) ou ambos
+                                simultaneamente.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Escaneamento de Redes</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

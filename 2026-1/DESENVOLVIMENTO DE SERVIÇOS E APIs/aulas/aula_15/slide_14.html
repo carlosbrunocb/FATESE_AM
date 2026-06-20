@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Diagrama: Ciclo de Vida de uma API</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            /* Alterado para Grid para tornar o layout responsivo */
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            /* Removido position absolute, width fixo, left e top */
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            /* Removido position absolute e larguras/alturas fixas para fluir no grid */
+            padding: 30px 40px;
+            overflow-y: auto; /* Permite scroll se o conteúdo passar do viewport em telas menores */
+            position: relative;
+            z-index: 1;
+        }
+
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .diagram-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .diagram-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-item i {
+            color: #3b82f6;
+        }
+
+        .diagram-content {
+            /* Alterado para Grid para estruturar os painéis lado a lado fluidamente */
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .diagram-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .diagram-right {
+            /* Width removido pois a largura já é ditada pelo grid-template-columns */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .lifecycle-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .flow-item {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flow-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .flow-item.active {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .flow-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .flow-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .flow-subtitle {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .flow-content {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+            padding: 0 5px;
+        }
+
+        .status-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 20px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .panel-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #475569;
+            flex: 1;
+        }
+
+        .status-value {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            padding-left: 8px;
+        }
+
+        .footer {
+            /* Removido position absolute. Adicionado margin para substituir os left/right/bottom  */
+            margin: 0 40px 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Adicionando media query opcional para evitar quebra em telas muito pequenas */
+        @media (max-width: 1024px) {
+            .diagram-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div>
+                    <div class="header-title">Diagrama: Ciclo de Vida de uma API</div>
+                    <div class="header-subtitle">Fluxo completo desde o design até a desativação</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Diagrama</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="diagram-container">
+                <div class="diagram-header">
+                    <div class="diagram-title">
+                        <i class="fas fa-sitemap" style="margin-right: 8px; color: #3b82f6;"></i>
+                        Fluxo do Ciclo de Vida
+                    </div>
+                    <div class="diagram-stats">
+                        <div class="stat-item"><i class="fas fa-clock"></i><span>7 etapas</span></div>
+                        <div class="stat-item"><i class="fas fa-check-circle"></i><span>3 fases ativas</span></div>
+                        <div class="stat-item"><i class="fas fa-exclamation-triangle"></i><span>2 alertas</span></div>
+                    </div>
+                </div>
+                <div class="diagram-content">
+                    <div class="diagram-left">
+                        <div class="lifecycle-flow">
+                            <div class="flow-row">
+                                <div class="flow-item active">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-pencil-ruler"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Design e Contrato</div>
+                                            <div class="flow-subtitle">Fase 1</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Definição de endpoints, formatos, tipos de dados e contratos OpenAPI. Estabelece
+                                        as regras de comunicação.
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-item active">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Build/Test</div>
+                                            <div class="flow-subtitle">Fase 2</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Implementação, testes unitários, testes de integração e validação do contrato.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flow-row">
+                                <div class="flow-item active">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-rocket"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Release v1.0</div>
+                                            <div class="flow-subtitle">Fase 3</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Lançamento oficial com versionamento inicial. Documentação publicada e
+                                        monitoramento ativo.
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Operar/Observar</div>
+                                            <div class="flow-subtitle">Fase 4</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Monitoramento de métricas, logs, performance e comportamento da API em produção.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flow-row">
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Evoluir v2.0</div>
+                                            <div class="flow-subtitle">Fase 5</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Adição de novas funcionalidades, endpoints e melhorias no contrato.
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-item">
+                                    <div class="flow-header">
+                                        <div class="flow-icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flow-title">Deprecar</div>
+                                            <div class="flow-subtitle">Fase 6</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-content">
+                                        Avisos de depreciação, headers de sunset e comunicação aos consumidores.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="diagram-right">
+                        <div class="status-panel">
+                            <div class="panel-header">
+                                <div class="panel-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="panel-title">Status do Ciclo</div>
+                            </div>
+                            <div class="status-list">
+                                <div class="status-item">
+                                    <div class="status-dot" style="background: #10b981;"></div>
+                                    <div class="status-text">Design - Concluído</div>
+                                    <div class="status-value">100%</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-dot" style="background: #10b981;"></div>
+                                    <div class="status-text">Build - Concluído</div>
+                                    <div class="status-value">100%</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-dot" style="background: #3b82f6;"></div>
+                                    <div class="status-text">Release - Ativo</div>
+                                    <div class="status-value">75%</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-dot" style="background: #f59e0b;"></div>
+                                    <div class="status-text">Operar - Em andamento</div>
+                                    <div class="status-value">50%</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-dot" style="background: #64748b;"></div>
+                                    <div class="status-text">Evoluir - Pendente</div>
+                                    <div class="status-value">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>7 etapas definidas</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

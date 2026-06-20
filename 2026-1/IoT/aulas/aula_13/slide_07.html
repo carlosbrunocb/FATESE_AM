@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>QoS 1 - At Least Once</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=IBM+Plex+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="slide-container" style="background-color: var(--bg-light); padding: 80px;" data-screen-label="07 QoS 1">
+
+        <!-- Header -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 60px; width: 1760px; height: 100px;">
+            <span class="caption">QoS 1 — Confirmação Simples</span>
+            <h2 class="title-lg" style="color: var(--text-dark); margin-top: 5px;">QoS 1: At Least Once (Pelo Menos Uma
+                Vez)</h2>
+        </div>
+
+        <!-- Corpo do Slide em Grid 2 Colunas -->
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 220px; width: 1760px; height: 700px;">
+            <div class="grid-2" style="height: 100%; gap: 60px;">
+
+                <!-- Esquerda: Funcionamento Conceitual -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="font-size: 32px; font-weight: 800; color: var(--text-dark); margin: 0 0 25px 0;">
+                            Garantia de Entrega com Armazenamento</h3>
+                        <p class="body-md" style="color: var(--text-muted); margin-bottom: 25px;">
+                            No QoS 1, o publicador reterá localmente o pacote da mensagem até receber a resposta de
+                            confirmação de recebimento chamada <code
+                                style="font-family: var(--font-mono); color: var(--accent); font-weight: bold;">PUBACK</code>
+                            emitida pelo broker.
+                        </p>
+                        <p class="body-md" style="color: var(--text-muted); margin-bottom: 25px;">
+                            Caso a confirmação demore ou não seja recebida, a mensagem original é reenviada
+                            automaticamente com um flag especial de duplicata (DUP).
+                        </p>
+                        <div
+                            style="background-color: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--accent-success); border-radius: 4px; padding: 20px;">
+                            <span
+                                style="font-weight: 700; color: var(--accent-success); font-size: 18px; text-transform: uppercase;">⚡
+                                Efeito Colateral Importante</span>
+                            <p style="font-size: 18px; color: var(--text-dark); margin: 10px 0 0 0;">
+                                O dispositivo receptor (Subscriber) pode receber a mesma mensagem repetida mais de uma
+                                vez. O código do firmware deve ser projetado para lidar com essa possível duplicata com
+                                segurança.
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <span
+                            style="font-weight: 700; color: var(--accent); font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;">Conectividade
+                            Confiável de Automação Básica</span>
+                    </div>
+                </div>
+
+                <!-- Direita: Diagrama Sequencial de QoS 1 -->
+                <div class="card-glass"
+                    style="display: flex; flex-direction: column; justify-content: center; background: #FAF9F6; border: 1px solid #E2E8F0;">
+                    <h4
+                        style="font-size: 22px; font-weight: 800; color: var(--text-dark); text-align: center; margin: 0 0 30px 0;">
+                        Aperto de Mão de Via Dupla (Reenvio Ativo)</h4>
+
+                    <!-- Diagrama MQTT QoS 1 -->
+                    <div
+                        style="position: relative; height: 350px; display: flex; flex-direction: column; justify-content: space-around; padding: 0 20px;">
+
+                        <!-- Etapa 1: Envio -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div
+                                style="width: 110px; text-align: center; font-family: var(--font-mono); font-weight: bold; color: var(--text-dark); background: white; border: 1px solid #CBD5E1; padding: 8px; border-radius: 6px;">
+                                Remetente</div>
+
+                            <!-- Linha com Seta -->
+                            <div style="flex-grow: 1; position: relative; margin: 0 20px;">
+                                <div style="text-align: center; margin-bottom: 5px;"><span
+                                        style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: bold;">1.
+                                        PUBLISH (QoS 1, ID=042)</span></div>
+                                <div style="height: 2px; background-color: var(--accent);"></div>
+                                <div
+                                    style="position: absolute; right: 0; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid var(--accent);">
+                                </div>
+                            </div>
+
+                            <div
+                                style="width: 110px; text-align: center; font-family: var(--font-mono); font-weight: bold; color: white; background: var(--accent); padding: 8px; border-radius: 6px;">
+                                Broker</div>
+                        </div>
+
+                        <!-- Etapa 2: Confirmação -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div
+                                style="width: 110px; text-align: center; font-family: var(--font-mono); font-weight: bold; color: var(--text-dark); background: white; border: 1px solid #CBD5E1; padding: 8px; border-radius: 6px;">
+                                Remetente</div>
+
+                            <!-- Linha com Seta contrária -->
+                            <div style="flex-grow: 1; position: relative; margin: 0 20px;">
+                                <div style="text-align: center; margin-bottom: 5px;"><span
+                                        style="font-family: var(--font-mono); font-size: 14px; color: var(--accent-success); font-weight: bold;">2.
+                                        PUBACK (Confirmação ID=042)</span></div>
+                                <div style="height: 2px; background-color: var(--accent-success);"></div>
+                                <div
+                                    style="position: absolute; left: 0; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-right: 8px solid var(--accent-success);">
+                                </div>
+                            </div>
+
+                            <div
+                                style="width: 110px; text-align: center; font-family: var(--font-mono); font-weight: bold; color: white; background: var(--accent); padding: 8px; border-radius: 6px;">
+                                Broker</div>
+                        </div>
+
+                    </div>
+
+                    <div
+                        style="border-top: 1px solid #E2E8F0; padding-top: 20px; margin-top: 10px; text-align: center;">
+                        <p class="body-md" style="font-weight: 600; color: var(--text-muted); margin: 0;">Se não há o
+                            PUBACK, o publicador reenvia após um timeout interno.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 980px; width: 1760px; height: 40px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+            <span style="font-size: 16px; color: var(--text-muted);">Internet das Coisas (IoT) - QoS</span>
+            <span style="font-size: 16px; color: var(--text-muted); font-weight: bold;">Pág. 7 / 15</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

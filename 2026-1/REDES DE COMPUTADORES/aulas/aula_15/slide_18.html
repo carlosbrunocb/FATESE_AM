@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sintaxe da ACL Extended - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">Sintaxe Cisco: ACL Extended (Estendida)</span>
+            <span class="slide-header-tag">Comandos & CLI</span>
+        </div>
+
+        <!-- Sintaxe Lógica (Esquerda) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10; padding: 25px;">
+            <h3
+                style="font-size: 30px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 10px; border-bottom: 2px solid var(--senac-blue); padding-bottom: 5px;">
+                Estrutura Geral de Comandos
+            </h3>
+            <p style="font-size: 24px; line-height: 1.4; color: var(--text-main); margin-bottom: 15px;">
+                A ACL Estendida oferece filtros avançados de multifatores, permitindo analisar origem, destino,
+                protocolo e portas específicos:
+            </p>
+
+            <!-- Sintaxe Comando Cisco -->
+            <div
+                style="background-color: #1E1E1E; padding: 15px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid var(--senac-blue);">
+                <div
+                    style="color: #4EC9B0; font-family: monospace; font-size: 17px; line-height: 1.5; white-space: pre-wrap;">
+<strong>Sintaxe básica do comando:</strong>
+Router(config)# access-list <span style="color: #CE9178;">[100-199]</span> {permit|deny} <span
+    style="color: #4FC1FF;">[Protocolo]</span> <span style="color: #9CDCFE;">[IP_Origem]</span>
+<span style="color: #CE9178;">[Curinga_Origem]</span> <span
+    style="color: #9CDCFE;">[IP_Destino]</span> <span
+    style="color: #CE9178;">[Curinga_Destino]</span> [operador] <span
+    style="color: #DCDCAA;">[Porta]</span>
+                </div>
+            </div>
+
+            <h4 style="font-size: 22px; font-weight: 700; color: var(--senac-dark-blue); margin-bottom: 8px;">Parâmetros
+                de Controle:</h4>
+            <ul class="custom-list" style="margin-bottom: 0;">
+                <li style="font-size: 18px; margin-bottom: 5px; padding-left: 25px;"><strong>Protocolos:</strong>
+                    <code>ip</code>, <code>tcp</code>, <code>udp</code>, <code>icmp</code>, <code>ospf</code>, etc..
+                </li>
+                <li style="font-size: 18px; margin-bottom: 5px; padding-left: 25px;"><strong>Operadores de
+                        Porta:</strong> <code>eq</code> (igual), <code>neq</code> (diferente), <code>gt</code> (maior),
+                    <code>lt</code> (menor), <code>range</code>.</li>
+                <li style="font-size: 18px; margin-bottom: 0; padding-left: 25px;"><strong>established:</strong> Permite
+                    a passagem de pacotes apenas se a conexão TCP já estiver estabelecida.
+                </li>
+            </ul>
+        </div>
+
+        <!-- Exemplos Práticos Cisco CLI (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10; padding: 25px;">
+            <h3
+                style="font-size: 30px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 10px; border-bottom: 2px solid var(--senac-orange); padding-bottom: 5px;">
+                Exemplos de Configuração Prática
+            </h3>
+
+            <!-- Bloco de Código Cisco CLI -->
+            <div class="code-block"
+                style="font-size: 15px; line-height: 1.4; margin-bottom: 15px; background-color: #1E1E1E; padding: 15px;"><span style="color: #6A9955;">! 1. Bloquear acesso HTTP (porta 80) do Host para o Servidor</span>
+Router(config)# <strong>access-list 101 deny tcp host 192.168.1.10 host 192.168.2.50 eq 80</strong>
+
+<span style="color: #6A9955;">! 2. Permitir acesso HTTPS (porta 443) da sub-rede para qualquer destino</span>
+Router(config)# <strong>access-list 101 permit tcp 192.168.1.0 0.0.0.255 any eq 443</strong>
+
+<span style="color: #6A9955;">! 3. Bloquear tráfego de PING (ICMP echo) de qualquer origem/destino</span>
+Router(config)# <strong>access-list 101 deny icmp any any echo</strong>
+
+<span style="color: #6A9955;">! 4. Permitir todo o restante do tráfego IP</span>
+Router(config)# <strong>access-list 101 permit ip any any</strong>
+
+<span style="color: #6A9955;">! 5. Associar a regra à interface (Entrada/Inbound)</span>
+Router(config)# <strong>interface GigabitEthernet0/1</strong>
+Router(config-if)# <strong>ip access-group 101 in</strong>
+            </div>
+
+            <div
+                style="background-color: rgba(0, 93, 164, 0.05); border-left: 5px solid var(--senac-blue); padding: 12px 15px; border-radius: 4px; font-size: 17px; line-height: 1.4;">
+                <strong style="color: var(--senac-dark-blue);">Nota de Segurança:</strong>
+                Ao final da ACL, o comando oculto <code>deny ip any any</code> bloquearia todo tráfego IP se o comando
+                <code>permit ip any any</code> não estivesse configurado.
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 18/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

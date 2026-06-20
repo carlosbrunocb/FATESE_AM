@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Guia ArduinoJson - Biblioteca para ESP32</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            min-height: 100vh;
+        }
+
+        /* Estrutura principal do slide com CSS Grid */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            width: 100%;
+        }
+
+        /* Cabeçalho e Rodapé */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 4vw;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 4vw 25px 4vw;
+            box-sizing: border-box;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        /* Área central de conteúdo */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 30px 4vw;
+            max-width: auto;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Layout de colunas responsivo */
+        .columns-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .columns-container {
+                grid-template-columns: 1fr; /* Quebra para 1 coluna em telas menores */
+            }
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Estilos dos Cards e Componentes (Mantidos do original) */
+        .content-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .syntax-key { color: #fbbf24; }
+        .syntax-string { color: #34d399; }
+        .syntax-number { color: #60a5fa; }
+        .syntax-comment { color: #94a3b8; font-style: italic; }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-primary { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        .tip-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 14px 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-book" style="font-size: 24px; color: #3b82f6;"></i>
+                <span style="font-size: clamp(16px, 2.5vw, 20px); color: #ffffff; font-weight: 600;">Biblioteca ArduinoJson v7+</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span style="font-size: 14px; color: #94a3b8;">Aula 11</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">|</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">Parsing JSON</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div style="text-align: center;">
+                <h1 style="font-size: clamp(28px, 4vw, 38px); font-weight: 700; color: #ffffff; margin: 0 0 10px 0;">
+                    <i class="fas fa-code" style="color: #3b82f6; margin-right: 15px;"></i>Manipulação de JSON no ESP32
+                </h1>
+                <p style="font-size: clamp(14px, 2vw, 18px); color: #94a3b8; margin: 0;">
+                    Biblioteca otimizada para sistemas embarcados com baixo consumo de RAM
+                </p>
+            </div>
+
+            <div class="columns-container">
+                <div class="column">
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                <i class="fas fa-microchip" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600; color: #ffffff;">O que é ArduinoJson?</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Biblioteca C++ para JSON em dispositivos embarcados</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 15px;">
+                            <span class="feature-badge badge-success">Baixo uso de RAM</span>
+                            <span class="feature-badge badge-primary">Parsing seguro</span>
+                            <span class="feature-badge badge-warning">Streaming</span>
+                        </div>
+                        <div style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">
+                            Biblioteca otimizada para ESP32, AVR e ARM com suporte a <strong>Streams</strong> para economizar memória e <strong>filtros</strong> para extrair apenas os dados necessários.
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <i class="fas fa-key" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Conceitos Principais</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Estrutura e classes</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <div style="font-size: 14px; color: #ffffff; font-weight: 600;">JsonDocument</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Documento em memória para armazenar JSON</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <div style="font-size: 14px; color: #ffffff; font-weight: 600;">deserializeJson()</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">Converte texto JSON para objeto</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <div style="font-size: 14px; color: #ffffff; font-weight: 600;">Acesso por chaves</div>
+                                    <div style="font-size: 12px; color: #94a3b8;">doc["current"]["temperature_2m"]</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="content-card" style="flex: unset;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                <i class="fas fa-download" style="font-size: 20px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Instalação no Wokwi</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Versão 7+ recomendada</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">
+                            <strong>Passos:</strong>
+                            <ul style="margin: 8px 0; padding-left: 20px; list-style-type: decimal;">
+                                <li>Gerenciador de Bibliotecas → buscar "ArduinoJson"</li>
+                                <li>Selecionar v7+ (Benoit Blanchon)</li>
+                                <li>Adicionar em diagram.json</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); width: 44px; height: 44px;">
+                                <i class="fas fa-code" style="font-size: 18px; color: #ffffff;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #ffffff;">Exemplo Mínimo</div>
+                                <div style="font-size: 13px; color: #94a3b8;">Código básico de parsing</div>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <span class="syntax-comment">// Incluir biblioteca</span><br />
+                            <span class="syntax-key">#include</span> <span class="syntax-string">&lt;ArduinoJson.h&gt;</span><br /><br />
+                            <span class="syntax-key">JsonDocument</span> doc;<br />
+                            <span class="syntax-key">DeserializationError</span> error = <span class="syntax-key">deserializeJson</span>(doc, payload);<br /><br />
+                            <span class="syntax-key">if</span> (!error) {<br />
+                            &nbsp;&nbsp;<span class="syntax-key">float</span> temp = doc[<span class="syntax-string">"current"</span>][<span class="syntax-string">"temperature_2m"</span>];<br />
+                            &nbsp;&nbsp;<span class="syntax-key">int</span> umidade = doc[<span class="syntax-string">"current"</span>][<span class="syntax-string">"relative_humidity_2m"</span>];<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <i class="fas fa-lightbulb" style="color: #f59e0b; font-size: 20px;"></i>
+                <div style="font-size: 15px; color: #cbd5e1;">
+                    <strong style="color: #ffffff;">Dica:</strong> Use <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #fbbf24;">doc.clear()</code> para liberar memória após uso em loops.
+                </div>
+            </div>
+        </main>
+
+        <footer class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-info-circle" style="font-size: 16px; color: #3b82f6;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">ArduinoJson v7+ - Biblioteca otimizada para ESP32</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="font-size: 16px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">16 de Maio de 2026</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

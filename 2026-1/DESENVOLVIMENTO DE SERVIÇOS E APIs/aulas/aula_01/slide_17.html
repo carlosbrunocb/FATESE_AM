@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>PUT, DELETE e PATCH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #ffffff; overflow-x: hidden; font-family: 'Open Sans', sans-serif; }
+        * { box-sizing: border-box; }
+        
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 8vh 8vw;
+            overflow: hidden;
+        }
+
+        /* Top decorative bars */
+        .top-bar-blue { position: absolute; top: 0; left: 0; width: 100%; height: 1.2vh; min-height: 6px; background-color: #2563eb; z-index: 1; }
+        .top-bar-orange { position: absolute; top: 0; left: 0; width: 20%; height: 1.2vh; min-height: 6px; background-color: #f97316; z-index: 1; }
+
+        /* Background Shapes */
+        .bg-shape-1 { position: absolute; top: 15%; right: -5%; width: 25vw; height: 25vw; border-radius: 50%; background-color: #f8fafc; z-index: 0; }
+        .bg-shape-2 { position: absolute; bottom: -10%; left: -5%; width: 15vw; height: 15vw; border-radius: 50%; background-color: #f8fafc; z-index: 0; }
+        .bg-shape-3 { position: absolute; bottom: 10%; right: 5%; width: 2vw; height: 2vw; border: 4px solid #e2e8f0; border-radius: 50%; z-index: 0; }
+        .bg-shape-4 { position: absolute; top: 20%; right: 15%; width: 1vw; height: 1vw; background-color: #f97316; border-radius: 50%; opacity: 0.3; z-index: 0; }
+
+        /* Header Section */
+        .header-sec { position: relative; z-index: 10; margin-bottom: 5vh; }
+        .title { margin: 0; font-family: 'Montserrat', sans-serif; font-size: clamp(32px, 4vw, 64px); font-weight: 800; color: #1e293b; line-height: 1.2; }
+        .divider { width: 5vw; min-width: 60px; height: 6px; background-color: #f97316; border-radius: 3px; margin-top: 2vh; }
+
+        /* Content Sections */
+        .columns-wrapper { display: flex; flex: 1; gap: 4vw; position: relative; z-index: 10; align-items: stretch; }
+        .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background-color: #e2e8f0; transform: translateX(-50%); z-index: 1; }
+
+        .column { flex: 1; border-radius: 12px; padding: 4vh 3vw; display: flex; flex-direction: column; justify-content: center; gap: 4vh; position: relative; z-index: 10; }
+        .col-left { background-color: #eff6ff; border: 1px solid #bfdbfe; }
+        .col-right { background-color: #1e293b; border: 1px solid #334155; }
+
+        /* Column Headers */
+        .col-header { display: flex; align-items: center; gap: 1vw; margin-bottom: 1vh; }
+        .col-left .col-title { font-family: 'Montserrat', sans-serif; font-size: clamp(22px, 2.2vw, 36px); font-weight: 700; color: #1e293b; margin: 0; }
+        .col-right .col-title { font-family: 'Montserrat', sans-serif; font-size: clamp(22px, 2.2vw, 36px); font-weight: 700; color: #f8fafc; margin: 0; }
+
+        /* Left Column Items */
+        .item-row { display: flex; gap: 1.5vw; align-items: flex-start; }
+        .badge { padding: 0.6vh 1vw; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: clamp(14px, 1.2vw, 20px); font-weight: 500; color: #ffffff; text-align: center; min-width: 80px; }
+        .badge.put { background-color: #2563eb; }
+        .badge.patch { background-color: #f97316; }
+        .badge.delete { background-color: #ef4444; }
+        .item-text { margin: 0; font-family: 'Open Sans', sans-serif; font-size: clamp(16px, 1.5vw, 22px); font-weight: 400; color: #334155; line-height: 1.5; flex: 1; }
+
+        /* Right Column Items */
+        .code-section { display: flex; flex-direction: column; gap: 1vh; }
+        .code-label { margin: 0; font-family: 'Open Sans', sans-serif; font-size: clamp(12px, 1.1vw, 18px); font-weight: 600; color: #94a3b8; }
+        .code-block { background-color: #0f172a; border-radius: 6px; padding: 2vh 1.5vw; }
+        .code-block pre { margin: 0; font-family: 'Fira Code', monospace; font-size: clamp(12px, 1.1vw, 18px); white-space: pre-wrap; word-wrap: break-word; }
+        .code-put { color: #a5b4fc; }
+        .code-patch { color: #fdba74; }
+        .code-delete { color: #fca5a5; }
+
+        /* Responsividade para telas menores */
+        @media (max-width: 768px) {
+            .columns-wrapper { flex-direction: column; }
+            .center-line { display: none; }
+            .item-row { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="top-bar-blue"></div>
+        <div class="top-bar-orange"></div>
+        <div class="bg-shape-1"></div>
+        <div class="bg-shape-2"></div>
+        <div class="bg-shape-3"></div>
+        <div class="bg-shape-4"></div>
+
+        <div class="header-sec">
+            <h1 class="title">PUT, DELETE e PATCH</h1>
+            <div class="divider"></div>
+        </div>
+
+        <div class="columns-wrapper">
+            <div class="center-line"></div>
+            
+            <div class="column col-left">
+                <div class="col-header">
+                    <i class="fa-solid fa-book-open" style="font-size: clamp(28px, 3vw, 48px); color: #2563eb;"></i>
+                    <h2 class="col-title">Conceitos</h2>
+                </div>
+                
+                <div class="item-row">
+                    <div class="badge put">PUT</div>
+                    <p class="item-text">Substitui a representação inteira do recurso. É <strong>idempotente</strong> (repetir a mesma requisição tem o mesmo efeito).</p>
+                </div>
+                
+                <div class="item-row">
+                    <div class="badge patch">PATCH</div>
+                    <p class="item-text">Altera parcialmente um recurso. Você envia apenas os campos que foram modificados. Geralmente não é idempotente.</p>
+                </div>
+                
+                <div class="item-row">
+                    <div class="badge delete">DELETE</div>
+                    <p class="item-text">Remove o recurso especificado. Resposta comum em caso de sucesso é <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #0f172a; font-family: 'Fira Code', monospace;">204 No Content</code>.</p>
+                </div>
+            </div>
+
+            <div class="column col-right">
+                <div class="col-header">
+                    <i class="fa-solid fa-terminal" style="font-size: clamp(28px, 3vw, 48px); color: #38bdf8;"></i>
+                    <h2 class="col-title">Exemplos cURL</h2>
+                </div>
+
+                <div class="code-section">
+                    <p class="code-label">Exemplo PUT:</p>
+                    <div class="code-block">
+                        <pre class="code-put">curl -X PUT -H "Content-Type: application/json" \
+-d '{"title":"novo"}' https://api.ex.com/posts/10</pre>
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <p class="code-label">Exemplo PATCH:</p>
+                    <div class="code-block">
+                        <pre class="code-patch">curl -X PATCH -H "Content-Type: application/json" \
+-d '{"title":"parcial"}' https://api.ex.com/posts/10</pre>
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <p class="code-label">Exemplo DELETE:</p>
+                    <div class="code-block">
+                        <pre class="code-delete">curl -X DELETE https://api.ex.com/posts/10</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

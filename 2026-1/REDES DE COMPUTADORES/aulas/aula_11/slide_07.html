@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>DHCP - Fundamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* Left column - Content */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: #cccccc;
+            line-height: 1.4;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #888888;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Right column - Configuration */
+        .right-column {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .config-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            flex: 1;
+        }
+
+        .config-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-section {
+            margin-bottom: 15px;
+        }
+
+        .config-label {
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 5px;
+        }
+
+        .config-value {
+            font-size: 13px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lease-timeline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .lease-phase {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .lease-phase.active {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .lease-phase.pending {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .status-value {
+            font-size: 12px;
+            color: #00ffff;
+            margin-left: auto;
+        }
+
+        .highlight {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            }
+        }
+
+        .dhcp-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .dhcp-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            font-size: 11px;
+        }
+
+        .dhcp-step i {
+            display: block;
+            margin-bottom: 4px;
+            color: #00ffff;
+        }
+
+        .security-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .security-item {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .security-icon {
+            font-size: 16px;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .security-text {
+            font-size: 11px;
+            color: #888888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="header-text">
+                    <h1>DHCP - Fundamentos</h1>
+                    <p>Dynamic Host Configuration Protocol</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-server"></i> UDP 67/68
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Definition Section -->
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        Definição e Objetivo
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 10px;"><strong>DHCP</strong> é um protocolo cliente-servidor que
+                            automatiza a configuração de rede, distribuindo endereços IP e parâmetros essenciais aos
+                            dispositivos.</p>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Objetivo Principal</div>
+                                    <div class="info-value">Automação de configuração</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Lease Time</div>
+                                    <div class="info-value">Tempo de concessão</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Segurança</div>
+                                    <div class="info-value">DHCP Snooping</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Escalabilidade</div>
+                                    <div class="info-value">Gestão centralizada</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Configuration Section -->
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-cogs"></i>
+                        Configuração de Rede
+                    </div>
+                    <div class="card-content">
+                        <div class="dhcp-flow">
+                            <div class="dhcp-step">
+                                <i class="fas fa-search"></i>
+                                <div>Discovery</div>
+                            </div>
+                            <div class="dhcp-step">
+                                <i class="fas fa-handshake"></i>
+                                <div>Offer</div>
+                            </div>
+                            <div class="dhcp-step">
+                                <i class="fas fa-check"></i>
+                                <div>Request</div>
+                            </div>
+                            <div class="dhcp-step">
+                                <i class="fas fa-check-double"></i>
+                                <div>ACK</div>
+                            </div>
+                        </div>
+                        <div class="status-bar" style="margin-top: 10px;">
+                            <div class="status-dot"></div>
+                            <span class="status-text">Processo DORA:</span>
+                            <span class="status-value">Discover → Offer → Request → ACK</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Lease Time Section -->
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-hourglass-half"></i>
+                        Lease Time e Renovação
+                    </div>
+                    <div class="card-content">
+                        <div class="lease-timeline">
+                            <div class="lease-phase active">
+                                <div style="font-weight: 600;">T1</div>
+                                <div style="font-size: 10px;">50% do tempo</div>
+                            </div>
+                            <div class="lease-phase pending">
+                                <div style="font-weight: 600;">T2</div>
+                                <div style="font-size: 10px;">87.5% do tempo</div>
+                            </div>
+                            <div class="lease-phase">
+                                <div style="font-weight: 600;">Expira</div>
+                                <div style="font-size: 10px;">100% do tempo</div>
+                            </div>
+                        </div>
+                        <div class="status-bar" style="margin-top: 10px;">
+                            <div class="status-dot"></div>
+                            <span class="status-text">Renovação automática em T1 (50%)</span>
+                            <span class="status-value">Rebinding em T2 (87.5%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <div class="config-card">
+                    <div class="config-title">
+                        <i class="fas fa-cog"></i>
+                        Configuração DHCP
+                    </div>
+                    <div class="config-section">
+                        <div class="config-label">Portas UDP</div>
+                        <div class="config-value"
+                            style="display: flex; justify-content: space-between; padding-right: 18px;">
+                            <span>Servidor: 67</span>
+                            <span>Cliente: 68</span>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <div class="config-label">Parâmetros Distribuídos</div>
+                        <div class="config-value">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px;">
+                                <div><i class="fas fa-check" style="color: #00ff00; margin-right: 5px;"></i>IP</div>
+                                <div><i class="fas fa-check" style="color: #00ff00; margin-right: 5px;"></i>Máscara
+                                </div>
+                                <div><i class="fas fa-check" style="color: #00ff00; margin-right: 5px;"></i>Gateway
+                                </div>
+                                <div><i class="fas fa-check" style="color: #00ff00; margin-right: 5px;"></i>DNS</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <div class="config-label">Opções Comuns</div>
+                        <div class="config-value" style="font-size: 12px; padding: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Opção 1:</span>
+                                <span>Máscara de sub-rede</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Opção 3:</span>
+                                <span>Gateway padrão</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Opção 6:</span>
+                                <span>Servidor DNS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="security-section">
+                        <div class="security-item">
+                            <div class="security-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="security-text">DHCP Snooping</div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="security-text">IP Source Guard</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Contexto do Problema - AdoptMatch</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: visible;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(90deg, #003DA5 0%, #002d7a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20pt;
+            color: #003DA5;
+        }
+
+        .header-text {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-item {
+            color: white;
+            font-size: 12pt;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 80px);
+            padding: 0 40px;
+            z-index: 5;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28pt;
+            font-weight: 700;
+            color: #003DA5;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: #FF6B35;
+            font-size: 24pt;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #FF6B35;
+        }
+
+        .problem-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .problem-icon {
+            width: 36px;
+            height: 36px;
+            background: #fff3e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16pt;
+            color: #FF6B35;
+        }
+
+        .problem-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .big-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 48pt;
+            font-weight: 800;
+            color: #FF6B35;
+            margin: 10px 0;
+        }
+
+        .big-number-label {
+            font-size: 14pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 150px;
+            width: 100%;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin: 0 5px;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 2px;
+            background: #003DA5;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-icon {
+            font-size: 24pt;
+            color: #003DA5;
+            margin-bottom: 8px;
+        }
+
+        .flow-text {
+            font-size: 12pt;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .consequences-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .consequence-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12pt;
+            color: #666;
+        }
+
+        .consequence-item i {
+            color: #FF6B35;
+            font-size: 10pt;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18pt;
+            font-weight: 700;
+            color: #003DA5;
+        }
+
+        .stat-label {
+            font-size: 11pt;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            font-size: 13pt;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .highlight-text strong {
+            color: #FF6B35;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(90deg, #003DA5 0%, #002d7a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 12pt;
+        }
+
+        .footer-item i {
+            font-size: 12pt;
+        }
+
+        .footer-right {
+            color: white;
+            font-size: 12pt;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 80px;
+            right: 40px;
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12pt;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            z-index: 15;
+        }
+
+        .status-badge i {
+            font-size: 12pt;
+        }
+
+        .problem-visual {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .visual-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .visual-icon {
+            font-size: 24pt;
+            color: #003DA5;
+            margin-bottom: 5px;
+        }
+
+        .visual-text {
+            font-size: 11pt;
+            color: #666;
+        }
+
+        .visual-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20pt;
+            font-weight: 700;
+            color: #FF6B35;
+        }
+
+        .arrow-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .arrow-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12pt;
+            color: #666;
+        }
+
+        .arrow-icon {
+            color: #003DA5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div class="header-left">
+                <div class="header-logo">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="header-text">AdoptMatch - Contexto do Problema</div>
+            </div>
+            <div class="header-right">
+                <div class="header-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>12/04/2026</span>
+                </div>
+                <div class="header-item">
+                    <i class="fas fa-clock"></i>
+                    <span>15 min</span>
+                </div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Problema Identificado</span>
+        </div>
+        <div class="main-content">
+            <div class="section-title">
+                <i class="fas fa-search"></i>
+                Contexto do Problema: Devolução de Pets em Abrigos
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <div class="problem-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="problem-title">Taxa de Devolução</div>
+                    </div>
+                    <div class="big-number">60%</div>
+                    <div class="big-number-label">dos pets adotados são devolvidos nos primeiros 90 dias</div>
+                    <div class="chart-container">
+                        <canvas id="devolutionChart"></canvas>
+                    </div>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <div class="problem-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="problem-title">Impacto nas ONGs</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">40%</div>
+                            <div class="stat-label">Custo de re-acolhimento</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">80%</div>
+                            <div class="stat-label">Superlotação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">25%</div>
+                            <div class="stat-label">Abandono</div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="highlight-text">
+                            <strong>Problema Central:</strong> Adoção por <strong>impulso visual</strong> sem considerar
+                            compatibilidade de estilo de vida, gerando <strong>frustração</strong> e
+                            <strong>devolução</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="flow-text">Impulso Estético</div>
+                    <div style="font-size: 10pt; color: #666;">Adoção por aparência</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="flow-text">Baixa Compatibilidade</div>
+                    <div style="font-size: 10pt; color: #666;">Estilo de vida diferente</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="fas fa-frown"></i>
+                    </div>
+                    <div class="flow-text">Atritos Pós-Adoção</div>
+                    <div style="font-size: 10pt; color: #666;">Frustração do adotante</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <div class="flow-text">Devolução</div>
+                    <div style="font-size: 10pt; color: #666;">Retorno ao abrigo</div>
+                </div>
+            </div>
+            <div class="consequences-list">
+                <div class="consequence-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Consequência 1:</strong> Superlotação dos abrigos</span>
+                </div>
+                <div class="consequence-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Consequência 2:</strong> Estresse animal</span>
+                </div>
+                <div class="consequence-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Consequência 3:</strong> Custos operacionais elevados</span>
+                </div>
+                <div class="consequence-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Consequência 4:</strong> Desgaste emocional</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-paw"></i>
+                    <span>Projeto: AdoptMatch</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-users"></i>
+                    <span>ONGs de Proteção Animal</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span>Slide 2 de 9</span>
+            </div>
+        </div>
+        <script>
+            const ctx = document.getElementById('devolutionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mês 1', 'Mês 2', 'Mês 3', 'Mês 4', 'Mês 5', 'Mês 6'],
+                    datasets: [{
+                        label: 'Taxa de Devolução (%)',
+                        data: [15, 25, 45, 55, 60, 58],
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

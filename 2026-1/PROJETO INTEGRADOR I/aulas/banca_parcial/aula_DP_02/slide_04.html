@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8fafc;
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT GRID MANTENDO 100VW E 100VH --- */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            display: grid;
+            grid-template-rows: 70px 1fr; /* 70px para o Header, resto para o conteúdo */
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23e0f2fe" stroke-width="0.5"/></svg>') repeat;
+            background-size: 100px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a8a;
+            font-size: 15pt; /* Alterado de 20px para 15pt */
+            font-weight: 700;
+        }
+
+        .logo-text {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: white;
+            font-size: 13pt;
+        }
+
+        .header-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 40px; /* Margem interna para substituir o left/top absolute */
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24pt;
+        }
+
+        .title-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28pt;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16pt;
+            color: #64748b;
+        }
+
+        .matrix-container {
+            display: flex;
+            gap: 30px;
+            flex: 1; /* Faz o container preencher a altura disponível */
+            min-height: 0;
+        }
+
+        .matrix-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .matrix-right {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .quadrant {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 2px solid;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quadrant-q1 {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        .quadrant-q2 {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .quadrant-q3 {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+
+        .quadrant-q4 {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .quadrant-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .quadrant-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quadrant-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14pt;
+        }
+
+        .q1 .quadrant-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+
+        .q2 .quadrant-icon {
+            background: rgba(59, 130, 246, 0.2);
+            color: #2563eb;
+        }
+
+        .q3 .quadrant-icon {
+            background: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+
+        .q4 .quadrant-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .priority-badge {
+            font-size: 11pt;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .q1 .priority-badge { background: #10b981; color: white; }
+        .q2 .priority-badge { background: #3b82f6; color: white; }
+        .q3 .priority-badge { background: #f59e0b; color: white; }
+        .q4 .priority-badge { background: #ef4444; color: white; }
+
+        .quadrant-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .example-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 10px 14px;
+            border-left: 4px solid;
+            font-size: 13pt;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .q1 .example-item { border-left-color: #10b981; }
+        .q2 .example-item { border-left-color: #3b82f6; }
+        .q3 .example-item { border-left-color: #f59e0b; }
+        .q4 .example-item { border-left-color: #ef4444; }
+
+        .example-label {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-text {
+            color: #475569;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .note-icon {
+            width: 36px;
+            height: 36px;
+            background: #fef3c7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d97706;
+            font-size: 18pt;
+        }
+
+        .note-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18pt;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .note-content {
+            font-size: 14pt;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #92400e;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13pt;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .legend-green { background: #10b981; }
+        .legend-blue { background: #3b82f6; }
+        .legend-yellow { background: #f59e0b; }
+        .legend-red { background: #ef4444; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FATESE</div>
+            </div>
+            <div class="header-info">
+                <div class="header-info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>ADS</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>2026.1</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>60 min</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-left">
+                    <div class="title-icon">
+                        <i class="fas fa-th"></i>
+                    </div>
+                    <div class="title-text">
+                        <h1 class="main-title">Matriz Esforço x Valor</h1>
+                        <p class="subtitle">Decisão de Escopo e Priorização - Exemplo: AdoptMatch</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="matrix-container">
+                <div class="matrix-left">
+                    <div class="matrix-grid">
+                        <div class="quadrant quadrant-q1 q1">
+                            <div class="quadrant-header">
+                                <div class="quadrant-title">
+                                    <div class="quadrant-icon"><i class="fas fa-star"></i></div>
+                                    <span>Q1: Alta Prioridade</span>
+                                </div>
+                                <div class="priority-badge">Quick Win</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-puzzle-piece"></i> Quiz de Afinidade</div>
+                                    <div class="example-text">10 perguntas simples que resolvem devolução por falta de afinidade.</div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-check-circle"></i> Prioridade: ALTA</div>
+                                    <div class="example-text">Baixo esforço, alto impacto no problema central.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quadrant quadrant-q2 q2">
+                            <div class="quadrant-header">
+                                <div class="quadrant-title">
+                                    <div class="quadrant-icon"><i class="fas fa-rocket"></i></div>
+                                    <span>Q2: Grandes Apostas</span>
+                                </div>
+                                <div class="priority-badge">Planejar</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-brain"></i> ML Recomendação</div>
+                                    <div class="example-text">Recomendação inteligente via IA após validar o quiz básico.</div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-calendar-alt"></i> Fase 2</div>
+                                    <div class="example-text">Implementação apenas após evidência sólida de valor.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quadrant quadrant-q3 q3">
+                            <div class="quadrant-header">
+                                <div class="quadrant-title">
+                                    <div class="quadrant-icon"><i class="fas fa-moon"></i></div>
+                                    <span>Q3: Nice to Have</span>
+                                </div>
+                                <div class="priority-badge">Postergar</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-palette"></i> Tema Escuro</div>
+                                    <div class="example-text">Estético, não influencia a hipótese de negócio central.</div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-low-priority"></i> Baixa Prioridade</div>
+                                    <div class="example-text">Implementar somente após a estabilização do MVP.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quadrant quadrant-q4 q4">
+                            <div class="quadrant-header">
+                                <div class="quadrant-title">
+                                    <div class="quadrant-icon"><i class="fas fa-ban"></i></div>
+                                    <span>Q4: Descartado</span>
+                                </div>
+                                <div class="priority-badge">Evitar</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-camera"></i> Reconhecimento Facial</div>
+                                    <div class="example-text">Complexo demais para o retorno; não resolve o problema principal.</div>
+                                </div>
+                                <div class="example-item">
+                                    <div class="example-label"><i class="fas fa-times-circle"></i> Alto Esforço</div>
+                                    <div class="example-text">Desvio de foco técnico sem agregação de valor real.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="matrix-right">
+                    <div class="note-card">
+                        <div class="note-header">
+                            <div class="note-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="note-title">Nota Prática</div>
+                        </div>
+                        <div class="note-content">
+                            <p style="margin-bottom: 12px; font-weight: 600; color: #1e293b;">O <span class="highlight">MVP</span> deve conter:</p>
+                            <ul style="margin-bottom: 20px; padding-left: 18px; list-style-type: none;">
+                                <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i>Pelo menos 1 item do <strong>Q1</strong></li>
+                                <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i>Excluir 100% dos itens do <strong>Q4</strong></li>
+                                <li><i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i>Focar em valor, não em features</li>
+                            </ul>
+                            
+                            <div class="legend">
+                                <div class="legend-item">
+                                    <div class="legend-color legend-green"></div>
+                                    <span>Quick Win (Ganho Rápido)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color legend-blue"></div>
+                                    <span>Grandes Apostas (Planejar)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color legend-yellow"></div>
+                                    <span>Nice to Have (Desejável)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color legend-red"></div>
+                                    <span>Descartado (Evitar)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

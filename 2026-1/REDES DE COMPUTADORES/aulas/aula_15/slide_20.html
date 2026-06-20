@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cenário Prático Cisco - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .topology-container {
+            background-color: #F8FAFC;
+            border: 2px dashed var(--senac-blue);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--senac-dark-blue);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">Cenário Prático: Cisco Packet Tracer</span>
+            <span class="slide-header-tag">Demonstração Prática</span>
+        </div>
+
+        <!-- Descrição do Caso (Esquerda) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--senac-blue); padding-bottom: 10px;">
+                O Problema e o Objetivo Técnico
+            </h3>
+            <p style="font-size: 24px; line-height: 1.5; color: var(--text-main); margin-bottom: 20px;">
+                Em nosso laboratório virtual de redes, simularemos uma situação real de controle corporativo exigida
+                pelo gestor de TI.
+            </p>
+
+            <div
+                style="background-color: rgba(198, 40, 40, 0.05); border-left: 5px solid var(--danger-color); padding: 20px; border-radius: 4px; margin-bottom: 25px;">
+                <strong style="font-size: 22px; color: var(--danger-color);">A Demanda de Segurança:</strong>
+                <p style="font-size: 18px; line-height: 1.5; color: var(--text-main); margin: 5px 0 0 0;">
+                    <strong>Bloquear</strong> especificamente o computador do setor de testes (<strong>IP
+                        192.168.1.10</strong>) de acessar o Servidor Web de Produção (<strong>IP 192.168.2.50</strong>)
+                    através do protocolo HTTP (<strong>Porta TCP 80</strong>).
+                </p>
+            </div>
+
+            <div
+                style="background-color: rgba(46, 125, 50, 0.05); border-left: 5px solid var(--success-color); padding: 20px; border-radius: 4px;">
+                <strong style="font-size: 22px; color: var(--success-color);">A Regra de Conectividade:</strong>
+                <p style="font-size: 18px; line-height: 1.5; color: var(--text-main); margin: 5px 0 0 0;">
+                    <strong>Permitir</strong> que todo o restante do tráfego de qualquer host de rede flua normalmente e
+                    sem impedimentos lógicos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Topologia e Fluxo (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: auto; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--senac-orange); padding-bottom: 10px;">
+                Topologia Lógica e Conexão de Redes
+            </h3>
+
+            <p style="font-size: 22px; color: var(--text-muted); margin-bottom: 15px;">
+                O laboratório é composto por duas sub-redes distintas interconectadas por um roteador centralizado:
+            </p>
+
+            <div class="topology-container">
+        <strong>[ Sub-rede LAN 1 ]</strong> - Bloco IP: 192.168.1.0/24<br>
+        • Host PC-Testes: <span style="color: var(--danger-color); font-weight: bold;">192.168.1.10</span> (Alvo
+        do bloqueio)<br>
+        • Host PC-Estudante: 192.168.1.20 (Livre de bloqueio)<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interface Router Gi0/0 (Gateway:
+        192.168.1.1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ ROTEADOR CENTRAL
+        CISCO ]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interface Router Gi0/1 (Gateway:
+        192.168.2.1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+        <br>
+        <strong>[ Sub-rede LAN 2 ]</strong> - Bloco IP: 192.168.2.0/24<br>
+        • Servidor Web: <span style="color: var(--senac-blue); font-weight: bold;">192.168.2.50</span> (Porta
+        TCP 80 ativa)
+            </div>
+
+            <div
+                style="margin-top: 25px; padding: 20px; background-color: #F8FAFC; border-radius: 6px; font-size: 18px; line-height: 1.5; color: var(--text-main);">
+                <strong>Planejamento do Administrador:</strong> Como usaremos uma <strong>ACL Estendida</strong>,
+                seguiremos a recomendação técnica de posicioná-la <strong>o mais próximo possível da origem</strong> do
+                tráfego. Portanto, aplicaremos o filtro na entrada (in) da interface <strong>GigabitEthernet0/0</strong>
+                do roteador central.
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 20/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

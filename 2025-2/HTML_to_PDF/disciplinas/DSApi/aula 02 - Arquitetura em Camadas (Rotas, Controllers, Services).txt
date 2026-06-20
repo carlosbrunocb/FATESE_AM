@@ -1,0 +1,3201 @@
+
+
+<!-- Conteúdo do Arquivo: slide_1.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Arquitetura em Camadas - Node.js e Express</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+            background-color: white;
+        }
+        .title-box {
+            background-color: #0078d4;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .footer {
+            background-color: #f0f0f0;
+            padding: 20px 40px;
+        }
+        .course-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with institution name -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">FACULDADE DE TECNOLOGIA SENAC - FATESE</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area -->
+<div class="main-content">
+<div class="mb-8">
+<p class="text-xl text-gray-600 mb-2">Curso: Análise e Desenvolvimento de Sistemas</p>
+<p class="text-xl text-gray-600">Disciplina: Desenvolvimento de Serviços e APIs</p>
+</div>
+<div class="title-box text-white">
+<h2 class="text-4xl font-bold mb-3">Desenvolvendo uma API RESTful em Camadas</h2>
+<h3 class="text-2xl font-semibold mb-4">com Node.js e Express</h3>
+<div class="mt-6">
+<p class="text-xl">Arquitetura em Camadas (Rotas, Controllers, Services)</p>
+<p class="text-lg mt-2 italic">Separação de responsabilidades para APIs escaláveis</p>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-center">
+<div class="bg-gray-200 rounded-full p-3 mr-4">
+<i class="fas fa-user-tie text-2xl text-gray-700"></i>
+</div>
+<p class="text-xl">Professor: Carlos Bruno Oliveira Lopes</p>
+</div>
+</div>
+</div>
+<div class="accent-bar"></div>
+<!-- Footer with date -->
+<div class="footer">
+<div class="course-info">
+<p class="text-gray-600"><i class="fas fa-calendar-alt mr-2"></i>2023</p>
+<div class="flex items-center">
+<i class="fas fa-code text-2xl mr-2 text-blue-600"></i>
+<i class="fab fa-node-js text-2xl mr-2 text-green-600"></i>
+<i class="fas fa-server text-2xl text-blue-700"></i>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_10.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Arquivo Principal: src/index.js</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+            line-height: 1.6;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .keyword {
+            color: #569cd6;
+        }
+        .string {
+            color: #ce9178;
+        }
+        .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        .function {
+            color: #dcdcaa;
+        }
+        .variable {
+            color: #9cdcfe;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Arquivo Principal: src/index.js</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code -->
+<div class="main-content">
+<div class="code-area">
+<p><span class="keyword">const</span> <span class="variable">express</span> = <span class="function">require</span>(<span class="string">'express'</span>);</p>
+<p><span class="keyword">const</span> <span class="variable">userRoutes</span> = <span class="function">require</span>(<span class="string">'./routes/user.routes'</span>);</p>
+<p><span class="keyword">const</span> <span class="variable">app</span> = <span class="function">express</span>();</p>
+<p><span class="keyword">const</span> <span class="variable">PORT</span> = <span style="color: #b5cea8;">3000</span>;</p>
+<p></p>
+<p><span class="comment">// Middleware para ler JSON</span></p>
+<p><span class="variable">app</span>.<span class="function">use</span>(<span class="variable">express</span>.<span class="function">json</span>());</p>
+<p></p>
+<p><span class="comment">// Prefixo opcional para as rotas</span></p>
+<p><span class="variable">app</span>.<span class="function">use</span>(<span class="string">'/api'</span>, <span class="variable">userRoutes</span>);</p>
+<p></p>
+<p><span class="variable">app</span>.<span class="function">listen</span>(<span class="variable">PORT</span>, () =&gt; {</p>
+<p>  <span class="variable">console</span>.<span class="function">log</span>(<span class="string">`Servidor rodando em http://localhost:${</span><span class="variable">PORT</span><span class="string">}`</span>);</p>
+<p>});</p>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Ponto de entrada da aplicação: configura middleware, rotas e inicia o servidor</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_11.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Service: src/services/user.service.js</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+            line-height: 1.5;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .comment {
+            color: #6a9955;
+        }
+        .keyword {
+            color: #569cd6;
+        }
+        .string {
+            color: #ce9178;
+        }
+        .function {
+            color: #dcdcaa;
+        }
+        .variable {
+            color: #9cdcfe;
+        }
+        .number {
+            color: #b5cea8;
+        }
+        .operator {
+            color: #d4d4d4;
+        }
+        .method {
+            color: #dcdcaa;
+        }
+        .code-line {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Service: src/services/user.service.js</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code structure -->
+<div class="main-content">
+<div class="code-area">
+<div class="code-line">
+<span class="comment">// Simulando um banco de dados em memória</span>
+</div>
+<div class="code-line">
+<span class="keyword">const</span> <span class="variable">users</span> <span class="operator">=</span> [{ <span class="variable">id</span>: <span class="number">1</span>, <span class="variable">name</span>: <span class="string">'João'</span> }];
+</div>
+<div class="code-line"> </div>
+<div class="code-line">
+<span class="keyword">class</span> <span class="function">UserService</span> {
+</div>
+<div class="code-line">
+  <span class="method">getAll</span>(<span class="variable">limit</span>) {
+</div>
+<div class="code-line">
+    <span class="keyword">return</span> <span class="keyword">typeof</span> <span class="variable">limit</span> <span class="operator">===</span> <span class="string">'number'</span> <span class="operator">?</span> <span class="variable">users</span>.<span class="method">slice</span>(<span class="number">0</span>, <span class="variable">limit</span>) <span class="operator">:</span> <span class="variable">users</span>;
+</div>
+<div class="code-line">
+  }
+</div>
+<div class="code-line"> </div>
+<div class="code-line">
+  <span class="method">create</span>(<span class="variable">userData</span>) {
+</div>
+<div class="code-line">
+    <span class="keyword">const</span> <span class="variable">newUser</span> <span class="operator">=</span> { <span class="variable">id</span>: <span class="variable">users</span>.<span class="variable">length</span> <span class="operator">+</span> <span class="number">1</span>, ...<span class="variable">userData</span> };
+</div>
+<div class="code-line">
+    <span class="variable">users</span>.<span class="method">push</span>(<span class="variable">newUser</span>);
+</div>
+<div class="code-line">
+    <span class="keyword">return</span> <span class="variable">newUser</span>;
+</div>
+<div class="code-line">
+  }
+</div>
+<div class="code-line"> </div>
+<div class="code-line">
+  <span class="method">getById</span>(<span class="variable">id</span>) {
+</div>
+<div class="code-line">
+    <span class="keyword">return</span> <span class="variable">users</span>.<span class="method">find</span>(<span class="variable">u</span> <span class="operator">=&gt;</span> <span class="variable">u</span>.<span class="variable">id</span> <span class="operator">===</span> <span class="method">parseInt</span>(<span class="variable">id</span>));
+</div>
+<div class="code-line">
+  }
+</div>
+<div class="code-line">
+}
+</div>
+<div class="code-line"> </div>
+<div class="code-line">
+<span class="keyword">module</span>.<span class="variable">exports</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">UserService</span>();
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Camada Service: contém apenas a lógica de negócio e não conhece o protocolo HTTP</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_12.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Controller: src/controllers/user.controller.js</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .comment {
+            color: #6a9955;
+        }
+        .keyword {
+            color: #569cd6;
+        }
+        .string {
+            color: #ce9178;
+        }
+        .function {
+            color: #dcdcaa;
+        }
+        .variable {
+            color: #9cdcfe;
+        }
+        .method {
+            color: #4ec9b0;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Controller: src/controllers/user.controller.js</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code -->
+<div class="main-content">
+<div class="code-area">
+<p><span class="keyword">const</span> <span class="variable">userService</span> = <span class="function">require</span>(<span class="string">'../services/user.service'</span>);</p>
+<p><span class="keyword">class</span> <span class="method">UserController</span> {</p>
+<p> <span class="function">getAll</span>(<span class="variable">req</span>, <span class="variable">res</span>) {</p>
+<p> <span class="keyword">const</span> <span class="variable">limit</span> = <span class="variable">req.query.limit</span> ? <span class="function">parseInt</span>(<span class="variable">req.query.limit</span>) : <span class="keyword">undefined</span>;</p>
+<p> <span class="keyword">const</span> <span class="variable">users</span> = <span class="variable">userService</span>.<span class="function">getAll</span>(<span class="variable">limit</span>);</p>
+<p> <span class="variable">res</span>.<span class="function">json</span>({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">users</span> });</p>
+<p>  }</p>
+<p> <span class="function">create</span>(<span class="variable">req</span>, <span class="variable">res</span>) {</p>
+<p> <span class="keyword">const</span> <span class="variable">newUser</span> = <span class="variable">userService</span>.<span class="function">create</span>(<span class="variable">req.body</span>);</p>
+<p> <span class="variable">res</span>.<span class="function">status</span>(201).<span class="function">json</span>({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">newUser</span> });</p>
+<p>  }</p>
+<p> <span class="function">getById</span>(<span class="variable">req</span>, <span class="variable">res</span>) {</p>
+<p> <span class="keyword">const</span> <span class="variable">user</span> = <span class="variable">userService</span>.<span class="function">getById</span>(<span class="variable">req.params.id</span>);</p>
+<p> <span class="keyword">if</span> (!<span class="variable">user</span>) {</p>
+<p> <span class="keyword">return</span> <span class="variable">res</span>.<span class="function">status</span>(404).<span class="function">json</span>({</p>
+<p> <span class="variable">success</span>: <span class="keyword">false</span>,</p>
+<p> <span class="variable">message</span>: <span class="string">'Usuário não encontrado'</span></p>
+<p>      });</p>
+<p>    }</p>
+<p> <span class="variable">res</span>.<span class="function">json</span>({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: <span class="variable">user</span> });</p>
+<p>  }</p>
+<p>}</p>
+<p><span class="keyword">module</span>.<span class="variable">exports</span> = <span class="keyword">new</span> <span class="method">UserController</span>();</p>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Responsabilidade do Controller: Orquestrar a requisição, extrair dados, chamar o Service e responder ao cliente</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_13.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Routes: src/routes/user.routes.js</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .variable { color: #9cdcfe; }
+        .const { color: #4fc1ff; }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Routes: src/routes/user.routes.js</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code structure -->
+<div class="main-content">
+<div class="code-area">
+<p><span class="keyword">const</span> <span class="const">{ Router }</span> = <span class="function">require</span>(<span class="string">'express'</span>);</p>
+<p><span class="keyword">const</span> <span class="const">userController</span> = <span class="function">require</span>(<span class="string">'../controllers/user.controller'</span>);</p>
+<p><span class="keyword">const</span> <span class="variable">router</span> = <span class="function">Router</span>();</p>
+<p></p>
+<p><span class="comment">// Definição das rotas de usuário</span></p>
+<p><span class="variable">router</span>.<span class="function">get</span>(<span class="string">'/users'</span>, <span class="variable">userController</span>.<span class="function">getAll</span>);</p>
+<p><span class="variable">router</span>.<span class="function">post</span>(<span class="string">'/users'</span>, <span class="variable">userController</span>.<span class="function">create</span>);</p>
+<p><span class="variable">router</span>.<span class="function">get</span>(<span class="string">'/users/:id'</span>, <span class="variable">userController</span>.<span class="function">getById</span>);</p>
+<p></p>
+<p><span class="keyword">module</span>.<span class="variable">exports</span> = <span class="variable">router</span>;</p>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Camada de Rotas: define os endpoints (URLs) e verbos HTTP, direcionando para os Controllers apropriados</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_14.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registrando Rotas e Prefixos</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .code-example {
+            background-color: #f3f3f3;
+            padding: 10px 15px;
+            border-left: 4px solid #107c41;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 5px 0 15px 60px;
+            color: #333;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Registrando Rotas e Prefixos</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with concepts list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-link"></i>
+</div>
+<div>
+<p class="text-xl font-medium">Em src/index.js utilizamos app.use('/api', userRoutes)</p>
+<div class="code-example">
+<p>// index.js</p>
+<p>const userRoutes = require('./routes/user.routes');</p>
+<p>app.use('/api', userRoutes);</p>
+</div>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-code-branch"></i>
+</div>
+<div>
+<p class="text-xl">Benefícios do prefixo:</p>
+<ul class="list-disc ml-10 mt-2">
+<li><p>Versionamento da API (ex.: /api/v1/users, /api/v2/users)</p></li>
+<li><p>Organização por domínio ou contexto (/api/auth, /api/admin)</p></li>
+<li><p>Separação de APIs públicas e privadas (/public, /admin)</p></li>
+</ul>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-sitemap"></i>
+</div>
+<div>
+<p class="text-xl font-medium">Dica: use um arquivo src/routes/index.js para centralizar routers</p>
+<div class="code-example">
+<p>// routes/index.js</p>
+<p>const userRoutes = require('./user.routes');</p>
+<p>const authRoutes = require('./auth.routes');</p>
+<p></p>
+<p>module.exports = (app) =&gt; {</p>
+<p>  app.use('/api/users', userRoutes);</p>
+<p>  app.use('/api/auth', authRoutes);</p>
+<p>};</p>
+</div>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-cogs"></i>
+</div>
+<p class="text-xl">Parâmetros da função app.use(): <strong>(path, router)</strong>, onde path é opcional e pode ser uma string ou array de strings</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Organização de rotas para APIs escaláveis</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_15.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hello World: Antes e Depois (Refatoração)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .code-container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+        .code-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-title {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .code-content {
+            background-color: #1e1e1e;
+            border-radius: 0 0 8px 8px;
+            padding: 15px 20px;
+            flex: 1;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .comment {
+            color: #608b4e;
+        }
+        .string {
+            color: #ce9178;
+        }
+        .keyword {
+            color: #569cd6;
+        }
+        .function {
+            color: #dcdcaa;
+        }
+        .variable {
+            color: #9cdcfe;
+        }
+        .method {
+            color: #4ec9b0;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Hello World: Antes e Depois (Refatoração)</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code comparison -->
+<div class="main-content">
+<div class="code-container">
+<!-- Before refactoring -->
+<div class="code-column">
+<div class="code-title">
+<i class="fas fa-code mr-2"></i>
+<p>Antes (tudo no index.js)</p>
+</div>
+<div class="code-content">
+<p><span class="keyword">const</span> <span class="variable">express</span> = <span class="function">require</span>(<span class="string">'express'</span>);</p>
+<p><span class="keyword">const</span> <span class="variable">app</span> = <span class="function">express</span>();</p>
+<p><span class="keyword">const</span> <span class="variable">PORT</span> = 3000;</p>
+<p> </p>
+<p><span class="comment">// Rota Hello World</span></p>
+<p><span class="variable">app</span>.<span class="method">get</span>(<span class="string">'/hello'</span>, (<span class="variable">req</span>, <span class="variable">res</span>) =&gt; {</p>
+<p>  <span class="variable">res</span>.<span class="method">send</span>(<span class="string">'Hello World'</span>);</p>
+<p>});</p>
+<p> </p>
+<p><span class="variable">app</span>.<span class="method">listen</span>(<span class="variable">PORT</span>, () =&gt; {</p>
+<p>  <span class="function">console</span>.<span class="method">log</span>(<span class="string">`Servidor rodando na porta ${PORT}`</span>);</p>
+<p>});</p>
+</div>
+</div>
+<!-- After refactoring -->
+<div class="code-column">
+<div class="code-title">
+<i class="fas fa-layer-group mr-2"></i>
+<p>Depois (com camadas)</p>
+</div>
+<div class="code-content">
+<p><span class="comment">// routes/hello.routes.js</span></p>
+<p><span class="keyword">const</span> { <span class="variable">Router</span> } = <span class="function">require</span>(<span class="string">'express'</span>);</p>
+<p><span class="keyword">const</span> <span class="variable">router</span> = <span class="function">Router</span>();</p>
+<p> </p>
+<p><span class="variable">router</span>.<span class="method">get</span>(<span class="string">'/hello'</span>, (<span class="variable">req</span>, <span class="variable">res</span>) =&gt; {</p>
+<p>  <span class="variable">res</span>.<span class="method">json</span>({ <span class="variable">message</span>: <span class="string">'Hello World'</span> });</p>
+<p>});</p>
+<p> </p>
+<p><span class="function">module</span>.<span class="variable">exports</span> = <span class="variable">router</span>;</p>
+<p> </p>
+<p><span class="comment">// index.js</span></p>
+<p><span class="keyword">const</span> <span class="variable">helloRoutes</span> = <span class="function">require</span>(<span class="string">'./routes/hello.routes'</span>);</p>
+<p><span class="variable">app</span>.<span class="method">use</span>(<span class="string">'/api'</span>, <span class="variable">helloRoutes</span>);</p>
+</div>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Vantagens: Respostas em JSON padronizadas, organização por responsabilidade, prefixo unificado (/api)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_16.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Middleware express.json()</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .code-example {
+            background-color: #f8f8f8;
+            border-left: 5px solid #107c41;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 1rem;
+            color: #333;
+            border-radius: 0 5px 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Middleware express.json()</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with objectives list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-exchange-alt"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Objetivo</p>
+<p class="text-lg">Permite ler e processar o corpo da requisição em formato JSON, transformando-o em um objeto JavaScript acessível via <code>req.body</code></p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-code"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Como usar</p>
+<p class="text-lg">Coloque antes das rotas em seu arquivo principal:</p>
+<div class="code-example">
+<p>// Aplica o middleware em todas as rotas</p>
+<p>app.use(express.json());</p>
+</div>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-exclamation-triangle"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Sem o middleware</p>
+<p class="text-lg">O <code>req.body</code> virá como <code>undefined</code> em requests com JSON, gerando erros ao tentar acessar propriedades</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-tools"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Alternativas e extensões</p>
+<p class="text-lg">Combine com bibliotecas de validação como Zod/Joi para validar esquemas após o parse do JSON</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Express middleware para processamento de JSON</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_17.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parâmetros de Requisição - Arquitetura em Camadas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .example {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 5px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Parâmetros de Requisição: Visão Geral</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with objectives list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-route"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Params</p>
+<p class="text-lg">Parte da URL depois de ":" <span class="example">/users/:id</span></p>
+<p class="text-lg">Acessados via <span class="example">req.params</span> (ex: <span class="example">req.params.id</span>)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-question"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Query</p>
+<p class="text-lg">Após o "?" na URL <span class="example">/users?limit=10&amp;sort=name</span></p>
+<p class="text-lg">Acessados via <span class="example">req.query</span> (ex: <span class="example">req.query.limit</span>)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-file-alt"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Body</p>
+<p class="text-lg">Dados enviados no corpo da requisição (POST, PUT, PATCH)</p>
+<p class="text-lg">Requer middleware <span class="example">express.json()</span></p>
+<p class="text-lg">Acessados via <span class="example">req.body</span> (ex: <span class="example">req.body.name</span>)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-tag"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Headers</p>
+<p class="text-lg">Metadados da requisição (Content-Type, Authorization)</p>
+<p class="text-lg">Acessados via <span class="example">req.headers</span> (ex: <span class="example">req.headers.authorization</span>)</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Todos disponíveis através do objeto de requisição (req) no Express</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_18.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exemplo com Params (GET /users/:id)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .code-comment {
+            color: #6A9955;
+        }
+        .code-keyword {
+            color: #569CD6;
+        }
+        .code-string {
+            color: #CE9178;
+        }
+        .code-method {
+            color: #DCDCAA;
+        }
+        .code-variable {
+            color: #9CDCFE;
+        }
+        .code-property {
+            color: #4FC1FF;
+        }
+        .section-title {
+            color: #d7ba7d;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .code-section {
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Exemplo com Params (GET /users/:id)</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code structure -->
+<div class="main-content">
+<div class="code-area">
+<div class="code-section">
+<p class="section-title">// Router - Definindo rota com parâmetro na URL</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">{ Router }</span> = <span class="code-method">require</span>(<span class="code-string">'express'</span>);</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">userController</span> = <span class="code-method">require</span>(<span class="code-string">'../controllers/user.controller'</span>);</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">router</span> = <span class="code-method">Router</span>();</p>
+<p> </p>
+<p><span class="code-comment">// O ":id" captura qualquer valor nesta posição da URL</span></p>
+<p><span class="code-variable">router</span>.<span class="code-method">get</span>(<span class="code-string">'/users/:id'</span>, <span class="code-variable">userController</span>.<span class="code-property">getById</span>);</p>
+<p> </p>
+<p><span class="code-keyword">module</span>.<span class="code-property">exports</span> = <span class="code-variable">router</span>;</p>
+</div>
+<div class="code-section">
+<p class="section-title">// Controller - Acessando o parâmetro da URL</p>
+<p><span class="code-method">getById</span>(<span class="code-variable">req</span>, <span class="code-variable">res</span>) {</p>
+<p>  <span class="code-comment">// req.params contém todos os parâmetros da URL</span></p>
+<p>  <span class="code-keyword">const</span> <span class="code-variable">userId</span> = <span class="code-variable">req</span>.<span class="code-property">params</span>.<span class="code-property">id</span>;</p>
+<p>  <span class="code-keyword">const</span> <span class="code-variable">user</span> = <span class="code-variable">userService</span>.<span class="code-method">getById</span>(<span class="code-variable">userId</span>);</p>
+<p> </p>
+<p>  <span class="code-comment">// Verificação se o usuário existe</span></p>
+<p>  <span class="code-keyword">if</span> (!<span class="code-variable">user</span>) {</p>
+<p>    <span class="code-keyword">return</span> <span class="code-variable">res</span>.<span class="code-method">status</span>(404).<span class="code-method">json</span>({</p>
+<p>      <span class="code-property">success</span>: <span class="code-keyword">false</span>,</p>
+<p>      <span class="code-property">message</span>: <span class="code-string">'Usuário não encontrado'</span></p>
+<p>    });</p>
+<p>  }</p>
+<p>  <span class="code-variable">res</span>.<span class="code-method">json</span>({ <span class="code-property">success</span>: <span class="code-keyword">true</span>, <span class="code-property">data</span>: <span class="code-variable">user</span> });</p>
+<p>}</p>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Params - Valores extraídos diretamente da URL (ex: /users/1 → id=1)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_19.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exemplo com Query (GET /users?limit=10)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .comment {
+            color: #6A9955;
+        }
+        .keyword {
+            color: #569CD6;
+        }
+        .string {
+            color: #CE9178;
+        }
+        .function {
+            color: #DCDCAA;
+        }
+        .variable {
+            color: #9CDCFE;
+        }
+        .property {
+            color: #4EC9B0;
+        }
+        .code-section {
+            margin-bottom: 30px;
+        }
+        .code-label {
+            background-color: #333333;
+            padding: 8px 15px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .file-name {
+            color: #d7ba7d;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Exemplo com Query (GET /users?limit=10)</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code structure -->
+<div class="main-content">
+<div class="code-area">
+<div class="code-section">
+<div class="code-label">
+<i class="fas fa-file-code mr-2"></i>
+<span class="file-name">user.controller.js</span>
+</div>
+<p><span class="keyword">class</span> <span class="property">UserController</span> {</p>
+<p class="ml-8"><span class="function">getAll</span>(req, res) {</p>
+<p class="ml-16"><span class="comment">// Extraindo o parâmetro limit da query string</span></p>
+<p class="ml-16"><span class="keyword">const</span> <span class="variable">limit</span> = req.query.limit ? <span class="function">parseInt</span>(req.query.limit) : <span class="keyword">undefined</span>;</p>
+<p class="ml-16"><span class="keyword">const</span> <span class="variable">users</span> = userService.<span class="function">getAll</span>(limit);</p>
+<p class="ml-16">res.<span class="function">json</span>({ <span class="variable">success</span>: <span class="keyword">true</span>, <span class="variable">data</span>: users });</p>
+<p class="ml-8">}</p>
+<p>}</p>
+</div>
+<div class="code-section">
+<div class="code-label">
+<i class="fas fa-file-code mr-2"></i>
+<span class="file-name">user.service.js</span>
+</div>
+<p><span class="keyword">class</span> <span class="property">UserService</span> {</p>
+<p class="ml-8"><span class="function">getAll</span>(limit) {</p>
+<p class="ml-16"><span class="comment">// Retorna todos ou apenas um limite de usuários</span></p>
+<p class="ml-16"><span class="keyword">return</span> <span class="keyword">typeof</span> limit === <span class="string">'number'</span> ? users.<span class="function">slice</span>(0, limit) : users;</p>
+<p class="ml-8">}</p>
+<p>}</p>
+</div>
+<div class="mt-4">
+<p><span class="comment">// URL da requisição: GET /api/users?limit=10</span></p>
+<p><span class="comment">// Resposta: { "success": true, "data": [...primeiros 10 usuários] }</span></p>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">req.query permite acessar parâmetros opcionais da URL que vêm após o "?"</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_2.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Índice da Aula - Arquitetura em Camadas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .topic-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .topic-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #107c41;
+            border-radius: 5px;
+        }
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0078d4;
+            border-radius: 50%;
+            margin-right: 15px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Índice da Aula</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with topic list -->
+<div class="main-content">
+<div class="topic-grid">
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-network-wired"></i>
+</div>
+<p class="text-lg">O que é API e REST</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-exchange-alt"></i>
+</div>
+<p class="text-lg">Ciclo Request → Response</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-layer-group"></i>
+</div>
+<p class="text-lg">Por que Arquitetura em Camadas</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-sitemap"></i>
+</div>
+<p class="text-lg">Camadas: Router, Controller, Service</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-folder-tree"></i>
+</div>
+<p class="text-lg">Estrutura de pastas do projeto</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-cogs"></i>
+</div>
+<p class="text-lg">Configuração do ambiente</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-code"></i>
+</div>
+<p class="text-lg">Middleware express.json</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-laptop-code"></i>
+</div>
+<p class="text-lg">Implementação das camadas</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-comment-alt"></i>
+</div>
+<p class="text-lg">Hello World (antes e depois)</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-database"></i>
+</div>
+<p class="text-lg">Parâmetros de requisição</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-vial"></i>
+</div>
+<p class="text-lg">Testes com Insomnia/Postman</p>
+</div>
+<div class="topic-item">
+<div class="icon-box">
+<i class="fas fa-check-double"></i>
+</div>
+<p class="text-lg">Boas práticas e próximos passos</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic mt-8">Desenvolvendo uma API RESTful em Camadas com Node.js e Express</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_20.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exemplo com Body (POST /users)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .code-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #444;
+        }
+        .code-section:last-child {
+            border-bottom: none;
+        }
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        .code-keyword {
+            color: #569cd6;
+        }
+        .code-string {
+            color: #ce9178;
+        }
+        .code-function {
+            color: #dcdcaa;
+        }
+        .code-variable {
+            color: #9cdcfe;
+        }
+        .code-method {
+            color: #4ec9b0;
+        }
+        .section-label {
+            color: #569cd6;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Exemplo com Body (POST /users)</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code examples -->
+<div class="main-content">
+<div class="code-area">
+<div class="code-section">
+<span class="section-label">// Middleware global (index.js)</span>
+<p><span class="code-keyword">const</span> <span class="code-variable">express</span> = <span class="code-function">require</span>(<span class="code-string">'express'</span>);</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">app</span> = <span class="code-variable">express</span>();</p>
+<p><span class="code-comment">// Middleware para ler JSON do corpo da requisição</span></p>
+<p><span class="code-variable">app</span>.<span class="code-function">use</span>(<span class="code-variable">express</span>.<span class="code-function">json</span>());</p>
+</div>
+<div class="code-section">
+<span class="section-label">// Rota (routes/user.routes.js)</span>
+<p><span class="code-keyword">const</span> { <span class="code-variable">Router</span> } = <span class="code-function">require</span>(<span class="code-string">'express'</span>);</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">userController</span> = <span class="code-function">require</span>(<span class="code-string">'../controllers/user.controller'</span>);</p>
+<p><span class="code-keyword">const</span> <span class="code-variable">router</span> = <span class="code-function">Router</span>();</p>
+<p></p>
+<p><span class="code-variable">router</span>.<span class="code-function">post</span>(<span class="code-string">'/users'</span>, <span class="code-variable">userController</span>.<span class="code-variable">create</span>);</p>
+</div>
+<div class="code-section">
+<span class="section-label">// Controller (controllers/user.controller.js)</span>
+<p><span class="code-function">create</span>(<span class="code-variable">req</span>, <span class="code-variable">res</span>) {</p>
+<p> <span class="code-keyword">const</span> <span class="code-variable">newUser</span> = <span class="code-variable">userService</span>.<span class="code-function">create</span>(<span class="code-variable">req</span>.<span class="code-variable">body</span>); <span class="code-comment">// Ex.: { "name": "Maria" }</span></p>
+<p> <span class="code-variable">res</span>.<span class="code-function">status</span>(201).<span class="code-function">json</span>({ <span class="code-variable">success</span>: <span class="code-keyword">true</span>, <span class="code-variable">data</span>: <span class="code-variable">newUser</span> });</p>
+<p>}</p>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">O Body vem do cliente como JSON e é parseado pelo middleware express.json()</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_21.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Boas Práticas de Resposta</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            border-left: 4px solid #107c41;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Boas Práticas de Resposta</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with objectives list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-check-double"></i>
+</div>
+<div>
+<p class="text-xl">Consistência: sempre retorne JSON com a mesma estrutura</p>
+<div class="code-block">
+<p>{ success: boolean, data?: any, message?: string, errors?: any }</p>
+</div>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-hashtag"></i>
+</div>
+<div>
+<p class="text-xl">Status codes corretos</p>
+<p>200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found), 500 (Internal Error)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-comment-alt"></i>
+</div>
+<p class="text-xl">Mensagens claras e úteis ao cliente para facilitar o consumo da API</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-shield-alt"></i>
+</div>
+<p class="text-xl">Não exponha detalhes sensíveis de erros internos (stack traces, queries SQL)</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Arquitetura em Camadas (Rotas, Controllers, Services)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_22.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Testando com Insomnia/Postman</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .slide-container {
+        width: 1280px;
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        
+    }
+    .header {
+        background-color: #0078d4;
+        padding: 20px 40px;
+        text-align: center;
+    }
+    .main-content {
+        flex: 1;
+        padding: 40px 60px;
+        display: flex;
+        flex-direction: column;
+    }
+    .content-list {
+        margin-top: 30px;
+    }
+    .content-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 22px;
+    }
+    .icon-circle {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #107c41;
+        border-radius: 50%;
+        margin-right: 20px;
+        color: white;
+    }
+    .accent-bar {
+        height: 8px;
+        background-color: #107c41;
+        width: 100%;
+    }
+    .code {
+        font-family: 'Courier New', monospace;
+        background-color: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 4px;
+        color: #333;
+        font-weight: 500;
+    }
+</style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Testando com Insomnia/Postman</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with test examples -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-list"></i>
+</div>
+<div>
+<p class="text-xl"><span class="font-bold">GET</span> <span class="code">http://localhost:3000/api/users</span></p>
+<p class="text-gray-600">Lista todos os usuários cadastrados</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-user"></i>
+</div>
+<div>
+<p class="text-xl"><span class="font-bold">GET</span> <span class="code">http://localhost:3000/api/users/1</span></p>
+<p class="text-gray-600">Busca um usuário específico pelo ID</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-filter"></i>
+</div>
+<div>
+<p class="text-xl"><span class="font-bold">GET</span> <span class="code">http://localhost:3000/api/users?limit=1</span></p>
+<p class="text-gray-600">Utiliza parâmetros de consulta para filtrar resultados</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-plus-circle"></i>
+</div>
+<div>
+<p class="text-xl"><span class="font-bold">POST</span> <span class="code">http://localhost:3000/api/users</span></p>
+<p class="text-gray-600">Body (JSON): <span class="code">{ "name": "Maria" }</span></p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-check-circle"></i>
+</div>
+<div>
+<p class="text-xl">Verifique status, headers e body de resposta</p>
+<p class="text-gray-600">Status codes: 200 (OK), 201 (Created), 404 (Not Found)</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Testando sua API com ferramentas especializadas para desenvolvedores</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_23.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Próximos Passos e Evoluções - Arquitetura em Camadas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Próximos Passos e Evoluções</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with evolution topics -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-shield-alt"></i>
+</div>
+<p class="text-xl">Validação de dados (Zod/Joi) no Controller</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-user-shield"></i>
+</div>
+<p class="text-xl">Middlewares: autenticação, logs, tratamento de erros</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-exclamation-triangle"></i>
+</div>
+<p class="text-xl">Centralização de erros (error handler)</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-database"></i>
+</div>
+<p class="text-xl">Persistência real: bancos (PostgreSQL, MongoDB) e camada de repositório</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-code-branch"></i>
+</div>
+<p class="text-xl">Versionamento de API (v1, v2) e documentação (OpenAPI/Swagger)</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Evoluções para uma API robusta e profissional</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_24.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Encerramento - Arquitetura em Camadas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-left: 60px;
+        }
+        .summary-bullet {
+            color: #0078d4;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        .activity-box {
+            background-color: #f0f7ff;
+            border-left: 5px solid #0078d4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-left: 60px;
+        }
+        .questions-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .questions-circle {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0078d4;
+            border-radius: 50%;
+            color: white;
+            font-size: 3rem;
+            margin-right: 30px;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Encerramento</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with summary, activity and questions -->
+<div class="main-content">
+<!-- Summary section -->
+<div class="content-section">
+<div class="section-title">
+<div class="icon-circle">
+<i class="fas fa-check-circle"></i>
+</div>
+<h2 class="text-2xl font-bold">Resumo</h2>
+</div>
+<div class="summary-item">
+<div class="summary-bullet">•</div>
+<p class="text-lg">Você aprendeu o porquê e o como da Arquitetura em Camadas</p>
+</div>
+<div class="summary-item">
+<div class="summary-bullet">•</div>
+<p class="text-lg">Implementou Service, Controller e Routes com Express</p>
+</div>
+<div class="summary-item">
+<div class="summary-bullet">•</div>
+<p class="text-lg">Lidou com Params, Query e Body nas requisições</p>
+</div>
+</div>
+<!-- Activity section -->
+<div class="content-section">
+<div class="section-title">
+<div class="icon-circle">
+<i class="fas fa-laptop-code"></i>
+</div>
+<h2 class="text-2xl font-bold">Atividade Sugerida</h2>
+</div>
+<div class="activity-box">
+<p class="text-lg mb-3"><strong>Exercícios práticos:</strong></p>
+<div class="summary-item">
+<div class="summary-bullet">•</div>
+<p class="text-lg">Adicionar rotas PUT/PATCH e DELETE para users</p>
+</div>
+<div class="summary-item">
+<div class="summary-bullet">•</div>
+<p class="text-lg">Implementar validação de entrada e tratamento de erros centralizado</p>
+</div>
+</div>
+</div>
+<!-- Questions section -->
+<div class="content-section mt-auto">
+<div class="questions-container">
+<div class="questions-circle">
+<i class="fas fa-question"></i>
+</div>
+<div>
+<h2 class="text-3xl font-bold text-blue-600">Perguntas?</h2>
+<p class="text-xl mt-2">Estou à disposição para esclarecer suas dúvidas</p>
+</div>
+</div>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_3.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Objetivos da Aula - Arquitetura em Camadas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Objetivos da Aula</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with objectives list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-network-wired"></i>
+</div>
+<p class="text-xl">Compreender o que é uma API e o estilo arquitetural REST</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-exchange-alt"></i>
+</div>
+<p class="text-xl">Entender o ciclo Request/Response</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-object-group"></i>
+</div>
+<p class="text-xl">Compreender a Separação de Responsabilidades (SoC)</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-layer-group"></i>
+</div>
+<p class="text-xl">Estruturar projeto em camadas: Rotas, Controllers e Services</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-code"></i>
+</div>
+<p class="text-xl">Criar e refatorar rotas (Hello World, CRUD básico)</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-database"></i>
+</div>
+<p class="text-xl">Lidar com Params, Query e Body nas requisições</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Arquitetura em Camadas (Rotas, Controllers, Services)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_4.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>O que é uma API? E o que é REST?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">O que é uma API? E o que é REST?</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-plug"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">API: Interface de Programação de Aplicações</p>
+<p class="text-lg">Permite comunicação entre sistemas via contratos (endpoints, formatos)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-server"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">REST: Representational State Transfer</p>
+<p class="text-lg">Estilo arquitetural que utiliza HTTP, recursos (URLs), verbos (GET/POST/PUT/DELETE), e representações (JSON)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-list-check"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Características</p>
+<p class="text-lg">Stateless, cacheável, interface uniforme, arquitetura em camadas</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-rocket"></i>
+</div>
+<div>
+<p class="text-xl font-semibold">Benefícios</p>
+<p class="text-lg">Simplicidade, escalabilidade, interoperabilidade, desacoplamento</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Arquitetura em Camadas (Rotas, Controllers, Services)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_5.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ciclo de Requisição e Resposta (HTTP)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .http-flow {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .http-box {
+            border: 2px solid #0078d4;
+            border-radius: 8px;
+            padding: 15px;
+            width: 240px;
+            text-align: center;
+            background-color: #f0f9ff;
+        }
+        .arrow-right {
+            font-size: 2rem;
+            color: #107c41;
+            display: flex;
+            align-items: center;
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Ciclo de Requisição e Resposta (HTTP)</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area -->
+<div class="main-content">
+<!-- Simple HTTP flow diagram -->
+<div class="http-flow">
+<div class="http-box">
+<p class="font-bold text-lg">Cliente</p>
+<p class="text-sm">(Browser, App Mobile, Outro Serviço)</p>
+</div>
+<div class="arrow-right">
+<div>
+<p class="text-sm mb-1">Request →</p>
+<i class="fas fa-long-arrow-alt-right"></i>
+<p class="text-sm mt-4">← Response</p>
+</div>
+</div>
+<div class="http-box">
+<p class="font-bold text-lg">Servidor</p>
+<p class="text-sm">(Nossa API Node.js/Express)</p>
+</div>
+</div>
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-paper-plane"></i>
+</div>
+<div>
+<p class="text-xl font-medium">Cliente envia <strong>Request</strong>:</p>
+<p class="text-lg">• Método (GET, POST, PUT, DELETE...)</p>
+<p class="text-lg">• URL (/api/users, /products/1...)</p>
+<p class="text-lg">• Headers (Authorization, Content-Type...)</p>
+<p class="text-lg">• Body - opcional (dados em JSON, form-data...)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-reply"></i>
+</div>
+<div>
+<p class="text-xl font-medium">Servidor retorna <strong>Response</strong>:</p>
+<p class="text-lg">• Status code (200, 201, 404, 500...)</p>
+<p class="text-lg">• Headers (Content-Type, Cache-Control...)</p>
+<p class="text-lg">• Body - JSON, HTML, etc. (dados solicitados)</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-code"></i>
+</div>
+<div>
+<p class="text-xl font-medium">No Express.js:</p>
+<p class="text-lg">• <code>req</code> - Objeto de requisição (entrada)</p>
+<p class="text-lg">• <code>res</code> - Objeto de resposta (saída)</p>
+<p class="text-lg">• Exemplo: <code>app.get('/users', (req, res) =&gt; { ... })</code></p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">O fluxo HTTP é stateless: cada requisição é independente</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_6.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Por que Arquitetura em Camadas?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Por que Arquitetura em Camadas?</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with objectives list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-tools"></i>
+</div>
+<p class="text-xl">Manutenibilidade: menos acoplamento, código mais legível e organizado</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-expand-arrows-alt"></i>
+</div>
+<p class="text-xl">Escalabilidade: camadas independentes facilitam evolução do sistema</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-vial"></i>
+</div>
+<p class="text-xl">Testabilidade: serviços testáveis sem depender de HTTP</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-recycle"></i>
+</div>
+<p class="text-xl">Reuso: lógica de negócio reaproveitável em outros canais (CLI, jobs)</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-sitemap"></i>
+</div>
+<p class="text-xl">Organização: responsabilidades claras e bem definidas</p>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Separação de Responsabilidades (Separation of Concerns)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_7.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Camadas: Papéis e Responsabilidades</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Camadas: Papéis e Responsabilidades</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with layers description -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-route"></i>
+</div>
+<div>
+<p class="text-xl font-bold text-blue-700">Router (Rotas):</p>
+<p class="text-lg mt-2">Define endpoints e métodos HTTP; encaminha a requisição para o Controller apropriado. É a porta de entrada da API.</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-traffic-light"></i>
+</div>
+<div>
+<p class="text-xl font-bold text-blue-700">Controller:</p>
+<p class="text-lg mt-2">Orquestra a requisição; extrai dados de req; chama o Service; formata e envia a resposta JSON. Conhece HTTP mas não implementa regras de negócio.</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-cogs"></i>
+</div>
+<div>
+<p class="text-xl font-bold text-blue-700">Service:</p>
+<p class="text-lg mt-2">Contém a lógica de negócio pura; não conhece req/res; executa operações no banco de dados; fornece resultados para o Controller.</p>
+</div>
+</div>
+<div class="content-item border-t-2 pt-4 mt-6 border-gray-200">
+<div class="icon-circle">
+<i class="fas fa-lightbulb"></i>
+</div>
+<div>
+<p class="text-lg">A separação em camadas permite código mais organizado, testável, reaproveitável e facilita a manutenção do sistema ao longo do tempo.</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Arquitetura em Camadas (Rotas, Controllers, Services)</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+
+<!-- Conteúdo do Arquivo: slide_8.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estrutura de Pastas do Projeto</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-area {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 30px;
+            color: #f0f0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+        }
+        .folder {
+            color: #d7ba7d;
+        }
+        .file {
+            color: #9cdcfe;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .line {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .indent {
+            margin-left: 30px;
+        }
+        .double-indent {
+            margin-left: 60px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Estrutura de Pastas do Projeto</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with code structure -->
+<div class="main-content">
+<div class="code-area">
+<div class="line">
+<i class="fas fa-folder-open mr-3 folder"></i>
+<p>/src</p>
+</div>
+<div class="line indent">
+<i class="fas fa-folder mr-3 folder"></i>
+<p>/routes</p>
+</div>
+<div class="line double-indent">
+<i class="fas fa-file-code mr-3 file"></i>
+<p>index.js</p>
+</div>
+<div class="line double-indent">
+<i class="fas fa-file-code mr-3 file"></i>
+<p>user.routes.js</p>
+</div>
+<div class="line indent">
+<i class="fas fa-folder mr-3 folder"></i>
+<p>/controllers</p>
+</div>
+<div class="line double-indent">
+<i class="fas fa-file-code mr-3 file"></i>
+<p>user.controller.js</p>
+</div>
+<div class="line indent">
+<i class="fas fa-folder mr-3 folder"></i>
+<p>/services</p>
+</div>
+<div class="line double-indent">
+<i class="fas fa-file-code mr-3 file"></i>
+<p>user.service.js</p>
+</div>
+<div class="line">
+<i class="fas fa-file-code mr-3 file"></i>
+<p>index.js</p>
+</div>
+<div class="line">
+<i class="fas fa-file mr-3 file"></i>
+<p>package.json</p>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-gray-600 italic">Organização por camadas: separação de responsabilidades</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+
+
+
+<!-- Conteúdo do Arquivo: slide_9.html -->
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Configuração do Ambiente e Dependências</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            
+        }
+        .header {
+            background-color: #0078d4;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-list {
+            margin-top: 30px;
+        }
+        .content-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+        .icon-circle {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #107c41;
+            border-radius: 50%;
+            margin-right: 20px;
+            color: white;
+        }
+        .accent-bar {
+            height: 8px;
+            background-color: #107c41;
+            width: 100%;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            border-left: 4px solid #107c41;
+            padding: 10px 15px;
+            margin: 5px 0 5px 60px;
+            font-family: 'Consolas', monospace;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header with title -->
+<div class="header text-white">
+<h1 class="text-3xl font-bold">Configuração do Ambiente e Dependências</h1>
+</div>
+<div class="accent-bar"></div>
+<!-- Main content area with configuration list -->
+<div class="main-content">
+<div class="content-list">
+<div class="content-item">
+<div class="icon-circle">
+<i class="fab fa-node-js"></i>
+</div>
+<p class="text-xl">Requisitos: Node.js LTS instalado (<a class="text-blue-600" href="https://nodejs.org">https://nodejs.org</a>)</p>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-terminal"></i>
+</div>
+<p class="text-xl">Iniciar projeto:</p>
+<div class="code-block">
+<p>npm init -y</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-box-open"></i>
+</div>
+<p class="text-xl">Instalar Express:</p>
+<div class="code-block">
+<p>npm i express</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-sync-alt"></i>
+</div>
+<p class="text-xl">Instalar Nodemon (dev):</p>
+<div class="code-block">
+<p>npm i -D nodemon</p>
+</div>
+</div>
+<div class="content-item">
+<div class="icon-circle">
+<i class="fas fa-cog"></i>
+</div>
+<p class="text-xl">Script de desenvolvimento no package.json:</p>
+<div class="code-block">
+<p>"scripts": {</p>
+<p>  "dev": "nodemon src/index.js"</p>
+<p>}</p>
+</div>
+</div>
+</div>
+<div class="mt-auto text-center">
+<p class="text-gray-600 italic">Node.js + Express + Nodemon = Ambiente de desenvolvimento completo</p>
+</div>
+</div>
+<div class="accent-bar"></div>
+</div>
+</body>
+</html>
+

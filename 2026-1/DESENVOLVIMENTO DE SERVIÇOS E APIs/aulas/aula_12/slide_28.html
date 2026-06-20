@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Testando no Postman - Passo a Passo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            color: #10b981;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+            /* Important for flex child overflow */
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .step-method {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 4px;
+            font-size: 12px;
+            color: #3b82f6;
+            margin-top: 10px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .result-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .result-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-success {
+            background: #10b981;
+        }
+
+        .status-error {
+            background: #ef4444;
+        }
+
+        .status-warning {
+            background: #f59e0b;
+        }
+
+        .result-text {
+            flex: 1;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .result-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .test-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 14px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .flow-arrow {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e2e8f0;
+            font-size: 15px;
+        }
+
+        .checklist-item i {
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1px 4px;
+            border-radius: 4px;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <div>
+                        <div class="title">Testando no Postman</div>
+                        <div class="subtitle">Passo a passo para testar a API de autenticação JWT</div>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Pronto para testar</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="test-card" style="height: 590px;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-list-ol"></i>
+                            </div>
+                            <div class="card-title">Fluxo de Teste</div>
+                        </div>
+                        <div class="steps-container">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-title">
+                                        <i class="fas fa-lock"></i>
+                                        Tentar acessar rota protegida sem token
+                                    </div>
+                                    <div class="step-description">
+                                        Faça uma requisição POST para <code>/api/livros</code> sem enviar o token JWT. O
+                                        servidor deve retornar erro 401.
+                                    </div>
+                                    <div class="step-method">POST /api/livros</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-title">
+                                        <i class="fas fa-user-plus"></i>
+                                        Registrar novo usuário
+                                    </div>
+                                    <div class="step-description">
+                                        Envie uma requisição POST para <code>/api/auth/registrar</code> com nome, email
+                                        e senha.
+                                    </div>
+                                    <div class="step-method">POST /api/auth/registrar</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-title">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        Realizar login e obter token
+                                    </div>
+                                    <div class="step-description">
+                                        Faça login com o usuário criado e copie o token JWT da resposta.
+                                    </div>
+                                    <div class="step-method">POST /api/auth/login</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <div class="step-title">
+                                        <i class="fas fa-key"></i>
+                                        Configurar token no Postman
+                                    </div>
+                                    <div class="step-description">
+                                        Vá para a aba Authorization, selecione Bearer Token e cole o token obtido.
+                                    </div>
+                                    <div class="step-method">Authorization: Bearer &lt;token&gt;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="test-card" style="flex: 1.4;">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.15);">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="card-title">Resultados Esperados</div>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-item">
+                                <div class="result-status status-success"></div>
+                                <div class="result-text">Token gerado com sucesso</div>
+                                <div class="result-code">200 OK</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-status status-success"></div>
+                                <div class="result-text">Acesso autorizado à rota</div>
+                                <div class="result-code">200 OK</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-status status-error"></div>
+                                <div class="result-text">Token expirado/inválido</div>
+                                <div class="result-code">401 Unauthorized</div>
+                            </div>
+                            <div class="test-flow">
+                                <div class="flow-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Login</span>
+                                </div>
+                                <i class="fas fa-arrow-right flow-arrow"></i>
+                                <div class="flow-item">
+                                    <i class="fas fa-key"></i>
+                                    <span>Token</span>
+                                </div>
+                                <i class="fas fa-arrow-right flow-arrow"></i>
+                                <div class="flow-item">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Acesso</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="test-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.15);">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="card-title">Dicas Importantes</div>
+                        </div>
+                        <div class="checklist">
+                            <div class="checklist-item"><i class="fas fa-check-circle"></i><span>Verifique a expiração
+                                    do token</span></div>
+                            <div class="checklist-item"><i class="fas fa-check-circle"></i><span>Use HTTPS em
+                                    produção</span></div>
+                            <div class="checklist-item"><i class="fas fa-check-circle"></i><span>Guarde o token de forma
+                                    segura</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

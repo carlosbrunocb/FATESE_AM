@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura Pub/Sub: Componentes MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-badge.success {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Diagram */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .diagram-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .diagram-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .diagram-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pubsub-diagram {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .component-box {
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            width: 200px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .publisher-box {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+        }
+
+        .broker-box {
+            background: #fff3e0;
+            border: 2px solid #FF9800;
+            width: 220px;
+            z-index: 10;
+        }
+
+        .subscriber-box {
+            background: #e8f5e9;
+            border: 2px solid #4CAF50;
+        }
+
+        .component-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .component-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .component-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .connection-lines {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 15px;
+        }
+
+        .arrow-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .arrow-line {
+            width: 60px;
+            height: 2px;
+            background: #ccc;
+            position: relative;
+        }
+
+        .arrow-head {
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #ccc;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-label {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+        }
+
+        .message-flow {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .flow-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Right Column - Components Info */
+        .right-column {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .components-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .components-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .component-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #2196F3;
+        }
+
+        .component-item.broker {
+            border-left-color: #FF9800;
+        }
+
+        .component-item.subscriber {
+            border-left-color: #4CAF50;
+        }
+
+        .component-icon-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .component-content {
+            flex: 1;
+        }
+
+        .component-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .component-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section" data-object="true">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-project-diagram" style="margin-right: 12px; color: #2196F3;"></i>
+                    Arquitetura Pub/Sub: Componentes MQTT
+                </div>
+                <div class="header-subtitle">Estrutura de comunicação Publish/Subscribe</div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge success">
+                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                    Ativo
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column" data-object="true">
+                <div class="diagram-card">
+                    <div class="diagram-header">
+                        <div class="diagram-title">
+                            <i class="fas fa-sitemap" style="margin-right: 8px;"></i>
+                            Diagrama de Arquitetura Pub/Sub
+                        </div>
+                    </div>
+                    <div class="diagram-content">
+                        <div class="pubsub-diagram">
+                            <div class="component-box publisher-box">
+                                <div class="component-icon" style="color: #2196F3;">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="component-name">Publisher</div>
+                                <div class="component-desc">Envia mensagens</div>
+                            </div>
+                            <div class="connection-lines">
+                                <div class="arrow-container">
+                                    <div class="arrow-line">
+                                        <div class="arrow-head"></div>
+                                    </div>
+                                    <span class="arrow-label">PUBLISH</span>
+                                </div>
+                            </div>
+                            <div class="component-box broker-box">
+                                <div class="component-icon" style="color: #FF9800;">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="component-name">Broker MQTT</div>
+                                <div class="component-desc">Roteia mensagens</div>
+                            </div>
+                            <div class="connection-lines">
+                                <div class="arrow-container">
+                                    <div class="arrow-line">
+                                        <div class="arrow-head"></div>
+                                    </div>
+                                    <span class="arrow-label">SUBSCRIBE</span>
+                                </div>
+                            </div>
+                            <div class="component-box subscriber-box">
+                                <div class="component-icon" style="color: #4CAF50;">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="component-name">Subscriber</div>
+                                <div class="component-desc">Recebe mensagens</div>
+                            </div>
+                        </div>
+                        <div class="message-flow">
+                            <div class="flow-title">Fluxo de Mensagens:</div>
+                            <div class="flow-steps">
+                                <div class="flow-step">
+                                    <div class="step-number">1</div>
+                                    <span>Publisher envia</span>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">2</div>
+                                    <span>Broker recebe</span>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">3</div>
+                                    <span>Broker roteia</span>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">4</div>
+                                    <span>Subscriber recebe</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column" data-object="true">
+                <div class="components-card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: #e3f2fd; color: #2196F3;">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="card-title">Componentes do Sistema</div>
+                    </div>
+                    <div class="components-list">
+                        <div class="component-item">
+                            <div class="component-icon-small" style="background: #e3f2fd; color: #2196F3;">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="component-content">
+                                <div class="component-title">Publisher</div>
+                                <div class="component-desc">Dispositivo que publica mensagens em tópicos específicos
+                                </div>
+                            </div>
+                        </div>
+                        <div class="component-item broker">
+                            <div class="component-icon-small" style="background: #fff3e0; color: #FF9800;">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="component-content">
+                                <div class="component-title">Broker MQTT</div>
+                                <div class="component-desc">Servidor central que gerencia o roteamento de mensagens
+                                </div>
+                            </div>
+                        </div>
+                        <div class="component-item subscriber">
+                            <div class="component-icon-small" style="background: #e8f5e9; color: #4CAF50;">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="component-content">
+                                <div class="component-title">Subscriber</div>
+                                <div class="component-desc">Dispositivo que assina tópicos para receber mensagens</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">9/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

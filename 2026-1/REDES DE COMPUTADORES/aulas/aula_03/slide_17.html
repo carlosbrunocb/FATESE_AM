@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Limitações Físicas – Ruído e Interferência</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            position: relative;
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+
+        .left-sidebar {
+            width: 80px;
+            height: 100%;
+            background-color: #1e3a8a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+            z-index: 10;
+        }
+
+        .sidebar-icon {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-icon.active {
+            color: #ffffff;
+            position: relative;
+        }
+
+        .sidebar-icon.active::after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 40px;
+            background-color: #3b82f6;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top header accent */
+        .header-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background-color: #e5e7eb;
+        }
+
+        .header-accent-fill {
+            width: 48%; /* Progress indicator */
+            height: 100%;
+            background-color: #3b82f6;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 42px;
+            color: #111827;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 6px;
+            background-color: #ef4444; /* Red for alert/noise concept */
+            margin-top: 10px;
+            border-radius: 3px;
+        }
+
+        .content-area {
+            display: flex;
+            flex: 1;
+            margin-top: 30px;
+            align-items: flex-start;
+        }
+
+        .list-container {
+            flex: 2;
+            padding-right: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .visual-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            background-color: #f9fafb;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 5px solid #ef4444; /* Red accent */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .objective-item:hover {
+            transform: translateX(10px);
+            background-color: #fef2f2;
+        }
+
+        .icon-box {
+            min-width: 42px;
+            height: 42px;
+            background-color: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+            color: #dc2626;
+            font-size: 18px;
+        }
+
+        .text-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #1f2937;
+            margin: 0 0 4px 0;
+        }
+
+        .text-content p {
+            font-size: 14px;
+            color: #4b5563;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            font-size: 400px;
+            color: #f3f4f6;
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            font-size: 12px;
+            color: #9ca3af;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .signal-wave {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .noise-badge {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="left-sidebar">
+            <div class="sidebar-icon">
+                <i class="fas fa-list-check"></i>
+            </div>
+            <div class="sidebar-icon active">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="sidebar-icon">
+                <i class="fas fa-server"></i>
+            </div>
+            <div class="sidebar-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="header-accent">
+                <div class="header-accent-fill"></div>
+            </div>
+            <i class="fas fa-wave-square bg-pattern"></i>
+            <div>
+                <p class="text-sm font-bold text-red-600 uppercase tracking-widest mb-2">Camada Física: Limitações</p>
+                <h1>Ruído e Interferência</h1>
+            </div>
+            <div class="content-area z-10">
+                <div class="list-container">
+                    <div class="objective-item">
+                        <div class="icon-box">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>EMI/RFI (Eletromagnética e Rádio)</h3>
+                            <p>Sinais externos indesejados que corrompem os dados. Fontes comuns: motores elétricos, lâmpadas fluorescentes, micro-ondas e torres de rádio.</p>
+                        </div>
+                    </div>
+                    <div class="objective-item">
+                        <div class="icon-box">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Crosstalk (Diafonia)</h3>
+                            <p>Interferência causada pelo campo magnético de um sinal em um fio vizinho. Comum em cabos par trançado de baixa qualidade ou mal instalados.</p>
+                        </div>
+                    </div>
+                    <div class="objective-item">
+                        <div class="icon-box">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Multipercurso (Wi-Fi)</h3>
+                            <p>Sinais sem fio refletem em paredes e objetos, chegando ao receptor em tempos diferentes, causando distorção e erros.</p>
+                        </div>
+                    </div>
+                    <div class="objective-item">
+                        <div class="icon-box">
+                            <i class="fas fa-shield-virus"></i>
+                        </div>
+                        <div class="text-content">
+                            <h3>Mitigação</h3>
+                            <p>Uso de cabos blindados (STP), trançamento dos pares, fibra óptica (imune a EMI), e planejamento de canais em redes Wi-Fi.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual-container">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 w-full max-w-xs text-center">
+                        <div class="noise-badge">Sinal Original (Digital)</div>
+                        <div class="signal-wave text-blue-500 text-6xl">
+                            <i class="fas fa-square-full" style="font-size: 0.5em; margin-right: 5px;"></i>
+                            <i class="fas fa-square-full" style="font-size: 0.5em; margin-top: -30px; margin-right: 5px;"></i>
+                            <i class="fas fa-square-full" style="font-size: 0.5em; margin-right: 5px;"></i>
+                            <i class="fas fa-square-full" style="font-size: 0.5em; margin-top: -30px;"></i>
+                        </div>
+                        <div class="text-2xl text-red-500 my-2">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="noise-badge">Ruído (Interferência)</div>
+                        <div class="signal-wave text-red-400 text-6xl" style="height: 60px;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="text-2xl text-gray-500 my-2">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="noise-badge">Sinal Resultante (Corrompido)</div>
+                        <div class="signal-wave text-purple-600 text-6xl">
+                            <i class="fas fa-wave-square"></i>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 font-medium">Bits 0 e 1 podem ser interpretados incorretamente.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-info">
+                Redes de Computadores - Aula 03 | Prof. Carlos Lopes
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

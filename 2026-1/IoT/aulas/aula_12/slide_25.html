@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Montagem e Ambiente Wokwi</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            background: #e8f5e9;
+            color: #4CAF50;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Steps */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .steps-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .steps-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .steps-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Right Column - Configuration */
+        .right-column {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .config-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .config-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            color: #1976d2;
+        }
+
+        .config-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .config-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .config-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .config-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+
+        .config-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #4CAF50;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #f8f9fa;
+            overflow-x: auto;
+            margin-top: 5px;
+            white-space: nowrap;
+        }
+
+        .code-line {
+            margin-bottom: 4px;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-number {
+            color: #b5cea8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section" data-object-type="textbox">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-cogs" style="margin-right: 12px; color: #667eea;"></i>
+                    Montagem e Ambiente Wokwi
+                </div>
+                <div class="header-subtitle">Configuração passo a passo do ambiente de simulação</div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <i class="fas fa-check-circle" style="margin-right: 5px;"></i>
+                    Pronto
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object-type="container">
+            <div class="left-column">
+                <div class="steps-card">
+                    <div class="steps-header">
+                        <div class="steps-title">
+                            <i class="fas fa-list-ol" style="margin-right: 8px;"></i>
+                            Passos de Configuração
+                        </div>
+                    </div>
+                    <div class="steps-container">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Criar Projeto no Wokwi</div>
+                                <div class="step-desc">Acesse wokwi.com e crie um novo projeto com ESP32. Configure o
+                                    ambiente de simulação.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Adicionar Componentes</div>
+                                <div class="step-desc">Adicione o ESP32 e um LED conectado ao pino 2 para simular um
+                                    atuador remoto.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Configurar Wi-Fi</div>
+                                <div class="step-desc">Configure a conexão Wi-Fi com SSID "Wokwi-GUEST" (sem senha).
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Configurar Broker MQTT</div>
+                                <div class="step-desc">Use broker.hivemq.com na porta 1883 para conexão MQTT.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Adicionar Biblioteca</div>
+                                <div class="step-desc">Adicione a biblioteca PubSubClient no Wokwi para comunicação
+                                    MQTT.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="config-card">
+                    <div class="config-header">
+                        <div class="config-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="config-title">Configuração do Ambiente</div>
+                    </div>
+                    <div class="config-content">
+                        <div class="config-item">
+                            <span class="config-label">Wi-Fi SSID</span>
+                            <span class="config-value">Wokwi-GUEST</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Broker MQTT</span>
+                            <span class="config-value">broker.hivemq.com</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Porta</span>
+                            <span class="config-value">1883</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Status</span>
+                            <div class="config-status">
+                                <div class="status-dot"></div>
+                                <span class="status-text">Conectado</span>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-comment">// Configuração MQTT</span></div>
+                            <div class="code-line"><span class="code-keyword">const char</span>* mqtt_broker = <span
+                                    class="code-string">"broker.hivemq.com"</span>;</div>
+                            <div class="code-line"><span class="code-keyword">const int</span> mqtt_port = <span
+                                    class="code-number">1883</span>;</div>
+                            <div class="code-line"><span class="code-keyword">const char</span>* topico_pub = <span
+                                    class="code-string">"aula12/iot/RA12345/temperatura"</span>;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object-type="textbox">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">25/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

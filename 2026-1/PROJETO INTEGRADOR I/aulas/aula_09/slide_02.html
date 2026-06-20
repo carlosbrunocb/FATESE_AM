@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agenda da Aula - Dossiê Parte I</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 5px;
+        }
+
+        .duration-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .main-content {
+            padding: 20px 40px;
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 80px);
+        }
+
+        .left-column {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .agenda-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px 20px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .agenda-item:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+
+        .agenda-number {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .agenda-content {
+            flex: 1;
+        }
+
+        .agenda-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .agenda-time {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .agenda-description {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .stats-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .stats-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .stats-chart {
+            height: 100px;
+            margin-top: 10px;
+        }
+
+        .timeline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+
+        .timeline-line {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div>
+                <div class="header-title">Agenda da Aula 09</div>
+                <div class="header-subtitle">Dossiê Parte I - A Fundação do Projeto</div>
+            </div>
+            <div class="duration-badge">
+                <i class="fas fa-clock"></i> 60 minutos
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="agenda-item">
+                    <div class="agenda-number">1</div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">
+                            <span>Abertura: Por que o texto importa tanto quanto o código?</span>
+                            <span class="agenda-time">5 min</span>
+                        </div>
+                        <div class="agenda-description">
+                            Discussão sobre a importância da documentação técnica e como ela impacta na avaliação do
+                            projeto. Introdução aos conceitos de escrita acadêmica.
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 8%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="agenda-item">
+                    <div class="agenda-number">2</div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">
+                            <span>Teoria: A técnica do funil de escrita</span>
+                            <span class="agenda-time">10 min</span>
+                        </div>
+                        <div class="agenda-description">
+                            Explicação da técnica de funil para contextualização: Contexto Global → Problema Local →
+                            Solução Proposta.
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 17%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="agenda-item">
+                    <div class="agenda-number">3</div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">
+                            <span>Estudo de Caso: AdoptMatch</span>
+                            <span class="agenda-time">10 min</span>
+                        </div>
+                        <div class="agenda-description">
+                            Análise prática do projeto AdoptMatch como exemplo de aplicação das técnicas de escrita de
+                            objetivos.
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="agenda-item">
+                    <div class="agenda-number">4</div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">
+                            <span>Workshop: Escrita direta no Modelo Word</span>
+                            <span class="agenda-time">30 min</span>
+                        </div>
+                        <div class="agenda-description">
+                            Atividade prática em duplas para redação da introdução e estruturação dos objetivos do
+                            projeto.
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="agenda-item">
+                    <div class="agenda-number">5</div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">
+                            <span>Fechamento: Entrega da primeira versão</span>
+                            <span class="agenda-time">5 min</span>
+                        </div>
+                        <div class="agenda-description">
+                            Orientações sobre como postar a primeira versão da introdução no modelo institucional.
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 8%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-title">Progresso da Aula</div>
+                        <div class="stats-value">42%</div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-line"></div>
+                        <div class="timeline-dot" style="background: #e2e8f0;"></div>
+                    </div>
+                    <div class="stats-chart">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-title">Tempo Restante</div>
+                        <div class="stats-value" style="color: #f97316;">25 min</div>
+                    </div>
+                    <div style="font-size: 13px; color: #64748b;">
+                        Atividade principal: Workshop de escrita
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Progress Chart
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Concluído', 'Restante'],
+                datasets: [{
+                    data: [25, 75],
+                    backgroundColor: ['#3b82f6', '#e2e8f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

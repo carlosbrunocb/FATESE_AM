@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Automação de Testes Web - Selenium e WebDrivers</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0d1b2a 100%);
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0d1b2a 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 280px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 50%, #0d6efd 100%);
+            border-radius: 0 0 80px 80px;
+            z-index: 1;
+        }
+
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 280px;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
+            z-index: 2;
+            border-radius: 0 0 80px 80px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 60px;
+            right: 60px;
+            z-index: 10;
+        }
+
+        .title-section {
+            margin-bottom: 40px;
+        }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+            margin: 0 0 15px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            height: 380px;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .right-panel {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #1a5fb4;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .professor-card {
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .professor-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .professor-contact {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .objectives-section {
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #1a5fb4;
+            font-size: 24px;
+        }
+
+        .objectives-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .objective-icon {
+            width: 28px;
+            height: 28px;
+            background: #e7f3ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .objective-icon i {
+            font-size: 14px;
+            color: #1a5fb4;
+        }
+
+        .objective-text {
+            font-size: 15px;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .tech-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a5fb4;
+            font-size: 22px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: white;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="course-badge">
+                    <i class="fas fa-graduation-cap" style="margin-right: 8px;"></i>
+                    Disciplina: Qualidade e Teste de Software
+                </div>
+                <h1 class="main-title">Automação de Testes Web:<br />Introdução ao Selenium e WebDrivers</h1>
+                <p class="subtitle">Desenvolvimento de scripts de automação funcional utilizando Python e Selenium</p>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="objectives-section">
+                        <div class="section-title">
+                            <i class="fas fa-bullseye"></i>
+                            Objetivos da Aula
+                        </div>
+                        <div class="objectives-list">
+                            <div class="objective-item">
+                                <div class="objective-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="objective-text">Compreender o papel da automação na garantia de qualidade
+                                    contínua</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="objective-text">Conhecer a arquitetura do Selenium e WebDrivers</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="objective-text">Identificar elementos com diferentes locators</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="objective-text">Desenvolver primeiro script de automação funcional</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tech-icons">
+                        <div class="tech-icon">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-chrome"></i>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-firefox"></i>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-edge"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="info-card">
+                        <div class="info-label">Curso</div>
+                        <div class="info-value">Análise e Desenvolvimento de Sistemas</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Faculdade</div>
+                        <div class="info-value">FATESE - Senac</div>
+                    </div>
+                    <div class="professor-card">
+                        <div class="professor-name">
+                            <i class="fas fa-user-tie" style="margin-right: 8px;"></i>
+                            Prof. Carlos Bruno Oliveira Lopes
+                        </div>
+                        <div class="professor-contact">
+                            <i class="fas fa-envelope" style="margin-right: 5px;"></i>
+                            carlos.lopes@am.senac.br
+                        </div>
+                        <div class="professor-contact">
+                            <i class="fab fa-linkedin" style="margin-right: 5px;"></i>
+                            in/carlosbruno-lopes/
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 minutos</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    <span>Pronto para iniciar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

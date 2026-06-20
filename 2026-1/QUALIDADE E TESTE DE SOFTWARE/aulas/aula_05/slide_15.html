@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo Prático 1 — Green</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;family=Roboto:wght@300;400;500;700&amp;family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        .slide-container {
+            width: 100vw; /* Alterado para ocupar toda a largura */
+            height: 100vh; /* Alterado para ocupar toda a altura */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* Header Styling */
+        .header {
+            padding: 30px 60px 20px 60px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        /* Left Column: Concepts */
+        .concepts-column {
+            flex: 4;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .concept-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #22c55e;
+            /* Green border for Green phase */
+            transition: all 0.2s ease;
+        }
+
+        .concept-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 16px rgba(34, 197, 94, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #15803d;
+            /* Dark green */
+            font-size: 1.1rem;
+        }
+
+        .card-desc {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Right Column: Code Examples */
+        .code-column {
+            flex: 6;
+            padding: 40px 50px;
+            background-color: #0f172a;
+            /* Slate 950 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+        }
+
+        .code-window {
+            background-color: #1e293b;
+            /* Slate 800 */
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .window-bar {
+            background-color: #0f172a;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            justify-content: space-between;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-yellow {
+            background-color: #eab308;
+        }
+
+        .dot-green {
+            background-color: #22c55e;
+        }
+
+        .window-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .code-content {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Syntax Highlighting */
+        .kwd {
+            color: #c678dd;
+        }
+
+        /* keyword */
+        .func {
+            color: #61afef;
+        }
+
+        /* function */
+        .str {
+            color: #98c379;
+        }
+
+        /* string */
+        .num {
+            color: #d19a66;
+        }
+
+        /* number/bool */
+        .cls {
+            color: #e5c07b;
+        }
+
+        /* class */
+        .com {
+            color: #7f848e;
+            font-style: italic;
+        }
+
+        /* comment */
+        .op {
+            color: #56b6c2;
+        }
+
+        /* operator */
+        .type {
+            color: #e5c07b;
+        }
+
+        /* type hint */
+
+        /* Terminal Style */
+        .terminal-output {
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .term-success {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .term-cmd {
+            color: #f8fafc;
+        }
+
+        .term-path {
+            color: #60a5fa;
+        }
+
+        .phase-badge {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #86efac;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="flex items-center space-x-3 mb-1">
+                    <span
+                        class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Aula
+                        05</span>
+                    <span class="text-slate-500 text-sm font-medium tracking-wide uppercase">TDD: Ciclo
+                        Red-Green-Refactor</span>
+                </div>
+                <h1 class="text-4xl font-black text-slate-900 font-['Montserrat']">
+                    Exemplo Prático 1: Fase Green
+                </h1>
+            </div>
+            <div class="phase-badge">
+                <i class="fas fa-check-circle"></i>
+                FASE VERDE
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="concepts-column">
+                <div class="concept-card">
+                    <div class="card-title">
+                        <i class="fas fa-code mr-3"></i>
+                        1. Implementação Mínima
+                    </div>
+                    <p class="card-desc">
+                        Escreva apenas o código necessário para fazer o teste passar. Não tente criar a solução perfeita
+                        ou genérica ainda. O objetivo é sair do estado de erro (Red).
+                    </p>
+                </div>
+                <div class="concept-card">
+                    <div class="card-title">
+                        <i class="fas fa-play mr-3"></i>
+                        2. Executar Testes
+                    </div>
+                    <p class="card-desc">
+                        Rode o <code>pytest</code> novamente. Agora que a função existe e retorna o valor esperado, o
+                        teste deve passar sem erros.
+                    </p>
+                </div>
+                <div class="concept-card">
+                    <div class="card-title">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        3. Segurança Garantida
+                    </div>
+                    <p class="card-desc">
+                        Com o teste "verde", temos uma rede de segurança. Sabemos que essa funcionalidade específica
+                        está correta conforme a especificação.
+                    </p>
+                </div>
+            </div>
+            <div class="code-column">
+                <div class="bg-grid"></div>
+                <div class="code-window">
+                    <div class="window-bar">
+                        <div class="window-controls">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <span class="window-title">src/sistema.py</span>
+                        <div style="width: 40px;"></div> </div>
+                    <div class="code-content"><span class="kwd">def</span> <span class="func">eh_maior_de_idade</span>(idade: <span class="type">int</span>) -&gt; <span class="type">bool</span>:
+    <span class="com"># Implementação simples para passar o teste</span>
+    <span class="kwd">return</span> idade &gt;= <span class="num">18</span>
+                    </div>
+                </div>
+                <div class="code-window" style="border-color: #22c55e;">
+                    <div class="window-bar" style="background-color: #14532d; border-bottom-color: #22c55e;">
+                        <div class="window-controls">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <span class="window-title" style="color: #dcfce7;">Terminal</span>
+                        <i class="fas fa-terminal text-green-300 text-xs"></i>
+                    </div>
+                    <div class="code-content terminal-output"><span class="term-cmd">$ pytest -v</span>
+<span class="term-path">tests/test_idade.py</span>::test_deve_retornar_true_se_maior... <span class="term-success">PASSED</span>
+<span class="term-success">=================== 1 passed in 0.03s ===================</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

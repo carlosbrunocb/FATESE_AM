@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparação MVC vs Service-Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            position: absolute;
+            top: 110px;
+            left: 50px;
+            width: 95%;
+            height: auto;
+            /* Adjusted height to avoid overlap and clipping */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .comparison-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+            font-weight: 600;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            font-size: 12.5pt;
+            color: #4a5568;
+            line-height: 1.3;
+        }
+
+        .table-cell.mvc {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-radius: 8px;
+            border-left: 4px solid #63b3ed;
+        }
+
+        .table-cell.service {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .cell-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13pt;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .cell-icon.mvc {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+        }
+
+        .cell-icon.service {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .cell-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .cell-title {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 13pt;
+        }
+
+        .cell-description {
+            font-size: 11pt;
+            color: #4a5568;
+        }
+
+        /* Feature Comparison Grid */
+        .feature-comparison {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 110px;
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .feature-icon.structure {
+            background: #63b3ed;
+        }
+
+        .feature-icon.responsibility {
+            background: #ed8936;
+        }
+
+        .feature-icon.testability {
+            background: #48bb78;
+        }
+
+        .feature-icon.scalability {
+            background: #9f7aea;
+        }
+
+        .feature-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .feature-list {
+            font-size: 11pt;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-balance-scale header-icon"></i>
+                <span>Comparação MVC vs Service-Repository</span>
+            </div>
+            <div class="header-subtitle">Análise comparativa dos padrões arquiteturais</div>
+        </div>
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Comparison Section -->
+            <div class="comparison-section">
+                <div class="comparison-header">
+                    <div class="comparison-title">
+                        <i class="fas fa-chart-bar" style="color: #63b3ed;"></i>
+                        <span>Análise Comparativa</span>
+                    </div>
+                    <div style="font-size: 14px; color: #718096;">Diferenças em estrutura, responsabilidades e
+                        características</div>
+                </div>
+                <!-- Comparison Table -->
+                <div class="comparison-table">
+                    <!-- Header Row -->
+                    <div class="table-row table-header" style="border: none;">
+                        <div style="font-weight: 600;">Critério</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-layer-group" style="font-size: 16px;"></i>
+                            <span>MVC Tradicional</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-server" style="font-size: 16px;"></i>
+                            <span>Service-Repository</span>
+                        </div>
+                    </div>
+                    <!-- Row 1 -->
+                    <div class="table-row">
+                        <div class="table-cell" style="font-weight: 600; border: none; background: transparent;">
+                            <i class="fas fa-sitemap" style="color: #63b3ed; margin-right: 8px;"></i>
+                            Estrutura
+                        </div>
+                        <div class="table-cell mvc">
+                            <div class="cell-icon mvc"><i class="fas fa-layer-group"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">3 Camadas</div>
+                                <div class="cell-description">Model, View, Controller</div>
+                            </div>
+                        </div>
+                        <div class="table-cell service">
+                            <div class="cell-icon service"><i class="fas fa-server"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">4 Camadas</div>
+                                <div class="cell-description">Rotas, Controller, Service, Repository</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="table-row">
+                        <div class="table-cell" style="font-weight: 600; border: none; background: transparent;">
+                            <i class="fas fa-tasks" style="color: #ed8936; margin-right: 8px;"></i>
+                            Responsabilidade
+                        </div>
+                        <div class="table-cell mvc">
+                            <div class="cell-icon mvc"><i class="fas fa-user"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">Concentrada</div>
+                                <div class="cell-description">Controller gerencia tudo</div>
+                            </div>
+                        </div>
+                        <div class="table-cell service">
+                            <div class="cell-icon service"><i class="fas fa-users"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">Distribuída</div>
+                                <div class="cell-description">Cada camada tem função específica</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 3 -->
+                    <div class="table-row">
+                        <div class="table-cell" style="font-weight: 600; border: none; background: transparent;">
+                            <i class="fas fa-vial" style="color: #48bb78; margin-right: 8px;"></i>
+                            Testabilidade
+                        </div>
+                        <div class="table-cell mvc">
+                            <div class="cell-icon mvc"><i class="fas fa-check"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">Moderada</div>
+                                <div class="cell-description">Difícil testar isoladamente</div>
+                            </div>
+                        </div>
+                        <div class="table-cell service">
+                            <div class="cell-icon service"><i class="fas fa-check-double"></i></div>
+                            <div class="cell-content">
+                                <div class="cell-title">Alta</div>
+                                <div class="cell-description">Fácil testar cada componente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature Comparison Grid -->
+            <div class="feature-comparison">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon structure"><i class="fas fa-sitemap"></i></div>
+                        <div class="feature-title">Estrutura</div>
+                    </div>
+                    <div class="feature-list">
+                        MVC: 3 camadas<br />
+                        Service-Repo: 4 camadas<br />
+                        +1 camada de separação
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon responsibility"><i class="fas fa-tasks"></i></div>
+                        <div class="feature-title">Responsabilidade</div>
+                    </div>
+                    <div class="feature-list">
+                        MVC: Controller obeso<br />
+                        Service-Repo: Distribuída<br />
+                        Melhor organização
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon testability"><i class="fas fa-vial"></i></div>
+                        <div class="feature-title">Testabilidade</div>
+                    </div>
+                    <div class="feature-list">
+                        MVC: Testes complexos<br />
+                        Service-Repo: Fácil testar<br />
+                        Maior cobertura
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon scalability"><i class="fas fa-expand-arrows-alt"></i></div>
+                        <div class="feature-title">Escalabilidade</div>
+                    </div>
+                    <div class="feature-list">
+                        MVC: Limitada<br />
+                        Service-Repo: Alta<br />
+                        Fácil manutenção
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Implementação Prática</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Comparação Completa</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    <span>4 Critérios</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

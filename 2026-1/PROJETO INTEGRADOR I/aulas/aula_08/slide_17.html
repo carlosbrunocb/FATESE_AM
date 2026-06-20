@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Caso AdoptMatch: O Problema</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-title {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 2px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 25px;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 0 0 65%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 0 0 calc(35% - 25px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .problem-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .problem-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .problem-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .problem-text {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .symptom-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .symptom-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .symptom-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .symptom-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .symptom-icon {
+            color: #f59e0b;
+            font-size: 14px;
+        }
+
+        .hypothesis-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+        }
+
+        .hypothesis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .hypothesis-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .hypothesis-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .hypothesis-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .mvp-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mvp-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f0fdf4;
+            border-radius: 6px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .mvp-icon {
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .mvp-text {
+            font-size: 11px;
+            color: #166534;
+            line-height: 1.4;
+        }
+
+        .metrics-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+
+        .metrics-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .metrics-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .metrics-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .metrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-icon {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .metric-text {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            width: 70%;
+            border-radius: 0 2px 2px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <div>
+                    <div class="header-title">Caso AdoptMatch: O Problema</div>
+                    <div class="header-subtitle">Plataforma de adoção responsável de pets</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-heart"></i> Adoção
+                </div>
+                <div class="badge">
+                    <i class="fas fa-users"></i> Match
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section-title">Caso AdoptMatch: O Problema</div>
+            <div class="section-description">
+                Plataforma que conecta adotantes a ONGs/abrigos para adoção responsável, enfrentando alto índice de
+                devoluções por incompatibilidade.
+            </div>
+            <div class="main-content">
+                <div class="left-panel">
+                    <div class="problem-card">
+                        <div class="problem-header">
+                            <div class="problem-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="problem-title">Problema Central: Alto Índice de Devoluções</div>
+                        </div>
+                        <div class="problem-text">
+                            <strong>Contexto:</strong> Plataforma que conecta adotantes a ONGs/abrigos para adoção
+                            responsável. <strong>Problema:</strong> Alto índice de devoluções por incompatibilidade
+                            entre rotina/espera do adotante e necessidades do animal.
+                        </div>
+                        <div class="symptoms-grid">
+                            <div class="symptom-box">
+                                <div class="symptom-header">
+                                    <i class="fas fa-chart-line symptom-icon"></i>
+                                    <div class="symptom-label">Sintoma 1</div>
+                                </div>
+                                <div class="symptom-text">Baixa taxa de match qualificado; tempo longo na triagem manual
+                                </div>
+                            </div>
+                            <div class="symptom-box">
+                                <div class="symptom-header">
+                                    <i class="fas fa-file-alt symptom-icon"></i>
+                                    <div class="symptom-label">Sintoma 2</div>
+                                </div>
+                                <div class="symptom-text">Falta de informações padronizadas para decidir</div>
+                            </div>
+                            <div class="symptom-box">
+                                <div class="symptom-header">
+                                    <i class="fas fa-comments symptom-icon"></i>
+                                    <div class="symptom-label">Sintoma 3</div>
+                                </div>
+                                <div class="symptom-text">Comunicação fragmentada entre partes</div>
+                            </div>
+                            <div class="symptom-box">
+                                <div class="symptom-header">
+                                    <i class="fas fa-sync-alt symptom-icon"></i>
+                                    <div class="symptom-label">Sintoma 4</div>
+                                </div>
+                                <div class="symptom-text">Retrabalho na triagem de candidatos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="hypothesis-section">
+                        <div class="hypothesis-header">
+                            <div class="hypothesis-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="hypothesis-title">Hipótese de Valor (MVP)</div>
+                        </div>
+                        <div class="hypothesis-text">
+                            <strong>Valor:</strong> Quiz de Afinidade + Relatório de Match + Canal de diálogo pós-match
+                        </div>
+                        <div class="mvp-features">
+                            <div class="mvp-item">
+                                <div class="mvp-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="mvp-text">
+                                    <strong>Quiz de Afinidade:</strong> Para adotantes
+                                </div>
+                            </div>
+                            <div class="mvp-item">
+                                <div class="mvp-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="mvp-text">
+                                    <strong>Relatório de Match:</strong> Para ONGs
+                                </div>
+                            </div>
+                            <div class="mvp-item">
+                                <div class="mvp-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="mvp-text">
+                                    <strong>Canal de diálogo:</strong> Pós-match
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metrics-section">
+                        <div class="metrics-header">
+                            <div class="metrics-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="metrics-title">Métricas de Sucesso</div>
+                        </div>
+                        <div class="metrics-list">
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                                <div class="metric-text">
+                                    <strong>-20%</strong> devoluções em 60 dias
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="metric-text">
+                                    <strong>+30%</strong> matches qualificados
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-text">
+                                    <strong>-40%</strong> tempo de triagem
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>25/04/2026</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Carlos Bruno Oliveira Lopes</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <i class="fas fa-graduation-cap"></i> FATESE - ADS
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

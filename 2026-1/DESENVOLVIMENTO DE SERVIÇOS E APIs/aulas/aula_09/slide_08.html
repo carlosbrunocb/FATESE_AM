@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 8 - Schemas no Mongoose</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 115vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 50px;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 575px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .code-block {
+            background: #111;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: #d4d4d4;
+            border-left: 4px solid #00ED64;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .code-line-number {
+            color: #555;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-property {
+            color: #9cdcfe;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-number {
+            color: #b5cea8;
+        }
+
+        .schema-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .type-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .type-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .type-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .type-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .validation-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .validation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .validation-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .validation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .validation-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .validation-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .validation-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .highlight-green {
+            color: #00a854;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .practice-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .practice-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .practice-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .schema-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px dashed #ced4da;
+            margin-top: 10px;
+        }
+
+        .schema-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .schema-content {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 12px;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .json-key {
+            color: #0066cc;
+        }
+
+        .json-string {
+            color: #ce9178;
+        }
+
+        .json-number {
+            color: #b5cea8;
+        }
+
+        .json-boolean {
+            color: #569cd6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Schemas no Mongoose</h1>
+                    <p>Definição, tipos, validações e boas práticas de modelagem</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-database"></i> Mongoose
+                </div>
+                <div class="badge">
+                    <i class="fas fa-code"></i> Schema
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Left column -->
+            <div class="left-column">
+                <!-- Schema definition -->
+                <div class="card" style="flex: 0 0 auto;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="card-title">Definição de Schema</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-line-number">1</span><span
+                                    class="code-content"><span class="code-keyword">const</span> LivroSchema = <span
+                                        class="code-keyword">new</span> mongoose.Schema({</span></div>
+                            <div class="code-line"><span class="code-line-number">2</span><span class="code-content">
+                                    <span class="code-property">titulo</span>: { <span
+                                        class="code-property">type</span>: String, <span
+                                        class="code-property">required</span>: <span class="code-keyword">true</span>,
+                                    <span class="code-property">trim</span>: <span class="code-keyword">true</span>
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">3</span><span class="code-content">
+                                    <span class="code-property">autor</span>: { <span class="code-property">type</span>:
+                                    String, <span class="code-property">required</span>: <span
+                                        class="code-keyword">true</span> },</span></div>
+                            <div class="code-line"><span class="code-line-number">4</span><span class="code-content">
+                                    <span class="code-property">ano</span>: { <span class="code-property">type</span>:
+                                    Number, <span class="code-property">min</span>: <span class="code-number">0</span>,
+                                    <span class="code-property">max</span>: <span class="code-number">2100</span>
+                                    },</span></div>
+                            <div class="code-line"><span class="code-line-number">5</span><span class="code-content">
+                                    <span class="code-property">generos</span>: { <span
+                                        class="code-property">type</span>: [String], <span
+                                        class="code-property">default</span>: [] },</span></div>
+                            <div class="code-line"><span class="code-line-number">6</span><span class="code-content">
+                                    <span class="code-property">idioma</span>: { <span
+                                        class="code-property">type</span>: String, <span
+                                        class="code-property">enum</span>: [<span
+                                        class="code-string">'Português'</span>, <span
+                                        class="code-string">'Inglês'</span>] }</span></div>
+                            <div class="code-line"><span class="code-line-number">7</span><span class="code-content">},
+                                    { <span class="code-property">timestamps</span>: <span
+                                        class="code-keyword">true</span>, <span class="code-property">versionKey</span>:
+                                    <span class="code-keyword">false</span> });</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Schema types -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-cubes"></i></div>
+                        <div class="card-title">Tipos de Dados</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="schema-types">
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-font"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">String</div>
+                                    <div class="type-desc">Texto UTF-8</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-hashtag"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Number</div>
+                                    <div class="type-desc">Inteiros/decimais</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-toggle-on"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Boolean</div>
+                                    <div class="type-desc">true/false</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-calendar"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Date</div>
+                                    <div class="type-desc">Data/hora</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-fingerprint"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">ObjectId</div>
+                                    <div class="type-desc">ID único</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-list"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Array</div>
+                                    <div class="type-desc">Listas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right column -->
+            <div class="right-column">
+                <!-- Validations -->
+                <div class="validation-section">
+                    <div class="validation-header">
+                        <div class="validation-title"><i class="fas fa-check-circle"></i> Validações</div>
+                    </div>
+                    <div class="validation-grid">
+                        <div class="validation-item">
+                            <div class="validation-label">Required</div>
+                            <div class="validation-value">Campo obrigatório</div>
+                        </div>
+                        <div class="validation-item">
+                            <div class="validation-label">Min/Max</div>
+                            <div class="validation-value">Valores numéricos</div>
+                        </div>
+                        <div class="validation-item">
+                            <div class="validation-label">Enum</div>
+                            <div class="validation-value">Valores permitidos</div>
+                        </div>
+                        <div class="validation-item">
+                            <div class="validation-label">Match</div>
+                            <div class="validation-value">Regex pattern</div>
+                        </div>
+                        <div class="validation-item">
+                            <div class="validation-label">Validate</div>
+                            <div class="validation-value">Função custom</div>
+                        </div>
+                        <div class="validation-item">
+                            <div class="validation-label">Default</div>
+                            <div class="validation-value highlight-green">Valor padrão</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Best practices -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-medal"></i></div>
+                        <div class="card-title">Boas Práticas</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="best-practices" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-layer-group"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Nomes em lowerCamelCase</div>
+                                    <div class="practice-desc">Consistência na nomenclatura de campos</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-key"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Use ObjectId para IDs</div>
+                                    <div class="practice-desc">Identificadores únicos e eficientes</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-database"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Indexação estratégica</div>
+                                    <div class="practice-desc">Melhore performance de consultas frequentes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="schema-preview">
+                            <div class="schema-title">
+                                <i class="fas fa-eye"></i> Preview do Documento
+                            </div>
+                            <div class="schema-content">
+                                { <br />
+                                  <span class="json-key">"titulo"</span>: <span class="json-string">"Clean
+                                    Architecture"</span>, <br />
+                                  <span class="json-key">"ano"</span>: <span class="json-number">2017</span>, <br />
+                                  <span class="json-key">"ativo"</span>: <span class="json-boolean">true</span> <br />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

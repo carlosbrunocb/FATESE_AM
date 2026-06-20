@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Prática: netstat no Windows</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            right: 50px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .command-box {
+            background: #1e3a5f;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+
+        .command-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .prompt {
+            color: #4fd1c5;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #63b3ed;
+        }
+
+        .output {
+            color: #a0aec0;
+            margin-left: 20px;
+        }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .param-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #2c5282;
+        }
+
+        .param-name {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 12px;
+            min-width: 24px;
+        }
+
+        .param-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .status-item-card {
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-icon-card {
+            font-size: 20px;
+            color: #2c5282;
+            margin-bottom: 5px;
+        }
+
+        .status-name-card {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .status-desc-card {
+            font-size: 10px;
+            color: #718096;
+        }
+
+        .example-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .example-number {
+            width: 20px;
+            height: 20px;
+            background: #2c5282;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .example-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .highlight {
+            background: #ebf8ff;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #2c5282;
+            margin-top: 10px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #2c5282;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 90%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <div>
+                    <div class="header-title">Prática: netstat no Windows (CMD/PowerShell)</div>
+                    <div class="header-subtitle">Comando para visualizar conexões de rede e portas</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Ferramenta</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">netstat.exe</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-windows"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="left-section">
+                <!-- Sintaxe Básica -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        Sintaxe Básica
+                    </div>
+                    <div class="command-box">
+                        <div class="command-line">
+                            <span class="prompt">C:\&gt;</span>
+                            <span class="command">netstat</span>
+                            <span class="output">[opções]</span>
+                        </div>
+                        <div class="command-line">
+                            <span class="output">Exemplo: netstat -ano | findstr :443</span>
+                        </div>
+                    </div>
+                    <div class="highlight">
+                        <div class="highlight-text">
+                            <i class="fas fa-info-circle"></i> <strong>Dica:</strong> Use <code>netstat /?</code> para
+                            ver ajuda completa
+                        </div>
+                    </div>
+                </div>
+                <!-- Parâmetros Principais -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-title">
+                        <i class="fas fa-cogs"></i>
+                        Parâmetros Principais
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-item">
+                            <div class="param-name">-a</div>
+                            <div class="param-desc">Todas conexões e portas em escuta</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-name">-n</div>
+                            <div class="param-desc">Endereços/portas numéricos</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-name">-o</div>
+                            <div class="param-desc">Exibe PID do processo</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-name">-b</div>
+                            <div class="param-desc">Mostra executável (admin)</div>
+                        </div>
+                        <div class="param-item" style="padding: 8px; gap: 4px;">
+                            <div class="param-name" style="min-width: 65px;">-p tcp/udp</div>
+                            <div class="param-desc">Filtra por protocolo</div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-name">-r</div>
+                            <div class="param-desc">Tabela de rotas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <!-- Estados TCP -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-list-check"></i>
+                        Estados TCP Comuns
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-check-circle"></i></div>
+                            <div class="status-name-card">ESTABLISHED</div>
+                            <div class="status-desc-card">Conexão ativa</div>
+                        </div>
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-headphones"></i></div>
+                            <div class="status-name-card">LISTENING</div>
+                            <div class="status-desc-card">Aguardando conexão</div>
+                        </div>
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-clock"></i></div>
+                            <div class="status-name-card">TIME_WAIT</div>
+                            <div class="status-desc-card">Aguardando timeout</div>
+                        </div>
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-hand-paper"></i></div>
+                            <div class="status-name-card">CLOSE_WAIT</div>
+                            <div class="status-desc-card">Aguardando fechamento</div>
+                        </div>
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-sync"></i></div>
+                            <div class="status-name-card">SYN_SENT</div>
+                            <div class="status-desc-card">Solicitando conexão</div>
+                        </div>
+                        <div class="status-item-card">
+                            <div class="status-icon-card"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="status-name-card">CLOSING</div>
+                            <div class="status-desc-card">Fechando conexão</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Exemplos Práticos -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Exemplos Úteis
+                    </div>
+                    <div class="example-list">
+                        <div class="example-item">
+                            <div class="example-number">1</div>
+                            <div class="example-text">
+                                <strong>netstat -ano | findstr :443</strong><br />
+                                <small>Localiza conexões na porta 443 (HTTPS)</small>
+                            </div>
+                        </div>
+                        <div class="example-item">
+                            <div class="example-number">2</div>
+                            <div class="example-text">
+                                <strong>netstat -abn</strong><br />
+                                <small>Mapeia executáveis a sockets (requer admin)</small>
+                            </div>
+                        </div>
+                        <div class="example-item">
+                            <div class="example-number">3</div>
+                            <div class="example-text">
+                                <strong>netstat -p udp -an</strong><br />
+                                <small>Lista sockets UDP ativos</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Duração: 40 min</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso: 90%</span>
+                </div>
+                <div class="progress-bar"
+                    style="width: 150px; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 5px;">
+                    <div class="progress-fill"
+                        style="height: 100%; background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%); border-radius: 3px; width: 90%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

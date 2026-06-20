@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Listas e Tabelas - Markdown</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e3a5f 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 90px;
+            left: 40px;
+            right: 40px;
+            bottom: 70px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .code-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-title i {
+            color: #3b82f6;
+        }
+
+        .code-preview {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            flex: 1;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-number {
+            color: #fbbf24;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .render-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .render-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .render-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .render-title i {
+            color: #10b981;
+        }
+
+        .render-preview {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .render-content {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #1e293b;
+        }
+
+        .render-content h3 {
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .render-content ul {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        .render-content ul li {
+            margin-bottom: 4px;
+        }
+
+        .render-content ol {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        .render-content ol li {
+            margin-bottom: 4px;
+        }
+
+        .render-content input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .render-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+
+        .render-content th {
+            background: #f1f5f9;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+        }
+
+        .render-content td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .render-content tr:hover {
+            background: #f8fafc;
+        }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .bottom-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .bottom-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .bottom-item i {
+            color: #3b82f6;
+        }
+
+        .bottom-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 0;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tip-icon {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            font-size: 11px;
+            color: #0f172a;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #10b981;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        .comparison-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .comparison-label i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <div>
+                    <div class="header-title">Listas e Tabelas - Markdown</div>
+                    <div class="header-subtitle">Sintaxe para organização de conteúdo e estrutura de dados</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="badge"><i class="fas fa-code"></i> Markdown</span>
+                <span class="badge"><i class="fas fa-table"></i> Tabelas</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-section">
+                <div class="code-card">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-file-code"></i>
+                            Código Markdown
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Sintaxe</span>
+                        </div>
+                    </div>
+                    <div class="code-preview">
+                        <div class="code-line"><span class="code-comment"># Listas não ordenadas</span></div>
+                        <div class="code-line"><span class="code-keyword">-</span> <span class="code-string">Item
+                                A</span></div>
+                        <div class="code-line"><span class="code-keyword">-</span> <span class="code-string">Item
+                                B</span></div>
+                        <div class="code-line"><span class="code-keyword"> -</span> <span
+                                class="code-string">Sub-item</span></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"><span class="code-comment"># Lista ordenada</span></div>
+                        <div class="code-line"><span class="code-number">1.</span> <span class="code-string">Passo
+                                1</span></div>
+                        <div class="code-line"><span class="code-number">2.</span> <span class="code-string">Passo
+                                2</span></div>
+                        <div class="code-line"><span class="code-number">3.</span> <span class="code-string">Passo
+                                3</span></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"><span class="code-comment"># Checkboxes</span></div>
+                        <div class="code-line"><span class="code-keyword">- [x]</span> <span class="code-string">Item
+                                concluído</span></div>
+                        <div class="code-line"><span class="code-keyword">- [ ]</span> <span class="code-string">Item
+                                pendente</span></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"><span class="code-comment"># Tabela - Tríade de Valor</span></div>
+                        <div class="code-line"><span class="code-keyword">| Nível | Componente | ID | Função |</span>
+                        </div>
+                        <div class="code-line"><span class="code-keyword">|------:|-----------|----|--------|</span>
+                        </div>
+                        <div class="code-line"><span class="code-keyword">| Principal | Algoritmo | RF01 | Match
+                                |</span></div>
+                        <div class="code-line"><span class="code-keyword">| Secundária| Chat | RF02 | Suporte |</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips-grid">
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-text">Máx 5-7 itens por lista</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-text">Use tabelas para valor</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-text">Alinhe números à direita</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-text">Checkboxes para status</div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="render-card">
+                    <div class="render-header">
+                        <div class="render-title">
+                            <i class="fas fa-eye"></i>
+                            Resultado Renderizado
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Visual</span>
+                        </div>
+                    </div>
+                    <div class="render-preview">
+                        <div class="render-content">
+                            <h3>Listas</h3>
+                            <ul>
+                                <li>Item A</li>
+                                <li>Item B
+                                    <ul>
+                                        <li>Sub-item</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ol>
+                                <li>Passo 1</li>
+                                <li>Passo 2</li>
+                                <li>Passo 3</li>
+                            </ol>
+                            <div style="margin: 10px 0;">
+                                <input checked="" disabled="" type="checkbox" /> Item concluído<br />
+                                <input disabled="" type="checkbox" /> Item pendente
+                            </div>
+                            <h3>Tabela - Tríade de Valor</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nível</th>
+                                        <th>Componente</th>
+                                        <th>ID</th>
+                                        <th>Função</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Principal</td>
+                                        <td>Algoritmo</td>
+                                        <td>RF01</td>
+                                        <td>Match</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secundária</td>
+                                        <td>Chat</td>
+                                        <td>RF02</td>
+                                        <td>Suporte</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <div class="bottom-left">
+                <div class="bottom-item">
+                    <i class="fas fa-user"></i>
+                    <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                </div>
+                <div class="bottom-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>carlos.lopes@am.senac.br</span>
+                </div>
+            </div>
+            <div class="bottom-right">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-download"></i>
+                    Baixar Exemplos
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-play"></i>
+                    Praticar
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

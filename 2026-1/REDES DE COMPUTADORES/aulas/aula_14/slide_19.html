@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mobilidade e Handoff (Roaming)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #1a1a2e;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .slide-container {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .header {
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .process-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .definition-box {
+            background: rgba(74, 144, 217, 0.15);
+            border-left: 4px solid #4a90d9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .definition-box p {
+            color: white;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .step-description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        .handoff-visual {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .visual-explanation {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px dashed rgba(74, 144, 217, 0.3);
+        }
+
+        .ap-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .connection-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #4a90d9, transparent, #28a745);
+            position: relative;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon"><i class="fas fa-network-wired"></i></div>
+                <div class="logo-text">REDES<span>COMP</span></div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-walking"></i> Mobilidade e Handoff (Roaming)
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="content-wrapper">
+                
+                <div class="flex-[1.2] flex flex-col gap-4">
+                    <div class="process-diagram">
+                        <div class="flex items-center gap-3 mb-4">
+                            <i class="fas fa-project-diagram text-[#4a90d9] text-xl"></i>
+                            <span class="text-white font-bold text-lg">Processo de Handoff</span>
+                        </div>
+
+                        <div class="definition-box">
+                            <p><strong>Definição:</strong> Handoff (ou Handover) é o mecanismo técnico que transfere uma sessão de dados ou chamada em curso de um canal/célula para outro, garantindo que o usuário não perceba interrupções enquanto se move entre diferentes áreas de cobertura.</p>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="flex-1">
+                                    <div class="step-title">Detecção de Sinal Fraco</div>
+                                    <div class="step-description">STA detecta RSSI abaixo do limiar (ex: -75 dBm).</div>
+                                </div>
+                                <i class="fas fa-signal text-[#4a90d9]"></i>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="flex-1">
+                                    <div class="step-title">Scan de Redes</div>
+                                    <div class="step-description">Busca ativa/passiva por novos APs no mesmo ESS.</div>
+                                </div>
+                                <i class="fas fa-search text-[#4a90d9]"></i>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="flex-1">
+                                    <div class="step-title">Autenticação e Associação</div>
+                                    <div class="step-description">Negociação de segurança e registro no novo AP.</div>
+                                </div>
+                                <i class="fas fa-key text-[#4a90d9]"></i>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="flex-1">
+                                    <div class="step-title">Handoff Completo</div>
+                                    <div class="step-description">O tráfego é redirecionado; o AP antigo libera a STA.</div>
+                                </div>
+                                <i class="fas fa-check-circle text-[#28a745]"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col gap-4">
+                    <div class="process-diagram">
+                        <div class="flex items-center gap-3 mb-4">
+                            <i class="fas fa-wifi text-[#4a90d9] text-xl"></i>
+                            <span class="text-white font-bold text-lg">Visualização do Roaming</span>
+                        </div>
+
+                        <div class="handoff-visual">
+                            <div class="flex items-center justify-between gap-4 mb-6">
+                                <div class="text-center">
+                                    <div class="ap-icon"><i class="fas fa-broadcast-tower"></i></div>
+                                    <div class="text-white text-[11px] mt-2">AP1 (Origem)</div>
+                                </div>
+                                <div class="connection-line">
+                                    <i class="fas fa-walking absolute -top-5 left-1/2 -translate-x-1/2 text-white animate-pulse"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="ap-icon" style="background: linear-gradient(135deg, #28a745, #20c997);"><i class="fas fa-broadcast-tower"></i></div>
+                                    <div class="text-white text-[11px] mt-2">AP2 (Destino)</div>
+                                </div>
+                            </div>
+
+                            <div class="visual-explanation">
+                                <i class="fas fa-info-circle mr-2 text-[#4a90d9]"></i>
+                                O <strong>Roaming</strong> é a experiência do usuário de transitar entre APs sem perder o IP. Para que isso ocorra com baixa latência, os APs devem compartilhar o mesmo <strong>SSID</strong> e estar na mesma <strong>VLAN/Sub-rede (Layer 2)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="status-item">
+                                <div class="text-[#4a90d9] text-[10px] uppercase font-bold">Tipo de Handoff</div>
+                                <div class="text-white text-sm font-medium">Layer 2 (Seamless)</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="text-[#4a90d9] text-[10px] uppercase font-bold">Tempo de Troca</div>
+                                <div class="text-white text-sm font-medium"> < 100ms</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-black/20 p-3 rounded-lg border border-white/10">
+                                <div class="text-white/40 text-[10px] mb-1">RSSI Threshold</div>
+                                <div class="text-white text-xs font-mono">-75 dBm</div>
+                            </div>
+                            <div class="bg-black/20 p-3 rounded-lg border border-white/10">
+                                <div class="text-white/40 text-[10px] mb-1">Re-auth Time</div>
+                                <div class="text-white text-xs font-mono">~20ms</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Serviço de Autenticação - Login (authService.js)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            height: 80px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .header-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+
+        .file-path {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .file-path i {
+            color: #3b82f6;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            align-items: stretch;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .right-column {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+            /* Reduced fixed height to prevent clipping */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .code-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .code-action {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            /* Shrink font to avoid vertical clip */
+            line-height: 1.3;
+            color: #e2e8f0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .code-content pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .info-list li i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .flow-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-height: 260px;
+        }
+
+        .flow-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .flow-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .keyword {
+            color: #c678dd;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .function {
+            color: #61afef;
+        }
+
+        .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <div>
+                        <div class="header-title">Serviço de Autenticação - Login</div>
+                        <div class="header-subtitle">Implementação da função de login com validação de credenciais e
+                            geração de JWT</div>
+                    </div>
+                </div>
+                <div class="file-path">
+                    <i class="fas fa-folder"></i>
+                    <span>src/services/authService.js</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code"></i>
+                                Código do Serviço de Login
+                            </div>
+                            <div class="code-actions">
+                                <div class="code-action"><i class="fas fa-copy"></i></div>
+                                <div class="code-action"><i class="fas fa-download"></i></div>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code class="language-javascript"><span class="comment">// src/services/authService.js</span>
+<span class="keyword">const</span> usuarioRepository = <span class="function">require</span>(<span class="string">'../repositories/usuarioRepository'</span>);
+<span class="keyword">const</span> bcrypt = <span class="function">require</span>(<span class="string">'bcryptjs'</span>);
+<span class="keyword">const</span> jwt = <span class="function">require</span>(<span class="string">'jsonwebtoken'</span>);
+
+<span class="keyword">const</span> CHAVE_SECRETA = process.env.JWT_SECRET || <span class="string">"MinhaChaveSuperSecretaDaLivraria123"</span>;
+<span class="keyword">const</span> TEMPO_EXPIRACAO = <span class="string">'1h'</span>; <span class="comment">// Token expira em 1 hora</span>
+
+<span class="keyword">const</span> login = <span class="keyword">async</span> (email, senha) =&gt; {
+    <span class="comment">// 1. Verificar se o usuário existe no banco</span>
+    <span class="keyword">const</span> usuario = <span class="keyword">await</span> usuarioRepository.<span class="function">buscarPorEmail</span>(email);
+    <span class="keyword">if</span> (!usuario) {
+        <span class="keyword">throw new</span> <span class="function">Error</span>(<span class="string">"Credenciais inválidas."</span>);
+    }
+
+    <span class="comment">// 2. Comparar a senha digitada com o hash salvo</span>
+    <span class="keyword">const</span> senhaCorreta = <span class="keyword">await</span> bcrypt.<span class="function">compare</span>(senha, usuario.senha);
+    <span class="keyword">if</span> (!senhaCorreta) {
+        <span class="keyword">throw new</span> <span class="function">Error</span>(<span class="string">"Credenciais inválidas."</span>);
+    }
+
+    <span class="comment">// 3. Gerar o Token JWT</span>
+    <span class="keyword">const</span> token = jwt.<span class="function">sign</span>(
+        { 
+            id: usuario._id, 
+            email: usuario.email,
+            nome: usuario.nome,
+            role: usuario.role 
+        },
+        CHAVE_SECRETA,
+        { 
+            expiresIn: TEMPO_EXPIRACAO,
+            issuer: <span class="string">'api-livraria'</span>,
+            audience: <span class="string">'cliente-web'</span>
+        }
+    );
+
+    <span class="comment">// 4. Retornar dados do usuário e token</span>
+    <span class="keyword">return</span> {
+        usuario: { 
+            id: usuario._id,
+            nome: usuario.nome, 
+            email: usuario.email,
+            role: usuario.role
+        },
+        token,
+        expiraEm: <span class="number">3600</span> <span class="comment">// segundos</span>
+    };
+};
+
+<span class="keyword">module</span>.exports = { login, CHAVE_SECRETA };</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="info-title">Fluxo de Login</div>
+                        </div>
+                        <div class="info-text">
+                            Processo completo de autenticação: validação de credenciais, verificação de senha e geração
+                            de token JWT.
+                        </div>
+                        <ul class="info-list">
+                            <li><i class="fas fa-check"></i> Verificação de usuário existente</li>
+                            <li><i class="fas fa-check"></i> Comparação de senha com bcrypt</li>
+                            <li><i class="fas fa-check"></i> Geração de token JWT</li>
+                            <li><i class="fas fa-check"></i> Retorno de dados do usuário</li>
+                        </ul>
+                    </div>
+                    <div class="flow-container">
+                        <div class="flow-title">
+                            <i class="fas fa-stream"></i>
+                            Passos do Login
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Buscar usuário</div>
+                                <div class="step-desc">Verifica se email existe no banco</div>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Validar senha</div>
+                                <div class="step-desc">Compara hash da senha</div>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Gerar token</div>
+                                <div class="step-desc">Cria JWT com claims</div>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Retornar dados</div>
+                                <div class="step-desc">Envia token e info do usuário</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estudo de Caso Prático: Formulário Excludente e App sem Acessibilidade</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .status-badge i {
+            color: #3b82f6;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 150px);
+            padding: 20px 60px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Case Study Container */
+        .case-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ef4444;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .case-icon {
+            width: 48px;
+            height: 48px;
+            background: #fef2f2;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .case-title-section {
+            flex: 1;
+        }
+
+        .case-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0 0 4px 0;
+        }
+
+        .case-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .case-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .case-text {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .case-highlight {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #1e3a5f;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Stats Section */
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stats-icon {
+            width: 40px;
+            height: 40px;
+            background: #e0f2fe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0369a1;
+            font-size: 18px;
+        }
+
+        .stats-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0 0 4px 0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .detail-icon {
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .detail-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .detail-content {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .detail-list {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0 0;
+        }
+
+        .detail-item {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 6px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .detail-item::before {
+            content: "•";
+            color: #3b82f6;
+            position: absolute;
+            left: 0;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Solutions Section */
+        .solutions-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .solutions-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .solutions-header i {
+            color: #eab308;
+            font-size: 18px;
+        }
+
+        .solutions-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .solutions-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .solution-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .solution-icon {
+            color: #3b82f6;
+            font-size: 14px;
+            margin-top: 2px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            z-index: 2;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .footer-item {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-indicator.success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-indicator.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-indicator.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Estudo de Caso Prático</h1>
+                        <p>Formulário excludente e app sem acessibilidade - Discussão em aula</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Problemas Identificados</span>
+                    </div>
+                    <div class="status-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Compliance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="case-container">
+                <!-- Top Section -->
+                <div class="top-section">
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div class="case-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="case-title-section">
+                                <div class="case-title">Contexto do Problema</div>
+                                <div class="case-subtitle">Formulário de candidatura sem campo de Nome Social</div>
+                            </div>
+                        </div>
+                        <div class="case-content">
+                            <p class="case-text">
+                                Um portal de candidatura de emprego não possui campo para "Nome Social" e exige que
+                                candidatos selecionem gênero apenas entre "Masculino" ou "Feminino", excluindo pessoas
+                                não-binárias e trans. Além disso, o app possui imagens promocionais sem textos
+                                alternativos.
+                            </p>
+                            <div class="case-highlight">
+                                <p class="highlight-text">
+                                    <strong>Problema Central:</strong> A interface não respeita a identidade de gênero
+                                    dos usuários e exclui pessoas com deficiência visual, violando princípios de
+                                    inclusão digital e a LBI.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-header">
+                            <div class="stats-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="stats-title">Impacto Estimado</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">15%</div>
+                                <div class="stat-label">Abandono</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Barreiras</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">Violações</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">Alto</div>
+                                <div class="stat-label">Risco</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bottom Section -->
+                <div class="bottom-section">
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="detail-title">Problemas Identificados</div>
+                        </div>
+                        <div class="detail-content">
+                            <ul class="detail-list">
+                                <li class="detail-item">Campo "Nome" apenas para nome legal</li>
+                                <li class="detail-item">Gênero binário obrigatório (M/F)</li>
+                                <li class="detail-item">Imagens sem alt text</li>
+                                <li class="detail-item">Navegação visual dependente</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="detail-title">Impactos &amp; Compliance</div>
+                        </div>
+                        <div class="detail-content">
+                            <ul class="detail-list">
+                                <li class="detail-item">Violação da LBI (Lei 13.146/2015)</li>
+                                <li class="detail-item">Exclusão de candidatos</li>
+                                <li class="detail-item">Risco de ações judiciais</li>
+                                <li class="detail-item">Dano reputacional</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="detail-title">Soluções Técnicas</div>
+                        </div>
+                        <div class="detail-content">
+                            <ul class="detail-list">
+                                <li class="detail-item">Adicionar campo Nome Social</li>
+                                <li class="detail-item">Gênero inclusivo (campo aberto)</li>
+                                <li class="detail-item">Alt text obrigatório</li>
+                                <li class="detail-item">Testes com leitores</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Solutions Section -->
+                <div class="solutions-section">
+                    <div class="solutions-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <div class="solutions-title">Soluções Técnicas e Métricas de Sucesso</div>
+                    </div>
+                    <div class="solutions-content">
+                        <div class="solution-item">
+                            <i class="fas fa-database solution-icon"></i>
+                            <span><strong>Banco de Dados:</strong> Adicionar campos nome_social, pronome_preferido,
+                                genero (enum aberto)</span>
+                        </div>
+                        <div class="solution-item">
+                            <i class="fas fa-code solution-icon"></i>
+                            <span><strong>API:</strong> Versionar contrato, expor novos campos, validações
+                                inclusivas</span>
+                        </div>
+                        <div class="solution-item">
+                            <i class="fas fa-desktop solution-icon"></i>
+                            <span><strong>Interface:</strong> Campo "Nome Social", opções inclusivas, ajuda
+                                contextual</span>
+                        </div>
+                        <div class="solution-item">
+                            <i class="fas fa-universal-access solution-icon"></i>
+                            <span><strong>A11y:</strong> Alt text, aria-label, foco visível, labels claros</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer-section">
+            <div class="footer-text">
+                Faculdade de Tecnologia do Senac - FATESE
+            </div>
+            <div class="footer-right">
+                <div class="footer-item">
+                    <i class="fas fa-user"></i>
+                    <span>Prof. Carlos Bruno</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>carlos.lopes@am.senac.br</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

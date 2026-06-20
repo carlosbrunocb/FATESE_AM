@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Arquitetura de Tópicos</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&family=IBM+Plex+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="slide-container" style="background-color: var(--primary); padding: 80px;"
+        data-screen-label="10 Arquitetura de Tópicos">
+
+        <!-- Header -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 60px; width: 1760px; height: 100px;">
+            <span class="caption" style="color: var(--accent-light);">PADRÕES DA INDÚSTRIA IOT</span>
+            <h2 class="title-lg" style="color: var(--text-light); margin-top: 5px;">Separação de Tópicos: Comando vs
+                Estado</h2>
+        </div>
+
+        <!-- Duas colunas com explicação e fluxo visual -->
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 220px; width: 1760px; height: 700px;">
+            <div class="grid-2" style="height: 100%; gap: 60px;">
+
+                <!-- Esquerda: Explicação Semântica -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="font-size: 32px; font-weight: 800; color: var(--text-light); margin: 0 0 25px 0;">O
+                            Padrão <code style="font-family: var(--font-mono); color: var(--accent-light);">/set</code>
+                            e <code style="font-family: var(--font-mono); color: var(--accent-success);">/state</code>
+                        </h3>
+                        <p class="body-md" style="color: #94A3B8; margin-bottom: 25px;">
+                            Nunca confunda o <strong>desejo do usuário</strong> com o <strong>estado real da
+                                máquina</strong>. Se o usuário clicar em ligar, a lâmpada não está ligada até que o relé
+                            físico mude de estado de verdade.
+                        </p>
+
+                        <!-- Tópico de Comando -->
+                        <div
+                            style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent); padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                            <span class="badge-state set" style="margin-bottom: 10px;">TÓPICO DE COMANDO (/set)</span>
+                            <p
+                                style="font-size: 20px; color: var(--text-light); font-family: var(--font-mono); margin: 5px 0 0 0;">
+                                casa/sala/luz/set</p>
+                            <p style="font-size: 16px; color: #94A3B8; margin: 5px 0 0 0;">Onde a aplicação móvel
+                                publica a intenção (Ex: <code style="color:white;">1</code> para ligar).</p>
+                        </div>
+
+                        <!-- Tópico de Estado -->
+                        <div
+                            style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent-success); padding: 20px; border-radius: 4px;">
+                            <span class="badge-state state" style="margin-bottom: 10px;">TÓPICO DE ESTADO
+                                (/state)</span>
+                            <p
+                                style="font-size: 20px; color: var(--text-light); font-family: var(--font-mono); margin: 5px 0 0 0;">
+                                casa/sala/luz/state</p>
+                            <p style="font-size: 16px; color: #94A3B8; margin: 5px 0 0 0;">Onde o ESP32 publica para
+                                atualizar o aplicativo apenas após acionar fisicamente o relé (Ex: <code
+                                    style="color:white;">LIGADO</code>).</p>
+                        </div>
+                    </div>
+                    <span style="font-size: 16px; color: var(--accent-light); font-weight: bold;">Isolamento semântico
+                        evita loops de feedback infinitos.</span>
+                </div>
+
+                <!-- Direita: Representação Esquemática do Loop de Controle -->
+                <div class="card-dark"
+                    style="display: flex; flex-direction: column; justify-content: center; background: #0F172A;">
+                    <h4
+                        style="font-size: 24px; font-weight: 800; color: var(--text-light); text-align: center; margin: 0 0 40px 0;">
+                        Mapeamento do Fluxo Bidirecional</h4>
+
+                    <div style="position: relative; padding: 20px;">
+                        <!-- Aplicativo (Celular) -->
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                            <span style="font-weight: 600; color: var(--text-light); font-size: 18pt;">📱 App MQTT Dash</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span style="font-size: 16pt; color: var(--accent-light);">Publica no /set</span>
+                                <span style="font-size: 16pt; color: var(--accent-success);">Assina o /state</span>
+                            </div>
+                        </div>
+
+                        <!-- Broker (Meio de Transporte) -->
+                        <div style="margin: 30px 0; text-align: center;">
+                            <span style="font-size: 32px; color: azure;">☁️ Broker MQTT (broker.hivemq.com)</span>
+                        </div>
+
+                        <!-- Dispositivo (ESP32) -->
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                            <span style="font-weight: 600; color: var(--text-light); font-size: 18pt;">📟 ESP32 (Atuador)</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span style="font-size: 16pt; color: var(--accent-light);">Assina o /set</span>
+                                <span style="font-size: 16pt; color: var(--accent-success);">Publica no /state</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 16px; text-align: center; color: var(--text-muted); margin-top: 20px;">Se o
+                        ESP32 queimar ou perder energia, o app nunca receberá o estado de confirmação.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 80px; top: 980px; width: 1760px; height: 40px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <span style="font-size: 16px; color: var(--text-muted);">Módulo III - IoT</span>
+            <span style="font-size: 16px; color: var(--text-muted); font-weight: bold;">Pág. 10 / 15</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

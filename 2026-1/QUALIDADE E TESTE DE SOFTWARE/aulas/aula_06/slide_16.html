@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estrutura do Projeto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden; /* Garante que não haja barras de rolagem */
+        }
+
+        .slide-container {
+            width: 100vw;  /* Ocupa toda a largura da janela */
+            height: 100vh; /* Ocupa toda a altura da janela */
+            background-color: #0f172a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        /* Decorative Elements */
+        .header-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .decorative-circle-1 {
+            position: absolute;
+            width: 35vw; /* Tamanho relativo */
+            height: 35vw;
+            top: -10vh;
+            right: -5vw;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.05);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 4vh 4vw; /* Espaçamento relativo ao tamanho da tela */
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+        }
+
+        /* Two Column Layout */
+        .columns-container {
+            display: flex;
+            gap: 4vw;
+            flex: 1; /* Ocupa o restante da altura */
+            min-height: 0; /* Correção para flexbox scroll */
+            margin-top: 2vh;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0; /* Permite que o conteúdo interno defina a altura máxima */
+        }
+
+        /* Text Styles */
+        .info-box {
+            background-color: rgba(30, 41, 59, 0.4);
+            border-left: 4px solid #3b82f6;
+            padding: 2.5vh 2vw;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 2vh;
+            transition: transform 0.2s ease;
+        }
+
+        .info-box:hover {
+            transform: translateX(5px);
+            background-color: rgba(30, 41, 59, 0.6);
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #60a5fa;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-text {
+            color: #cbd5e1;
+            line-height: 1.5;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Code Terminal Styles */
+        .terminal-window {
+            background-color: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            /* Altura adaptável */
+            flex: 1; 
+            max-height: 70vh; /* Limite para não estourar em telas muito altas */
+            min-height: 300px;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 1.5vh 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 16px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 40px;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            color: #e2e8f0;
+            font-size: 1.1rem; /* Fonte um pouco maior para leitura */
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        /* Tree View Styling */
+        .tree-line { display: block; white-space: pre; margin-bottom: 4px; }
+        .folder { color: #60a5fa; font-weight: bold; }
+        .file { color: #e2e8f0; }
+        .comment { color: #64748b; font-style: italic; margin-left: 10px; }
+        .structure-char { color: #475569; }
+        .highlight-bg {
+            background-color: rgba(59, 130, 246, 0.1);
+            display: inline-block;
+            width: 100%;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle-1"></div>
+        
+        <div class="content-area">
+            <div class="mb-2 border-b border-slate-700 pb-4 shrink-0">
+                <div class="flex items-center">
+                    <div class="mr-4 text-blue-500 text-3xl">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-blue-400 font-medium uppercase tracking-wider text-sm mb-1 font-['Montserrat']">
+                            Organização e Boas Práticas</h2>
+                        <h1 class="text-4xl font-bold font-['Montserrat'] text-white">Estrutura do Projeto</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns-container">
+                <div class="left-column">
+                    <div class="info-box">
+                        <div class="info-title">
+                            <i class="fas fa-code mr-2 text-sm"></i> src/ (Source)
+                        </div>
+                        <p class="info-text">
+                            Contém o código-fonte da aplicação, a lógica de negócio real. É o que será entregue ao cliente final.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-color: #10b981;">
+                        <div class="info-title" style="color: #34d399;">
+                            <i class="fas fa-vial mr-2 text-sm"></i> tests/ (Testing)
+                        </div>
+                        <p class="info-text">
+                            Diretório exclusivo para scripts de qualidade. O Pytest busca arquivos que iniciam com <code>test_</code> aqui automaticamente.
+                        </p>
+                    </div>
+                    <div class="info-box" style="border-color: #f59e0b;">
+                        <div class="info-title" style="color: #fbbf24;">
+                            <i class="fas fa-box-open mr-2 text-sm"></i> Configuração
+                        </div>
+                        <ul class="info-text list-disc pl-5 mt-1 space-y-1">
+                            <li><p><strong>venv/</strong>: Ambiente virtual isolado (nunca versionar no Git).</p></li>
+                            <li><p><strong>requirements.txt</strong>: Lista de dependências para reprodutibilidade.</p></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <div class="dot dot-red"></div>
+                                <div class="dot dot-yellow"></div>
+                                <div class="dot dot-green"></div>
+                            </div>
+                            <div class="terminal-title">estrutura_projeto — tree</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="tree-line"><span class="folder">lab_qualidade_software/</span></div>
+                            <div class="tree-line"><span class="structure-char">│</span></div>
+                            <div class="tree-line highlight-bg"><span class="structure-char">├── </span><span class="folder">src/</span><span class="comment"># Lógica de negócio</span></div>
+                            <div class="tree-line highlight-bg"><span class="structure-char">│ └── </span><span class="file">calculadora.py</span></div>
+                            <div class="tree-line"><span class="structure-char">│</span></div>
+                            <div class="tree-line highlight-bg"><span class="structure-char">├── </span><span class="folder">tests/</span><span class="comment"># Scripts de QA (STLC)</span></div>
+                            <div class="tree-line highlight-bg"><span class="structure-char">│ └── </span><span class="file">test_calculadora.py</span></div>
+                            <div class="tree-line"><span class="structure-char">│</span></div>
+                            <div class="tree-line"><span class="structure-char">├── </span><span class="folder">venv/</span><span class="comment"># Ambiente Virtual</span></div>
+                            <div class="tree-line"><span class="structure-char">└── </span><span class="file">requirements.txt</span><span class="comment"># Dependências</span></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center shrink-0">
+                        <p class="text-sm text-slate-400 italic">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            A separação clara entre código e teste facilita a manutenção e automação.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-6 right-8 text-slate-500 text-sm font-light">
+                <p>Aula 06 - Organização de Projeto</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

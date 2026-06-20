@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Processo DORA - DHCP</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* Left column - DORA Process */
+        .left-column {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .process-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dora-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .dora-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid #00ffff;
+            transition: all 0.3s ease;
+        }
+
+        .dora-step:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: translateX(5px);
+        }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #00ffff;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .step-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .step-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .step-description {
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 8px;
+        }
+
+        .step-details {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #cccccc;
+        }
+
+        .detail-item i {
+            color: #00ffff;
+            font-size: 10px;
+        }
+
+        /* Right column - Info and Security */
+        .right-column {
+            width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .security-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .security-text {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .port-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .port-label {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .port-value {
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .message-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .flow-arrow {
+            color: #00ffff;
+            font-size: 14px;
+        }
+
+        .flow-text {
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .packet-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .packet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .packet-label {
+            font-size: 11px;
+            color: #888888;
+        }
+
+        .packet-value {
+            font-size: 11px;
+            color: #00ffff;
+            text-align: right;
+            word-wrap: break-word;
+            max-width: 60%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Processo DORA - DHCP</h1>
+                    <p>Discovery, Offer, Request, Acknowledgment</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-network-wired"></i> 4 Etapas
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - DORA Process -->
+            <div class="left-column">
+                <div class="process-card">
+                    <div class="card-title">
+                        <i class="fas fa-project-diagram"></i>
+                        Fluxo do Processo DORA
+                    </div>
+                    <div class="dora-flow">
+                        <!-- Step 1: Discovery -->
+                        <div class="dora-step">
+                            <div class="step-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-header">
+                                    <div class="step-name">1. Discovery (Broadcast)</div>
+                                    <div class="step-status">
+                                        <div class="status-dot"></div>
+                                        <span>Ativo</span>
+                                    </div>
+                                </div>
+                                <div class="step-description">Cliente envia DHCPDISCOVER para descobrir servidores DHCP
+                                    disponíveis</div>
+                                <div class="step-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-broadcast-tower"></i>
+                                        <span>255.255.255.255:67</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>0.0.0.0:68</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>UDP Broadcast</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 2: Offer -->
+                        <div class="dora-step">
+                            <div class="step-icon">
+                                <i class="fas fa-hand-holding"></i>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-header">
+                                    <div class="step-name">2. Offer (Unicast/Broadcast)</div>
+                                    <div class="step-status">
+                                        <div class="status-dot"></div>
+                                        <span>Ativo</span>
+                                    </div>
+                                </div>
+                                <div class="step-description">Servidor responde com DHCPOFFER contendo IP disponível
+                                </div>
+                                <div class="step-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-server"></i>
+                                        <span>yiaddr: IP oferecido</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Lease Time: 3600s</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Opções: Máscara, Gateway, DNS</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 3: Request -->
+                        <div class="dora-step">
+                            <div class="step-icon">
+                                <i class="fas fa-hand-point-right"></i>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-header">
+                                    <div class="step-name">3. Request (Broadcast)</div>
+                                    <div class="step-status">
+                                        <div class="status-dot"></div>
+                                        <span>Ativo</span>
+                                    </div>
+                                </div>
+                                <div class="step-description">Cliente confirma a oferta e solicita formalmente o IP
+                                </div>
+                                <div class="step-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-check"></i>
+                                        <span>Requested IP: 192.168.1.100</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-server"></i>
+                                        <span>Server ID: 192.168.1.1</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-broadcast-tower"></i>
+                                        <span>Broadcast para todos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 4: Acknowledgment -->
+                        <div class="dora-step">
+                            <div class="step-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-header">
+                                    <div class="step-name">4. Acknowledgment (ACK)</div>
+                                    <div class="step-status">
+                                        <div class="status-dot"></div>
+                                        <span>Ativo</span>
+                                    </div>
+                                </div>
+                                <div class="step-description">Servidor confirma e ativa a concessão do IP</div>
+                                <div class="step-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-check-double"></i>
+                                        <span>DHCPACK confirmado</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Lease: 3600s (T1: 1800s, T2: 3150s)</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Configuração completa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column - Info and Security -->
+            <div class="right-column">
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Segurança e Operação
+                    </div>
+                    <div class="info-content">
+                        <div class="security-grid">
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="security-text">DHCP Snooping</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="security-text">IP Source Guard</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="security-text">Monitoramento</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="security-text">Rogue Detection</div>
+                            </div>
+                        </div>
+                        <div class="port-info">
+                            <span class="port-label">Porta Servidor:</span>
+                            <span class="port-value">UDP 67</span>
+                        </div>
+                        <div class="port-info">
+                            <span class="port-label">Porta Cliente:</span>
+                            <span class="port-value">UDP 68</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informações do Processo
+                    </div>
+                    <div class="info-content">
+                        <div class="packet-info">
+                            <div class="packet-item">
+                                <span class="packet-label">Tipo de Mensagem:</span>
+                                <span class="packet-value">BOOTREQUEST/BOOTREPLY</span>
+                            </div>
+                            <div class="packet-item">
+                                <span class="packet-label">Opção 51:</span>
+                                <span class="packet-value">Lease Time</span>
+                            </div>
+                            <div class="packet-item">
+                                <span class="packet-label">Opção 1:</span>
+                                <span class="packet-value">Subnet Mask</span>
+                            </div>
+                            <div class="packet-item">
+                                <span class="packet-label">Opção 3:</span>
+                                <span class="packet-value">Router/Gateway</span>
+                            </div>
+                        </div>
+                        <div class="message-flow">
+                            <i class="fas fa-arrow-right flow-arrow"></i>
+                            <div class="flow-text">Cliente: 0.0.0.0 → Servidor: 255.255.255.255</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo da Calculadora Polonesa (RPN)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+        h1 {
+            font-size: 2em;
+        }
+        h2 {
+            font-size: 1.6em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 25px;
+            border-bottom: none;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            background-color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        thead {
+            background-color: #34495e;
+            color: #ffffff;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f6f6f6;
+        }
+        strong {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Como Funciona o Algoritmo da Calculadora Polonesa (RPN)</h1>
+
+        <p>
+            Esse algoritmo é mais comumente conhecido como <strong>Notação Polonesa Reversa</strong> (RPN, do inglês <em>Reverse Polish Notation</em>), ou <strong>notação pós-fixa</strong>.
+        </p>
+        <p>
+            Calculadoras científicas (como as clássicas da HP) e compiladores de linguagens de programação usam essa lógica porque ela <strong>elimina a ambiguidade</strong> das expressões matemáticas e <strong>remove completamente a necessidade de parênteses</strong>.
+        </p>
+        <p>
+            A ideia central é simples: em vez de escrever <code>3 + 4</code> (notação <em>infixa</em>, com o operador <em>no meio</em>), você escreve <code>3 4 +</code> (notação <em>pós-fixa</em>, com o operador <em>no fim</em>).
+        </p>
+        <p>
+            Para resolver uma expressão complexa com parênteses, como <code>(5 + 3) * (6 - 2)</code>, o processo é dividido em duas etapas principais:
+        </p>
+        <ol>
+            <li><strong>Conversão:</strong> Transformar a expressão normal (infixa) em Notação Polonesa Reversa (RPN).</li>
+            <li><strong>Avaliação:</strong> Calcular o resultado da expressão RPN.</li>
+        </ol>
+        <p>
+            Ambas as etapas usam uma estrutura de dados fundamental chamada <strong>Pilha</strong> (Stack), que funciona no sistema "Último a Entrar, Primeiro a Sair" (LIFO - Last In, First Out), como uma pilha de pratos.
+        </p>
+
+        <hr>
+
+        <h2>Etapa 1: Conversão (Algoritmo "Shunting-Yard")</h2>
+
+        <p>Este algoritmo, criado por Edsger Dijkstra, "reorganiza" a expressão infixa em RPN, respeitando a precedência dos operadores e os parênteses.</p>
+
+        <h3>O que você precisa:</h3>
+        <ul>
+            <li>Uma <strong>Fila de Saída</strong> (onde a expressão RPN será construída).</li>
+            <li>Uma <strong>Pilha de Operadores</strong> (para armazenar temporariamente os operadores e parênteses).</li>
+        </ul>
+
+        <h3>Regras de Precedência:</h3>
+        <ul>
+            <li><code>*</code> e <code>/</code> têm precedência alta (nível 2).</li>
+            <li><code>+</code> e <code>-</code> têm precedência baixa (nível 1).</li>
+        </ul>
+
+        <h3>O Processo (lendo a expressão da esquerda para a direita):</h3>
+        <ol>
+            <li><strong>Se encontrar um NÚMERO:</strong>
+                <ul>
+                    <li>Envie-o diretamente para a <strong>Fila de Saída</strong>.</li>
+                </ul>
+            </li>
+            <li><strong>Se encontrar um PARÊNTESE ABERTO <code>(</code>:</strong>
+                <ul>
+                    <li>Empilhe-o na <strong>Pilha de Operadores</strong>.</li>
+                </ul>
+            </li>
+            <li><strong>Se encontrar um OPERADOR (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>):</strong>
+                <ul>
+                    <li>Olhe o topo da <strong>Pilha de Operadores</strong>:</li>
+                    <li><strong>Enquanto</strong> houver um operador no topo da pilha com precedência <em>maior ou igual</em> à do operador que você está lendo:
+                        <ul>
+                            <li>Desempilhe o operador do topo e envie-o para a <strong>Fila de Saída</strong>.</li>
+                        </ul>
+                    </li>
+                    <li>Depois que a condição acima não for mais verdadeira (ou a pilha estiver vazia), empilhe o operador que você está lendo na <strong>Pilha de Operadores</strong>.</li>
+                </ul>
+            </li>
+            <li><strong>Se encontrar um PARÊNTESE FECHADO <code>)</code>:</strong>
+                <ul>
+                    <li>Desempilhe operadores da <strong>Pilha de Operadores</strong> e envie-os para a <strong>Fila de Saída</strong>, <strong>até</strong> encontrar o <code>(</code>.</li>
+                    <li>Descarte o <code>(</code> da pilha (e também o <code>)</code> que você está lendo). Eles serviram apenas para agrupar.</li>
+                </ul>
+            </li>
+            <li><strong>No final da expressão:</strong>
+                <ul>
+                    <li>Desempilhe qualquer operador restante na <strong>Pilha de Operadores</strong> e envie-os para a <strong>Fila de Saída</strong>.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <hr>
+
+        <h2>Etapa 2: Avaliação (Cálculo da Expressão RPN)</h2>
+        <p>Agora que você tem a expressão em RPN, calculá-la é muito mais simples.</p>
+
+        <h3>O que você precisa:</h3>
+        <ul>
+            <li>Apenas uma <strong>Pilha de Números</strong> (ou "pilha de operandos").</li>
+        </ul>
+
+        <h3>O Processo (lendo a expressão RPN da esquerda para a direita):</h3>
+        <ol>
+            <li><strong>Se encontrar um NÚMERO:</strong>
+                <ul>
+                    <li>Empilhe-o na <strong>Pilha de Números</strong>.</li>
+                </ul>
+            </li>
+            <li><strong>Se encontrar um OPERADOR (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>):</strong>
+                <ul>
+                    <li>Desempilhe os <strong>dois</strong> últimos números da pilha (vamos chamá-los de <code>B</code> e depois <code>A</code>).</li>
+                    <li>Realize a operação: <code>A [operador] B</code>.</li>
+                    <li>Empilhe o <strong>resultado</strong> de volta na <strong>Pilha de Números</strong>.</li>
+                </ul>
+            </li>
+            <li><strong>No final da expressão RPN:</strong>
+                <ul>
+                    <li>O único número que restar na pilha será o resultado final da expressão.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <hr>
+
+        <h2>Exemplo Completo: <code>(3 + 4) * 2</code></h2>
+
+        <h3>Etapa 1: Conversão para RPN</h3>
+        <p><strong>Expressão:</strong> <code>(</code>, <code>3</code>, <code>+</code>, <code>4</code>, <code>)</code>, <code>*</code>, <code>2</code></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Token Lido</th>
+                    <th>Ação</th>
+                    <th>Fila de Saída (RPN)</th>
+                    <th>Pilha de Operadores</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>(</code></td>
+                    <td>Empilha <code>(</code></td>
+                    <td><code></code></td>
+                    <td><code>[ ( ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>3</code></td>
+                    <td>Envia para Saída</td>
+                    <td><code>3</code></td>
+                    <td><code>[ ( ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>+</code></td>
+                    <td>Empilha <code>+</code></td>
+                    <td><code>3</code></td>
+                    <td><code>[ ( , + ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>4</code></td>
+                    <td>Envia para Saída</td>
+                    <td><code>3 4</code></td>
+                    <td><code>[ ( , + ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>)</code></td>
+                    <td>Desempilha até <code>(</code>. Envia <code>+</code> para Saída. Descarta <code>(</code>.</td>
+                    <td><code>3 4 +</code></td>
+                    <td><code>[ ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>*</code></td>
+                    <td>Empilha <code>*</code></td>
+                    <td><code>3 4 +</code></td>
+                    <td><code>[ * ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>2</code></td>
+                    <td>Envia para Saída</td>
+                    <td><code>3 4 + 2</code></td>
+                    <td><code>[ * ]</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Fim</strong></td>
+                    <td>Desempilha o que sobrou (<code>*</code>)</td>
+                    <td><code>3 4 + 2 *</code></td>
+                    <td><code>[ ]</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Expressão RPN resultante:</strong> <code>3 4 + 2 *</code></p>
+
+        <h3>Etapa 2: Avaliação da RPN</h3>
+        <p><strong>Expressão RPN:</strong> <code>3</code>, <code>4</code>, <code>+</code>, <code>2</code>, <code>*</code></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Token Lido</th>
+                    <th>Ação</th>
+                    <th>Pilha de Números</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>3</code></td>
+                    <td>Empilha 3</td>
+                    <td><code>[ 3 ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>4</code></td>
+                    <td>Empilha 4</td>
+                    <td><code>[ 3, 4 ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>+</code></td>
+                    <td>Desempilha 4 (B), Desempilha 3 (A). Calcula <code>3 + 4 = 7</code>. Empilha 7.</td>
+                    <td><code>[ 7 ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>2</code></td>
+                    <td>Empilha 2</td>
+                    <td><code>[ 7, 2 ]</code></td>
+                </tr>
+                <tr>
+                    <td><code>*</code></td>
+                    <td>Desempilha 2 (B), Desempilha 7 (A). Calcula <code>7 * 2 = 14</code>. Empilha 14.</td>
+                    <td><code>[ 14 ]</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Fim</strong></td>
+                    <td>O resultado é o topo da pilha.</td>
+                    <td><code>[ 14 ]</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Resultado Final: 14</h2>
+
+    </div>
+
+</body>
+</html>

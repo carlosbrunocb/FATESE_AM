@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estratégias de Versionamento: Visão Geral</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            /* O overflow oculto foi removido do body para permitir rolagem em telas muito pequenas, se necessário */
+        }
+
+        .slide-container {
+            display: grid;
+            grid-template-rows: 100px 1fr auto;
+            width: 100vw;
+            height: 100vh;
+            background: #f8fafc;
+            position: relative;
+            /* Adicionado um pequeno espaçamento no fundo para o footer não colar na borda */
+            padding-bottom: 30px;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+            /* Garante que o grid de fundo não bloqueie cliques */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            width: 100%;
+            padding: 30px 40px;
+            z-index: 10;
+            overflow-y: auto;
+            /* Permite rolagem do conteúdo em telas menores */
+        }
+
+        .content-grid {
+            display: grid;
+            /* Alterado para responsivo: cria colunas automáticas baseadas no tamanho da tela */
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .center-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .strategy-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .strategy-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .card-content {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .card-example {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #1e40af;
+            border-left: 3px solid #3b82f6;
+            margin-bottom: 14px;
+        }
+
+        .pros-cons {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .pro-item {
+            flex: 1;
+            background: #dcfce7;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #166534;
+        }
+
+        .con-item {
+            flex: 1;
+            background: #fee2e2;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #991b1b;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .comparison-label {
+            width: 120px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .comparison-bar {
+            flex: 1;
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 11px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .fill-uri {
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            width: 85%;
+        }
+
+        .fill-query {
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 60%;
+        }
+
+        .fill-header {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            width: 45%;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            margin: 0 40px;
+            /* Alinha o footer com o padding do conteúdo */
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 12px;
+            padding: 18px;
+            border: 2px solid #3b82f6;
+        }
+
+        .highlight-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .highlight-text {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-left: 5px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            color: #475569;
+        }
+
+        .criteria-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        /* Responsividade para o header e footer em telas menores */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                justify-content: center;
+                height: auto;
+                padding: 15px 20px;
+                gap: 10px;
+            }
+
+            .header-right {
+                text-align: center;
+            }
+
+            .footer {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .slide-container {
+                grid-template-rows: auto 1fr auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <div>
+                    <div class="header-title">Estratégias de Versionamento: Visão Geral</div>
+                    <div class="header-subtitle">Comparação das principais abordagens de versionamento de APIs</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Versionamento</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="strategy-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-link"></i></div>
+                            <div>
+                                <div class="card-title">URI Versioning</div>
+                                <div class="card-subtitle">Mais comum e explícito</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            A versão fica explícita na URL, tornando-a fácil de entender e implementar. Ideal para APIs
+                            REST públicas.
+                        </div>
+                        <div class="card-example">/api/v1/livros</div>
+                        <div class="pros-cons">
+                            <div class="pro-item"><i class="fas fa-check"></i> Fácil de usar</div>
+                            <div class="pro-item"><i class="fas fa-check"></i> Cacheável</div>
+                        </div>
+                    </div>
+                    <div class="strategy-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i
+                                    class="fas fa-filter"></i></div>
+                            <div>
+                                <div class="card-title">Query Parameter</div>
+                                <div class="card-subtitle">Flexível e dinâmico</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            A versão é passada como parâmetro de consulta, permitindo filtros adicionais.
+                        </div>
+                        <div class="card-example">/api/livros?version=1</div>
+                        <div class="pros-cons">
+                            <div class="pro-item"><i class="fas fa-check"></i> Flexível</div>
+                            <div class="con-item"><i class="fas fa-times"></i> Menos cacheável</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="center-column">
+                    <div class="highlight-box">
+                        <div class="highlight-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Critérios de Escolha</span>
+                        </div>
+                        <div class="highlight-text">
+                            Selecione a estratégia baseada em: clareza, cacheabilidade, suporte a proxies, governança e
+                            experiência do desenvolvedor.
+                        </div>
+                    </div>
+                    <div class="comparison-table">
+                        <div class="table-header">
+                            <div class="table-title">Comparação de Estratégias</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">URI</div>
+                            <div class="comparison-bar">
+                                <div class="comparison-fill fill-uri">85%</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Query</div>
+                            <div class="comparison-bar">
+                                <div class="comparison-fill fill-query">60%</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Header</div>
+                            <div class="comparison-bar">
+                                <div class="comparison-fill fill-header">45%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Clareza:</strong> URI é mais explícita</span>
+                        </div>
+                        <div class="criteria-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Cache:</strong> URI e Header melhores</span>
+                        </div>
+                        <div class="criteria-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Complexidade:</strong> Query mais simples</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="strategy-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i
+                                    class="fas fa-header"></i></div>
+                            <div>
+                                <div class="card-title">Header Versioning</div>
+                                <div class="card-subtitle">Content Negotiation</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            A versão é passada via cabeçalho HTTP, mantendo a URL limpa e estável.
+                        </div>
+                        <div class="card-example">Accept: application/vnd.v1+json</div>
+                        <div class="pros-cons">
+                            <div class="pro-item"><i class="fas fa-check"></i> URL estável</div>
+                            <div class="con-item"><i class="fas fa-times"></i> Mais complexo</div>
+                        </div>
+                    </div>
+                    <div class="strategy-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i
+                                    class="fas fa-clipboard-list"></i></div>
+                            <div>
+                                <div class="card-title">Recomendação</div>
+                                <div class="card-subtitle">Quando usar cada uma</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <strong>URI:</strong> APIs públicas REST<br />
+                            <strong>Query:</strong> APIs internas<br />
+                            <strong>Header:</strong> APIs com media types
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Em andamento</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

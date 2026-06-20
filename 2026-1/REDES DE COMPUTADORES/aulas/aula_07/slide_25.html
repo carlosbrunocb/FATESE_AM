@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Traceroute - Observando os Saltos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;family=Consolas&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 22px 50px 24px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 18px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 25px;
+            height: calc(100% - 60px);
+        }
+
+        .left-panel {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 18px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #e0e6ed;
+            font-size: 13pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .terminal-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-btn.red {
+            background: #ff5f56;
+        }
+
+        .terminal-btn.yellow {
+            background: #ffbd2e;
+        }
+
+        .terminal-btn.green {
+            background: #27c93f;
+        }
+
+        .terminal-title {
+            color: #ffffff;
+            font-size: 12pt;
+            margin-left: 10px;
+        }
+
+        .terminal-content {
+            font-family: 'Consolas', monospace;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #e0e6ed;
+        }
+
+        .terminal-line {
+            margin-bottom: 5px;
+        }
+
+        .terminal-prompt {
+            color: #ff6b35;
+        }
+
+        .terminal-command {
+            color: #ffffff;
+        }
+
+        .terminal-output {
+            color: #a0aec0;
+        }
+
+        .terminal-success {
+            color: #4CAF50;
+        }
+
+        .terminal-error {
+            color: #f44336;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 80%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .command-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .command-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .command-item i {
+            color: #ff6b35;
+            font-size: 14pt;
+        }
+
+        .command-item span {
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .command-item .command {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .example-output {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .output-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11pt;
+            color: #e0e6ed;
+        }
+
+        .output-line .hop {
+            color: #ff6b35;
+            width: 30px;
+        }
+
+        .output-line .time {
+            color: #4CAF50;
+            width: 80px;
+        }
+
+        .output-line .ip {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-terminal"></i> Diagnóstico de Rede
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Traceroute - Observando os Saltos
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-info-circle"></i>
+                            O que é Traceroute?
+                        </h3>
+                        <div class="concept-text">
+                            O <span class="highlight">traceroute</span> (ou <span class="highlight">tracert</span> no
+                            Windows) é uma ferramenta que mostra o caminho percorrido por um pacote IP até seu destino,
+                            exibindo cada roteador (salto) pelo qual o pacote passa.
+                        </div>
+                        <div class="bullet-point">Mostra a rota completa: cada roteador intermediário</div>
+                        <div class="bullet-point">Mede o tempo de resposta (RTT) de cada salto</div>
+                        <div class="bullet-point">Ajuda a identificar gargalos e problemas de roteamento</div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-cogs"></i>
+                            Como Funciona?
+                        </h3>
+                        <div class="concept-text">
+                            O traceroute utiliza o campo <span class="highlight">TTL</span> (Time to Live) do cabeçalho
+                            IP:
+                        </div>
+                        <div class="bullet-point">Envia pacotes com TTL crescente (1, 2, 3...)</div>
+                        <div class="bullet-point">Cada roteador decrementa o TTL em 1</div>
+                        <div class="bullet-point">Quando TTL chega a 0, o roteador responde com ICMP "Time Exceeded"
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="terminal-container">
+                        <div class="terminal-header">
+                            <div class="terminal-btn red"></div>
+                            <div class="terminal-btn yellow"></div>
+                            <div class="terminal-btn green"></div>
+                            <div class="terminal-title">Terminal - traceroute</div>
+                        </div>
+                        <div class="terminal-content">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">$</span> <span class="terminal-command">traceroute
+                                    www.google.com</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">traceroute to www.google.com (142.250.80.68), 30 hops
+                                    max</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">1 192.168.1.1 2.1 ms 1.8 ms 1.9 ms</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">2 10.0.0.1 15.3 ms 14.8 ms 15.1 ms</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">3 172.16.0.1 25.7 ms 25.2 ms 25.4 ms</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">4 142.250.80.68 45.2 ms 44.8 ms 45.0 ms</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-success">✓ Rota completa identificada</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-commands"></i>
+                            Comandos Principais
+                        </h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <i class="fas fa-terminal"></i>
+                                <span><span class="command">traceroute</span> - Linux/macOS</span>
+                            </div>
+                            <div class="command-item">
+                                <i class="fas fa-terminal"></i>
+                                <span><span class="command">tracert</span> - Windows</span>
+                            </div>
+                            <div class="command-item">
+                                <i class="fas fa-globe"></i>
+                                <span><span class="command">traceroute -I</span> - ICMP</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

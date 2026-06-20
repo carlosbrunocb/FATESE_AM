@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Blindagem do Servidor (app.js)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            flex: 1;
+            height: calc(100% - 80px);
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .code-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-icon {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .code-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12.5px;
+            color: #e2e8f0;
+            line-height: 1.35;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .code-line {
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+            white-space: pre-wrap;
+        }
+
+        .code-keyword {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-function {
+            color: #fbbf24;
+        }
+
+        .code-number {
+            color: #f472b6;
+        }
+
+        .code-variable {
+            color: #c4b5fd;
+        }
+
+        .config-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .config-icon {
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .config-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .config-content {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .config-item i {
+            color: #3b82f6;
+            font-size: 13px;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .config-value {
+            color: #64748b;
+            margin-left: auto;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 16px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #475569;
+        }
+
+        .step-text {
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .key-point i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            padding: 16px;
+            border: 2px solid #f59e0b;
+            margin-top: 5px;
+        }
+
+        .warning-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-content {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .feature-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-shield-alt"></i> Blindagem do Servidor (app.js)</h1>
+                    <div class="subtitle">Implementação de proteções contra vulnerabilidades com Helmet e Rate Limiting
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Proteção Ativa</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="code-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="code-title">Configuração da Blindagem</div>
+                        </div>
+                        <div class="code-content">
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">express</span> = <span
+                                    class="code-function">require</span>(<span class="code-string">'express'</span>);</div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">helmet</span> = <span
+                                    class="code-function">require</span>(<span class="code-string">'helmet'</span>);</div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">rateLimit</span> = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'express-rate-limit'</span>);</div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">routes</span> = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'./routes/livroRoutes'</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">app</span> = <span class="code-function">express</span>();</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment">// 1. Proteção: Oculta headers e aplica políticas restritas</span></div>
+                            <div class="code-line"><span class="code-variable">app</span>.<span
+                                    class="code-function">use</span>(<span class="code-function">helmet</span>());</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment">// 2. Proteção: Rate Limiting (100req/15min)</span></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-variable">limiter</span> = <span
+                                    class="code-function">rateLimit</span>({</div>
+                            <div class="code-line"> <span class="code-variable" style="margin-left: 20px;">windowMs</span>: <span
+                                    class="code-number">15</span> * <span class="code-number">60</span> * <span
+                                    class="code-number">1000</span>,</div>
+                            <div class="code-line"> <span class="code-variable" style="margin-left: 20px;">max</span>: <span
+                                    class="code-number">100</span>,</div>
+                            <div class="code-line"> <span class="code-variable" style="margin-left: 20px;">message</span>: { <span
+                                    class="code-variable">erro</span>: <span class="code-string">"Muitas requisições deste IP"</span> }</div>
+                            <div class="code-line">});</div>
+                            <div class="code-line"><span class="code-variable">app</span>.<span
+                                    class="code-function">use</span>(<span class="code-string">'/api/'</span>, <span
+                                    class="code-variable">limiter</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-variable">app</span>.<span
+                                    class="code-function">use</span>(<span class="code-function">express</span>.<span
+                                    class="code-function">json</span>());</div>
+                            <div class="code-line"><span class="code-variable">app</span>.<span
+                                    class="code-function">use</span>(<span class="code-string">'/api'</span>, <span
+                                    class="code-variable">routes</span>);</div>
+                        </div>
+                    </div>
+                    <div class="warning-box">
+                        <div class="warning-title">
+                            <i class="fas fa-exclamation-triangle"></i> Importante
+                        </div>
+                        <div class="warning-content">
+                            O Helmet deve ser configurado <span class="highlight">antes</span> das rotas para garantir
+                            proteção.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="config-card">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="config-title">Proteções Implementadas</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="config-item">
+                                <i class="fas fa-check"></i>
+                                <span class="config-label">Helmet:</span>
+                                <span class="config-value">Headers seguros</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-check"></i>
+                                <span class="config-label">Rate Limit:</span>
+                                <span class="config-value">100 req/15min</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-check"></i>
+                                <span class="config-label">JSON Parser:</span>
+                                <span class="config-value">Ativo</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-check"></i>
+                                <span class="config-label">Rotas API:</span>
+                                <span class="config-value">Protegidas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-card">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="config-title">Fluxo de Segurança</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="flow-diagram">
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="step-text">Requisição</div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="step-text">Helmet</div>
+                                </div>
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div class="step-text">Rate Limit</div>
+                                </div>
+                            </div>
+                            <div class="security-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Headers seguros</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Rate limiting</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-ban"></i>
+                                    <span>IP blocking</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Validação</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

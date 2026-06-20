@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 01 - Introdução ao Mobile e Android Studio</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Montserrat:wght@400;600;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* ALTERAÇÃO: Mudado de fixo px para viewport units */
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            /* Garante que não haja barras de rolagem */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-container {
+            /* ALTERAÇÃO: Ocupa 100% do body */
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        /* Left Side - Visual & Branding */
+        .brand-section {
+            width: 40%;
+            height: 100%;
+            background-color: #3DDC84;
+            /* Android Green */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Mantém o design diagonal responsivo */
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+            z-index: 2;
+        }
+
+        .brand-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: radial-gradient(#073042 2px, transparent 2px);
+            /* Navy Blue dots */
+            background-size: 20px 20px;
+        }
+
+        .android-mascot {
+            border-radius: 4%;
+            width: 300px;
+            /* Mantive fixo para não distorcer, mas pode ser % se preferir */
+            max-width: 80%;
+            /* Segurança para telas menores */
+            height: auto;
+            z-index: 3;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Right Side - Content */
+        .content-section {
+            flex: 1;
+            padding: 4% 5% 4% 3%;
+            /* Padding responsivo em % */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #073042;
+            /* Android Navy Blue */
+        }
+
+        .institution-badge {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #EFF7CF;
+            /* Light Green accent */
+            padding: 8px 16px;
+            border-radius: 50px;
+            width: fit-content;
+        }
+
+        .institution-badge i {
+            color: #3DDC84;
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .institution-badge p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #073042;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            /* Pode-se usar clamp() para responsividade avançada, mas rem funciona bem em full screen */
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            color: #073042;
+        }
+
+        .subtitle {
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #424242;
+            /* Grey */
+            margin-bottom: 40px;
+            border-left: 5px solid #3DDC84;
+            padding-left: 20px;
+        }
+
+        .divider {
+            height: 2px;
+            width: 100px;
+            background-color: #3DDC84;
+            margin-bottom: 30px;
+        }
+
+        .professor-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prof-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #073042;
+            margin-bottom: 5px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            /* Aumentei um pouco o gap para telas grandes */
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            /* Aumentei levemente para leitura em projeção */
+            color: #5f6368;
+        }
+
+        .contact-item i {
+            width: 25px;
+            margin-right: 8px;
+            color: #3DDC84;
+            text-align: center;
+        }
+
+        /* Decorative Elements */
+        .circle-decor {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .circle-1 {
+            width: 20vw;
+            /* Responsivo ao tamanho da tela */
+            height: 20vw;
+            background-color: #EFF7CF;
+            bottom: -5vw;
+            right: -5vw;
+            opacity: 0.6;
+        }
+
+        .code-snippet {
+            font-family: 'Courier New', monospace;
+            position: absolute;
+            bottom: 30px;
+            right: 50px;
+            font-size: 1rem;
+            color: #bdbdbd;
+            opacity: 0.4;
+            z-index: 1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="brand-section">
+            <div class="brand-pattern"></div>
+            <img alt="Android Mascot" class="android-mascot" src="imagens/android_mascote_q.PNG" />
+        </div>
+        <div class="content-section">
+            <div class="institution-badge">
+                <i class="fas fa-university"></i>
+                <p>Senac (FATESE)</p>
+            </div>
+            <h1 class="main-title">Introdução ao Mobile</h1>
+            <h2 class="subtitle">Aula 01 • Android Studio e Ecossistema</h2>
+            <div class="divider"></div>
+            <div class="professor-info">
+                <p class="prof-name">Prof. Carlos Bruno Oliveira Lopes</p>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>carlos.lopes@am.senac.br</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <p>github.com/carlosbrunocb</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-laptop-code"></i>
+                        <p>Análise e Desenv. de Sistemas</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <p>in/carlosbruno-lopes/</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="circle-decor circle-1"></div>
+        <div class="code-snippet">
+            <pre><code>
+fun onCreate() {
+    startLearning()
+}
+            </code></pre>
+        </div>
+    </div>
+</body>
+
+</html>

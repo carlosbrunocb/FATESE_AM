@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desafio do Parsing em Microcontroladores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Estrutura Principal em Grid */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Header, Conteúdo (expande), Footer */
+            min-height: 100vh;
+            width: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Preenche o espaço flexível */
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .strategy-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .code-snippet {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="bg-slate-900/80 border-b border-white/10 px-6 py-4 lg:px-16 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-microchip text-blue-500 text-2xl"></i>
+                <h2 class="text-lg lg:text-xl font-bold text-white">Desafio do Parsing em Microcontroladores</h2>
+            </div>
+            <div class="hidden sm:flex items-center gap-4 text-slate-400 text-sm">
+                <span>Aula 11</span>
+                <span>|</span>
+                <span>ESP32 & ArduinoJson</span>
+            </div>
+        </header>
+
+        <main class="w-full mx-auto p-6 lg:p-12 flex flex-col gap-8">
+            
+            <div class="text-center">
+                <h1 class="text-2xl lg:text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-memory text-blue-500 mr-3"></i>Parsing JSON em ESP32
+                </h1>
+                <p class="text-slate-400 text-base lg:text-lg">
+                    Estratégias eficientes para lidar com limitações de RAM e parsing robusto
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 flex-1">
+                
+                <div class="flex flex-col gap-6">
+                    <div class="content-card">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="icon-box bg-gradient-to-br from-red-500 to-red-700">
+                                <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-lg font-semibold text-white">Restrições de Hardware</div>
+                                <div class="text-sm text-slate-400">~520KB SRAM total no ESP32</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 flex-1">
+                            <div class="flex items-center justify-between p-3 bg-red-500/10 rounded-md">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-memory text-red-400 text-sm"></i>
+                                    <span class="text-sm text-slate-300">Heap livre com WiFi</span>
+                                </div>
+                                <span class="text-sm text-red-400 font-semibold">~200-300KB</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-red-500/10 rounded-md">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-network-wired text-red-400 text-sm"></i>
+                                    <span class="text-sm text-slate-300">Risco de fragmentação</span>
+                                </div>
+                                <span class="text-sm text-red-400 font-semibold">Alto</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-slate-400 flex items-center">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            Resposta HTTP chega como string grande (kBs)
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="icon-box bg-gradient-to-br from-emerald-500 to-emerald-700" style="width: 44px; height: 44px;">
+                                <i class="fas fa-cogs text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-base font-semibold text-white">Estratégias Eficientes</div>
+                                <div class="text-sm text-slate-400">Otimização de parsing</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
+                            <div class="strategy-badge badge-success">ArduinoJson V7</div>
+                            <div class="strategy-badge badge-warning">Filtro de dados</div>
+                            <div class="strategy-badge badge-success">Streaming</div>
+                            <div class="strategy-badge badge-warning">Buffers char*</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <div class="content-card">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="icon-box bg-gradient-to-br from-violet-500 to-violet-700">
+                                <i class="fas fa-shield-alt text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-base font-semibold text-white">Robustez</div>
+                                <div class="text-sm text-slate-400">Tratamento de erros</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 flex-1">
+                            <div class="flex items-center gap-3 text-sm text-slate-300">
+                                <i class="fas fa-check-circle text-emerald-500"></i>
+                                <span>Verificar DeserializationError</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-slate-300">
+                                <i class="fas fa-check-circle text-emerald-500"></i>
+                                <span>Respeitar Content-Length</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-slate-300">
+                                <i class="fas fa-check-circle text-emerald-500"></i>
+                                <span>Liberar recursos: http.end(), doc.clear()</span>
+                            </div>
+                        </div>
+                        <div class="code-snippet mt-4">
+                            <span class="text-amber-400">DeserializationError</span> erro = deserializeJson(doc, payload);
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="icon-box bg-gradient-to-br from-amber-500 to-amber-700" style="width: 44px; height: 44px;">
+                                <i class="fas fa-code text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-base font-semibold text-white">Exemplo de Parsing</div>
+                                <div class="text-sm text-slate-400">Código otimizado</div>
+                            </div>
+                        </div>
+                        <div class="code-snippet text-[13px] leading-relaxed mt-auto">
+                            <span class="text-amber-400">JsonDocument</span> doc;<br />
+                            <span class="text-amber-400">DeserializationError</span> error = <span class="text-blue-400">deserializeJson</span>(doc, payload);<br />
+                            <span class="text-amber-400">if</span> (!error) {<br />
+                            &nbsp;&nbsp;<span class="text-amber-400">float</span> temp = doc[<span class="text-emerald-400">"current"</span>][<span class="text-emerald-400">"temperature_2m"</span>];<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-emerald-500/10 border-l-4 border-emerald-500 p-4 rounded-r-md flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <i class="fas fa-lightbulb text-amber-500 text-xl"></i>
+                <div class="text-sm text-slate-300">
+                    <strong class="text-white">Resultado:</strong> Menor uso de RAM, maior estabilidade e menor latência no loop principal
+                </div>
+            </div>
+        </main>
+
+        <footer class="border-t border-white/10 px-6 lg:px-16 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-info-circle text-blue-500"></i>
+                <span class="font-medium">Parsing eficiente com ArduinoJson para ESP32</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-calendar-alt opacity-60"></i>
+                <span class="font-medium">16 de Maio de 2026</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

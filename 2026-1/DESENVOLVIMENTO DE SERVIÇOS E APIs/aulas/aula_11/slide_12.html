@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura em Camadas Detalhada</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            position: absolute;
+            top: 105px;
+            left: 50px;
+            width: 95%;
+            height: 545px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Architecture Section */
+        .architecture-section {
+            display: flex;
+            gap: 20px;
+            height: 335px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .diagram-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .flow-box {
+            flex: 1;
+            height: 95px;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .flow-box.routes {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-color: #63b3ed;
+        }
+
+        .flow-box.controller {
+            background: linear-gradient(135deg, #fffaf0 0%, #fed7aa 100%);
+            border-color: #ed8936;
+        }
+
+        .flow-box.service {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-color: #48bb78;
+        }
+
+        .flow-box.repository {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-color: #9f7aea;
+        }
+
+        .flow-box.database {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-color: #fc8181;
+        }
+
+        .flow-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .flow-icon.routes {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+        }
+
+        .flow-icon.controller {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .flow-icon.service {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .flow-icon.repository {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        }
+
+        .flow-icon.database {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+        }
+
+        .flow-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .flow-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .flow-description {
+            font-size: 10pt;
+            color: #4a5568;
+            line-height: 1.25;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            color: #a0aec0;
+            font-size: 18px;
+        }
+
+        /* Code Section */
+        .code-section {
+            width: 37%;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .code-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .code-block {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12pt;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #718096;
+        }
+
+        .code-keyword {
+            color: #63b3ed;
+        }
+
+        .code-string {
+            color: #48bb78;
+        }
+
+        .code-variable {
+            color: #fc8181;
+        }
+
+        .code-function {
+            color: #ed8936;
+        }
+
+        /* Responsibilities Section */
+        .responsibilities-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 190px;
+        }
+
+        .responsibilities-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .responsibilities-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .responsibilities-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .responsibility-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .responsibility-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .responsibility-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .responsibility-icon.routes {
+            background: #63b3ed;
+        }
+
+        .responsibility-icon.controller {
+            background: #ed8936;
+        }
+
+        .responsibility-icon.service {
+            background: #48bb78;
+        }
+
+        .responsibility-icon.repository {
+            background: #9f7aea;
+        }
+
+        .responsibility-title {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .responsibility-list {
+            font-size: 11pt;
+            color: #4a5568;
+            line-height: 1.5;
+            padding-left: 18px;
+        }
+
+        .responsibility-list li {
+            margin-bottom: 2px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-layer-group header-icon"></i>
+                <span>Arquitetura em Camadas Detalhada</span>
+            </div>
+            <div class="header-subtitle">Fluxo completo de dados e responsabilidades</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- Architecture Section -->
+            <div class="architecture-section">
+                <!-- Diagram Section -->
+                <div class="diagram-section">
+                    <div class="diagram-header">
+                        <div class="diagram-title">
+                            <i class="fas fa-project-diagram" style="color: #63b3ed;"></i>
+                            <span>Fluxo de Dados</span>
+                        </div>
+                        <div style="font-size: 13px; color: #718096;">5 camadas de arquitetura</div>
+                    </div>
+                    <div class="flow-diagram">
+                        <!-- Row 1: Routes -->
+                        <div class="flow-row">
+                            <div class="flow-box routes">
+                                <div class="flow-icon routes"><i class="fas fa-route"></i></div>
+                                <div class="flow-content">
+                                    <div class="flow-title">1. Rotas (Routes)</div>
+                                    <div class="flow-description">Define endpoints e verbos HTTP</div>
+                                </div>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-box controller">
+                                <div class="flow-icon controller"><i class="fas fa-cogs"></i></div>
+                                <div class="flow-content">
+                                    <div class="flow-title">2. Controller</div>
+                                    <div class="flow-description">Processa requisições HTTP</div>
+                                </div>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-box service">
+                                <div class="flow-icon service"><i class="fas fa-briefcase"></i></div>
+                                <div class="flow-content">
+                                    <div class="flow-title">3. Service</div>
+                                    <div class="flow-description">Lógica de negócio pura</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row 2: Repository and Database -->
+                        <div class="flow-row">
+                            <div class="flow-box repository" style="max-width: 310px;">
+                                <div class="flow-icon repository"><i class="fas fa-database"></i></div>
+                                <div class="flow-content">
+                                    <div class="flow-title">4. Repository</div>
+                                    <div class="flow-description">Acesso a dados (ORM)</div>
+                                </div>
+                            </div>
+                            <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-box database" style="max-width: 310px;">
+                                <div class="flow-icon database"><i class="fas fa-hdd"></i></div>
+                                <div class="flow-content">
+                                    <div class="flow-title">5. Banco de Dados</div>
+                                    <div class="flow-description">Persistência de dados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Code Section -->
+                <div class="code-section">
+                    <div class="code-header">
+                        <i class="fas fa-code" style="color: #63b3ed;"></i>
+                        <div class="code-title">Exemplo de Implementação</div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-line"><span class="code-comment">// Repository pattern</span></div>
+                        <div class="code-line"><span class="code-keyword">const</span> <span
+                                class="code-variable">buscarTodos</span> = <span class="code-keyword">async</span> () =&gt; {</div>
+                        <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">return</span> <span
+                                class="code-keyword">await</span> <span class="code-variable">LivroModel</span>.<span
+                                class="code-function">find</span>();</div>
+                        <div class="code-line">};</div>
+                        <div class="code-line"></div>
+                        <div class="code-line"><span class="code-comment">// Service layer</span></div>
+                        <div class="code-line"><span class="code-keyword">const</span> <span
+                                class="code-variable">listarTodos</span> = <span class="code-keyword">async</span> () =&gt; {</div>
+                        <div class="code-line" style="margin-left: 20px;"><span class="code-keyword">return</span> <span
+                                class="code-keyword">await</span> <span
+                                class="code-variable">livroRepository</span>.<span
+                                class="code-function">buscarTodos</span>();</div>
+                        <div class="code-line">};</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Responsibilities Section -->
+            <div class="responsibilities-section">
+                <div class="responsibilities-header">
+                    <div class="responsibilities-title">
+                        <i class="fas fa-tasks" style="color: #63b3ed;"></i>
+                        <span>Responsabilidades de Cada Camada</span>
+                    </div>
+                    <div style="font-size: 13px; color: #718096;">Clara separação de responsabilidades</div>
+                </div>
+                <div class="responsibilities-grid">
+                    <div class="responsibility-card">
+                        <div class="responsibility-header">
+                            <div class="responsibility-icon routes"><i class="fas fa-route"></i></div>
+                            <div class="responsibility-title">Rotas</div>
+                        </div>
+                        <ul class="responsibility-list">
+                            <li>Definir endpoints</li>
+                            <li>Mapear URLs</li>
+                            <li>Configurar verbos HTTP</li>
+                        </ul>
+                    </div>
+                    <div class="responsibility-card">
+                        <div class="responsibility-header">
+                            <div class="responsibility-icon controller"><i class="fas fa-cogs"></i></div>
+                            <div class="responsibility-title">Controller</div>
+                        </div>
+                        <ul class="responsibility-list">
+                            <li>Processar requisições</li>
+                            <li>Validar entrada</li>
+                            <li>Chamar serviços</li>
+                        </ul>
+                    </div>
+                    <div class="responsibility-card">
+                        <div class="responsibility-header">
+                            <div class="responsibility-icon service"><i class="fas fa-briefcase"></i></div>
+                            <div class="responsibility-title">Service</div>
+                        </div>
+                        <ul class="responsibility-list">
+                            <li>Lógica de negócio</li>
+                            <li>Regras de validação</li>
+                            <li>Processamento</li>
+                        </ul>
+                    </div>
+                    <div class="responsibility-card">
+                        <div class="responsibility-header">
+                            <div class="responsibility-icon repository"><i class="fas fa-database"></i></div>
+                            <div class="responsibility-title">Repository</div>
+                        </div>
+                        <ul class="responsibility-list">
+                            <li>Acesso a dados</li>
+                            <li>Queries SQL</li>
+                            <li>ORM operations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Implementação Prática</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Arquitetura Completa</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    <span>5 Camadas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

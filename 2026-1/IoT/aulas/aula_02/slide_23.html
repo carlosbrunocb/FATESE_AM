@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Versões delay() vs millis(): Comparativo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Evita barras de rolagem na página inteira */
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 40px 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .comparison-container {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+        }
+
+        .comparison-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            border: 3px solid;
+        }
+
+        .side-warning {
+            border-color: #dc2626;
+        }
+
+        .side-success {
+            border-color: #22c55e;
+        }
+
+        .side-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid #334155;
+        }
+
+        .side-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid;
+        }
+
+        .icon-warning {
+            background-color: #991b1b;
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .icon-success {
+            background-color: #15803d;
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .side-title {
+            flex: 1;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+            justify-content: space-around; /* Distribui melhor o espaço em telas grandes */
+        }
+
+        .item-card {
+            background-color: #0f172a;
+            padding: 18px 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .item-warning {
+            border-left-color: #dc2626;
+        }
+
+        .item-success {
+            border-left-color: #22c55e;
+        }
+
+        .item-icon {
+            min-width: 36px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .item-icon-warning {
+            background-color: #991b1b;
+            color: #fca5a5;
+        }
+
+        .item-icon-success {
+            background-color: #15803d;
+            color: #22c55e;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 17px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding-top: 4px;
+        }
+
+        .item-label {
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Versões delay() vs millis(): Comparativo</p>
+            </h1>
+            <div class="comparison-container">
+                <div class="comparison-side side-warning">
+                    <div class="side-header">
+                        <div class="side-icon icon-warning">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <p class="side-title">delay() — Bloqueante</p>
+                    </div>
+                    <div class="items-container">
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-hand-paper"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Responsividade:</p>
+                                <p>Bloqueia o processador completamente durante a espera</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Escalabilidade:</p>
+                                <p>Complica a adição de novas funcionalidades e estados</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Rede/IoT:</p>
+                                <p>Derruba conexões Wi-Fi e perde mensagens MQTT</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-wrench"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Manutenção:</p>
+                                <p>Dificulta evoluções e adição de sensores/recursos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-side side-success">
+                    <div class="side-header">
+                        <div class="side-icon icon-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <p class="side-title">millis() — Não Bloqueante</p>
+                    </div>
+                    <div class="items-container">
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Responsividade:</p>
+                                <p>Permite multitarefa cooperativa e sistema sempre ativo</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Escalabilidade:</p>
+                                <p>Favorece máquina de estados e arquitetura modular</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-signal"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Rede/IoT:</p>
+                                <p>Mantém conexões ativas e processa dados em tempo real</p>
+                            </div>
+                        </div>
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="item-text">
+                                <p class="item-label">Manutenção:</p>
+                                <p>Claro para evoluções (pedestre, sensores, modo noite)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

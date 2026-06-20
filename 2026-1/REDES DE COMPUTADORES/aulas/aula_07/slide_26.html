@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercício Prático: Configuração de Roteamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 100px);
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .right-panel {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .network-diagram {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .router-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .router-title {
+            font-weight: 600;
+            font-size: 14pt;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .router-info {
+            font-size: 12pt;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .task-list {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13pt;
+        }
+
+        .task-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-checkbox.checked {
+            background: #667eea;
+            color: white;
+        }
+
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11pt;
+        }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .network-node {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .node-icon {
+            font-size: 24pt;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .node-label {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .node-ip {
+            font-size: 10pt;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .connection-line {
+            position: relative;
+            height: 2px;
+            background: #e0e0e0;
+            margin: 10px 0;
+        }
+
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .connection-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-active {
+            background: #4CAF50;
+        }
+
+        .status-inactive {
+            background: #f44336;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12pt;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .route-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12pt;
+        }
+
+        .route-table th {
+            background: #f5f5f5;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .route-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .route-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .highlight {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .network-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+
+        .router-node {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .router-name {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 12pt;
+        }
+
+        .router-ip {
+            font-size: 10pt;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .connection {
+            flex: 1;
+            height: 2px;
+            background: #e0e0e0;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .connection::before {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: -8px;
+            color: #667eea;
+            font-size: 12pt;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <div class="header">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-network-wired mr-2 text-blue-600"></i>
+                        Exercício Prático: Configuração de Roteamento
+                    </h1>
+                    <p class="text-sm text-gray-600">Rede com 3 roteadores interconectando 3 sub-redes distintas</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600"><i class="fas fa-clock mr-1"></i> 45 min</span>
+                    <span class="text-sm text-gray-600"><i class="fas fa-users mr-1"></i> Grupos de 2</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-panel">
+                    <div class="section-title">
+                        <i class="fas fa-sitemap section-icon"></i>
+                        <span>Cenário da Rede</span>
+                    </div>
+                    <div class="network-visual">
+                        <div class="router-node">
+                            <div class="router-name">R1</div>
+                            <div class="router-ip">192.168.1.1/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Rede A</div>
+                        </div>
+                        <div class="connection"></div>
+                        <div class="router-node">
+                            <div class="router-name">R2</div>
+                            <div class="router-ip">192.168.2.1/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Rede B</div>
+                        </div>
+                        <div class="connection"></div>
+                        <div class="router-node">
+                            <div class="router-name">R3</div>
+                            <div class="router-ip">192.168.3.1/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Rede C</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                        <div class="bg-white p-3 rounded-lg border border-gray-200">
+                            <div class="text-sm font-semibold text-gray-700 mb-2">Rede A</div>
+                            <div class="text-xs text-gray-600">192.168.1.0/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Gateway: 192.168.1.1</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200">
+                            <div class="text-sm font-semibold text-gray-700 mb-2">Rede B</div>
+                            <div class="text-xs text-gray-600">192.168.2.0/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Gateway: 192.168.2.1</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200">
+                            <div class="text-sm font-semibold text-gray-700 mb-2">Rede C</div>
+                            <div class="text-xs text-gray-600">192.168.3.0/24</div>
+                            <div class="text-xs text-gray-500 mt-1">Gateway: 192.168.3.1</div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="section-title">
+                            <i class="fas fa-tasks section-icon"></i>
+                            <span>Tarefas a Realizar</span>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-checkbox"></div>
+                                <span class="text-sm">Preencher tabela de roteamento para R1, R2 e R3</span>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-checkbox"></div>
+                                <span class="text-sm">Definir gateways padrão para cada rede</span>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-checkbox"></div>
+                                <span class="text-sm">Configurar next hops adequados</span>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-checkbox"></div>
+                                <span class="text-sm">Validar caminhos bidirecionais A→C e C→A</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                            Use <span class="font-mono bg-gray-100 px-1 rounded">traceroute</span> para verificar rotas
+                        </div>
+                        <button class="btn-primary">
+                            <i class="fas fa-check mr-1"></i> Validar Configuração
+                        </button>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="network-diagram">
+                        <div class="section-title">
+                            <i class="fas fa-table section-icon"></i>
+                            <span>Tabela de Roteamento</span>
+                        </div>
+                        <div class="table-container">
+                            <table class="route-table">
+                                <thead>
+                                    <tr>
+                                        <th>Destino</th>
+                                        <th>Máscara</th>
+                                        <th>Next Hop</th>
+                                        <th>Interface</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>192.168.1.0</td>
+                                        <td>255.255.255.0</td>
+                                        <td>Direct</td>
+                                        <td>Gi0/1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>192.168.2.0</td>
+                                        <td>255.255.255.0</td>
+                                        <td>192.168.1.2</td>
+                                        <td>Gi0/2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>192.168.3.0</td>
+                                        <td>255.255.255.0</td>
+                                        <td>192.168.2.2</td>
+                                        <td>Gi0/3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>0.0.0.0</td>
+                                        <td>0.0.0.0</td>
+                                        <td>192.168.1.1</td>
+                                        <td>Gi0/1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4">
+                            <div class="section-title">
+                                <i class="fas fa-check-circle section-icon"></i>
+                                <span>Validação</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-green-50 p-2 rounded border border-green-200">
+                                    <div class="text-xs font-semibold text-green-700">Teste A→C</div>
+                                    <div class="text-xs text-green-600">Ping: 192.168.3.1</div>
+                                </div>
+                                <div class="bg-green-50 p-2 rounded border border-green-200">
+                                    <div class="text-xs font-semibold text-green-700">Teste C→A</div>
+                                    <div class="text-xs text-green-600">Ping: 192.168.1.1</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200">
+                        <div class="text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file-alt mr-1"></i> Entregável
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            • Tabela de rotas completa por roteador<br />
+                            • Justificativa técnica das decisões<br />
+                            • Documentação dos testes realizados
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

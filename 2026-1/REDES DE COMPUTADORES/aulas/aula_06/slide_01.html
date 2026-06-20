@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sub-redes – Dividindo a Rede de Forma Eficiente</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23e2e8f0" opacity="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24pt;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18pt;
+            color: #1e293b;
+        }
+
+        .logo-subtitle {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+            color: #1e293b;
+        }
+
+        .course-code {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 41pt;
+            color: #1e293b;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+
+        .subtitle {
+            font-size: 18pt;
+            color: #64748b;
+            margin-bottom: 18px;
+        }
+
+        .highlight-bar {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 14pt;
+            flex: 0 0 auto;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14pt;
+            color: #1e293b;
+        }
+
+        .card-content {
+            font-size: 13pt;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12pt;
+            color: #475569;
+            line-height: 1.45;
+        }
+
+        .objectives-list li::before {
+            content: "•";
+            color: #2563eb;
+            font-weight: bold;
+            margin-right: 5px;
+            flex: 0 0 auto;
+        }
+
+        .professor-info {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .professor-avatar {
+            width: 60px;
+            height: 60px;
+            background: #f0f9ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 28pt;
+            flex: 0 0 auto;
+        }
+
+        .professor-details {
+            flex: 1;
+        }
+
+        .professor-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16pt;
+            margin-bottom: 5px;
+        }
+
+        .professor-role {
+            font-size: 12pt;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 15px;
+            font-size: 11pt;
+            color: #cbd5e1;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .contact-item i {
+            font-size: 10pt;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            background: #f0f9ff;
+            color: #2563eb;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11pt;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .network-diagram {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 150px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">FATESE</div>
+                        <div class="logo-subtitle">Faculdade de Tecnologia do Senac</div>
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Redes de Computadores</div>
+                    <div class="course-code">Módulo 2 - Camadas Inferiores</div>
+                </div>
+            </div>
+            <div class="title-section">
+                <div class="main-title">Sub-redes – Dividindo a Rede de Forma Eficiente</div>
+                <div class="subtitle">Aula 06: Conceitos, Cálculos e Configuração Prática</div>
+                <div class="highlight-bar"></div>
+            </div>
+            <div class="content-grid">
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="card-title">Objetivos da Aula</div>
+                    </div>
+                    <ul class="objectives-list">
+                        <li>Fundamentar a necessidade técnica de dividir redes (domínios de broadcast)</li>
+                        <li>Calcular sub-redes utilizando notação CIDR e máscaras de comprimento variável</li>
+                        <li>Configurar dispositivos em sub-redes distintas e validar a conectividade</li>
+                        <li>Compreender o método do "Número Mágico" para cálculos rápidos</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="card-title">Conteúdo Programático</div>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>• Fundamentos:</strong> Conceitos de subnetting, CIDR, VLSM</p>
+                        <p><strong>• Cálculos:</strong> Fórmulas, máscaras, bits emprestados</p>
+                        <p><strong>• Prática:</strong> Configuração no Cisco Packet Tracer</p>
+                        <p><strong>• Aplicações:</strong> Cloud, VPCs, segurança</p>
+                    </div>
+                </div>
+            </div>
+            <div class="professor-info">
+                <div class="professor-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="professor-details">
+                    <div class="professor-name">Carlos Bruno Oliveira Lopes</div>
+                    <div class="professor-role">Professor de Redes de Computadores - FATESE</div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>carlos.lopes@am.senac.br</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-github"></i>
+                            <span>github.com/carlosbrunocb</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-linkedin"></i>
+                            <span>in/carlosbruno-lopes/</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    Aula 06 
+                </div>
+                <div class="footer-right">
+                    <div class="badge"><i class="fas fa-check-circle"></i> Redes</div>
+                    <div class="badge"><i class="fas fa-server"></i> Subnetting</div>
+                    <div class="badge"><i class="fas fa-cogs"></i> Configuração</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

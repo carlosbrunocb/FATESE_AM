@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 4 - Documentos e BSON no MongoDB</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 50px;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 26px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-text p {
+            font-size: 15px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main content grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 580px;
+        }
+
+        /* Columns */
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-block {
+            background: #111;
+            border-radius: 8px;
+            padding: 18px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #d4d4d4;
+            overflow-x: auto;
+            border-left: 4px solid #00ED64;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 2px;
+        }
+
+        .code-line-number {
+            color: #555;
+            min-width: 25px;
+            text-align: right;
+            user-select: none;
+        }
+
+        .code-content {
+            color: #d4d4d4;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-number {
+            color: #b5cea8;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-property {
+            color: #9cdcfe;
+        }
+
+        .bson-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .type-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .type-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 15px;
+        }
+
+        .type-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .type-desc {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .comparison-section {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .comparison-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .comparison-item {
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .comparison-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .comparison-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .highlight-green {
+            color: #00a854;
+        }
+
+        .best-practices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #00ED64;
+        }
+
+        .practice-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .practice-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .practice-desc {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .document-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .document-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .document-content {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 12px;
+            color: #495057;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .json-key {
+            color: #0066cc;
+        }
+
+        .json-string {
+            color: #ce9178;
+        }
+
+        .json-number {
+            color: #b5cea8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Documentos e BSON no MongoDB</h1>
+                    <p>Estrutura de dados, tipos BSON e boas práticas de modelagem</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-database"></i> MongoDB
+                </div>
+                <div class="badge">
+                    <i class="fas fa-code"></i> BSON
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Left column -->
+            <div class="left-column">
+                <!-- Document structure -->
+                <div class="card" style="flex: 0 0 auto;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-title">Estrutura de Documento</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-line-number">1</span><span
+                                    class="code-content"><span class="code-keyword">{</span></span></div>
+                            <div class="code-line"><span class="code-line-number">2</span><span class="code-content">
+                                    <span class="code-property">"_id"</span>: <span
+                                        class="code-string">"665e1f..."</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">3</span><span class="code-content">
+                                    <span class="code-property">"titulo"</span>: <span class="code-string">"Clean
+                                        Architecture"</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">4</span><span class="code-content">
+                                    <span class="code-property">"autor"</span>: { <span
+                                        class="code-property">"nome"</span>: <span class="code-string">"Robert
+                                        Martin"</span> },</span></div>
+                            <div class="code-line"><span class="code-line-number">5</span><span class="code-content">
+                                    <span class="code-property">"ano"</span>: <span
+                                        class="code-number">2017</span>,</span></div>
+                            <div class="code-line"><span class="code-line-number">6</span><span class="code-content">
+                                    <span class="code-property">"generos"</span>: [<span
+                                        class="code-string">"Engenharia"</span>, <span
+                                        class="code-string">"Arquitetura"</span>]</span></div>
+                            <div class="code-line"><span class="code-line-number">7</span><span
+                                    class="code-content"><span class="code-keyword">}</span></span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- BSON Types -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="card-title">Tipos de Dados BSON</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="bson-types">
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-font"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">String</div>
+                                    <div class="type-desc">Texto UTF-8</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-hashtag"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Int32/64</div>
+                                    <div class="type-desc">Inteiros</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-percentage"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Double</div>
+                                    <div class="type-desc">Decimais</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-calendar"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Date</div>
+                                    <div class="type-desc">Data/hora</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-fingerprint"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">ObjectId</div>
+                                    <div class="type-desc">ID único</div>
+                                </div>
+                            </div>
+                            <div class="type-item">
+                                <div class="type-icon"><i class="fas fa-list"></i></div>
+                                <div class="type-info">
+                                    <div class="type-name">Array</div>
+                                    <div class="type-desc">Listas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right column -->
+            <div class="right-column">
+                <!-- JSON vs BSON comparison -->
+                <div class="comparison-section">
+                    <div class="comparison-header">
+                        <div class="comparison-title">
+                            <i class="fas fa-exchange-alt"></i>
+                            JSON vs BSON
+                        </div>
+                    </div>
+                    <div class="comparison-grid">
+                        <div class="comparison-item">
+                            <div class="comparison-label">JSON</div>
+                            <div class="comparison-value">Formato texto legível</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">BSON</div>
+                            <div class="comparison-value">Binário + eficiente</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Suporte a tipos</div>
+                            <div class="comparison-value">Limitado</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Tipos extras</div>
+                            <div class="comparison-value highlight-green">Date, ObjectId, Binary</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Tamanho</div>
+                            <div class="comparison-value">Maior</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-label">Tamanho</div>
+                            <div class="comparison-value highlight-green">Menor</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Best practices -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title">Boas Práticas</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="best-practices">
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-layer-group"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Evite profundidade excessiva</div>
+                                    <div class="practice-desc">Máximo 3 níveis de aninhamento</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-key"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Use ObjectId para IDs</div>
+                                    <div class="practice-desc">Identificadores únicos e eficientes</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-database"></i></div>
+                                <div class="practice-text">
+                                    <div class="practice-title">Normalize quando necessário</div>
+                                    <div class="practice-desc">Evite documentos muito grandes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Document preview integrated inside card for better balance -->
+                        <div class="document-preview"
+                            style="margin-top: 5px; padding: 12px; box-shadow: none; border-style: dashed;">
+                            <div class="document-title" style="font-size: 13px; margin-bottom: 8px;">
+                                <i class="fas fa-eye"></i> Visualização
+                            </div>
+                            <div class="document-content" style="padding: 8px; font-size: 11px;">
+                                <span class="json-key">"_id"</span>: <span class="json-string">"665e1f..."</span>,
+                                <span class="json-key">"ano"</span>: <span class="json-number">2017</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

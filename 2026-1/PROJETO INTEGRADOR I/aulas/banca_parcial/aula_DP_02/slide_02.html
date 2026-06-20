@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8fafc;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* --- LAYOUT GRID (OCUPANDO 100% DA TELA) --- */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            display: grid;
+            grid-template-rows: 70px 1fr; /* 70px pro Header, e o resto (1fr) pro conteúdo principal */
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23e0f2fe" stroke-width="0.5"/></svg>') repeat;
+            background-size: 100px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a8a;
+            font-size: 15pt; /* Convertido de 20px para pt */
+            font-weight: 700;
+        }
+
+        .logo-text {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: white;
+            font-size: 13pt;
+        }
+
+        .header-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            display: flex;
+            gap: 32px;
+            padding: 40px; /* Margem de respiro ao redor de todo o conteúdo */
+            width: 100%;
+            height: 100%; /* Garante que ocupe todo o 1fr do Grid */
+            z-index: 5;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-panel {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1; /* Faz com que os cards se estiquem para preencher a altura da tela */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 16pt;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .card-content {
+            font-size: 14pt;
+            color: #64748b;
+            line-height: 1.6;
+            flex: 1; /* Centraliza verticalmente o conteúdo interno do card */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .criteria-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 14pt;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .criteria-text {
+            flex: 1;
+        }
+
+        .criteria-title {
+            font-weight: 700;
+            color: #1e3a8a;
+            font-size: 14pt;
+            margin-bottom: 4px;
+        }
+
+        .criteria-desc {
+            font-size: 13pt;
+            color: #64748b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .highlight-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14pt;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .highlight-text {
+            font-size: 13pt;
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14pt;
+            color: #475569;
+        }
+
+        .checklist-icon {
+            color: #10b981;
+            font-size: 14pt;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 3px;
+            width: 75%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FATESE</div>
+            </div>
+            <div class="header-info">
+                <div class="header-info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>ADS</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>2026.1</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>60 min</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="left-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="card-title">Objetivo da Aula</div>
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 16px;">Alinhar o trabalho escrito e os slides com foco na <span
+                                style="background: #fef3c7; padding: 4px 8px; border-radius: 4px; font-weight: 700; color: #92400e;">tríade:
+                                Principal → Secundária → Resultado</span></p>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <i class="fas fa-check-circle checklist-icon"></i>
+                                <span>Justificativa, Objetivos e Requisitos alinhados</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check-circle checklist-icon"></i>
+                                <span>Killer Feature identificada e validada</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check-circle checklist-icon"></i>
+                                <span>Escopo mínimo viável (MVP) definido</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="card-title">O que a Banca Observa</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="criteria-list">
+                            <div class="criteria-item">
+                                <div class="criteria-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="criteria-text">
+                                    <div class="criteria-title">Clareza do Tema</div>
+                                    <div class="criteria-desc">O projeto resolve um problema real? A proposta é clara e objetiva?</div>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="criteria-text">
+                                    <div class="criteria-title">Estratégia de Desenvolvimento</div>
+                                    <div class="criteria-desc">Decisões de escopo e priorização são coerentes?</div>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <div class="criteria-icon">
+                                    <i class="fas fa-gem"></i>
+                                </div>
+                                <div class="criteria-text">
+                                    <div class="criteria-title">Proposta de Valor</div>
+                                    <div class="criteria-desc">Qual o ganho real para o cliente? (tempo, dinheiro, impacto)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="card-title">Dica do Professor</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="highlight-box">
+                            <div class="highlight-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Validação Real
+                            </div>
+                            <div class="highlight-text">
+                                "A banca quer ver se vocês descobriram um <strong>problema real</strong> ou se só estão
+                                inventando um app que ninguém vai usar."
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 16px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <div
+                                style="font-size: 12pt; color: #64748b; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fas fa-question-circle" style="margin-right: 6px; color: #2563eb;"></i>
+                                Pergunta de Validação
+                            </div>
+                            <div style="font-size: 13pt; color: #1e3a8a; font-weight: 600; font-style: italic;">
+                                "Se eu tirar a função [X] do seu sistema, ele ainda resolve o problema principal?"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-title">Status da Entrega</div>
+                    </div>
+                    <div class="card-content">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 13pt; color: #64748b; font-weight: 500;">Progresso do Projeto</span>
+                            <span style="font-size: 14pt; color: #1e3a8a; font-weight: 700;">75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div style="margin-top: 16px; display: flex; gap: 10px;">
+                            <div class="priority-badge">Prioridade Alta</div>
+                            <div class="status-badge">Em andamento</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

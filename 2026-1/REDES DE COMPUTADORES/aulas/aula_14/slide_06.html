@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BSS, IBSS e ESS - Arquitetura 802.11</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 130px);
+            /* adjusted height */
+            padding: 0 50px 0 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* Architecture card */
+        .architecture-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(74, 144, 217, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 18px;
+        }
+
+        .card-title {
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Architecture types */
+        .architecture-types {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .architecture-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .architecture-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .architecture-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(74, 144, 217, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 16px;
+        }
+
+        .architecture-name {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .architecture-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .comparison-table th {
+            background: rgba(74, 144, 217, 0.2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Network diagram */
+        .network-diagram {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .diagram-title {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagram-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px 0;
+            flex: 1;
+        }
+
+        .diagram-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .node-icon {
+            width: 60px;
+            height: 60px;
+            background: #1a3c63;
+            border: 2px solid #4a90d9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 24px;
+        }
+
+        .node-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .connection-line {
+            width: 70px;
+            height: 2px;
+            background: rgba(74, 144, 217, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .connection-line::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: -4px;
+            border: 5px solid transparent;
+            border-left: 7px solid rgba(74, 144, 217, 0.5);
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 60%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-sitemap"></i> BSS, IBSS e ESS - Arquitetura 802.11
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="left-section">
+                    <div class="architecture-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="card-title">Tipos de Arquitetura Wi-Fi</div>
+                        </div>
+                        <div class="card-description">
+                            A arquitetura 802.11 define três modos principais de operação: BSS (infraestrutura), IBSS
+                            (ad-hoc) e ESS (múltiplos BSS). Cada modo tem características específicas de conectividade e
+                            mobilidade.
+                        </div>
+                        <div class="architecture-types">
+                            <div class="architecture-item">
+                                <div class="architecture-header">
+                                    <div class="architecture-icon">
+                                        <i class="fas fa-wifi"></i>
+                                    </div>
+                                    <div class="architecture-name">BSS (Basic Service Set)</div>
+                                </div>
+                                <div class="architecture-desc">
+                                    <strong>Modo Infraestrutura:</strong> Consiste de um Access Point (AP) e várias
+                                    estações (STA) associadas a ele. O AP funciona como ponte entre a rede sem fio e a
+                                    rede cabeada.
+                                </div>
+                            </div>
+                            <div class="architecture-item">
+                                <div class="architecture-header">
+                                    <div class="architecture-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="architecture-name">IBSS (Independent BSS)</div>
+                                </div>
+                                <div class="architecture-desc">
+                                    <strong>Modo Ad-Hoc:</strong> Comunicação direta entre estações sem fio sem
+                                    necessidade de AP. Útil para redes temporárias ou peer-to-peer.
+                                </div>
+                            </div>
+                            <div class="architecture-item">
+                                <div class="architecture-header">
+                                    <div class="architecture-icon">
+                                        <i class="fas fa-arrows-alt"></i>
+                                    </div>
+                                    <div class="architecture-name">ESS (Extended Service Set)</div>
+                                </div>
+                                <div class="architecture-desc">
+                                    <strong>Múltiplos BSS:</strong> Vários APs interconectados oferecendo mobilidade sob
+                                    um mesmo SSID. Permite roaming entre APs.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="architecture-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="card-title">Comparação de Características</div>
+                        </div>
+                        <table class="comparison-table">
+                            <tr>
+                                <th>Característica</th>
+                                <th>BSS</th>
+                                <th>IBSS</th>
+                                <th>ESS</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Infraestrutura</strong></td>
+                                <td>Com AP</td>
+                                <td>Sem AP</td>
+                                <td>Múltiplos APs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Alcance</strong></td>
+                                <td>Limitado ao AP</td>
+                                <td>Limitado à STA</td>
+                                <td>Expandido</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mobilidade</strong></td>
+                                <td>Limitada</td>
+                                <td>N/A</td>
+                                <td>Roaming</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Custo</strong></td>
+                                <td>Médio</td>
+                                <td>Baixo</td>
+                                <td>Alto</td>
+                            </tr>
+                        </table>
+                        <div class="network-diagram">
+                            <div class="diagram-title">
+                                <i class="fas fa-diagram-project"></i>
+                                Topologia ESS
+                            </div>
+                            <div class="diagram-content">
+                                <div class="diagram-node">
+                                    <div class="node-icon">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="node-label">STA 1</div>
+                                </div>
+                                <div class="connection-line"></div>
+                                <div class="diagram-node">
+                                    <div class="node-icon">
+                                        <!-- <i class="fas fa-router"></i> -->
+                                        <img width="30" height="30" src="https://img.icons8.com/deco-color/48/wifi-router.png" alt="wifi-router"/>
+                                    </div>
+                                    <div class="node-label">AP 1</div>
+                                </div>
+                                <div class="connection-line"></div>
+                                <div class="diagram-node">
+                                    <div class="node-icon">
+                                        <img width="30" height="30" src="https://img.icons8.com/deco-color/48/wifi-router.png" alt="wifi-router"/>
+                                        <!-- <i class="fas fa-router"></i> -->
+                                    </div>
+                                    <div class="node-label">AP 2</div>
+                                </div>
+                                <div class="connection-line"></div>
+                                <div class="diagram-node">
+                                    <div class="node-icon">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="node-label">STA 2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

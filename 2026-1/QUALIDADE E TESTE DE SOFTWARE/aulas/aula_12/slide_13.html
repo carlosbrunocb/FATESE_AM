@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exemplo Prático - App de Delivery</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        /* Content grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        /* Left column - Context and Stakeholders */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .card-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Stakeholder grid */
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stakeholder-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .stakeholder-icon {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #3b82f6;
+        }
+
+        /* Right column - Objectives and Evidence */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .objective-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .objective-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .objective-text {
+            flex: 1;
+        }
+
+        .objective-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        /* Evidence section */
+        .evidence-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .evidence-item {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        .evidence-icon {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .evidence-text {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+            background: #1a1a2e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .progress-fill {
+            width: 33%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        .highlight {
+            color: #3b82f6;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content" style="top: 48%;">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Exemplo Prático</span> — App de Delivery
+                </div>
+                <div class="subtitle">
+                    Caso real de aplicação de UAT em um sistema de delivery com novas funcionalidades
+                </div>
+            </div>
+            <!-- Content grid -->
+            <div class="content-grid">
+                <!-- Left column -->
+                <div class="left-column">
+                    <!-- Context card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="card-title">Contexto do Sistema</div>
+                        </div>
+                        <div class="card-content">
+                            Aplicativo de delivery para restaurantes com <span class="highlight">novas
+                                funcionalidades</span>: aviso sonoro de "Novo Pedido", pagamento via PIX e painel de
+                            atendimento. O sistema precisa operar em horário de pico com alta demanda.
+                        </div>
+                    </div>
+                    <!-- Stakeholders card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-title">Stakeholders Envolvidos</div>
+                        </div>
+                        <div class="stakeholder-grid">
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-user"></i></div>
+                                <div>Cliente</div>
+                            </div>
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-headset"></i></div>
+                                <div>Atendente</div>
+                            </div>
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-store"></i></div>
+                                <div>Dono</div>
+                            </div>
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-motorcycle"></i></div>
+                                <div>Entregador</div>
+                            </div>
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-laptop-code"></i></div>
+                                <div>TI</div>
+                            </div>
+                            <div class="stakeholder-item">
+                                <div class="stakeholder-icon"><i class="fas fa-dollar-sign"></i></div>
+                                <div>Financeiro</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Journey card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="card-title">Jornada Ponta a Ponta</div>
+                        </div>
+                        <div class="card-content" style="font-size: 12px;">
+                            Cliente faz pedido → Restaurante recebe alerta → Atendente confirma → Preparo → Pagamento
+                            PIX → Entrega → Relatório
+                        </div>
+                    </div>
+                </div>
+                <!-- Right column -->
+                <div class="right-column">
+                    <!-- Objectives card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="card-title">Objetivos do UAT</div>
+                        </div>
+                        <div class="objective-list">
+                            <div class="objective-item">
+                                <div class="objective-icon"><i class="fas fa-check"></i></div>
+                                <div class="objective-text">Validar audibilidade do alerta na cozinha barulhenta</div>
+                                <div class="objective-status">Crítico</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon"><i class="fas fa-check"></i></div>
+                                <div class="objective-text">Verificar clareza da fila de pedidos</div>
+                                <div class="objective-status">Alto</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon"><i class="fas fa-check"></i></div>
+                                <div class="objective-text">Testar QR Code em até 2 segundos</div>
+                                <div class="objective-status">Crítico</div>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon"><i class="fas fa-check"></i></div>
+                                <div class="objective-text">Avaliar usabilidade sob pressão</div>
+                                <div class="objective-status">Alto</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Evidence card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="card-title">Evidências Esperadas</div>
+                        </div>
+                        <div class="evidence-section">
+                            <div class="evidence-item">
+                                <div class="evidence-icon"><i class="fas fa-video"></i></div>
+                                <div class="evidence-text">Vídeo/Áudio</div>
+                            </div>
+                            <div class="evidence-item">
+                                <div class="evidence-icon"><i class="fas fa-camera"></i></div>
+                                <div class="evidence-text">Screenshots</div>
+                            </div>
+                            <div class="evidence-item">
+                                <div class="evidence-icon"><i class="fas fa-clock"></i></div>
+                                <div class="evidence-text">Métricas de Tempo</div>
+                            </div>
+                            <div class="evidence-item">
+                                <div class="evidence-icon"><i class="fas fa-file-alt"></i></div>
+                                <div class="evidence-text">Logs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>6 stakeholders</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>4 objetivos</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>4 evidências</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

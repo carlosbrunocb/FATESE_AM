@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 1 - Fundamentos de APIs</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Estilo base com a fonte Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Esconde todos os slides por padrão */
+        .slide {
+            display: none;
+        }
+
+        /* Mostra apenas o slide ativo */
+        .slide.active {
+            display: flex;
+            /* Usamos flex para centralizar o conteúdo */
+        }
+
+        /* Estilos customizados para blocos de código */
+        pre {
+            background-color: #1e293b;
+            /* bg-slate-800 */
+            color: #e2e8f0;
+            /* text-slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        /* Destaque de sintaxe simples para JS */
+        .code-js .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Verde para comentários */
+        .code-js .keyword {
+            color: #4e9cd6;
+        }
+
+        /* Azul para 'const', 'require' */
+        .code-js .function {
+            color: #dcdcaa;
+        }
+
+        /* Amarelo para 'app', 'express', 'log' */
+        .code-js .string {
+            color: #ce9178;
+        }
+
+        /* Laranja para 'Hello World' */
+        .code-js .variable {
+            color: #9cdcfe;
+        }
+
+        /* Azul claro para 'request', 'response' */
+        .code-js .number {
+            color: #b5cea8;
+        }
+
+        /* Verde claro para '3000' */
+
+        /* Destaque para Bash */
+        .code-bash .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .code-bash .command {
+            color: #9cdcfe;
+        }
+
+        .code-bash .arg {
+            color: #ce9178;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Container Principal do Slide -->
+    <div class="w-full max-w-5xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        style="height: 650px;">
+
+        <!-- Viewport do Slide (onde o conteúdo aparece) -->
+        <div id="slide-container" class="flex-1 w-full h-full overflow-y-auto">
+
+            <!-- Slide 0: Título -->
+            <div class="slide active w-full h-full flex-col justify-center items-center text-center p-8">
+                <span class="text-sm font-semibold text-cyan-400">FACULDADE DE TECNOLOGIA SENAC - FATESE</span>
+                <span class="text-lg text-gray-300 mt-1">Curso de Análise e Desenvolvimento de Sistemas</span>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mt-6">Desenvolvimento de Serviços e APIs</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <h2 class="text-2xl md:text-3xl font-semibold text-white">Aula 1: Fundamentos de APIs, REST e Ambiente
+                    Node.js</h2>
+                <p class="text-xl text-gray-300 mt-8">Professor: Carlos Bruno Oliveira Lopes</p>
+            </div>
+
+            <!-- Slide 1: Sobre a Disciplina -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Objetivos da Disciplina</h2>
+                <p class="text-xl text-gray-300 mb-6">
+                    Capacitar o estudante a <span class="text-cyan-400 font-semibold">projetar, desenvolver, documentar
+                        e manter APIs</span> robustas e seguras utilizando JavaScript no back-end.
+                </p>
+                <div class="w-full h-px bg-gray-700 my-6"></div>
+                <h3 class="text-2xl font-semibold text-white mb-4">Por que isso é importante?</h3>
+                <p class="text-lg text-gray-300 leading-relaxed">
+                    Hoje, quase tudo é conectado. Do seu celular ao seu relógio, do iFood ao Netflix, tudo consome dados
+                    de algum lugar. Esses "lugares" são as APIs.
+                    <br><br>
+                    Saber construir APIs é uma das habilidades mais requisitadas no desenvolvimento de software moderno,
+                    seja para web, mobile ou microsserviços.
+                </p>
+            </div>
+
+            <!-- Slide 2: Índice -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Índice da Aula</h2>
+                <ul class="space-y-4 text-lg text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">1.</span> O que é uma
+                        API?</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">2.</span> O que é
+                        Node.js?</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">3.</span> O que é
+                        RESTful?</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">4.</span> Configuração
+                        do Ambiente</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">5.</span> Mão na Massa:
+                        O Framework Express.js</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">6.</span> Nosso
+                        Primeiro Servidor</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">7.</span> O Ciclo
+                        Request/Response</li>
+                </ul>
+            </div>
+
+            <!-- Slide 3: Conceitos Teóricos (API) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">1. Conceitos: O que é uma API?</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold text-cyan-400">API</span> significa <span class="font-semibold">Application
+                        Programming Interface</span> (Interface de Programação de Aplicações).
+                </p>
+                <p class="text-lg text-gray-300 mb-6">
+                    É um conjunto de regras, padrões e protocolos que permite que diferentes sistemas de software
+                    "conversem" entre si.
+                </p>
+                <p class="text-lg text-gray-300">
+                    A API define os <span class="font-semibold">"pedidos"</span> que podem ser feitos, como fazê-los, e
+                    quais <span class="font-semibold">"respostas"</span> esperar. Ela é o "contrato" de comunicação.
+                </p>
+            </div>
+
+            <!-- Slide 4: A Analogia do Garçom (Visual) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">A Analogia do "Garçom"</h2>
+                <div class="bg-gray-700 p-6 rounded-lg text-lg space-y-3">
+                    <p><span class="font-bold text-cyan-300">Você (Cliente/Front-end)</span>: Faz um pedido (Requisição)
+                        ao garçom. "Eu quero um X-Bacon."</p>
+                    <p><span class="font-bold text-yellow-300">Garçom (API)</span>: Anota seu pedido, leva para a
+                        cozinha e garante que ele seja compreendido. Ele é a interface.</p>
+                    <p><span class="font-bold text-red-300">Cozinha (Servidor/Back-end)</span>: Prepara o prato
+                        (Processa a lógica e busca dados).</p>
+                    <p><span class="font-bold text-yellow-300">Garçom (API)</span>: Traz o prato pronto (Resposta) para
+                        você. "Aqui está seu X-Bacon."</p>
+                </div>
+                <img 
+                    style="height: auto; width: 256px;"
+                    src="Diagrama-Cliente-API-Servidor.png"
+                    alt="[Diagrama da analogia do garçom: Cliente, API, Servidor]"
+                    class="mt-6 rounded-lg shadow-lg w-full max-w-lg mx-auto bg-gray-600">
+            </div>
+
+            <!-- Slide 5: Por que usar APIs? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Por que usar APIs?</h2>
+                <ul class="space-y-5 text-xl text-gray-300">
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Desacoplamento:</span>
+                            <p class="text-lg text-gray-400">O Front-end (web, mobile) pode evoluir sem quebrar o
+                                Back-end, e vice-versa. Eles só precisam respeitar o "contrato" (a API).</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Reutilização:</span>
+                            <p class="text-lg text-gray-400">Uma mesma API pode servir dados para um site, um app
+                                Android e um app iOS ao mesmo tempo.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Ecossistemas:</span>
+                            <p class="text-lg text-gray-400">Permite que outras empresas se integrem ao seu serviço (Ex:
+                                Pagar com Pix no iFood; o iFood usa a API do Pix).</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 6: O que é JavaScript no Back-end? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">2. O que é JavaScript no Back-end?</h2>
+                <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                    Historicamente, JavaScript (JS) foi criado para rodar <span class="font-bold text-yellow-300">dentro
+                        de navegadores (browsers)</span> para adicionar interatividade às páginas web (cliques,
+                    animações, etc).
+                </p>
+                <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                    Nesse contexto, o JS <span class="font-bold text-red-400">não podia</span> acessar o sistema de
+                    arquivos do computador, abrir conexões de rede ou interagir com um banco de dados (por segurança).
+                </p>
+                <p class="text-xl text-gray-300 mb-6 leading-relaxed">
+                    Com o <span class="font-bold text-green-400">Node.js</span>, o JavaScript foi "libertado" do
+                    navegador.
+                </p>
+                <p class="text-lg text-gray-300 bg-gray-700 p-4 rounded-lg leading-relaxed">
+                    Ele se tornou um <span class="font-semibold text-white">ambiente de execução (runtime)</span> que
+                    permite usar JS para construir o <span class="font-bold text-cyan-400">Back-end</span> (a "cozinha"
+                    da nossa analogia), com acesso total a redes, arquivos e bancos de dados.
+                </p>
+            </div>
+
+            <!-- Slide 7: O que é Node.js? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O que é o Node.js?</h2>
+                <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                    Node.js <span class="font-bold text-red-400">NÃO</span> é uma linguagem de programação. A linguagem
+                    é JavaScript.
+                </p>
+                <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                    Node.js <span class="font-bold text-red-400">NÃO</span> é um framework (como o Express).
+                </p>
+                <p class="text-lg text-gray-300 mb-4 bg-gray-700 p-4 rounded-lg leading-relaxed">
+                    É um <span class="font-bold text-cyan-400">ambiente de execução</span> de JavaScript do lado do
+                    servidor, construído sobre o <span class="font-bold text-yellow-300">motor V8 do Google
+                        Chrome</span>.
+                </p>
+
+                <h3 class="text-2xl font-semibold text-white mt-6 mb-3">Como funciona?</h3>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2">
+                    <li><span class="font-semibold">Single-Threaded (Uma única "fila"):</span> Ele processa uma coisa de
+                        cada vez.</li>
+                    <li><span class="font-semibold">Event Loop (Loop de Eventos):</span> O "gerente" que organiza a
+                        fila.</li>
+                    <li><span class="font-semibold text-green-400">Non-blocking I/O (E/S Não-Bloqueante):</span> A
+                        mágica do Node. Ele <span class="font-bold">NÃO ESPERA</span> por operações lentas (como ler um
+                        arquivo ou buscar dados no banco). Ele pede, e quando a operação termina, o Event Loop o avisa e
+                        ele pega o resultado.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 8: Onde o Node.js é Usado? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Para que serve o Node.js?</h2>
+                <p class="text-lg text-gray-300 mb-6">
+                    Sua natureza "não-bloqueante" o torna <span class="font-bold text-green-400">extremamente
+                        eficiente</span> para aplicações que lidam com muitas conexões simultâneas e operações de I/O
+                    (rede, disco).
+                </p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">1.</span> <span
+                            class="font-bold">APIs e Microsserviços:</span> Seu principal uso. É leve e rápido para
+                        servir dados (Ex: Netflix, Uber).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">2.</span> <span
+                            class="font-bold">Aplicações Real-Time:</span> Chats, jogos online, apps de colaboração (Ex:
+                        Trello, Slack).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">3.</span> <span
+                            class="font-bold">Ferramentas de Build:</span> Usado para "empacotar" aplicações front-end
+                        (Webpack, Vite).</li>
+                </ul>
+                <img
+                    style="height: auto; width: 192px;"
+                    src="Logos - Netflix, Uber, LinkedIn, Trello, Paypal.png"
+                    alt="[Empresas que usam Node.js]"
+                    class="mt-6 rounded-lg shadow-lg w-full max-w-lg mx-auto bg-gray-600">
+            </div>
+
+            <!-- Slide 9: Conceitos Teóricos (REST) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">3. Conceitos: O que é RESTful?</h2>
+                <p class="text-xl text-gray-300 mb-4">
+                    <span class="font-bold text-cyan-400">REST</span> significa <span
+                        class="font-semibold">Representational State Transfer</span>.
+                </p>
+                <p class="text-lg text-gray-300 mb-6 leading-relaxed">
+                    Não é uma ferramenta ou linguagem, mas sim um <span class="font-bold">estilo arquitetural</span>: um
+                    conjunto de regras e boas práticas para criar APIs que sejam fáceis de entender, previsíveis e
+                    escaláveis.
+                </p>
+                <p class="text-lg text-gray-300 leading-relaxed">
+                    Uma API que segue os padrões REST é chamada de <span class="font-semibold text-white">"API
+                        RESTful"</span>.
+                </p>
+            </div>
+
+            <!-- Slide 10: Princípios do REST -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Princípios do REST (Resumido)</h2>
+                <ul class="space-y-5 text-xl text-gray-300">
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Cliente-Servidor:</span>
+                            <p class="text-lg text-gray-400">Separação clara entre quem pede (Cliente) e quem responde
+                                (Servidor). Podem evoluir de forma independente.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Sem Estado (Stateless):</span>
+                            <p class="text-lg text-gray-400">Cada requisição do cliente deve conter <span
+                                    class="font-bold">toda</span> a informação que o servidor precisa. O servidor não
+                                "guarda o estado" ou "lembra" de requisições anteriores.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-cyan-400 font-bold mr-3">›</span>
+                        <div>
+                            <span class="font-semibold text-white">Cacheável (Cacheable):</span>
+                            <p class="text-lg text-gray-400">As respostas devem indicar se podem ou não ser guardadas
+                                (em cache) pelo cliente para melhorar a performance.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 11: Anatomia de uma Requisição REST -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Anatomia de uma Requisição</h2>
+                <p class="text-lg text-gray-300 mb-4">Uma requisição REST é composta por 4 partes principais:</p>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <p class="text-lg"><span class="font-bold text-green-400">1. Método (Verbo):</span> A ação que
+                        queremos (GET, POST, PUT, DELETE).</p>
+                    <p class="text-lg"><span class="font-bold text-cyan-400">2. Endpoint (URL):</span> O "endereço" do
+                        recurso (Ex: `/users/1`).</p>
+                    <p class="text-lg"><span class="font-bold text-yellow-300">3. Cabeçalhos (Headers):</span> Metadados
+                        sobre a requisição (Ex: Tipo de conteúdo, Token de autenticação).</p>
+                    <p class="text-lg"><span class="font-bold text-orange-300">4. Corpo (Body):</span> Os dados que
+                        estamos enviando (Ex: Um JSON com dados de um novo usuário). *Obrigatório em POST/PUT.*</p>
+                </div>
+                <img 
+                    style="height: auto; width: 192px;" 
+                    src="Diagrama-Verbo, Endpoint, Header e Body.png"
+                    alt="[Diagrama das partes de uma requisição]"
+                    class="mt-6 rounded-lg shadow-lg w-full max-w-lg mx-auto bg-gray-600">
+            </div>
+
+            <!-- Slide 12: Métodos HTTP (Verbos) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Métodos HTTP (Verbos)</h2>
+                <p class="text-lg text-gray-300 mb-4">REST usa os verbos do protocolo HTTP para indicar a intenção da
+                    operação sobre um recurso.</p>
+                <table class="w-full text-left table-auto">
+                    <thead>
+                        <tr class="bg-gray-700">
+                            <th class="p-3 text-lg font-semibold text-cyan-400">Verbo</th>
+                            <th class="p-3 text-lg font-semibold text-white">Ação (CRUD)</th>
+                            <th class="p-3 text-lg font-semibold text-white">Exemplo de Endpoint</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-gray-700/50">
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-green-400">GET</td>
+                            <td class="p-3 text-lg">Ler (Read)</td>
+                            <td class="p-3 text-lg"><code>/users</code> (Lista todos) ou <code>/users/1</code> (Busca
+                                um)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-blue-400">POST</td>
+                            <td class="p-3 text-lg">Criar (Create)</td>
+                            <td class="p-3 text-lg"><code>/users</code> (Cria um novo usuário)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-yellow-400">PUT / PATCH</td>
+                            <td class="p-3 text-lg">Atualizar (Update)</td>
+                            <td class="p-3 text-lg"><code>/users/1</code> (Atualiza o usuário 1)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-lg font-bold text-red-400">DELETE</td>
+                            <td class="p-3 text-lg">Remover (Delete)</td>
+                            <td class="p-3 text-lg"><code>/users/1</code> (Deleta o usuário 1)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Slide 13: Endpoints e Formato de Dados (JSON) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Endpoints e Formato de Dados (JSON)</h2>
+                <p class="text-lg text-gray-300 mb-2">
+                    <span class="font-bold">JSON (JavaScript Object Notation)</span> é o formato de dados padrão para
+                    APIs REST. É leve, legível e nativo do JavaScript.
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Vamos ver um exemplo completo de <span class="font-bold text-blue-400">POST</span>:
+                </p>
+
+                <pre><code><span class="text-blue-400">POST</span> /users
+                
+<span class="comment">// Headers (Cabeçalho)</span>
+Content-Type: application/json
+
+<span class="comment">// Body (Corpo da Requisição em JSON)</span>
+{
+  "nome": "Carlos Bruno",
+  "email": "carlos.lopes@senac.com"
+}
+
+<span class="comment">// Resposta (JSON) - Status 201 Created</span>
+{
+  "id": 1,
+  "nome": "Carlos Bruno",
+  "email": "carlos.lopes@senac.com"
+}</code></pre>
+            </div>
+
+            <!-- Slide 14: Nosso Kit de Ferramentas -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">4. Configuração do Ambiente</h2>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-6"></div>
+                <p class="text-xl text-gray-300">Vamos preparar nossas ferramentas de trabalho.</p>
+            </div>
+
+            <!-- Slide 15: Configuração do Ambiente (Softwares) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">1. Node.js e VS Code</h2>
+                <ul class="space-y-6">
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400">A. Node.js (LTS)</h3>
+                        <p class="text-gray-300 mt-1">O ambiente que executa nosso JavaScript no back-end.</p>
+                        <p class="mt-2">Baixe em: <code class="text-yellow-300">https://nodejs.org/</code> (use a versão
+                            LTS)</p>
+                        <p class="mt-2">Verifique no terminal:</p>
+                        <pre class="mt-2 code-bash"><code><span class="command">node</span> <span class="arg">-v</span>
+<span class="command">npm</span> <span class="arg">-v</span></code></pre>
+                    </li>
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400">B. VS Code</h3>
+                        <p class="text-gray-300 mt-1">Nosso editor de código.</p>
+                        <p class="mt-2">Baixe em: <code class="text-yellow-300">https://code.visualstudio.com/</code>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 16: O Cliente de API (Insomnia) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">2. O Cliente de API (Insomnia/Postman)</h2>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold text-cyan-400">Insomnia (ou Postman)</h3>
+                    <p class="text-gray-300 mt-1">Um "Cliente de API". Essencial para testar nossas rotas.</p>
+                    <p class="mt-2">Baixe em: <code class="text-yellow-300">https://insomnia.rest/</code></p>
+                </div>
+                <h3 class="text-2xl font-semibold text-white mt-8 mb-3">Por que precisamos disso?</h3>
+                <p class="text-lg text-gray-300 leading-relaxed">
+                    Um navegador (Chrome, Firefox) só consegue fazer requisições <span
+                        class="font-bold text-green-400">GET</span> de forma fácil (quando você digita uma URL).
+                    <br><br>
+                    Para testar nossas rotas <span class="font-bold text-blue-400">POST</span>, <span
+                        class="font-bold text-yellow-400">PUT</span> ou <span
+                        class="font-bold text-red-400">DELETE</span>, e para enviar dados (JSON) no <span
+                        class="font-bold">Corpo (Body)</span> da requisição, precisamos de uma ferramenta especializada.
+                </p>
+            </div>
+
+            <!-- Slide 17: Mão na Massa (Setup) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">5. Mão na Massa: Setup do Projeto</h2>
+                <p class="text-lg text-gray-300 mb-4">Abra seu terminal (ou o terminal integrado do VS Code):</p>
+
+                <h3 class="text-xl font-semibold text-white mt-4 mb-2">1. Crie e acesse a pasta do projeto</h3>
+                <pre class="code-bash"><code><span class="command">mkdir</span> <span class="arg">aula1-api</span>
+<span class="command">cd</span> <span class="arg">aula1-api</span></code></pre>
+
+                <h3 class="text-xl font-semibold text-white mt-4 mb-2">2. Inicie um projeto Node.js</h3>
+                <pre
+                    class="code-bash"><code><span class="command">npm</span> <span class="arg">init -y</span></code></pre>
+                <p class="text-gray-400 mt-1 text-sm">Isso cria o arquivo <code
+                        class="text-yellow-300">package.json</code>.</p>
+
+                <h3 class="text-xl font-semibold text-white mt-4 mb-2">3. Instale o Express.js</h3>
+                <pre
+                    class="code-bash"><code><span class="command">npm</span> <span class="arg">install express</span></code></pre>
+                <p class="text-gray-400 mt-1 text-sm">Isso baixa o Express e o adiciona ao <code
+                        class="text-yellow-300">package.json</code> e à pasta <code
+                        class="text-yellow-300">node_modules</code>.</p>
+            </div>
+
+            <!-- Slide 18: Conhecendo o package.json -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O que é o `package.json`?</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    É o "RG" ou a "certidão de nascimento" do nosso projeto Node.js.
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Ele guarda:
+                </p>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2">
+                    <li><span class="font-semibold">Informações básicas:</span> Nome do projeto, versão, autor.</li>
+                    <li><span class="font-semibold text-cyan-400">Dependências (`dependencies`):</span> Bibliotecas que
+                        o projeto precisa para <span class="font-bold">rodar em produção</span> (Ex: `express`).</li>
+                    <li><span class="font-semibold text-yellow-300">Dependências de Dev (`devDependencies`):</span>
+                        Bibliotecas usadas <span class="font-bold">apenas para desenvolver</span> (Ex: `nodemon`, que
+                        veremos depois).</li>
+                    <li><span class="font-semibold">Scripts:</span> Atalhos para comandos (Ex: `npm run dev`).</li>
+                </ul>
+            </div>
+
+            <!-- Slide 19: O que é o Express.js? -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">O Framework Express.js</h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    Se o Node.js é a "cozinha" (o ambiente), o <span class="font-bold text-cyan-400">Express.js</span> é
+                    o "conjunto de panelas, fogões e balcões" (o <span class="font-bold">Framework</span>).
+                </p>
+                <p class="text-lg text-gray-300 mb-4">
+                    Construir um servidor web <span class="font-bold">apenas com Node.js puro</span> é possível, mas
+                    muito complexo e verboso.
+                </p>
+                <p class="text-lg text-gray-300 bg-gray-700 p-4 rounded-lg leading-relaxed">
+                    O <span class="font-semibold text-white">Express.js</span> é o framework web mais popular para
+                    Node.js. Ele <span class="font-bold">simplifica</span> tarefas comuns, como:
+                </p>
+                <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 mt-4">
+                    <li>Criação e gerenciamento de <span class="font-semibold">Rotas (Routing)</span>.</li>
+                    <li>Gerenciamento de <span class="font-semibold">Requisições e Respostas</span>.</li>
+                    <li>Uso de <span class="font-semibold">Middlewares</span>.</li>
+                </ul>
+                <p class="text-lg text-gray-300 mt-6">
+                    <span class="font-bold">Documentação Oficial (PT-BR):</span> <a href="https://expressjs.com/pt-br/"
+                        target="_blank" class="text-cyan-400 hover:underline">https://expressjs.com/pt-br/</a>
+                </p>
+            </div>
+
+            <!-- Slide 20: Mão na Massa (Código) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-4">6. Mão na Massa: O Código</h2>
+                <p class="text-lg text-gray-300 mb-4">Crie um arquivo chamado <code
+                        class="text-yellow-300">index.js</code> e adicione o seguinte código:</p>
+
+                <pre class="code-js flex-1"><code><span class="comment">// 1. Importar o express</span>
+<span class="keyword">const</span> <span class="function">express</span> = <span class="keyword">require</span>(<span class="string">'express'</span>);
+
+<span class="comment">// 2. Criar a "aplicação" (nosso servidor)</span>
+<span class="keyword">const</span> <span class="function">app</span> = <span class="function">express</span>();
+
+<span class="comment">// 3. Definir a porta que o servidor vai rodar</span>
+<span class="keyword">const</span> <span class="variable">PORT</span> = <span class="number">3000</span>;
+
+<span class="comment">// 4. Criar nossa primeira Rota (Endpoint)</span>
+<span class="comment">// Método: GET | Recurso: / (raiz)</span>
+<span class="function">app</span>.get(<span class="string">'/'</span>, (<span class="variable">request</span>, <span class="variable">response</span>) => {
+  <span class="comment">// 'request' (req) = O que o cliente enviou</span>
+  <span class="comment">// 'response' (res) = O que vamos devolver</span>
+  
+  <span class="variable">response</span>.send(<span class="string">'Hello World!'</span>);
+});
+
+<span class="comment">// 5. "Ligar" o servidor para ouvir requisições</span>
+<span class="function">app</span>.listen(<span class="variable">PORT</span>, () => {
+  <span class="variable">console</span>.log(<span class="string">`Servidor rodando na porta ${<span class="variable">PORT</span>}`</span>);
+});</code></pre>
+            </div>
+
+            <!-- Slide 21: Analisando o Ciclo Request/Response -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">7. O Ciclo Request/Response</h2>
+                <p class="text-lg text-gray-300 mb-4">Vamos analisar a parte mais importante do nosso código:</p>
+                <pre class="code-js"><code><span class="function">app</span>.get(<span class="string">'/'</span>, (<span class="variable">request</span>, <span class="variable">response</span>) => {
+  <span class="comment">// ... </span>
+});</code></pre>
+                <p class="text-lg text-gray-300 my-4">Isso é uma <span class="font-bold">função de callback</span>. O
+                    Express a executa <span class="font-bold">automaticamente</span> toda vez que uma requisição <span
+                        class="font-bold text-green-400">GET</span> chega no endpoint <span
+                        class="font-bold text-cyan-400">`/`</span>.</p>
+                <ul class="space-y-4">
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400"><code>request</code> (ou `req`)</h3>
+                        <p class="text-gray-300 mt-1">É um <span class="font-semibold">objeto</span> que contém <span
+                                class="font-bold">TUDO</span> sobre a requisição do cliente: Headers, IP, parâmetros
+                            (Ex: <code>req.params</code>), corpo (Ex: <code>req.body</code>).</p>
+                    </li>
+                    <li class="bg-gray-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400"><code>response</code> (ou `res`)</h3>
+                        <p class="text-gray-300 mt-1">É um <span class="font-semibold">objeto</span> com métodos para
+                            <span class="font-bold">construir e enviar a resposta</span> de volta ao cliente (Ex:
+                            <code>res.send()</code>, <code>res.json()</code>, <code>res.status()</code>).</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Slide 22: Mão na Massa (Teste) -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">6. Mão na Massa: Executando</h2>
+
+                <h3 class="text-xl font-semibold text-white mt-4 mb-2">1. Execute o servidor</h3>
+                <p class="text-gray-300 mb-2">No seu terminal, digite:</p>
+                <pre
+                    class="code-bash"><code><span class="command">node</span> <span class="arg">index.js</span></code></pre>
+                <p class="text-gray-300 mt-2">Você deve ver a mensagem: <code
+                        class="text-green-400">Servidor rodando na porta 3000</code></p>
+
+                <h3 class="text-xl font-semibold text-white mt-8 mb-2">2. Teste no Navegador</h3>
+                <p class="text-gray-300 mb-2">Abra seu navegador (Chrome, Firefox, etc.) e acesse:</p>
+                <pre><code>http://localhost:3000</code></pre>
+                <p class="text-gray-300 mt-2">Você deve ver a mensagem <span class="font-bold text-white">"Hello
+                        World!"</span> na tela.</p>
+
+                <h3 class="text-xl font-semibold text-white mt-8 mb-2">3. Teste no Insomnia</h3>
+                <p class="text-gray-300 mb-2">Abra o Insomnia, crie uma nova requisição do tipo <span
+                        class="font-bold text-green-400">GET</span>, insira a URL <code
+                        class="text-yellow-300">http://localhost:3000</code> e clique em <span
+                        class="font-bold">"Send"</span>.</p>
+                <p class="text-gray-300 mt-2">O resultado deve ser o mesmo (Status 200 OK e Body "Hello World!").</p>
+            </div>
+
+            <!-- Slide 23: Resumo da Aula 1 -->
+            <div class="slide w-full h-full flex-col justify-start p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Resumo da Aula 1</h2>
+                <p class="text-xl text-gray-300 mb-6">O que aprendemos hoje:</p>
+                <ul class="space-y-4 text-xl text-gray-300">
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> O que é uma
+                        API e por que ela é fundamental.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> O que é o
+                        Node.js (Runtime) e o que é o Express.js (Framework).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> O que é uma
+                        API RESTful e seus verbos (GET, POST, etc).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como
+                        configurar o ambiente (Node, VS Code, Insomnia).</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como iniciar
+                        um projeto com <code>npm</code>.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> Como criar um
+                        servidor básico com Express.</li>
+                    <li class="flex items-center"><span class="text-cyan-400 font-semibold mr-3">✔</span> O que são os
+                        objetos <code>request</code> e <code>response</code>.</li>
+                </ul>
+            </div>
+
+            <!-- Slide 24: Encerramento -->
+            <div class="slide w-full h-full flex-col justify-center items-center text-center p-8">
+                <h1 class="text-4xl font-bold text-white mb-4">Obrigado!</h1>
+                <div class="w-24 h-1 bg-cyan-500 rounded-full my-4"></div>
+                <h2 class="text-2xl font-semibold text-white mb-2">Próxima Aula:</h2>
+                <p class="text-xl text-gray-300">Aula 2: Arquitetura em Camadas (Rotas, Controllers e Services)</p>
+
+                <p class="text-3xl text-gray-300 mt-12">Perguntas?</p>
+            </div>
+
+        </div>
+
+        <!-- Navegação dos Slides -->
+        <div class="flex-shrink-0 w-full bg-gray-700 p-4 flex justify-between items-center border-t border-gray-600">
+            <button id="prevBtn"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Anterior
+            </button>
+            <span id="slide-counter" class="text-sm text-gray-400">Slide 1 / 25</span>
+            <button id="nextBtn"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Próximo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slide-counter');
+            const slideContainer = document.getElementById('slide-container');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            if (slides.length > 0) {
+                const activeSlide = document.querySelector('.slide.active');
+                if (activeSlide) {
+                    currentSlide = Array.from(slides).indexOf(activeSlide);
+                } else {
+                    currentSlide = 0; // Fallback
+                }
+                showSlide(currentSlide);
+            }
+
+            function showSlide(index) {
+                // Remove 'active' de todos os slides
+                slides.forEach((slide) => {
+                    slide.classList.remove('active');
+                });
+
+                // Adiciona 'active' ao slide correto
+                slides[index].classList.add('active');
+
+                // Reseta o scroll do container do slide para o topo
+                slideContainer.scrollTop = 0;
+
+                // Atualiza o estado dos botões
+                currentSlide = index;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === totalSlides - 1);
+
+                // Atualiza o contador
+                slideCounter.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+            }
+
+            // Event Listeners
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Permite navegação pelas setas do teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CSMA/CD vs CSMA/CA - Tabela Comparativa</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            height: 100%;
+        }
+
+        /* Table container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-title i {
+            color: #4a90d9;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .comparison-table th {
+            background: rgba(74, 144, 217, 0.2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(74, 144, 217, 0.3);
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .comparison-table .feature {
+            font-weight: 500;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-table .feature i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .comparison-table .csma-cd {
+            color: #6bff6b;
+        }
+
+        .comparison-table .csma-ca {
+            color: #ff6b6b;
+        }
+
+        /* Protocol indicators */
+        .protocol-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .protocol-cd {
+            background: rgba(107, 255, 107, 0.2);
+            color: #6bff6b;
+        }
+
+        .protocol-ca {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 55%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* Key points */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: auto;
+            padding-top: 15px;
+        }
+
+        .key-point {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .key-point-title {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-point-title i {
+            color: #4a90d9;
+            font-size: 15px;
+        }
+
+        .key-point-content {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-table"></i> CSMA/CD vs CSMA/CA
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fas fa-exchange-alt"></i>
+                            Comparação de Protocolos de Acesso ao Meio
+                        </div>
+                        <div style="display: flex; gap: 15px;">
+                            <div class="protocol-badge protocol-cd">
+                                <i class="fas fa-check-circle"></i> CSMA/CD
+                            </div>
+                            <div class="protocol-badge protocol-ca">
+                                <i class="fas fa-times-circle"></i> CSMA/CA
+                            </div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Característica</th>
+                                <th class="csma-cd" style="width: 37.5%;">CSMA/CD (Ethernet)</th>
+                                <th class="csma-ca" style="width: 37.5%;">CSMA/CA (Wi-Fi)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature"><i class="fas fa-broadcast-tower"></i> Meio de Transmissão</td>
+                                <td class="csma-cd">Cabos (par trançado, fibra óptica)</td>
+                                <td class="csma-ca">Ar/espectro eletromagnético (rádio)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature"><i class="fas fa-eye"></i> Detecção de Colisão</td>
+                                <td class="csma-cd">Sim - CD (Collision Detection)</td>
+                                <td class="csma-ca">Não - CA (Collision Avoidance)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature"><i class="fas fa-shield-alt"></i> Prevenção</td>
+                                <td class="csma-cd">Detecta colisões e retransmite</td>
+                                <td class="csma-ca">Evita colisões com backoff aleatório</td>
+                            </tr>
+                            <tr>
+                                <td class="feature"><i class="fas fa-clock"></i> Confirmação</td>
+                                <td class="csma-cd">Sem ACK (confirmação implícita)</td>
+                                <td class="csma-ca">Com ACK (confirmação explícita)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature"><i class="fas fa-signal"></i> Topologia</td>
+                                <td class="csma-cd">Ethernet comutado (switch)</td>
+                                <td class="csma-ca">Meio compartilhado (broadcast)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature"><i class="fas fa-tachometer-alt"></i> Eficiência</td>
+                                <td class="csma-cd">Alta (menos overhead)</td>
+                                <td class="csma-ca">Menor (mais overhead de controle)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-title">
+                                <i class="fas fa-check-circle"></i>
+                                CSMA/CD
+                            </div>
+                            <div class="key-point-content">
+                                Usado em redes Ethernet. Detecta colisões e retransmite imediatamente.
+                            </div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-title">
+                                <i class="fas fa-times-circle"></i>
+                                CSMA/CA
+                            </div>
+                            <div class="key-point-content">
+                                Usado em Wi-Fi. Evita colisões com mecanismos de backoff.
+                            </div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Diferença Chave
+                            </div>
+                            <div class="key-point-content">
+                                Wi-Fi não pode detectar colisões durante transmissão.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

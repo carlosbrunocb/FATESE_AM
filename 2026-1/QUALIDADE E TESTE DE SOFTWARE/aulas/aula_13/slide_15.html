@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comparação entre Locators - ID, Name, CSS, XPath</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8f9fa;
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100% - 130px);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .locator-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid #1a5fb4;
+            transition: transform 0.2s ease;
+        }
+
+        .locator-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .locator-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .locator-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .locator-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            margin: 0;
+            margin-bottom: 4px;
+        }
+
+        .locator-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .locator-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            color: #495057;
+        }
+
+        .feature-item i {
+            color: #28a745;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+
+        .feature-text {
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+
+        .pros,
+        .cons {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .pros-title,
+        .cons-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pros-title {
+            color: #28a745;
+        }
+
+        .cons-title {
+            color: #dc3545;
+        }
+
+        .pros-list,
+        .cons-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .pros-list li,
+        .cons-list li {
+            font-size: 13px;
+            color: #495057;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .pros-list li i {
+            color: #28a745;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .cons-list li i {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .usage-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #e7f3ff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #1a5fb4;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .legend-color.blue {
+            background: #1a5fb4;
+        }
+
+        .legend-color.green {
+            background: #28a745;
+        }
+
+        .legend-color.orange {
+            background: #ffc107;
+        }
+
+        .legend-color.red {
+            background: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-search-location"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Comparação entre Locators</h1>
+                    <p>ID, Name, CSS Selector e XPath - Quando usar cada um</p>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Prática</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="comparison-grid">
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <div>
+                            <div class="locator-title">ID</div>
+                            <div class="locator-subtitle">Mais rápido e estável</div>
+                        </div>
+                    </div>
+                    <div class="locator-content">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Performance:</strong> Mais rápido para localização
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Estabilidade:</strong> Geralmente único na página
+                            </div>
+                        </div>
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <div class="pros-title">
+                                    <i class="fas fa-plus"></i> Prós
+                                </div>
+                                <ul class="pros-list">
+                                    <li><i class="fas fa-check"></i> Rápido</li>
+                                    <li><i class="fas fa-check"></i> Estável</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <div class="cons-title">
+                                    <i class="fas fa-minus"></i> Contras
+                                </div>
+                                <ul class="cons-list">
+                                    <li><i class="fas fa-times"></i> Pode não existir</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="usage-badge">
+                            <i class="fas fa-star"></i>
+                            Recomendado
+                        </div>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div>
+                            <div class="locator-title">Name</div>
+                            <div class="locator-subtitle">Para formulários</div>
+                        </div>
+                    </div>
+                    <div class="locator-content">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Uso:</strong> Ideal para campos de formulário
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Flexibilidade:</strong> Pode haver múltiplos elementos
+                            </div>
+                        </div>
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <div class="pros-title">
+                                    <i class="fas fa-plus"></i> Prós
+                                </div>
+                                <ul class="pros-list">
+                                    <li><i class="fas fa-check"></i> Simples</li>
+                                    <li><i class="fas fa-check"></i> Útil em forms</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <div class="cons-title">
+                                    <i class="fas fa-minus"></i> Contras
+                                </div>
+                                <ul class="cons-list">
+                                    <li><i class="fas fa-times"></i> Não único</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="usage-badge">
+                            <i class="fas fa-check-circle"></i>
+                            Formulários
+                        </div>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="locator-title">CSS Selector</div>
+                            <div class="locator-subtitle">Balanceado</div>
+                        </div>
+                    </div>
+                    <div class="locator-content">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Performance:</strong> Mais rápido que XPath
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Legibilidade:</strong> Código mais limpo
+                            </div>
+                        </div>
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <div class="pros-title">
+                                    <i class="fas fa-plus"></i> Prós
+                                </div>
+                                <ul class="pros-list">
+                                    <li><i class="fas fa-check"></i> Rápido</li>
+                                    <li><i class="fas fa-check"></i> Legível</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <div class="cons-title">
+                                    <i class="fas fa-minus"></i> Contras
+                                </div>
+                                <ul class="cons-list">
+                                    <li><i class="fas fa-times"></i> Limitado</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="usage-badge">
+                            <i class="fas fa-balance-scale"></i>
+                            Equilibrado
+                        </div>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div>
+                            <div class="locator-title">XPath</div>
+                            <div class="locator-subtitle">Flexível</div>
+                        </div>
+                    </div>
+                    <div class="locator-content">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Flexibilidade:</strong> Pode navegar na estrutura
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <div class="feature-text">
+                                <strong>Potência:</strong> Mais recursos disponíveis
+                            </div>
+                        </div>
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <div class="pros-title">
+                                    <i class="fas fa-plus"></i> Prós
+                                </div>
+                                <ul class="pros-list">
+                                    <li><i class="fas fa-check"></i> Flexível</li>
+                                    <li><i class="fas fa-check"></i> Poderoso</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <div class="cons-title">
+                                    <i class="fas fa-minus"></i> Contras
+                                </div>
+                                <ul class="cons-list">
+                                    <li><i class="fas fa-times"></i> Frágil</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="usage-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Complexo
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color blue"></div>
+                    <span>ID - Mais estável</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color green"></div>
+                    <span>CSS - Melhor performance</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color orange"></div>
+                    <span>XPath - Mais flexível</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color red"></div>
+                    <span>Name - Para formulários</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-user" style="margin-right: 5px;"></i> Prof. Carlos Bruno Oliveira Lopes</span>
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+            </div>
+            <div class="footer-right">
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desafio FizzBuzz - Passo a Passo TDD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;family=Roboto:wght@300;400;500;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* AJUSTE PARA TELA CHEIA (FULLSCREEN) */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+            /* Cor de fundo para preencher bordas se houver */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            /* Sombra suave para destacar o slide */
+            /* Importante para o script de redimensionamento */
+            flex-shrink: 0;
+        }
+
+        /* --- ESTILOS ORIGINAIS --- */
+        .header {
+            padding: 30px 60px 20px 60px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #fff;
+            z-index: 10;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .steps-column {
+            flex: 6;
+            padding: 30px 60px;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .visual-column {
+            flex: 4;
+            background-color: #0f172a;
+            padding: 40px 40px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            position: relative;
+        }
+
+        .step-list {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .step-list::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 10px;
+            bottom: 10px;
+            width: 3px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
+            z-index: 0;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 16px;
+            padding-left: 55px;
+            opacity: 0;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 3px solid #2563EB;
+            color: #2563EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            z-index: 10;
+            box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .step-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .step-content p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            line-height: 1.3;
+        }
+
+        .badge-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .badge-green {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .terminal-window {
+            width: 465px;
+            /* max-width: 464px; */
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #334155;
+        }
+
+        .terminal-header {
+            background-color: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .control.red {
+            background-color: #ef4444;
+        }
+
+        .control.yellow {
+            background-color: #eab308;
+        }
+
+        .control.green {
+            background-color: #22c55e;
+        }
+
+        .terminal-body {
+            padding: 15px 20px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            height: 380px;
+        }
+
+        .prompt {
+            color: #22c55e;
+            margin-right: 8px;
+        }
+
+        .command {
+            color: #fff;
+        }
+
+        .output {
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        .info {
+            color: #60a5fa;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: #94a3b8;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" id="slideContainer">
+        <div class="header">
+            <div class="flex items-center space-x-3 mb-2">
+                <span
+                    class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Aula
+                    05</span>
+                <span class="text-slate-500 text-sm font-medium tracking-wide uppercase">TDD em Prática</span>
+            </div>
+            <h1 class="text-4xl font-black text-slate-900 font-['Montserrat']">
+                Desafio <span class="text-indigo-600">FizzBuzz</span> <span
+                    class="text-slate-400 font-light text-2xl ml-2">Passo a Passo</span>
+            </h1>
+        </div>
+        <div class="main-content">
+            <div class="steps-column">
+                <div class="step-list">
+                    <div class="step-item" style="animation-delay: 0.1s;">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Escrever Teste: 3 retorna "Fizz" <span class="badge-red">Red</span></h3>
+                            <p>Crie o teste que espera "Fizz" para a entrada 3. Ele falhará inicialmente.</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.15s;">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Implementar Mínimo <span class="badge-green">Green</span></h3>
+                            <p>Retorne "Fizz" apenas se n == 3 (ou hardcoded) para passar o teste.</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.2s;">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Teste: 5 retorna "Buzz" <span class="badge-red">Red</span> <i
+                                    class="fas fa-arrow-right text-xs mx-1 text-slate-400"></i> <span
+                                    class="badge-green">Green</span></h3>
+                            <p>Adicione o novo caso e implemente a lógica (elif n == 5...).</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.25s;">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Teste: 15 retorna "FizzBuzz" <span class="badge-red">Red</span> <i
+                                    class="fas fa-arrow-right text-xs mx-1 text-slate-400"></i> <span
+                                    class="badge-green">Green</span></h3>
+                            <p>Implemente a lógica de múltiplos de 3 e 5 simultâneos.</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.3s;">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Cobrir número comum: 2 retorna "2"</h3>
+                            <p>Garanta que números normais sejam retornados como string.</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.35s;">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h3>Parametrizar Casos</h3>
+                            <p>Use <code
+                                    class="bg-slate-100 px-1 rounded border text-indigo-600 font-mono text-xs">@pytest.mark.parametrize</code>
+                                para agrupar cenários.</p>
+                        </div>
+                    </div>
+                    <div class="step-item" style="animation-delay: 0.4s;">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h3>Refatorar <span class="text-blue-600 font-bold text-xs uppercase ml-2">Refactor</span>
+                            </h3>
+                            <p>Limpe o código, remova duplicações e melhore a legibilidade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="visual-column">
+                <div class="bg-pattern"></div>
+                <div class="terminal-window relative z-10">
+                    <div class="terminal-header">
+                        <div class="window-controls">
+                            <div class="control red"></div>
+                            <div class="control yellow"></div>
+                            <div class="control green"></div>
+                        </div>
+                        <div class="ml-4 text-slate-400 text-xs">pytest — watch</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div>
+                            <span class="prompt">➜</span>
+                            <span class="command">pytest -v tests/test_fizzbuzz.py</span>
+                        </div>
+                        <div class="output mt-2">
+                            platform linux -- Python 3.10.6, pytest-7.4.0<br />
+                            rootdir: /app/projeto<br />
+                            collected 6 items
+                        </div>
+                        <div class="mb-2">
+                            <span class="info">test_fizzbuzz.py::test_fb[3-Fizz]</span> <span
+                                class="success">PASSED</span><br />
+                            <span class="info">test_fizzbuzz.py::test_fb[5-Buzz]</span> <span
+                                class="success">PASSED</span><br />
+                            <span class="info">test_fizzbuzz.py::test_fb[6-Fizz]</span> <span
+                                class="success">PASSED</span><br />
+                            <span class="info">test_fizzbuzz.py::test_fb[10-Buzz]</span> <span
+                                class="success">PASSED</span><br />
+                            <span class="info">test_fizzbuzz.py::test_fb[15-FizzBuzz]</span> <span
+                                class="success">PASSED</span><br />
+                            <span class="info">test_fizzbuzz.py::test_fb[2-2]</span> <span class="success">PASSED</span>
+                        </div>
+                        <div class="output mt-4 border-t border-slate-600 pt-2">
+                            <span class="success font-bold">================== 6 passed in 0.04s
+                                ==================</span>
+                        </div>
+                        <div>
+                            <span class="prompt">➜</span>
+                            <span class="cursor"></span>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="absolute bottom-10 right-5 bg-white/10 backdrop-blur-md border border-white/20 text-white p-4 rounded-lg shadow-xl max-w-xs z-10">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        <div>
+                            <p class="text-xs font-bold uppercase text-yellow-400 mb-1">Atenção</p>
+                            <p class="text-sm">A ordem das condições importa! Verifique o <code>15 (FizzBuzz)</code>
+                                antes de verificar apenas 3 ou 5.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function resizeSlide() {
+            const container = document.getElementById('slideContainer');
+            const targetWidth = 1280;
+            const targetHeight = 720;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Calcula a escala para caber na janela (mantendo aspect ratio)
+            const scale = Math.min(
+                windowWidth / targetWidth,
+                windowHeight / targetHeight
+            );
+
+            // Aplica a transformação
+            container.style.transform = `scale(${scale})`;
+        }
+
+        // Executa ao carregar e ao redimensionar a janela
+        window.addEventListener('load', resizeSlide);
+        window.addEventListener('resize', resizeSlide);
+    </script>
+</body>
+
+</html>

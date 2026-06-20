@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Objetivos da Aula - DNS e DHCP</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #888888;
+            margin: 5px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 30px;
+            right: 30px;
+            bottom: 100px;
+            display: flex;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        /* Left side - Objectives */
+        .objectives-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objective-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .objective-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .objective-number {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #00ffff;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .objective-content {
+            flex: 1;
+        }
+
+        .objective-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .objective-description {
+            font-size: 13px;
+            color: #888888;
+            line-height: 1.5;
+        }
+
+        .objective-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Right side - Visual elements */
+        .visual-section {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .visual-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .visual-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .visual-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .status-value {
+            font-size: 12px;
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Bottom section */
+        .bottom-section {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .progress-text span {
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+        }
+
+        .btn-primary:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Decorative elements */
+        .decorative-element {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 255, 255, 0.1);
+            animation: rotate 20s linear infinite;
+        }
+
+        .decorative-element-1 {
+            width: 100px;
+            height: 100px;
+            top: 150px;
+            right: 100px;
+        }
+
+        .decorative-element-2 {
+            width: 80px;
+            height: 80px;
+            bottom: 150px;
+            right: 150px;
+            animation-direction: reverse;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 40px;
+            color: rgba(0, 255, 255, 0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-icon-1 {
+            top: 200px;
+            right: 200px;
+        }
+
+        .floating-icon-2 {
+            bottom: 200px;
+            right: 100px;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Objetivos da Aula</h1>
+                    <p>Aula 11 - DNS e DHCP - Redes de Computadores</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-graduation-cap"></i> 3 Objetivos Principais
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left side - Objectives -->
+            <div class="objectives-section">
+                <div class="section-title">
+                    <i class="fas fa-list-check"></i>
+                    Objetivos de Aprendizagem
+                </div>
+                <!-- Objective 1 -->
+                <div class="objective-card">
+                    <div class="objective-number">1</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-globe"></i> Compreender o DNS e sua Hierarquia
+                        </div>
+                        <div class="objective-description">
+                            Entender o processo de resolução de nomes, a estrutura hierárquica do DNS (Root, TLD,
+                            Authoritative) e os diferentes tipos de registros (A, CNAME, MX, PTR).
+                        </div>
+                        <div class="objective-tags">
+                            <span class="tag">Resolução de Nomes</span>
+                            <span class="tag">Hierarquia DNS</span>
+                            <span class="tag">Porta 53</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Objective 2 -->
+                <div class="objective-card">
+                    <div class="objective-number">2</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-network-wired"></i> Entender o Processo DORA do DHCP
+                        </div>
+                        <div class="objective-description">
+                            Dominar o ciclo de vida da atribuição dinâmica de endereços IP: Discovery, Offer, Request,
+                            Acknowledgment (DORA) e o conceito de Lease Time.
+                        </div>
+                        <div class="objective-tags">
+                            <span class="tag">DORA Process</span>
+                            <span class="tag">Lease Time</span>
+                            <span class="tag">Portas 67/68</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Objective 3 -->
+                <div class="objective-card">
+                    <div class="objective-number">3</div>
+                    <div class="objective-content">
+                        <div class="objective-title">
+                            <i class="fas fa-cogs"></i> Configurar e Validar Ambos os Serviços
+                        </div>
+                        <div class="objective-description">
+                            Configurar servidores DNS e DHCP em ambiente simulado (Cisco Packet Tracer) e validar o
+                            funcionamento com ferramentas de diagnóstico.
+                        </div>
+                        <div class="objective-tags">
+                            <span class="tag">Configuração</span>
+                            <span class="tag">Validação</span>
+                            <span class="tag">Packet Tracer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right side - Visual elements -->
+            <div class="visual-section">
+                <div class="visual-card">
+                    <div class="visual-title">
+                        <i class="fas fa-chart-line"></i>
+                        Progresso da Aula
+                    </div>
+                    <div class="visual-content">
+                        <div class="status-item">
+                            <span class="status-label">DNS</span>
+                            <span class="status-value">85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="status-item" style="margin-top: 10px;">
+                            <span class="status-label">DHCP</span>
+                            <span class="status-value">70%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 70%;"></div>
+                        </div>
+                        <div class="status-item" style="margin-top: 10px;">
+                            <span class="status-label">Configuração</span>
+                            <span class="status-value">60%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual-card">
+                    <div class="visual-title">
+                        <i class="fas fa-clock"></i>
+                        Cronograma
+                    </div>
+                    <div class="visual-content">
+                        <div class="status-item">
+                            <span class="status-label">Teoria DNS</span>
+                            <span class="status-value">45 min</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Teoria DHCP</span>
+                            <span class="status-value">45 min</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Laboratório</span>
+                            <span class="status-value">60 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom section -->
+        <div class="bottom-section">
+            <div class="progress-info">
+                <div class="progress-text">
+                    <i class="fas fa-info-circle"></i>
+                    <span>3/3</span> objetivos definidos para esta aula
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-book"></i> Material
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-play"></i> Iniciar
+                </button>
+            </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="decorative-element decorative-element-1"></div>
+        <div class="decorative-element decorative-element-2"></div>
+        <div class="floating-icon floating-icon-1">
+            <i class="fas fa-server"></i>
+        </div>
+        <div class="floating-icon floating-icon-2">
+            <i class="fas fa-network-wired"></i>
+        </div>
+    </div>
+</body>
+
+</html>

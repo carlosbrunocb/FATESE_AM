@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agenda e Cronograma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Transformado em Grid */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            background: #f8fafc;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Elementos da grade devem ficar acima do background */
+        .header, .main-content, .footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Removido o posicionamento absoluto e larguras fixas */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Ajustado para preencher o espaço no Grid (1fr) */
+        .main-content {
+            padding: 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .timeline-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .timeline-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-item i {
+            color: #3b82f6;
+        }
+
+        /* Tornando a grade de cards responsiva */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        /* Ajuste flexível de altura */
+        .timeline-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 350px;
+            height: 100%;
+        }
+
+        .timeline-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .timeline-card.active {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .card-time {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .card-content {
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.55;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            border-radius: 3px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Rodapé ajustado com margens ao invés de position absolute */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 60px;
+            width: calc(100% - 80px);
+            margin: 0 auto 20px auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .total-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #f0f9ff;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .total-time i {
+            color: #3b82f6;
+        }
+
+        /* Media Query para garantir uma exibição elegante em telas muito pequenas (Mobile) */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                height: auto;
+                padding: 20px;
+                text-align: center;
+                gap: 15px;
+            }
+            .header-right {
+                text-align: center;
+            }
+            .footer {
+                justify-content: center;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <div class="header-title">Agenda e Cronograma</div>
+                    <div class="header-subtitle">Distribuição de tempo e atividades da aula</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - 180 minutos</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <div class="timeline-title">
+                        <i class="fas fa-calendar-alt" style="margin-right: 8px; color: #3b82f6;"></i>
+                        Cronograma da Aula - 3 horas (180 min)
+                    </div>
+                    <div class="timeline-stats">
+                        <div class="stat-item"><i class="fas fa-book"></i><span>5 blocos</span></div>
+                        <div class="stat-item"><i class="fas fa-users"></i><span>Atividades práticas</span></div>
+                        <div class="stat-item"><i class="fas fa-clock"></i><span>180 min total</span></div>
+                    </div>
+                </div>
+                <div class="timeline-grid">
+                    <div class="timeline-card active">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                            <div class="card-info">
+                                <div class="card-title">Exposição Teórica</div>
+                                <div class="card-time">45 min (09:00-09:45)</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-description">
+                                <strong>Ciclo de vida</strong> de APIs, <strong>breaking changes</strong>, SemVer e
+                                estratégias de versionamento. Conceitos fundamentais.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div class="status-row">
+                                <div class="progress-text">Concluído</div>
+                                <div class="status-badge status-completed">Concluído</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-card active">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-sitemap"></i></div>
+                            <div class="card-info">
+                                <div class="card-title">Arquitetura</div>
+                                <div class="card-time">20 min (09:45-10:05)</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-description">
+                                <strong>Reorganização</strong> de pastas controllers e routes para suportar v1 e v2.
+                                Estrutura de projetos.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div class="status-row">
+                                <div class="progress-text">Concluído</div>
+                                <div class="status-badge status-completed">Concluído</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-title">Intervalo</div>
+                                <div class="card-time">15 min (10:05-10:20)</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-description">
+                                <strong>Pausa</strong> para descanso e esclarecimento de dúvidas. Preparação para o
+                                laboratório.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div class="status-row">
+                                <div class="progress-text">Concluído</div>
+                                <div class="status-badge status-completed">Concluído</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-card active">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+                            <div class="card-info">
+                                <div class="card-title">Laboratório Prático</div>
+                                <div class="card-time">75 min (10:20-11:35)</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-description">
+                                <strong>Evolução da Livraria</strong>: Mantendo v1 intacta e criando v2 com resposta
+                                paginada. Implementação prática.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                            <div class="status-row">
+                                <div class="progress-text">60% - Em andamento</div>
+                                <div class="status-badge status-active">Ativo</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-info">
+                                <div class="card-title">Testes e Fechamento</div>
+                                <div class="card-time">25 min (11:35-12:00)</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-description">
+                                <strong>Execução</strong> lado a lado das duas versões no Postman e simulação de
+                                depreciação.
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="status-row">
+                                <div class="progress-text">0% - Pendente</div>
+                                <div class="status-badge status-pending">Pendente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="total-time">
+                <i class="fas fa-hourglass-half"></i>
+                <span>Tempo restante: 85 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

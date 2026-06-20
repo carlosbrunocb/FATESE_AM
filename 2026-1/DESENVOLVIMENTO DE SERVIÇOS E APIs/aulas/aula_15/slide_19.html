@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 1: Repositório com Paginação</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Mantido para evitar barra de rolagem na tela inteira */
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Container principal transformado em Grid */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #f8fafc;
+            display: grid;
+            grid-template-rows: 100px 1fr auto; /* Header fixo, conteúdo flexível, Footer adaptável */
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Remoção de posições absolutas e larguras fixas */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Main adaptável ao 1fr do container */
+        .main-content {
+            width: 100%;
+            padding: 30px 40px;
+            z-index: 1;
+            overflow-y: auto; /* Permite rolar se o conteúdo ficar muito longo em telas menores */
+        }
+
+        .content-grid {
+            display: grid;
+            /* Grid responsivo: quebra para 1 coluna se a tela for menor que 900px aproximadamente */
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            flex-grow: 1;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .code-header {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.45;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .code-function {
+            color: #c084fc;
+        }
+
+        .code-variable {
+            color: #fca5a5;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #3b82f6;
+            margin-top: 15px;
+        }
+
+        .explanation-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation-text {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border-radius: 6px;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            margin-top: 10px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+
+        /* Usando Margens em vez de absolutos para acompanhar o fluxo do Grid */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+            margin: 0 40px 20px 40px;
+            flex-wrap: wrap; /* Evita que os itens fiquem esmagados */
+            gap: 10px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <div class="header-title">Passo 1: Repositório com Paginação</div>
+                    <div class="header-subtitle">Implementação do padrão Repository com suporte a paginação</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Código do Repositório</div>
+                                <div class="section-subtitle">src/repositories/livroRepository.js</div>
+                            </div>
+                        </div>
+                        <div class="step-indicator">
+                            <div class="step-number">1</div>
+                            <div class="step-text">Implementar busca com paginação</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-title">livroRepository.js</div>
+                                <div style="color: #94a3b8; font-size: 12px;">JavaScript</div>
+                            </div>
+                            <div class="code-content">
+                                <span class="code-keyword">const</span> LivroModel = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'../models/Livro'</span>);<br /><br />
+                                <span class="code-comment">// Buscar todos com paginação</span><br />
+                                <span class="code-keyword">const</span> <span class="code-function">buscarTodos</span> =
+                                <span class="code-keyword">async</span> (titulo, pagina = <span
+                                    class="code-variable">1</span>, limite = <span class="code-variable">0</span>) =&gt;
+                                {<br />
+                                &nbsp;&nbsp;<span class="code-keyword">let</span> filtro = {};<br />
+                                &nbsp;&nbsp;<span class="code-keyword">if</span> (titulo) {<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;filtro.titulo = { $regex: titulo, $options: <span class="code-string">'i'</span>
+                                };<br />
+                                &nbsp;&nbsp;}<br />
+                                &nbsp;&nbsp;<span class="code-keyword">const</span> pular = (pagina - <span
+                                    class="code-variable">1</span>) * limite;<br />
+                                &nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-keyword">await</span>
+                                LivroModel.find(filtro).skip(pular).limit(limite);<br />
+                                };<br /><br />
+                                <span class="code-comment">// Contar total de registros</span><br />
+                                <span class="code-keyword">const</span> <span class="code-function">contarTodos</span> =
+                                <span class="code-keyword">async</span> (titulo) =&gt; {<br />
+                                &nbsp;&nbsp;<span class="code-keyword">let</span> filtro = {};<br />
+                                &nbsp;&nbsp;<span class="code-keyword">if</span> (titulo) filtro.titulo = { $regex: titulo
+                                };<br />
+                                &nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-keyword">await</span>
+                                LivroModel.countDocuments(filtro);<br />
+                                };<br />
+                                <span class="code-keyword">module.exports</span> = { buscarTodos, contarTodos };
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Explicação Detalhada</div>
+                                <div class="section-subtitle">Como funciona a paginação</div>
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <div class="explanation-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Por que paginação?
+                            </div>
+                            <div class="explanation-text">
+                                A paginação evita retornar milhares de registros de uma vez, reduzindo carga no banco de
+                                dados e melhorando performance da API.
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Parâmetros:</strong><br />
+                                • <strong>pagina:</strong> número da página atual<br />
+                                • <strong>limite:</strong> quantidade de itens por página<br />
+                                • <strong>skip:</strong> quantos registros pular
+                            </div>
+                        </div>
+                        <div class="explanation-box" style="margin-top: 15px;">
+                            <div class="explanation-title">
+                                <i class="fas fa-calculator"></i>
+                                Cálculo do Skip
+                            </div>
+                            <div class="explanation-text">
+                                <strong>skip = (pagina - 1) × limite</strong><br />
+                                Página 1: skip 0 | Página 2: skip 10 | Página 3: skip 20
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Repositório implementado</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

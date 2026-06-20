@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>A Lógica da Tensão e Corrente</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #f8fafc;
+        }
+
+        .header-section {
+            padding: 30px 60px 10px;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .title-accent {
+            color: #38bdf8;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 20px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid;
+        }
+
+        .card-red { border-left-color: #ef4444; }
+        .card-green { border-left-color: #10b981; }
+        .card-blue { border-left-color: #38bdf8; }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-text {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .math-box {
+            background-color: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #e2e8f0;
+            border: 1px dashed #475569;
+            margin-top: 15px;
+        }
+
+        .math-text {
+            font-size: 14px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .mono-bg {
+            background: #000;
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                Por que <span class="title-accent">Paralelo</span> e por que <span class="title-accent">220Ω</span>?
+            </h1>
+            <p class="text-gray-400 mt-2 text-lg">Entendendo as limitações do ESP32 e a Lei de Ohm</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="flex flex-col gap-6">
+                <div class="info-card card-red">
+                    <h3 class="card-title"><i class="fas fa-ban text-red-500"></i> Por que NÃO usar circuito em Série?</h3>
+                    <p class="card-text">Em um circuito em série, a <strong>tensão (Voltagem) cai</strong> a cada componente. O ESP32 fornece <span class="mono-bg">3.3V</span>. Cada LED consome cerca de <span class="mono-bg">2.0V</span> para acender.</p>
+                    <p class="card-text mt-2">Para 3 LEDs em série, precisaríamos de <strong>6.0V</strong> ($2V + 2V + 2V$). Como temos apenas 3.3V, <strong>os LEDs não acenderiam</strong>! Por isso usamos o Semáforo em <strong class="text-white">Paralelo</strong> (cada GPIO entrega 3.3V para seu próprio LED).</p>
+                </div>
+
+                <div class="info-card card-green">
+                    <h3 class="card-title"><i class="fas fa-shield-alt text-green-500"></i> O Papel do Resistor</h3>
+                    <p class="card-text">Se ligarmos o LED direto nos 3.3V, ele receberá mais energia do que suporta (2V) e deixará passar corrente livremente, causando <strong>curto-circuito e queima</strong> do LED ou da porta do ESP32.</p>
+                    <p class="card-text mt-2">O resistor atua como um "freio", dissipando o excesso de tensão ($3.3V - 2.0V = 1.3V$) em forma de calor.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col h-full">
+                <div class="info-card card-blue flex-1 flex flex-col">
+                    <h3 class="card-title"><i class="fas fa-calculator text-blue-400"></i> Calculando com a Lei de Ohm</h3>
+                    <p class="card-text">A Lei de Ohm diz que a Tensão ($V$) é igual à Resistência ($R$) vezes a Corrente ($I$).</p>
+                    
+                    <div class="math-box flex-1">
+                        <p class="text-sm text-gray-400 mb-2">Fórmula para achar a Resistência (R):</p>
+                        <div>
+                            $$R = \frac{V_{fonte} - V_{led}}{I_{led}}$$
+                        </div>
+                        <div class="w-full h-px bg-gray-700 my-4"></div>
+                        <p class="math-text text-left w-full px-4">
+                            <strong>1.</strong> Tensão da Fonte ESP32 = <span class="text-white">3.3V</span><br>
+                            <strong>2.</strong> Tensão do LED Vermelho ≈ <span class="text-white">2.0V</span><br>
+                            <strong>3.</strong> Corrente ideal pro LED ≈ <span class="text-white">0.02A</span> (20mA)
+                        </p>
+                        <div class="mt-4">
+                            $$R = \frac{3.3 - 2.0}{0.02} \implies R = \frac{1.3}{0.02} \implies R = 65 \Omega$$
+                        </div>
+                    </div>
+                    <p class="card-text mt-4 text-center"><strong>Dica:</strong> O cálculo pede $65 \Omega$, mas por segurança limitamos ainda mais a corrente. Usar resistores comerciais de <strong>220Ω ou 330Ω</strong> é perfeito para a porta do ESP32 não ser sobrecarregada!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

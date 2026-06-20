@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Força Bruta e DDoS - Conceitos e Defesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            flex: 1;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .vulnerability-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: #fee2e2;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .attack-vector {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid #f59e0b;
+            margin-bottom: 16px;
+        }
+
+        .vector-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vector-content {
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        .symptom-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .symptom-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #475569;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .symptom-item i {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .mitigation-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .mitigation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: #166534;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mitigation-content {
+            font-size: 14px;
+            color: #166534;
+            line-height: 1.6;
+        }
+
+        .code-snippet {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+
+        .code-line {
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .code-keyword {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .severity-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .severity-bar {
+            width: 120px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .severity-fill {
+            height: 100%;
+            background: #ef4444;
+            border-radius: 4px;
+        }
+
+        .severity-text {
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .ddos-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 16px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .ddos-node {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .ddos-arrow {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .ddos-arrow::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #e2e8f0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-bolt"></i> Força Bruta e DDoS - Conceitos e Defesa</h1>
+                    <div class="subtitle">Análise de ataques de força bruta e negação de serviço</div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Alta Severidade</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="vulnerability-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="card-title">Força Bruta</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="attack-vector">
+                                <div class="vector-title">
+                                    <i class="fas fa-hammer"></i> Ataque de Força Bruta
+                                </div>
+                                <div class="vector-content">
+                                    Tentativas repetidas de login com <span class="highlight">credenciais
+                                        aleatórias</span> para descobrir senhas. O atacante automatiza milhares de
+                                    tentativas por segundo.
+                                </div>
+                            </div>
+                            <div class="ddos-visual">
+                                <div class="ddos-node"><i class="fas fa-user"></i></div>
+                                <div class="ddos-arrow"></div>
+                                <div class="ddos-node"><i class="fas fa-lock"></i></div>
+                            </div>
+                            <div class="severity-indicator">
+                                <div class="severity-bar">
+                                    <div class="severity-fill" style="width: 75%;"></div>
+                                </div>
+                                <span class="severity-text">Severidade: Alta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vulnerability-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="card-title">DDoS (Distributed Denial of Service)</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="attack-vector">
+                                <div class="vector-title">
+                                    <i class="fas fa-cloud"></i> Ataque DDoS
+                                </div>
+                                <div class="vector-content">
+                                    Volume massivo de <span class="highlight">requisições simultâneas</span> para
+                                    esgotar recursos do servidor e torná-lo indisponível.
+                                </div>
+                            </div>
+                            <div class="symptom-list">
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Servidor lento</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Time-outs</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Indisponibilidade</span>
+                                </div>
+                                <div class="symptom-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Alto consumo de CPU</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="vulnerability-card" style="height: 100%;">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="card-title">Defesa e Mitigação</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="mitigation-box">
+                                <div class="mitigation-title">
+                                    <i class="fas fa-check-circle"></i> Estratégias de Defesa
+                                </div>
+                                <div class="mitigation-content">
+                                    <strong>1. Rate Limiting:</strong> Limitar requisições por IP/rota<br />
+                                    <strong>2. Bloqueio de IPs:</strong> Blacklist de IPs suspeitos<br />
+                                    <strong>3. CAPTCHA:</strong> Verificação humana<br />
+                                    <strong>4. WAF:</strong> Firewall de aplicação web<br />
+                                    <strong>5. CDN:</strong> Distribuição de carga
+                                </div>
+                            </div>
+                            <div class="code-snippet">
+                                <div class="code-line"><span class="code-comment">// Configuração de Rate
+                                        Limiting</span></div>
+                                <div class="code-line"><span class="code-keyword">const</span> limiter = rateLimit({
+                                </div>
+                                <div class="code-line" style="margin-left: 20px;"> windowMs: <span class="code-string">15 * 60 * 1000</span>, <span
+                                        class="code-comment">&ensp;// 15 minutos</span></div>
+                                <div class="code-line" style="margin-left: 20px;"> max: <span class="code-string">100</span>, <span
+                                        class="code-comment">&ensp;// máximo 100 requisições</span></div>
+                                <div class="code-line" style="margin-left: 20px;"> message: { erro: <span class="code-string">'Muitas
+                                        requisições'</span> }</div>
+                                <div class="code-line">});</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

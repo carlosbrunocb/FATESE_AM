@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>A Função next()</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            /* VS Code Dark bg */
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accent-text {
+            color: #8CC84B;
+        }
+
+        .bg-accent {
+            background-color: #8CC84B;
+        }
+
+        .border-accent {
+            border-color: #8CC84B;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header-bar {
+            height: 8px;
+            width: 120px;
+            background-color: #8CC84B;
+            margin-bottom: 24px;
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .bullet-icon {
+            min-width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(140, 200, 75, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #8CC84B;
+            font-size: 18px;
+        }
+
+        .code-snippet {
+            font-family: 'Fira Code', monospace;
+            background-color: #141414;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #8CC84B;
+            color: #d4d4d4;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            white-space: pre;   
+        }
+
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Decoration -->
+        <div class="decoration-circle" style="width: 600px; height: 600px; top: -100px; right: -200px; opacity: 0.5;">
+        </div>
+        <div class="decoration-circle" style="width: 300px; height: 300px; bottom: 50px; left: -100px; opacity: 0.3;">
+        </div>
+        <div class="content-area">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="header-bar"></div>
+                <h2 class="text-xl text-gray-400 font-medium uppercase tracking-wider mb-2">Controle de Fluxo</h2>
+                <h1 class="text-5xl font-bold text-white">A Função <span class="accent-text">next()</span></h1>
+            </header>
+            <div class="flex flex-row gap-10 h-full">
+                <!-- Left Column: Bullets -->
+                <div class="w-7/12 flex flex-col justify-center">
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-link"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Encadeamento Obrigatório</p>
+                            <p class="text-gray-300 leading-relaxed">O next() é a "cola" que une os middlewares. Se sua
+                                função não envia uma resposta (res.send), ela <strong class="text-white">deve</strong>
+                                chamar next() para evitar que a requisição fique travada (hanging).</p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Cuidado com Múltiplas Respostas</p>
+                            <p class="text-gray-300 leading-relaxed">Chamar next() não encerra a execução da função
+                                atual. Use <code class="bg-gray-800 px-1 rounded text-green-400">return next()</code> ou
+                                <code class="bg-gray-800 px-1 rounded text-green-400">return res.send()</code> para
+                                garantir que o código pare ali e evitar erros de "Headers already sent".</p>
+                        </div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-bug"></i></div>
+                        <div>
+                            <p class="text-xl font-bold text-white mb-2">Sinalização de Erros</p>
+                            <p class="text-gray-300 leading-relaxed">Se você passar qualquer argumento para <code
+                                    class="bg-gray-800 px-1 rounded text-green-400">next(err)</code> (exceto 'route'), o
+                                Express pulará todos os middlewares normais e irá direto para o Middleware de Tratamento
+                                de Erros.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Visual/Code -->
+                <div class="w-5/12 flex flex-col h-full">
+                    <div class="glass-panel">
+                        <div class="flex items-center mb-4 text-gray-400">
+                            <i class="fas fa-code mr-2"></i>
+                            <span class="text-sm font-bold uppercase tracking-widest">Exemplo de Uso</span>
+                        </div>
+                        <div class="code-snippet"><span style="color: #569cd6;">const</span> <span style="color: #dcdcaa;">validaToken</span> = (<span style="color: #9cdcfe;">req</span>, <span style="color: #9cdcfe;">res</span>, <span
+    style="color: #9cdcfe;">next</span>) =&gt; {
+    <span style="color: #c586c0;">if</span> (!<span style="color: #9cdcfe;">req</span>.<span
+        style="color: #9cdcfe;">headers</span>.<span style="color: #9cdcfe;">token</span>) {
+        <span style="color: #6a9955;">// Erro: pula para o error handler</span>
+        <span style="color: #c586c0;">return</span> <span style="color: #dcdcaa;">next</span>(<span
+            style="color: #569cd6;">new</span> <span style="color: #4ec9b0;">Error</span>(<span
+            style="color: #ce9178;">'Sem token!'</span>));
+    }
+
+    <span style="color: #6a9955;">// Sucesso: passa para o próximo</span>
+    <span style="color: #dcdcaa;">console</span>.<span style="color: #dcdcaa;">log</span>(<span
+        style="color: #ce9178;">'Token OK'</span>);
+    <span style="color: #dcdcaa;">next</span>();
+};
+
+<span style="color: #9cdcfe;">app</span>.<span style="color: #dcdcaa;">use</span>(<span style="color: #dcdcaa;">validaToken</span>);
+<span style="color: #9cdcfe;">app</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #ce9178;">'/'</span>, (<span style="color: #9cdcfe;">req</span>, <span
+    style="color: #9cdcfe;">res</span>) =&gt; {
+    <span style="color: #9cdcfe;">res</span>.<span style="color: #dcdcaa;">send</span>(<span
+    style="color: #ce9178;">'Acesso permitido'</span>);
+});                        </div>
+                        <div class="mt-6 flex items-center justify-center text-gray-500 text-sm">
+                            <i class="fas fa-arrow-down mr-2 animate-bounce"></i>
+                            <span>Fluxo controlado pelo next()</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Info -->
+            <div class="mt-8 pt-6 flex justify-between items-center text-xs text-gray-500 border-t border-gray-800">
+                <p>Aula 06: Middlewares no Express.js</p>
+                <p>Professor Carlos Bruno Oliveira Lopes</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

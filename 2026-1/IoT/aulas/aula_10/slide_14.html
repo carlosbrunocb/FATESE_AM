@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Segurança em WebServers IoT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .header-text h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text p {
+            font-size: 18px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-section {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            color: #ef4444;
+            font-size: 24px;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            flex: 1;
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .risk-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .risk-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .risk-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 4px 0;
+        }
+
+        .risk-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            flex: 1;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .practice-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22c55e;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .practice-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .practice-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 4px 0;
+        }
+
+        .practice-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #22c55e;
+        }
+
+        .highlight {
+            color: #3b82f6;
+        }
+
+        .warning {
+            color: #f59e0b;
+        }
+
+        .success {
+            color: #22c55e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Segurança em WebServers IoT</h1>
+                        <p>Proteção de dispositivos embarcados na rede local</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="status-bar">
+                        <div class="status-dot"></div>
+                        <span class="status-text">Segurança ativa</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Top Section -->
+                <div class="top-section">
+                    <!-- Left Panel: Riscos -->
+                    <div class="left-panel">
+                        <div class="section-title">
+                            <i class="fas fa-exclamation-triangle section-icon"></i>
+                            <span>Riscos Comuns</span>
+                        </div>
+                        <div class="risk-grid">
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Autenticação Fraca</div>
+                                    <div class="risk-desc">Rotas sem controle de acesso</div>
+                                </div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Exposição de Portas</div>
+                                    <div class="risk-desc">Porta 80 exposta na internet</div>
+                                </div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Senha Wi-Fi Fraca</div>
+                                    <div class="risk-desc">Credenciais fáceis de adivinhar</div>
+                                </div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Vulnerabilidades XSS</div>
+                                    <div class="risk-desc">Parâmetros sem validação</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Panel: Boas Práticas -->
+                    <div class="right-panel">
+                        <div class="section-title">
+                            <i class="fas fa-check-circle section-icon" style="color: #22c55e;"></i>
+                            <span>Boas Práticas</span>
+                        </div>
+                        <div class="practice-grid">
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">Autenticação HTTP Basic</div>
+                                    <div class="practice-desc">Use server.requestAuthentication()</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">Validação de Entrada</div>
+                                    <div class="practice-desc">Verifique parâmetros e métodos</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">Desabilitar UPnP</div>
+                                    <div class="practice-desc">Evite exposição direta</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">Rate Limiting</div>
+                                    <div class="practice-desc">Controle de requisições</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bottom Section -->
+                <div class="top-section">
+                    <!-- Left Panel: HTTPS/TLS -->
+                    <div class="left-panel">
+                        <div class="section-title">
+                            <i class="fas fa-lock section-icon"></i>
+                            <span>HTTPS/TLS Considerações</span>
+                        </div>
+                        <div class="risk-grid">
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Certificados SSL</div>
+                                    <div class="risk-desc">Use proxy local (Nginx)</div>
+                                </div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-icon">
+                                    <i class="fas fa-user-secret"></i>
+                                </div>
+                                <div class="risk-content">
+                                    <div class="risk-title">Criptografia</div>
+                                    <div class="risk-desc">Evite senhas em texto claro</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Panel: Checklist -->
+                    <div class="right-panel">
+                        <div class="section-title">
+                            <i class="fas fa-list-check section-icon" style="color: #22c55e;"></i>
+                            <span>Checklist de Segurança</span>
+                        </div>
+                        <div class="practice-grid">
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">WPA2/WPA3</div>
+                                    <div class="practice-desc">Wi-Fi com senha forte</div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">Monitoramento</div>
+                                    <div class="practice-desc">Logs de acesso</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

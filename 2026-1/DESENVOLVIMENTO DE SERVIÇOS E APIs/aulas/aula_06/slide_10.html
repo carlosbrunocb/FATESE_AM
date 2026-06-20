@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Middlewares Integrados vs Terceiros</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accent-text {
+            color: #8CC84B;
+        }
+
+        /* Layout Structure */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+        }
+
+        .title-badge {
+            background-color: rgba(140, 200, 75, 0.2);
+            color: #8CC84B;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: inline-block;
+            border: 1px solid rgba(140, 200, 75, 0.4);
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .columns-container {
+            display: flex;
+            flex: 1;
+            gap: 40px;
+            position: relative;
+        }
+
+        .column {
+            flex: 1;
+            background-color: #252526;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .column-header {
+            padding: 25px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .column-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+        }
+
+        /* Integrated Middleware Styles - Cyan/Blue */
+        .icon-integrated {
+            background-color: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+        }
+
+        /* Third Party Middleware Styles - Purple/Pink */
+        .icon-thirdparty {
+            background-color: rgba(217, 70, 239, 0.2);
+            color: #d946ef;
+            border: 1px solid rgba(217, 70, 239, 0.4);
+        }
+
+        .column-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .column-subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin: 5px 0 0 0;
+        }
+
+        .column-content {
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .feature-check {
+            color: #8CC84B;
+            margin-right: 12px;
+            margin-top: 4px;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+            border-left: 3px solid;
+            margin-top: auto;
+            line-height: 1.5;
+        }
+
+        .code-integrated {
+            border-color: #06b6d4;
+        }
+
+        .code-thirdparty {
+            border-color: #d946ef;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .function {
+            color: #dcdcaa;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .variable {
+            color: #9cdcfe;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        /* Background Decorations */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 0;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: #1e1e1e;
+            border: 2px solid #8CC84B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            font-weight: 900;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Elements -->
+        <div class="bg-circle" style="width: 600px; height: 600px; top: -200px; right: -200px; opacity: 0.5;"></div>
+        <div class="bg-circle" style="width: 300px; height: 300px; bottom: 50px; left: -100px; opacity: 0.3;"></div>
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header-section">
+                <div class="title-badge">Ecossistema Express</div>
+                <h1 class="main-title">Integrados vs <span class="accent-text">De Terceiros</span></h1>
+                <p class="text-gray-400 text-lg mt-2">Origem, manutenção e propósito de cada tipo de middleware.</p>
+            </div>
+            <!-- Comparison Columns -->
+            <div class="columns-container">
+                <!-- VS Badge in center -->
+                <div class="vs-badge">VS</div>
+                <!-- Integrated Middleware Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-icon icon-integrated">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <div>
+                            <h2 class="column-title">Integrados</h2>
+                            <p class="column-subtitle">Nativos (Built-in)</p>
+                        </div>
+                    </div>
+                    <div class="column-content">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Já vêm instalados com o pacote <code>express</code> (zero
+                                    dependências extras).</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Focados em tarefas essenciais: parsing de corpo (body) e
+                                    arquivos estáticos.</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Mantidos pela equipe do Express.js.</p>
+                            </li>
+                        </ul>
+                        <div class="code-block code-integrated">
+                            <span class="comment">// Parsing de JSON no body</span><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="variable">express</span>.<span class="function">json</span>());<br /><br />
+                            <span class="comment">// Parsing de dados de formulário</span><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="variable">express</span>.<span class="function">urlencoded</span>({ <span
+                                class="variable">extended</span>: <span class="keyword">true</span> }));<br /><br />
+                            <span class="comment">// Servir arquivos estáticos</span><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="variable">express</span>.<span class="function">static</span>(<span
+                                class="string">'public'</span>));
+                        </div>
+                    </div>
+                </div>
+                <!-- Third Party Middleware Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-icon icon-thirdparty">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div>
+                            <h2 class="column-title">De Terceiros</h2>
+                            <p class="column-subtitle">Comunidade (NPM)</p>
+                        </div>
+                    </div>
+                    <div class="column-content">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Requerem instalação via gerenciador de pacotes (ex:
+                                    <code>npm install cors</code>).</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Resolve problemas específicos: segurança, logs, cookies,
+                                    autenticação.</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Vasto ecossistema open source.</p>
+                            </li>
+                        </ul>
+                        <div class="code-block code-thirdparty">
+                            <span class="keyword">const</span> <span class="variable">cors</span> = <span
+                                class="function">require</span>(<span class="string">'cors'</span>);<br />
+                            <span class="keyword">const</span> <span class="variable">helmet</span> = <span
+                                class="function">require</span>(<span class="string">'helmet'</span>);<br />
+                            <span class="keyword">const</span> <span class="variable">morgan</span> = <span
+                                class="function">require</span>(<span class="string">'morgan'</span>);<br /><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="function">cors</span>());<br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="function">helmet</span>());<br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="function">morgan</span>(<span class="string">'dev'</span>));
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="mt-6 flex justify-between items-center border-t border-gray-800 pt-4">
+                <p class="text-gray-500 text-xs">Análise e Desenvolvimento de Sistemas - FATESE</p>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full bg-cyan-500 mr-2"></div>
+                        <p class="text-gray-500 text-xs">Core</p>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full bg-purple-500 mr-2"></div>
+                        <p class="text-gray-500 text-xs">Plugins</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

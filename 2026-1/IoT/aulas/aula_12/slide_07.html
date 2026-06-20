@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fundamentos do MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .section-badge span {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 160px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - MQTT Overview */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mqtt-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .mqtt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .icon-mqtt {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Right Column - Key Points */
+        .right-column {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .points-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .points-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .points-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .points-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .point-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .point-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .point-text {
+            flex: 1;
+        }
+
+        .point-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .point-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="section-badge">
+                    <span><i class="fas fa-book-open" style="margin-right: 8px;"></i>Seção 2</span>
+                </div>
+                <div class="header-title">
+                    <i class="fas fa-comments" style="margin-right: 12px;"></i>
+                    Fundamentos do MQTT
+                </div>
+                <div class="header-subtitle">O que é MQTT, arquitetura Pub/Sub e componentes principais</div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Ao vivo</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" style="bottom: 90px;">
+            <div class="left-column">
+                <div class="mqtt-card">
+                    <div class="card-icon icon-mqtt">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">
+                            MQTT (Message Queuing Telemetry Transport)
+                            <span style="color: #4CAF50; font-size: 14px;">●</span>
+                        </div>
+                        <div class="card-desc">
+                            Protocolo de mensageria leve baseado em TCP, projetado especificamente para dispositivos IoT
+                            com recursos limitados e redes instáveis.
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Pub/Sub</span>
+                            <span class="feature-tag">Leve</span>
+                            <span class="feature-tag">QoS</span>
+                            <span class="feature-tag">Retained</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mqtt-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <i class="fas fa-network-wired" style="color: #2196F3;"></i>
+                            Arquitetura Publish/Subscribe
+                        </div>
+                        <div class="card-desc">
+                            Diferente do HTTP, no MQTT os dispositivos nunca conversam diretamente. Eles conversam
+                            através de um intermediário central chamado Broker.
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Desacoplado</span>
+                            <span class="feature-tag">Escalável</span>
+                            <span class="feature-tag">Flexível</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mqtt-card" style="background: rgba(255,255,255,0.9);">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <i class="fas fa-server" style="color: #9C27B0;"></i>
+                            Componentes Principais
+                        </div>
+                        <div class="card-desc">
+                            Broker (servidor central), Publisher (envia dados), Subscriber (recebe dados) e Tópicos
+                            (canais de comunicação).
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="points-card">
+                    <div class="points-header">
+                        <div class="points-title">
+                            <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
+                            Conceitos-Chave
+                        </div>
+                    </div>
+                    <div class="points-list">
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="point-text">
+                                <div class="point-label">Leveza</div>
+                                <div class="point-desc">Cabeçalhos mínimos (2 bytes), ideal para dispositivos com
+                                    recursos limitados</div>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="point-text">
+                                <div class="point-label">Conexão Persistente</div>
+                                <div class="point-desc">Mantém conexão TCP ativa, evitando overhead de reconexão</div>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="point-text">
+                                <div class="point-label">Qualidade de Serviço</div>
+                                <div class="point-desc">Três níveis de QoS para garantir entrega de mensagens</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">7/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

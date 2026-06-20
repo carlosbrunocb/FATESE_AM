@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Efeito Bounce e Debounce</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding: 30px 60px 10px;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .title-accent {
+            color: #38bdf8;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .top-row {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .info-card {
+            flex: 1;
+            background-color: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 30px;
+            position: relative;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon.success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Roboto Mono', monospace;
+            color: #e2e8f0;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .keyword { color: #c678dd; }
+        .function { color: #61afef; }
+        .comment { color: #5c6370; font-style: italic; }
+        .number { color: #d19a66; }
+        
+        .bounce-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 60px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        .bar { width: 8px; background-color: #ef4444; border-radius: 2px 2px 0 0; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                Lógica de Botões: <span class="title-accent">Bounce</span> e <span class="title-accent">Debounce</span>
+            </h1>
+            <p class="text-gray-400 mt-2 text-lg">Lidando com a imperfeição física dos componentes eletrônicos</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="top-row">
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <h2 class="card-title">O Problema (Bounce)</h2>
+                    <div class="card-text">
+                        <p>Botões são componentes mecânicos. Quando você aperta o botão, as plaquinhas de metal lá dentro "quicam" microscopicamente antes de estabilizar.</p>
+                        <p class="mt-3">Para o microcontrolador (que lê em microssegundos), um único aperto humano parece <strong>5, 10 ou 20 apertos rápidos consecutivos</strong>.</p>
+                    </div>
+                    
+                    <div class="bounce-chart">
+                        <div class="bar" style="height: 10%;"></div>
+                        <div class="bar" style="height: 100%;"></div>
+                        <div class="bar" style="height: 20%;"></div>
+                        <div class="bar" style="height: 80%;"></div>
+                        <div class="bar" style="height: 10%;"></div>
+                        <div class="bar" style="height: 100%;"></div>
+                        <div class="bar" style="height: 100%;"></div>
+                        <div class="bar" style="height: 100%;"></div>
+                        <div class="ml-4 text-xs text-red-400 font-mono">← Ruído Mecânico</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon success">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h2 class="card-title">A Solução (Debounce por Software)</h2>
+                    <div class="card-text">
+                        <p>Para corrigir isso, instruímos o código a ignorar as leituras muito rápidas e sucessivas.</p>
+                        <p class="mt-3">A lógica é simples: <strong>"Se o botão foi apertado, espere ~50 milissegundos. Se depois disso ele continuar apertado, então foi um aperto real."</strong></p>
+                    </div>
+                    
+                    <div class="bounce-chart">
+                        <div class="bar bg-green-500" style="height: 10%;"></div>
+                        <div class="bar bg-green-500" style="height: 10%;"></div>
+                        <div class="bar bg-green-500" style="height: 10%;"></div>
+                        <div class="bar bg-green-500" style="height: 100%;"></div>
+                        <div class="bar bg-green-500" style="height: 100%;"></div>
+                        <div class="bar bg-green-500" style="height: 100%;"></div>
+                        <div class="bar bg-green-500" style="height: 100%;"></div>
+                        <div class="bar bg-green-500" style="height: 100%;"></div>
+                        <div class="ml-4 text-xs text-green-400 font-mono">← Sinal Limpo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block"><pre><span class="comment">// Lógica de Debounce usando millis() aplicada na Atividade do Semáforo (Slide 23)</span>
+<span class="keyword">if</span> (<span class="function">digitalRead</span>(botaoPin) == LOW) {
+    <span class="keyword">if</span> (<span class="function">millis</span>() - ultimoTempoDebounce > <span class="number">50</span>) { <span class="comment">// 50ms de trava</span>
+        <span class="comment">// Ação real executada aqui! O aperto foi confirmado.</span>
+        iniciarTravessiaPedestre();
+        ultimoTempoDebounce = <span class="function">millis</span>(); <span class="comment">// Reseta o cronômetro</span>
+    }
+}</pre>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

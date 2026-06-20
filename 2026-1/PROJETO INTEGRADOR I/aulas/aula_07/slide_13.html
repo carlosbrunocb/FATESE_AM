@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Matriz Esforço x Valor — Conceito e Quadrantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%);
+            clip-path: polygon(30% 0%, 100% 0, 100% 100%, 0% 100%);
+            z-index: 0;
+        }
+
+        .decorative-dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .dot-1 {
+            width: 120px;
+            height: 120px;
+            background: #3498db;
+            top: 30px;
+            left: 30px;
+        }
+
+        .dot-2 {
+            width: 80px;
+            height: 80px;
+            background: #2ecc71;
+            bottom: 40px;
+            right: 40px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .title-sub {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .matrix-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #3498db;
+            height: 520px;
+            /* Fixed height for symmetry and redistribution */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .card-icon.green {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .card-text {
+            font-size: 15px;
+            color: #34495e;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .matrix-image {
+            width: 100%;
+            height: 200px;
+            /* Increased height to fill space */
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .matrix-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .quadrants-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .quadrant-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .quadrant-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .quadrant-icon.green {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .quadrant-icon.blue {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .quadrant-icon.yellow {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .quadrant-icon.red {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .quadrant-content {
+            flex: 1;
+        }
+
+        .quadrant-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .quadrant-text {
+            font-size: 12px;
+            color: #5d6d7e;
+            line-height: 1.4;
+        }
+
+        .action-box {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #2196f3;
+            margin-top: auto;
+        }
+
+        .action-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-text {
+            font-size: 14px;
+            color: #5d6d7e;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-badge.pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: #1976d2;
+        }
+
+        .status-dot.pending {
+            background: #f57c00;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="decorative-dot dot-1"></div>
+        <div class="decorative-dot dot-2"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-th"></i>
+                    </div>
+                    <div>
+                        <h1 class="title-text">Matriz Esforço x Valor</h1>
+                        <div class="title-sub">Conceito, quadrantes e orientações de priorização</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <span class="status-badge active">
+                        <div class="status-dot active"></div>
+                        Prioridade: Alta
+                    </span>
+                    <span class="status-badge pending">
+                        <div class="status-dot pending"></div>
+                        Sprint 1
+                    </span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="matrix-card" style="border-left-color: #3498db;">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-th"></i>
+                            </div>
+                            <div class="card-title">O que é a Matriz Esforço x Valor?</div>
+                        </div>
+                        <div class="card-text">
+                            Técnica <strong>2x2</strong> para priorizar itens do backlog pela relação entre <span
+                                style="color: #3498db; font-weight: 600;">Valor (impacto)</span> e <span
+                                style="color: #e74c3c; font-weight: 600;">Esforço (custo/complexidade)</span>.
+                        </div>
+                        <div class="matrix-image">
+                            <img alt="Matriz Esforço x Valor"
+                                src="https://www.genspark.ai/api/files/s/yKIboKJk?cache_control=3600" />
+                        </div>
+                        <div class="action-box">
+                            <div class="action-title">
+                                <i class="fas fa-info-circle" style="color: #2196f3;"></i>
+                                Como usar
+                            </div>
+                            <div class="action-text">
+                                1. Liste todas as user stories<br />
+                                2. Estime esforço (Story Points)<br />
+                                3. Estime valor (impacto no usuário)<br />
+                                4. Posicione na matriz e priorize
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="matrix-card" style="border-left-color: #2ecc71;">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="card-title">Os 4 Quadrantes</div>
+                        </div>
+                        <div class="quadrants-grid">
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon green">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="quadrant-content">
+                                    <div class="quadrant-title">Quick Wins</div>
+                                    <div class="quadrant-text">Alto valor, baixo esforço - <strong>FAÇA
+                                            PRIMEIRO</strong></div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon blue">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div class="quadrant-content">
+                                    <div class="quadrant-title">Projetos Grandes</div>
+                                    <div class="quadrant-text">Alto valor, alto esforço - <strong>FATIAR</strong></div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon yellow">
+                                    <i class="fas fa-fill-drip"></i>
+                                </div>
+                                <div class="quadrant-content">
+                                    <div class="quadrant-title">Preencher Gaps</div>
+                                    <div class="quadrant-text">Baixo valor, baixo esforço - <strong>SE SOBRAR
+                                            TEMPO</strong></div>
+                                </div>
+                            </div>
+                            <div class="quadrant-item">
+                                <div class="quadrant-icon red">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="quadrant-content">
+                                    <div class="quadrant-title">Evite/NASA</div>
+                                    <div class="quadrant-text">Baixo valor, alto esforço - <strong>ADIAR</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-box" style="background: #fff8e1; border-color: #ffc107;">
+                            <div class="action-title">
+                                <i class="fas fa-lightbulb" style="color: #f39c12;"></i>
+                                Dica de Priorização
+                            </div>
+                            <div class="action-text">
+                                <strong>80/20:</strong> 80% do valor vem de 20% das tarefas. Foque nos Quick Wins
+                                primeiro!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-text">
+                    <i class="fas fa-info-circle" style="margin-right: 6px; color: #3498db;"></i>
+                    A matriz ajuda a tomar decisões informadas sobre o que priorizar na Sprint
+                </div>
+                <div class="footer-icons">
+                    <div class="footer-icon"><i class="fas fa-question"></i></div>
+                    <div class="footer-icon"><i class="fas fa-cog"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

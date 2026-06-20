@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Máscaras Curinga (Wildcard) - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .binary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 20px;
+            margin-top: 15px;
+        }
+
+        .binary-card {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            padding: 15px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">O que são Máscaras Curinga (Wildcard Masks)?</span>
+            <span class="slide-header-tag">Conceitos de Rede</span>
+        </div>
+
+        <!-- Conteúdo Teórico (Esquerda) -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 38px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 25px;">
+                Definição e Semântica Inversa</h2>
+            <p class="body-text" style="margin-bottom: 25px;">
+                Ao contrário das máscaras de sub-rede tradicionais (usadas para definir IPs de interfaces), as
+                <strong>Máscaras Curinga (Wildcard Masks)</strong> são usadas em ACLs para especificar quais bits de um
+                endereço IP devem ser inspecionados ou ignorados.
+            </p>
+            <p class="body-text" style="margin-bottom: 30px; color: var(--text-muted);">
+                Elas operam de forma estritamente <strong>inversa</strong> à lógica de uma máscara de sub-rede
+                convencional.
+            </p>
+
+            <div
+                style="background-color: rgba(247, 148, 29, 0.05); padding: 25px; border-radius: var(--border-radius); border-top: 4px solid var(--senac-orange);">
+                <h4 style="font-size: 22px; font-weight: 700; color: var(--senac-dark-blue); margin: 0 0 10px 0;">As
+                    Duas Regras Binárias do Curinga</h4>
+                <ul class="custom-list" style="margin-bottom: 0;">
+                    <li style="font-size: 18px; margin-bottom: 10px;"><strong>Bit 0 (Match):</strong> Significa
+                        "Verifique este bit". Ele deve ser idêntico ao IP configurado.</li>
+                    <li style="font-size: 18px; margin-bottom: 0;"><strong>Bit 1 (Don't Care):</strong> Significa "Não
+                        me importo". O valor deste bit pode ser qualquer um (0 ou 1).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tabela de Equivalência Binária (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 32px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 20px; text-transform: uppercase;">
+                Visualização de Bits do Curinga</h2>
+
+            <p style="font-size: 20px; color: var(--text-muted); margin-bottom: 20px;">
+                Exemplo prático de aplicação para a sub-rede <strong>192.168.10.0 / 24</strong>:
+            </p>
+
+            <div class="binary-grid">
+                <div class="binary-card">
+                    <strong style="color: var(--senac-blue);">Endereço IP da Rede:</strong>
+                    <div style="font-family: monospace; font-size: 20px; margin-top: 5px;">192.168.10.0</div>
+                </div>
+                <div class="binary-card">
+                    <strong style="color: var(--senac-blue);">Máscara de Sub-rede:</strong>
+                    <div style="font-family: monospace; font-size: 20px; margin-top: 5px;">255.255.255.0</div>
+                </div>
+                <div class="binary-card" style="grid-column: span 2; border-top: 3px solid var(--senac-orange);">
+                    <strong style="color: var(--senac-orange);">Máscara Curinga (Inversa):</strong>
+                    <div style="font-family: monospace; font-size: 24px; font-weight: bold; margin-top: 5px;">0.0.0.255
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding: 20px; background-color: #F8FAFC; border-radius: 6px;">
+                <strong style="font-size: 20px; color: var(--senac-dark-blue);">Análise Binária do Octeto
+                    Curinga:</strong>
+                <table style="width: 100%; border-collapse: collapse; font-size: 18px; margin-top: 10px;">
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 8px 0; font-weight: bold;">Octeto Decimal</td>
+                        <td style="padding: 8px 0; font-family: monospace;">0 (Primeiros 3 octetos)</td>
+                        <td style="padding: 8px 0; font-family: monospace;">255 (Último octeto)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 8px 0; font-weight: bold;">Valor Binário</td>
+                        <td
+                            style="padding: 8px 0; font-family: monospace; color: var(--success-color); font-weight: bold;">
+                            00000000</td>
+                        <td
+                            style="padding: 8px 0; font-family: monospace; color: var(--danger-color); font-weight: bold;">
+                            11111111</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; font-weight: bold;">Significado</td>
+                        <td style="padding: 8px 0; color: var(--success-color);">Verificação Obrigatória (Match)</td>
+                        <td style="padding: 8px 0; color: var(--danger-color);">Qualquer valor é aceito (Ignore)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div
+                style="margin-top: 25px; background-color: rgba(0, 93, 164, 0.05); padding: 15px 20px; border-radius: var(--border-radius); font-size: 18px; color: var(--text-main); line-height: 1.5;">
+                <strong>Resultado Prático:</strong> O firewall irá testar se o tráfego começa obrigatoriamente com
+                <strong>192.168.10.</strong> e ignorará qualquer valor no último octeto (de .1 a .254).
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 14/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

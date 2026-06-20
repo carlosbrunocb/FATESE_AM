@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 12 - Testes de Aceitação UAT e Alfa/Beta</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+        }
+
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1100px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            margin-bottom: 60px;
+        }
+
+        .main-title {
+            font-size: 64px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -1px;
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        /* Info cards */
+        .info-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px 30px;
+            text-align: left;
+            flex: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .info-card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .info-card-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .info-card-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .info-card-title {
+            font-size: 16px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .info-card-value {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* Professor info */
+        .professor-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .professor-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .professor-details {
+            text-align: left;
+        }
+
+        .professor-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .professor-role {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        /* Institution badge */
+        .institution-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .institution-badge i {
+            color: #3b82f6;
+        }
+
+        /* Duration badge */
+        .duration-badge {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .duration-badge i {
+            color: #3b82f6;
+        }
+
+        /* Bottom decoration */
+        .bottom-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+        }
+
+        /* Floating elements */
+        .floating-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .floating-element-1 {
+            top: 10%;
+            left: 5%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element-2 {
+            top: 60%;
+            right: 5%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Duration badge -->
+        <div class="duration-badge" data-object="true" data-object-type="badge">
+            <i class="fas fa-clock"></i>
+            <span>170 minutos (2h 50min)</span>
+        </div>
+        <!-- Institution badge -->
+        <div class="institution-badge" data-object="true" data-object-type="badge">
+            <i class="fas fa-university"></i>
+            <span>FATESE - Senac</span>
+        </div>
+        <!-- Floating elements -->
+        <div class="floating-element floating-element-1"></div>
+        <div class="floating-element floating-element-2"></div>
+        <!-- Main content -->
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="title-section">
+                <div class="main-title">
+                    Testes de <span>Aceitação do Usuário</span>
+                </div>
+                <div class="subtitle">
+                    UAT (User Acceptance Testing) e Testes Alfa/Beta
+                </div>
+            </div>
+            <!-- Info cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon blue">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="info-card-title">Disciplina</div>
+                            <div class="info-card-value">Qualidade e Teste de Software</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon green">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <div class="info-card-title">Curso</div>
+                            <div class="info-card-value">Análise e Desenvolvimento de Sistemas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon orange">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <div class="info-card-title">Professor</div>
+                            <div class="info-card-value">Carlos Bruno Oliveira Lopes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Professor info -->
+            <div class="professor-info">
+                <div class="professor-avatar">CB</div>
+                <div class="professor-details">
+                    <div class="professor-name">Prof. Carlos Bruno Oliveira Lopes</div>
+                    <div class="professor-role">carlos.lopes@am.senac.br | linkedin.com/in/carlosbruno-lopes</div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom decoration -->
+        <div class="bottom-decoration"></div>
+    </div>
+</body>
+
+</html>

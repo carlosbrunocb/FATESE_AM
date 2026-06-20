@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Análise de Riscos em Integrações de Terceiros</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecef 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #3b5998 50%, #1e3a5f 100%);
+            z-index: 100;
+        }
+
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 0;
+            width: 80px;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+        }
+
+        .sidebar-icon {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            padding: 5px;
+            width: 44px;
+            text-align: center;
+        }
+
+        .sidebar-icon:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            z-index: 100;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a5f;
+            text-align: right;
+        }
+
+        .logo-subtext {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 120px;
+            top: 60px;
+            right: 60px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .highlight {
+            color: #3b5998;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3a5f;
+            line-height: 1.2;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .risk-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .risk-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .risk-level {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .risk-high {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .risk-medium {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .risk-low {
+            background: #bbf7d0;
+            color: #166534;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b5998;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #3b5998;
+            flex-shrink: 0;
+        }
+
+        .checklist-text {
+            font-size: 16px;
+            color: #475569;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .decision-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .matrix-cell {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .matrix-header {
+            background: #e0e7ff;
+            color: #3730a3;
+            font-weight: 600;
+        }
+
+        .matrix-value {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .go-indicator {
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .no-go-indicator {
+            color: #991b1b;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="sidebar">
+            <div class="sidebar-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-code"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-lock"></i></div>
+            <div class="sidebar-icon"><i class="fas fa-balance-scale"></i></div>
+        </div>
+        <div class="logo-container">
+            <div class="logo-text">FATESE</div>
+            <div class="logo-subtext">Faculdade de Tecnologia do Senac</div>
+        </div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 15px; color: #3b5998;"></i>
+                    Análise de Riscos em <span class="highlight">Integrações de Terceiros</span>
+                </div>
+                <div class="subtitle">Contexto: Implementar sistema de login rápido e processamento de pagamentos usando
+                    biblioteca open-source pouco conhecida e SDK de startup estrangeira</div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: #fecaca; color: #991b1b;">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            <div class="card-title">Riscos Técnicos e de Segurança</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="risk-grid">
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fecaca; color: #991b1b;">
+                                        <i class="fas fa-lock-open"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Criptografia não auditada</div>
+                                        <div class="risk-level risk-high">Alto</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fde68a; color: #92400e;">
+                                        <i class="fas fa-code-branch"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Dependências transitivas vulneráveis</div>
+                                        <div class="risk-level risk-medium">Médio</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fecaca; color: #991b1b;">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">SDK com permissões excessivas</div>
+                                        <div class="risk-level risk-high">Alto</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fde68a; color: #92400e;">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Coleta de dados além do necessário</div>
+                                        <div class="risk-level risk-medium">Médio</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: #e0e7ff; color: #3730a3;">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="card-title">Riscos Jurídicos/Compliance</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="checklist-item">
+                                <div class="checklist-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="checklist-text">Licenças incompatíveis (copyleft)</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checklist-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="checklist-text">LGPD/GDPR compliance</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checklist-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="checklist-text">PCI DSS para pagamentos</div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checklist-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="checklist-text">Contratos sem DPA/SCCs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: #bbf7d0; color: #166534;">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="card-title">Riscos Operacionais</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="risk-grid">
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #bbf7d0; color: #166534;">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">SLA fraco</div>
+                                        <div class="risk-level risk-low">Baixo</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fde68a; color: #92400e;">
+                                        <i class="fas fa-headset"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Suporte limitado</div>
+                                        <div class="risk-level risk-medium">Médio</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fecaca; color: #991b1b;">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Lock-in</div>
+                                        <div class="risk-level risk-high">Alto</div>
+                                    </div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon" style="background: #fde68a; color: #92400e;">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <div class="risk-text">Disponibilidade da API</div>
+                                        <div class="risk-level risk-medium">Médio</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: #f0f4f8; color: #1e3a5f;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Critérios de Decisão Go/No-Go</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="decision-matrix">
+                                <div class="matrix-cell matrix-header">Critério</div>
+                                <div class="matrix-cell matrix-header">Status</div>
+                                <div class="matrix-cell matrix-header">Ação</div>
+                                <div class="matrix-cell matrix-value">Segurança</div>
+                                <div class="matrix-cell matrix-value">
+                                    <span class="go-indicator">✓ Aprovado</span>
+                                </div>
+                                <div class="matrix-cell matrix-value">Implementar</div>
+                                <div class="matrix-cell matrix-value">Compliance</div>
+                                <div class="matrix-cell matrix-value">
+                                    <span class="no-go-indicator">✗ Reprovado</span>
+                                </div>
+                                <div class="matrix-cell matrix-value">Revisar</div>
+                                <div class="matrix-cell matrix-value">Operacional</div>
+                                <div class="matrix-cell matrix-value">
+                                    <span class="go-indicator">✓ Aprovado</span>
+                                </div>
+                                <div class="matrix-cell matrix-value">Monitorar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

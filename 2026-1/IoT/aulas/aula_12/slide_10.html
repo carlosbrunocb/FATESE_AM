@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Papel do Broker MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Top Section - Broker Overview */
+        .broker-overview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .broker-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        .broker-info {
+            flex: 1;
+        }
+
+        .broker-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .broker-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Middle Section - Functions Grid */
+        .functions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1;
+        }
+
+        .function-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .function-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .function-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .function-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .function-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .function-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .function-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .function-list li {
+            font-size: 11px;
+            color: #555;
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .function-list li::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* Color Coding */
+        .card-1 {
+            border-top-color: #4CAF50;
+        }
+
+        .card-1 .function-icon {
+            background: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .card-2 {
+            border-top-color: #2196F3;
+        }
+
+        .card-2 .function-icon {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .card-3 {
+            border-top-color: #FF9800;
+        }
+
+        .card-3 .function-icon {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .card-4 {
+            border-top-color: #9C27B0;
+        }
+
+        .card-4 .function-icon {
+            background: #f3e5f5;
+            color: #9C27B0;
+        }
+
+        .card-5 {
+            border-top-color: #F44336;
+        }
+
+        .card-5 .function-icon {
+            background: #ffebee;
+            color: #F44336;
+        }
+
+        .card-6 {
+            border-top-color: #00BCD4;
+        }
+
+        .card-6 .function-icon {
+            background: #e0f7fa;
+            color: #00BCD4;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-server" style="margin-right: 12px; color: #667eea;"></i>
+                    Papel do Broker MQTT
+                </div>
+                <div class="header-subtitle">Funções principais do servidor central em arquitetura Pub/Sub</div>
+            </div>
+            <div class="header-right">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="progress-text">55%</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- Broker Overview -->
+            <div class="broker-overview">
+                <div class="broker-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="broker-info">
+                    <div class="broker-title">Broker MQTT - O Carteiro Inteligente</div>
+                    <div class="broker-desc">O Broker é o servidor central que recebe mensagens de publicadores, filtra
+                        por tópicos e entrega aos assinantes. Não analisa o conteúdo da mensagem, apenas faz o
+                        roteamento baseado em tópicos.</div>
+                </div>
+            </div>
+            <!-- Functions Grid -->
+            <div class="functions-grid">
+                <div class="function-card card-1">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <div class="function-title">Roteamento de Mensagens</div>
+                    </div>
+                    <div class="function-desc">Recebe, filtra e entrega mensagens baseado em tópicos</div>
+                    <ul class="function-list">
+                        <li>Filtragem por tópico</li>
+                        <li>Distribuição para assinantes</li>
+                        <li>Armazenamento temporário</li>
+                    </ul>
+                </div>
+                <div class="function-card card-2">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="function-title">Autenticação</div>
+                    </div>
+                    <div class="function-desc">Gerencia sessões e controle de acesso</div>
+                    <ul class="function-list">
+                        <li>Validação de clientes</li>
+                        <li>Controle de permissões</li>
+                        <li>Gestão de sessões</li>
+                    </ul>
+                </div>
+                <div class="function-card card-3">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="function-title">QoS</div>
+                    </div>
+                    <div class="function-desc">Garantias de entrega de mensagens</div>
+                    <ul class="function-list">
+                        <li>Níveis QoS 0, 1, 2</li>
+                        <li>Confirmação de entrega</li>
+                        <li>Retransmissão</li>
+                    </ul>
+                </div>
+                <div class="function-card card-4">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="function-title">Persistência</div>
+                    </div>
+                    <div class="function-desc">Armazenamento de mensagens</div>
+                    <ul class="function-list">
+                        <li>Mensagens retidas</li>
+                        <li>Sessões persistentes</li>
+                        <li>Histórico de mensagens</li>
+                    </ul>
+                </div>
+                <div class="function-card card-5">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="function-title">Last Will</div>
+                    </div>
+                    <div class="function-desc">Mensagem de desconexão inesperada</div>
+                    <ul class="function-list">
+                        <li>Notificação de offline</li>
+                        <li>Testamento digital</li>
+                        <li>Monitoramento de conexão</li>
+                    </ul>
+                </div>
+                <div class="function-card card-6">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </div>
+                        <div class="function-title">Escalabilidade</div>
+                    </div>
+                    <div class="function-desc">Suporte a múltiplos clientes</div>
+                    <ul class="function-list">
+                        <li>Clustering</li>
+                        <li>Load balancing</li>
+                        <li>Alta disponibilidade</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">10/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

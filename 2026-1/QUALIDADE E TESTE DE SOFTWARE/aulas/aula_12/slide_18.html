@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade - Etapas da Execução</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        /* Timeline container */
+        .timeline-container {
+            position: relative;
+            margin-top: 50px;
+            padding: 30px 0;
+        }
+
+        /* Timeline line */
+        .timeline-line {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                    rgba(59, 130, 246, 0.3) 0%,
+                    rgba(139, 92, 246, 0.3) 50%,
+                    rgba(236, 72, 153, 0.3) 100%);
+            border-radius: 2px;
+        }
+
+        /* Timeline items */
+        .timeline-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 10;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            height: 260px;
+        }
+
+        .timeline-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .timeline-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .timeline-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .timeline-description {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .timeline-details {
+            font-size: 12px;
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        /* Timeline dot */
+        .timeline-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 3px solid #ffffff;
+            position: absolute;
+            top: -19px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Step number */
+        .step-number {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        /* Action buttons */
+        .action-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 15px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .action-btn i {
+            color: #3b82f6;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Checklist items */
+        .checklist {
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .checklist-item i {
+            color: #22c55e;
+            margin-top: 2px;
+            font-size: 11px;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Atividade</span> — Etapas da Execução
+                </div>
+                <div class="subtitle">
+                    Protocolo de teste de aceitação com 4 etapas principais
+                </div>
+            </div>
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-items">
+                    <!-- Step 1: Elaborar Checklist -->
+                    <div class="timeline-item">
+                        <div class="step-number">1</div>
+                        <div class="timeline-card">
+                            <div class="timeline-icon">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="timeline-title">Elaborar Checklist</div>
+                            <div class="timeline-description">Cliente define 3 critérios de aceite claros</div>
+                            <div class="timeline-details">Ex: Data no PDF, 2 casas decimais, nome cliente</div>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Data do cálculo no PDF</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Total com 2 casas decimais</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Nome do cliente no cabeçalho</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <!-- Step 2: Executar UAT -->
+                    <div class="timeline-item">
+                        <div class="step-number">2</div>
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="timeline-title">Executar UAT</div>
+                            <div class="timeline-description">Cliente usa sistema, QA observa</div>
+                            <div class="timeline-details" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">
+                                Marca Passa/Falha por critério</div>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Observação ativa do QA</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Registro de comportamento</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Medição de tempo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-dot" style="background: #8b5cf6;"></div>
+                    </div>
+                    <!-- Step 3: Documentar Feedback -->
+                    <div class="timeline-item">
+                        <div class="step-number">3</div>
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #f97316, #fb923c);">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="timeline-title">Documentar Feedback</div>
+                            <div class="timeline-description">Anotar falhas e melhorias</div>
+                            <div class="timeline-details" style="color: #f97316; background: rgba(249, 115, 22, 0.1);">
+                                Classificar severidade e prioridade</div>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <i class="fas fa-exclamation-triangle" style="color: #f97316;"></i>
+                                    <span>Registro de bugs</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-list" style="color: #3b82f6;"></i>
+                                    <span>Lista de melhorias</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-image" style="color: #8b5cf6;"></i>
+                                    <span>Evidências (prints)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-dot" style="background: #f97316;"></div>
+                    </div>
+                    <!-- Step 4: Termo de Aceite -->
+                    <div class="timeline-item">
+                        <div class="step-number">4</div>
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #22c55e, #10b981);">
+                                <i class="fas fa-file-signature"></i>
+                            </div>
+                            <div class="timeline-title">Termo de Aceite</div>
+                            <div class="timeline-description">Decisão final do cliente</div>
+                            <div class="timeline-details" style="color: #22c55e; background: rgba(34, 197, 94, 0.1);">
+                                Aceito / Com Ressalvas / Rejeitado</div>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Validação final</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-signature"></i>
+                                    <span>Assinatura digital</span>
+                                </div>
+                                <div class="checklist-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Data de entrega</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-dot" style="background: #22c55e;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Action buttons -->
+            <div class="action-row">
+                <div class="action-btn">
+                    <i class="fas fa-users"></i>
+                    <span>Trabalho em Duplas</span>
+                </div>
+                <div class="action-btn">
+                    <i class="fas fa-clock"></i>
+                    <span>40 minutos</span>
+                </div>
+                <div class="action-btn">
+                    <i class="fas fa-laptop"></i>
+                    <span>Ambiente Web</span>
+                </div>
+                <div class="action-btn">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Exportar PDF</span>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>4 etapas completas</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>Atividade prática</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Feedback documentado</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pipeline de Middlewares</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .pipeline-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .pipeline-track {
+            position: absolute;
+            top: 47%;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background-color: #333;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 160px;
+            transition: transform 0.3s ease;
+        }
+
+        .pipeline-step:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-node {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #252526;
+            border: 3px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #aaa;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+
+        .step-node.active {
+            border-color: #8CC84B;
+            color: #8CC84B;
+            background-color: rgba(140, 200, 75, 0.1);
+        }
+
+        .step-node.final {
+            border-color: #4285F4;
+            color: #4285F4;
+            background-color: rgba(66, 133, 244, 0.1);
+        }
+
+        .step-node.error {
+            border-color: #EA4335;
+            color: #EA4335;
+            background-color: rgba(234, 67, 53, 0.1);
+        }
+
+        .step-node.start-end {
+            border-color: #fff;
+            color: #fff;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            background-color: #333;
+        }
+
+        .step-label {
+            font-weight: bold;
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            line-height: 1.4;
+            width: 140px;
+        }
+
+        .connector-arrow {
+            flex: 1;
+            height: 2px;
+            background-color: #555;
+            position: relative;
+            margin: 0 10px;
+        }
+
+        .connector-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 6px solid #555;
+        }
+
+        .code-snippet {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #dcdcaa;
+            background-color: #111;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border: 1px solid #333;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Flow indicators */
+        .flow-marker {
+            position: absolute;
+            top: 47%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            transform: translateY(-50%);
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .flow-particle {
+            position: absolute;
+            top: 0;
+            left: -20px;
+            width: 20px;
+            height: 4px;
+            background-color: #8CC84B;
+            border-radius: 2px;
+            box-shadow: 0 0 10px #8CC84B;
+            animation: flowAnimation 3s linear infinite;
+        }
+
+        @keyframes flowAnimation {
+            0% {
+                left: 5%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                left: 95%;
+                opacity: 0;
+            }
+        }
+
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 30px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 50px;
+            align-self: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Background */
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-grid"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <p class="subtitle">Fluxo de Execução</p>
+                <h1 class="title">Pipeline de <span style="color: #8CC84B;">Middlewares</span></h1>
+                <p class="text-gray-400 mt-2">Visualização sequencial do processamento de uma requisição HTTP no
+                    Express.</p>
+            </header>
+            <div class="pipeline-container">
+                <!-- Background Track -->
+                <div class="pipeline-track"></div>
+                <!-- Animated Flow Particle -->
+                <div class="flow-marker">
+                    <div class="flow-particle"></div>
+                </div>
+                <div class="pipeline-flow">
+                    <!-- Step 1: Request -->
+                    <div class="pipeline-step">
+                        <div class="step-node start-end">
+                            <i class="fas fa-satellite-dish"></i>
+                        </div>
+                        <div class="step-label pb-3">Request</div>
+                        <p class="step-desc mb-7">Chegada da requisição HTTP</p>
+                    </div>
+                    <!-- Connector -->
+                    <div class="connector-arrow"></div>
+                    <!-- Step 2: Logger -->
+                    <div class="pipeline-step">
+                        <div class="step-node active">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="step-label pb-3">Logger</div>
+                        <p class="step-desc">Registra dados e chama next()</p>
+                        <div class="code-snippet">app.use(logger)</div>
+                    </div>
+                    <!-- Connector -->
+                    <div class="connector-arrow"></div>
+                    <!-- Step 3: Auth/Validation -->
+                    <div class="pipeline-step">
+                        <div class="step-node active">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="step-label pb-3">Validação</div>
+                        <p class="step-desc">Verifica dados. Pode barrar ou passar.</p>
+                        <div class="code-snippet">router.use(valida)</div>
+                    </div>
+                    <!-- Connector -->
+                    <div class="connector-arrow"></div>
+                    <!-- Step 4: Controller -->
+                    <div class="pipeline-step">
+                        <div class="step-node final">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="step-label pb-3">Controller</div>
+                        <p class="step-desc">Lógica de negócio e resposta final.</p>
+                        <div class="code-snippet">app.post(...)</div>
+                    </div>
+                    <!-- Connector -->
+                    <div class="connector-arrow"></div>
+                    <!-- Step 5: Error Handler -->
+                    <div class="pipeline-step">
+                        <div class="step-node error">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="step-label pb-3">Error Handler</div>
+                        <p class="step-desc">Captura falhas de qualquer etapa anterior.</p>
+                        <div class="code-snippet">app.use(errHnd)</div>
+                    </div>
+                    <!-- Connector -->
+                    <div class="connector-arrow"></div>
+                    <!-- Step 6: Response -->
+                    <div class="pipeline-step">
+                        <div class="step-node start-end">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="step-label pb-3">Response</div>
+                        <p class="step-desc mb-10">Envio para o cliente</p>
+                    </div>
+                </div>
+                <!-- Legend -->
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background-color: #8CC84B;"></div>
+                        <span>Middleware Intermediário</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background-color: #4285F4;"></div>
+                        <span>Rota Final (Controller)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background-color: #EA4335;"></div>
+                        <span>Tratamento de Erros</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="border: 2px solid #555; background-color: transparent;"></div>
+                        <span>Fluxo Principal</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Note -->
+            <div class="text-center mt-4 text-gray-500 text-sm">
+                <p><i class="fas fa-info-circle mr-2"></i>A ordem de definição no código (app.use) determina a posição
+                    no pipeline.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

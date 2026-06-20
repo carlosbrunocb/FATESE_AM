@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Filtragem de Pacotes Stateless - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .packet-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 20px;
+            margin-top: 15px;
+        }
+
+        .packet-table th {
+            background-color: var(--senac-blue);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-weight: 700;
+        }
+
+        .packet-table td {
+            padding: 15px;
+            border-bottom: 1px solid #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .packet-table tr:nth-child(even) {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">1ª Geração: Filtragem de Pacotes (Stateless)</span>
+            <span class="slide-header-tag">Arquitetura</span>
+        </div>
+
+        <!-- Conteúdo Teórico (Esquerda) -->
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 38px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 25px;">
+                Como Funciona o Filtro Sem Estado?</h2>
+            <p class="body-text" style="margin-bottom: 25px;">
+                O firewall <strong>Stateless (Sem Estado)</strong> analisa cada pacote de rede de forma totalmente
+                isolada. Ele toma decisões de liberação ou bloqueio baseando-se apenas nas informações contidas nos
+                cabeçalhos das camadas 3 (IP) e 4 (TCP/UDP/ICMP).
+            </p>
+            <p class="body-text" style="margin-bottom: 30px; color: var(--text-muted);">
+                O filtro não tem memória ("estado"). Ele desconhece se o pacote é o início de uma nova conexão, parte de
+                uma conexão legítima já estabelecida ou um tráfego forjado.
+            </p>
+
+            <div
+                style="background-color: rgba(0, 93, 164, 0.05); padding: 25px; border-radius: var(--border-radius); border-top: 4px solid var(--senac-blue);">
+                <h4 style="font-size: 22px; font-weight: 700; color: var(--senac-dark-blue); margin: 0 0 10px 0;">
+                    Vantagens & Limitações Clarass</h4>
+                <ul class="custom-list" style="margin-bottom: 0;">
+                    <li style="font-size: 18px; margin-bottom: 10px;"><strong>Extrema Rapidez:</strong> Processamento na
+                        velocidade do hardware (ASICs), ideal para bordas de alta performance.</li>
+                    <li style="font-size: 18px; margin-bottom: 10px;"><strong>Vulnerável a Spoofing:</strong> Permite
+                        pacotes forjados com facilidade.</li>
+                    <li style="font-size: 18px; margin-bottom: 0;"><strong>Regras Complexas:</strong> Para conexões de
+                        ida e volta, é obrigatório criar regras explícitas para ambos os sentidos.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Exemplo de Tabela de Regras (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10;">
+            <h2
+                style="font-size: 32px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 10px; text-transform: uppercase;">
+                A Tabela de Decisão do Filtro</h2>
+            <p style="font-size: 20px; color: var(--text-muted); margin-bottom: 20px;">
+                Exemplo prático de regras aplicadas em um roteador de borda stateless:
+            </p>
+
+            <table class="packet-table">
+                <thead>
+                    <tr>
+                        <th>Regra</th>
+                        <th>IP Origem</th>
+                        <th>Porta Or.</th>
+                        <th>IP Destino</th>
+                        <th>Porta Des.</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-blue);">R1</td>
+                        <td>Qualquer</td>
+                        <td>*</td>
+                        <td>192.168.1.50</td>
+                        <td>80 (HTTP)</td>
+                        <td><span class="status-badge-permit">Permitir</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-blue);">R2</td>
+                        <td>10.0.0.99</td>
+                        <td>*</td>
+                        <td>Qualquer</td>
+                        <td>22 (SSH)</td>
+                        <td><span class="status-badge-permit">Permitir</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-blue);">R3</td>
+                        <td>Qualquer</td>
+                        <td>*</td>
+                        <td>192.168.1.100</td>
+                        <td>23 (Telnet)</td>
+                        <td><span class="status-badge-deny">Negar</span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: var(--senac-blue);">R4 (Padrão)</td>
+                        <td>Qualquer</td>
+                        <td>*</td>
+                        <td>Qualquer</td>
+                        <td>*</td>
+                        <td><span class="status-badge-deny">Negar (Implícito)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div
+                style="margin-top: 30px; background-color: #F8FAFC; border: 1px dashed var(--senac-orange); padding: 20px; border-radius: var(--border-radius);">
+                <strong style="font-size: 20px; color: var(--senac-dark-blue);">Nota de Engenharia:</strong>
+                <p style="font-size: 18px; color: var(--text-main); margin: 5px 0 0 0;">
+                    Para que o servidor Web retorne os dados ao cliente na porta 80, o administrador deve criar uma
+                    regra permitindo portas de retorno (ex: >1023), criando brechas de segurança perigosas.
+                </p>
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 7/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

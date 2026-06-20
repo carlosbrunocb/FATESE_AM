@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Prática 1: Conexão Ponto a Ponto</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            background-color: #00264d;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #00264d;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 4vh 5vw 2vh 5vw;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.5rem, 3.5vh, 2.8rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .title-bar {
+            width: 120px;
+            height: 5px;
+            background-color: #00bceb;
+            border-radius: 2px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            position: relative;
+            padding: 0 5vw 4vh 5vw;
+            gap: 2.5vw;
+            min-height: 0; /* Permite scroll em resoluções muito baixas */
+        }
+
+        /* Columns */
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 3vh 2vw;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2vh;
+            border-bottom: 2px solid rgba(0, 188, 235, 0.3);
+            padding-bottom: 1.5vh;
+            flex-shrink: 0;
+        }
+
+        .column-icon {
+            background-color: rgba(0, 188, 235, 0.1);
+            width: clamp(35px, 3vw, 50px);
+            height: clamp(35px, 3vw, 50px);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #00bceb;
+            font-size: 1.3rem;
+        }
+
+        .column-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* List Styling */
+        .column-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2vh;
+            font-size: clamp(0.9rem, 1.1vw, 1.15rem);
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        .bullet {
+            min-width: 28px;
+            height: 28px;
+            background-color: #00bceb;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00264d;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .item-content strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Diagram and Validation */
+        .diagram-container {
+            width: 100%;
+            height: 40%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 188, 235, 0.3);
+            margin-bottom: 2vh;
+            background-color: #fff;
+            flex-shrink: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .diagram-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 25vh; /* Limita altura para não empurrar a validação */
+            object-fit: contain;
+        }
+
+        .validation-box {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #22c55e;
+            padding: 2vh 1.5vw;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .terminal-line {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #00bceb;
+            margin: 1vh 0;
+            font-size: 0.95rem;
+        }
+
+        .tech-deco {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <h1 class="main-title">Prática 1: Conexão Ponto a Ponto (Crossover)</h1>
+            <div class="title-bar"></div>
+        </header>
+
+        <main class="content-area">
+            <div class="column">
+                <div class="column-header">
+                    <div class="column-icon"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="column-title">Configuração Passo a Passo</h2>
+                </div>
+                <ul class="column-list">
+                    <li class="list-item">
+                        <div class="bullet">1</div>
+                        <div class="item-content">
+                            <strong>Adicionar Dispositivos</strong>
+                            Arraste dois computadores <em>PC-PT</em> (PC0 e PC1) para a área de trabalho do Packet Tracer.
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="bullet">2</div>
+                        <div class="item-content">
+                            <strong>Conexão Física</strong>
+                            Use o cabo <em>Copper Cross-Over</em> (tracejado) para conectar a porta FastEthernet0 do PC0 ao PC1.
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="bullet">3</div>
+                        <div class="item-content">
+                            <strong>Configuração PC0</strong>
+                            IP: <span class="code-snippet">192.168.1.1</span><br>
+                            Máscara: <span class="code-snippet">255.255.255.0</span>
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <div class="bullet">4</div>
+                        <div class="item-content">
+                            <strong>Configuração PC1</strong>
+                            IP: <span class="code-snippet">192.168.1.2</span><br>
+                            Máscara: <span class="code-snippet">255.255.255.0</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="column">
+                <div class="column-header">
+                    <div class="column-icon"><i class="fas fa-network-wired"></i></div>
+                    <h2 class="column-title">Topologia e Validação</h2>
+                </div>
+
+                <div class="diagram-container">
+                    <img alt="Diagrama Crossover" class="diagram-img" src="imagens/cabo_crossover.png" />
+                </div>
+
+                <div class="validation-box">
+                    <p class="font-bold mb-2"><i class="fas fa-check-circle text-blue-400 mr-2"></i>Teste de Conectividade</p>
+                    <p class="text-sm mb-1">No prompt de comando do PC0, execute:</p>
+                    <div class="terminal-line">
+                        C:\> ping 192.168.1.2
+                    </div>
+                    <p class="text-xs text-gray-400 italic">
+                        Dica: Verifique se os triângulos na conexão ficaram verdes.
+                    </p>
+                </div>
+
+                <svg class="tech-deco" width="150" height="150" viewBox="0 0 100 100">
+                    <circle cx="80" cy="80" r="15" fill="none" stroke="#00bceb" stroke-width="1" />
+                    <circle cx="30" cy="30" r="20" fill="none" stroke="#00bceb" stroke-width="1" />
+                    <line x1="45" y1="45" x2="68" y2="68" stroke="#00bceb" stroke-width="1" />
+                </svg>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

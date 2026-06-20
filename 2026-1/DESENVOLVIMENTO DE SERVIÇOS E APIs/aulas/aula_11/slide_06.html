@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Evolução Histórica dos Padrões Arquiteturais</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content */
+        .content-area {
+            position: absolute;
+            top: 105px;
+            left: 50px;
+            width: 95%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Timeline Container */
+        .timeline-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-subtitle {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        /* Timeline */
+        .timeline-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 72%;
+            left: 80px;
+            right: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e0 100%);
+            border-radius: 2px;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 72%;
+            left: 80px;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, #63b3ed 0%, #4299e1 100%);
+            border-radius: 2px;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .timeline-points {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+            width: 100%;
+        }
+
+        .timeline-point {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 210px;
+        }
+
+        .point-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            z-index: 5;
+        }
+
+        .point-circle.completed {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            border: 4px solid #c6f6d5;
+        }
+
+        .point-circle.active {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            border: 4px solid #bee3f8;
+        }
+
+        .point-circle.future {
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            border: 4px solid #e2e8f0;
+        }
+
+        .point-content {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            min-height: 85px;
+        }
+
+        .point-title {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .point-year {
+            font-size: 12pt;
+            color: #718096;
+            margin-bottom: 6px;
+        }
+
+        .point-description {
+            font-size: 11pt;
+            color: #718096;
+            line-height: 1.3;
+        }
+
+        /* Evolution Cards */
+        .evolution-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .evolution-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 130px;
+        }
+
+        .evolution-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .evolution-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .evolution-icon.blue {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+        }
+
+        .evolution-icon.green {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .evolution-icon.purple {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        }
+
+        .evolution-icon.orange {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .evolution-title {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .evolution-description {
+            font-size: 12pt;
+            color: #718096;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-history header-icon"></i>
+                <span>Evolução Histórica dos Padrões</span>
+            </div>
+            <div class="header-subtitle">Da arquitetura monolítica aos microserviços</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- Timeline Container -->
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <div class="timeline-title">
+                        <i class="fas fa-clock" style="color: #63b3ed;"></i>
+                        <span>Linha do Tempo da Evolução</span>
+                    </div>
+                    <div class="timeline-subtitle">Progressão dos padrões arquiteturais ao longo dos anos</div>
+                </div>
+                <div class="timeline-wrapper">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-progress"></div>
+                    <div class="timeline-points">
+                        <!-- Point 1: Monolithic -->
+                        <div class="timeline-point">
+                            <div class="point-circle completed">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="point-content">
+                                <div class="point-title">Monolítica</div>
+                                <div class="point-year">1970s</div>
+                                <div class="point-description">Arquitetura única e centralizada</div>
+                            </div>
+                        </div>
+                        <!-- Point 2: MVC -->
+                        <div class="timeline-point">
+                            <div class="point-circle completed">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="point-content">
+                                <div class="point-title">MVC</div>
+                                <div class="point-year">1980s</div>
+                                <div class="point-description">Separação Model-View-Controller</div>
+                            </div>
+                        </div>
+                        <!-- Point 3: Layers -->
+                        <div class="timeline-point">
+                            <div class="point-circle completed">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="point-content">
+                                <div class="point-title">Camadas</div>
+                                <div class="point-year">1990s</div>
+                                <div class="point-description">Arquitetura em camadas</div>
+                            </div>
+                        </div>
+                        <!-- Point 4: Service-Repository -->
+                        <div class="timeline-point">
+                            <div class="point-circle active">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="point-content">
+                                <div class="point-title">Service-Repository</div>
+                                <div class="point-year">2000s</div>
+                                <div class="point-description">Separação de responsabilidades</div>
+                            </div>
+                        </div>
+                        <!-- Point 5: Microservices -->
+                        <div class="timeline-point">
+                            <div class="point-circle future">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="point-content">
+                                <div class="point-title">Microserviços</div>
+                                <div class="point-year">2010s+</div>
+                                <div class="point-description">Arquitetura distribuída</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Evolution Cards -->
+            <div class="evolution-section">
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <div class="evolution-icon blue">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <div class="evolution-title">Monolítica</div>
+                    </div>
+                    <div class="evolution-description">
+                        Aplicação única onde todos os componentes estão interligados e dependem uns dos outros.
+                    </div>
+                </div>
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <div class="evolution-icon green">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="evolution-title">MVC</div>
+                    </div>
+                    <div class="evolution-description">
+                        Separação em Model, View e Controller para melhor organização do código.
+                    </div>
+                </div>
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <div class="evolution-icon purple">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="evolution-title">Camadas</div>
+                    </div>
+                    <div class="evolution-description">
+                        Divisão em camadas lógicas: apresentação, negócio e dados.
+                    </div>
+                </div>
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <div class="evolution-icon orange">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="evolution-title">Service-Repo</div>
+                    </div>
+                    <div class="evolution-description">
+                        Separação entre lógica de negócio e acesso a dados.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Padrão MVC</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Conceito Fundamental</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    <span>Em andamento</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

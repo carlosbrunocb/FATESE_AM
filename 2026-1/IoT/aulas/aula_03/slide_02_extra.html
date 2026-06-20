@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>O Problema do Floating</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding: 30px 60px 10px;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .title-accent {
+            color: #38bdf8;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 20px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon.warning {
+            color: #fbbf24;
+            background-color: rgba(251, 191, 36, 0.1);
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background-color: rgba(56, 189, 248, 0.05);
+            border-left: 4px solid #38bdf8;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+        
+        .code-inline {
+            background-color: #0f172a;
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                Entradas Digitais: O problema do <span class="title-accent">Estado Flutuante</span>
+            </h1>
+            <p class="text-gray-400 mt-2 text-lg">Por que não podemos simplesmente ligar um botão direto no pino?</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="info-card">
+                <div class="card-icon warning">
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+                <h2 class="card-title">O que é o estado "Floating"?</h2>
+                <div class="card-text space-y-4">
+                    <p>Quando conectamos um botão a um pino GPIO e o botão <strong>NÃO está pressionado</strong>, o pino fica "solto" no ar, sem conexão nem com o Positivo (3.3V) nem com o Negativo (GND).</p>
+                    <p>Nesse estado, o pino age como uma <strong>antena</strong>, captando interferências eletromagnéticas do ambiente (ondas de rádio, Wi-Fi, estática do seu corpo).</p>
+                    <p>O resultado? O microcontrolador lê valores aleatórios, alternando loucamente entre <span class="code-inline">HIGH</span> e <span class="code-inline">LOW</span>, causando disparos falsos no seu código.</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">
+                    <i class="fas fa-anchor"></i>
+                </div>
+                <h2 class="card-title">A Solução: Resistores de Amarração</h2>
+                <div class="card-text space-y-4">
+                    <p>Para resolver isso, usamos resistores para "amarrar" (pull) o pino a um estado conhecido quando o botão não está pressionado.</p>
+                    
+                    <div class="highlight-box">
+                        <p class="font-bold text-white mb-1"><i class="fas fa-arrow-up text-blue-400 mr-2"></i>Pull-Up (Puxar para Cima)</p>
+                        <p class="text-sm">O resistor liga o pino ao 3.3V. Estado padrão: <span class="code-inline">HIGH</span>. Quando aperta o botão: <span class="code-inline">LOW</span>.</p>
+                    </div>
+
+                    <div class="highlight-box" style="border-left-color: #fbbf24; background-color: rgba(251, 191, 36, 0.05);">
+                        <p class="font-bold text-white mb-1"><i class="fas fa-arrow-down text-yellow-400 mr-2"></i>Pull-Down (Puxar para Baixo)</p>
+                        <p class="text-sm">O resistor liga o pino ao GND. Estado padrão: <span class="code-inline">LOW</span>. Quando aperta o botão: <span class="code-inline">HIGH</span>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

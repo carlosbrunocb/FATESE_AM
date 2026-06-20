@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Middleware de Validação (validaLivro.js)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Elements */
+        .bg-element {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.05;
+        }
+
+        .bg-grid {
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(#fff 1px, transparent 1px),
+                linear-gradient(90deg, #fff 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.03;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .file-badge {
+            background-color: #333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #aaa;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Code Window */
+        .code-window {
+            flex: 1;
+            background-color: #1a1a1a;
+            /* Darker than bg for contrast */
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .window-header {
+            background-color: #252526;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 20px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .tab-active {
+            background-color: #1e1e1e;
+            padding: 5px 15px;
+            border-radius: 4px 4px 0 0;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            border-top: 2px solid #8CC84B;
+        }
+
+        .code-content {
+            flex: 1;
+            padding: 20px 0;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            font-size: 18px;
+            /* Large readable text */
+            line-height: 1.6;
+            display: flex;
+        }
+
+        .line-numbers {
+            padding: 0 15px;
+            text-align: right;
+            color: #555;
+            border-right: 1px solid #333;
+            user-select: none;
+            min-width: 40px;
+        }
+
+        .code-lines {
+            padding-left: 20px;
+            color: #d4d4d4;
+            flex: 1;
+        }
+
+        .code-line {
+            min-height: 29px;
+            /* Matches line-height roughly */
+        }
+
+        /* Syntax Highlighting Classes */
+        .kwd {
+            color: #569cd6;
+            font-weight: bold;
+        }
+
+        /* Keywords: const, function */
+        .func {
+            color: #dcdcaa;
+        }
+
+        /* Functions */
+        .str {
+            color: #ce9178;
+        }
+
+        /* Strings */
+        .var {
+            color: #9cdcfe;
+        }
+
+        /* Variables */
+        .prop {
+            color: #9cdcfe;
+        }
+
+        /* Properties */
+        .cmt {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Comments */
+        .num {
+            color: #b5cea8;
+        }
+
+        /* Numbers */
+        .op {
+            color: #d4d4d4;
+        }
+
+        /* Operators */
+        .cls {
+            color: #4ec9b0;
+        }
+
+        /* Classes/Types */
+
+        /* Annotations */
+        .annotation-area {
+            height: 120px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .note-card {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .note-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+        }
+
+        .note-title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .note-text {
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Highlights in code */
+        .highlight-line {
+            background-color: rgba(140, 200, 75, 0.1);
+            display: inline-block;
+            width: 100%;
+        }
+
+        .error-line {
+            background-color: rgba(255, 95, 86, 0.1);
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* Tooltip-like marker in code */
+        .marker-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #8CC84B;
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+            vertical-align: middle;
+            transform: translateY(-1px);
+        }
+
+        .indent-1 {
+            padding-left: 20px;
+        }
+
+        .indent-2 {
+            padding-left: 40px;
+        }
+
+        .indent-3 {
+            padding-left: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-element bg-grid"></div>
+        <div class="content-wrapper">
+            <!-- Header -->
+            <header class="header">
+                <div class="title-group">
+                    <p class="subtitle">Implementação Prática</p>
+                    <h1 class="title">Middleware de <span style="color: #8CC84B;">Validação</span></h1>
+                </div>
+                <div class="file-badge">
+                    <i class="fab fa-js mr-2 text-yellow-400"></i>
+                    src/middlewares/validaLivro.js
+                </div>
+            </header>
+            <!-- Main Code Area -->
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="window-controls">
+                        <div class="control-dot dot-red"></div>
+                        <div class="control-dot dot-yellow"></div>
+                        <div class="control-dot dot-green"></div>
+                    </div>
+                    <div class="tab-active">
+                        <i class="fab fa-js mr-2 text-yellow-400"></i> validaLivro.js
+                    </div>
+                </div>
+                <div class="code-content">
+                    <div class="line-numbers">
+                        1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16
+                    </div>
+                    <div class="code-lines">
+                        <div class="code-line"><span class="kwd">const</span> <span class="func">validaLivro</span>
+                            <span class="op">=</span> <span class="op">(</span><span class="var">req</span><span
+                                class="op">,</span> <span class="var">res</span><span class="op">,</span> <span
+                                class="var">next</span><span class="op">)</span> <span class="kwd">=&gt;</span> <span
+                                class="op">{</span></div>
+                        <div class="code-line indent-1"> <span class="cmt">// 1. Desestrutura dados do corpo da requisição</span>
+                        </div>
+                        <div class="code-line indent-1"> <span class="kwd">const</span> <span class="op">{</span> <span
+                                class="prop">titulo</span><span class="op">,</span> <span class="prop">autor</span><span
+                                class="op">,</span> <span class="prop">ano</span> <span class="op">}</span> <span
+                                class="op">=</span> <span class="var">req</span><span class="op">.</span><span
+                                class="prop">body</span><span class="op">;</span></div>
+                        <div class="code-line"> </div>
+                        <div class="code-line indent-1"> <span class="cmt">// 2. Verifica se algum campo obrigatório está
+                                faltando</span></div>
+                        <div class="code-line indent-1"> <span class="kwd">if</span> <span class="op">(!</span><span
+                                class="prop">titulo</span> <span class="op">|| !</span><span class="prop">autor</span>
+                            <span class="op">|| !</span><span class="prop">ano</span><span class="op">)</span> <span
+                                class="op">{</span></div>
+                        <div class="code-line error-line indent-2"> <span class="cmt">// 3. SHORT-CIRCUIT: Encerra com erro
+                                400</span></div>
+                        <div class="code-line error-line indent-2"> <span class="kwd">return</span> <span
+                                class="var">res</span><span class="op">.</span><span class="func">status</span><span
+                                class="op">(</span><span class="num">400</span><span class="op">).</span><span
+                                class="func">json</span><span class="op">({</span> </div>
+                        <div class="code-line error-line indent-3"> <span class="prop">erro</span><span class="op">:</span> <span
+                                class="str">"Dados inválidos"</span><span class="op">,</span> </div>
+                        <div class="code-line error-line indent-3"> <span class="prop">mensagem</span><span class="op">:</span>
+                            <span class="str">"Os campos são obrigatórios."</span> </div>
+                        <div class="code-line error-line indent-2"> <span class="op">});</span></div>
+                        <div class="code-line indent-1"> <span class="op">}</span></div>
+                        <div class="code-line"> </div>
+                        <div class="code-line highlight-line indent-1"> <span class="cmt">// 4. Sucesso: Passa o controle para o
+                                Controller</span></div>
+                        <div class="code-line highlight-line indent-1"> <span class="func">next</span><span class="op">();</span>
+                        </div>
+                        <div class="code-line"><span class="op">};</span></div>
+                        <div class="code-line"> </div>
+                        <div class="code-line"><span class="var">module</span><span class="op">.</span><span
+                                class="var">exports</span> <span class="op">=</span> <span
+                                class="var">validaLivro</span><span class="op">;</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Explanatory Notes -->
+            <div class="annotation-area">
+                <div class="note-card" style="border-left: 3px solid #569cd6;">
+                    <i class="fas fa-check-double note-icon" style="color: #569cd6;"></i>
+                    <div>
+                        <p class="note-title">Sanitização de Entrada</p>
+                        <p class="note-text">Garante que o Controller só seja executado se os dados mínimos necessários
+                            (titulo, autor, ano) estiverem presentes no <code>req.body</code>.</p>
+                    </div>
+                </div>
+                <div class="note-card" style="border-left: 3px solid #ff5f56;">
+                    <i class="fas fa-ban note-icon" style="color: #ff5f56;"></i>
+                    <div>
+                        <p class="note-title">Short-Circuit (Curto-Circuito)</p>
+                        <p class="note-text">Ao usar <code>return res...</code>, encerramos o ciclo Request-Response
+                            imediatamente. O <code>next()</code> nunca é chamado e a rota não continua.</p>
+                    </div>
+                </div>
+                <div class="note-card" style="border-left: 3px solid #8CC84B;">
+                    <i class="fas fa-arrow-right note-icon" style="color: #8CC84B;"></i>
+                    <div>
+                        <p class="note-title">Fluxo de Sucesso</p>
+                        <p class="note-text">Somente se todas as verificações passarem, a função <code>next()</code> é
+                            invocada, permitindo que a requisição chegue ao próximo passo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercícios Propostos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            background-color: #00264d;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #00264d;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Background Pattern Responsivo */
+        .bg-pattern {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 45%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.02);
+            z-index: 0;
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+            pointer-events: none;
+        }
+
+        /* Header */
+        .header {
+            padding: 4vh 5vw 1vh 5vw;
+            z-index: 10;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.8rem, 4vh, 3rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-accent {
+            height: 6px;
+            width: 80px;
+            background-color: #00bceb;
+            margin-top: 5px;
+            border-radius: 3px;
+        }
+
+        .header-icon {
+            font-size: clamp(2rem, 5vh, 3rem);
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            padding: 2vh 5vw 5vh 5vw;
+            gap: 3vw;
+            position: relative;
+            z-index: 10;
+            min-height: 0; /* Para permitir scroll interno se necessário */
+        }
+
+        /* Left Column: Checklist */
+        .list-column {
+            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8vh;
+            justify-content: center;
+        }
+
+        .task-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2vh 1.5vw;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .task-card:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(10px);
+            border-color: rgba(0, 188, 235, 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-checkbox {
+            width: clamp(24px, 2vw, 32px);
+            height: clamp(24px, 2vw, 32px);
+            border: 2px solid #00bceb;
+            border-radius: 6px;
+            margin-right: 1.5vw;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .task-card:hover .custom-checkbox {
+            background-color: rgba(0, 188, 235, 0.2);
+        }
+
+        .task-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1rem, 1.5vw, 1.3rem);
+            color: #475569;
+            margin-right: 1vw;
+            width: 35px;
+        }
+
+        .task-title {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .task-desc {
+            margin: 0;
+            font-size: clamp(0.85rem, 1vw, 1rem);
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        /* Right Column: Challenge */
+        .sidebar-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5vh;
+            justify-content: center;
+        }
+
+        .challenge-box {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 2px dashed #f59e0b;
+            border-radius: 16px;
+            padding: 3.5vh 2vw;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .challenge-badge {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background-color: #f59e0b;
+            color: #00264d;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .challenge-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            color: #f59e0b;
+            margin: 10px 0 15px 0;
+        }
+
+        .challenge-text {
+            color: #e2e8f0;
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+            line-height: 1.6;
+        }
+
+        /* Info Box */
+        .info-box {
+            background-color: #0f172a;
+            border-radius: 12px;
+            padding: 2vh 1.5vw;
+            border-left: 4px solid #22c55e;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .info-icon {
+            color: #22c55e;
+            font-size: 1.4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        
+        <header class="header">
+            <div>
+                <h1 class="main-title">Exercícios Propostos</h1>
+                <div class="header-accent"></div>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="list-column">
+                <div class="task-card">
+                    <div class="task-number">01</div>
+                    <div class="custom-checkbox"><i class="fas fa-check" style="font-size: 0.8rem; color: #00bceb;"></i></div>
+                    <div class="task-content">
+                        <h3 class="task-title">Rede Ponto a Ponto Modificada</h3>
+                        <p class="task-desc">Altere os IPs para a rede <strong>192.168.10.0/24</strong> e valide o ping entre os hosts.</p>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-number">02</div>
+                    <div class="custom-checkbox"></div>
+                    <div class="task-content">
+                        <h3 class="task-title">Expansão da Rede Estrela</h3>
+                        <p class="task-desc">Acrescente um <strong>PC4 (10.0.0.4)</strong> ao Switch e teste a conectividade geral.</p>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-number">03</div>
+                    <div class="custom-checkbox"></div>
+                    <div class="task-content">
+                        <h3 class="task-title">Simulação de Falha Física</h3>
+                        <p class="task-desc">Delete um cabo durante um <code>ping -t</code>. Reconecte e observe o tempo de recuperação.</p>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-number">04</div>
+                    <div class="custom-checkbox"></div>
+                    <div class="task-content">
+                        <h3 class="task-title">Análise de Protocolo ARP</h3>
+                        <p class="task-desc">No modo Simulation, filtre o <strong>ARP</strong> e explique a sequência Request/Reply ao pingar um novo IP.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-column">
+                <div class="challenge-box">
+                    <div class="challenge-badge">Desafio Extra</div>
+                    <i class="fas fa-trophy absolute bottom-4 right-4 text-6xl opacity-10 pointer-events-none text-yellow-500"></i>
+                    <h3 class="challenge-title">Gateway & Roteamento</h3>
+                    <div class="challenge-text">
+                        <p>Configure o <strong>Default Gateway</strong> (ex: 10.0.0.254).</p>
+                        <p class="mt-4 font-semibold italic text-blue-300">Reflexão: O Switch saberia o que fazer com um pacote para 8.8.8.8?</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white mb-1">Dica de Ouro</h4>
+                        <p class="text-sm text-gray-400">Use o atalho <strong>P</strong> para enviar pings visuais (Simple PDU) rapidamente.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

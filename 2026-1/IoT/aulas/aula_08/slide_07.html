@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modo STA+AP (Dual Mode) - Operação Simultânea</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            /* Adjusted to prevent bottom overflow */
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: calc(100% - 120px);
+        }
+
+        .left-panel,
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .diagram-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .network-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .network-node {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            flex: 1;
+        }
+
+        .network-node i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .network-node .label {
+            font-size: 13px;
+            line-height: 1.2;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .connection-line {
+            flex: 1.5;
+            height: 2px;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            position: relative;
+            margin: 0 5px;
+        }
+
+        .connection-line::after {
+            content: '▶';
+            position: absolute;
+            right: -2px;
+            top: -8px;
+            color: #00BCD4;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            align-self: flex-start;
+            margin-top: 5px;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .use-case-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .use-case-title {
+            color: #00BCD4;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .use-case-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .technical-specs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .spec-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 12px 5px;
+            text-align: center;
+        }
+
+        .spec-value {
+            color: #00BCD4;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .spec-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .warning-box {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+
+        .warning-text {
+            color: #FF9800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #00BCD4;
+            margin-top: 10px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Modo STA+AP (Dual Mode)</div>
+                    <div class="subtitle">Operação Simultânea - Station + Access Point</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 14px 28px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-sync-alt" style="color: #00BCD4; font-size: 22px; margin-right: 12px;"></i>
+                    <span style="color: #fff; font-weight: 700; font-size: 16px;">Dual Mode</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-network-wired"></i></div>
+                            <div>
+                                <div class="card-title">Arquitetura Dual Mode</div>
+                                <div class="card-subtitle">Operação simultânea STA e AP</div>
+                            </div>
+                        </div>
+                        <div class="diagram-container">
+                            <div class="network-flow">
+                                <div class="network-node">
+                                    <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
+                                    <div class="label">Dispositivos</div>
+                                </div>
+                                <div class="connection-line"></div>
+                                <div class="network-node">
+                                    <i class="fas fa-microchip" style="color: #2196F3;"></i>
+                                    <div class="label">ESP32<br /><span style="font-size: 10px;">(AP + STA)</span></div>
+                                </div>
+                                <div class="connection-line"></div>
+                                <div class="network-node">
+                                    <!-- <i class="fas fa-router" style="color: #00BCD4;"></i> -->
+                                     <img width="36px" src="https://img.icons8.com/color/48/wifi-router.png"
+                                            alt="Roteador" class="device-img">
+                                    <div class="label">Roteador<br /><span style="font-size: 10px;">(Internet)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-badge status-active">✓ Ambos os modos ativos</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-bullseye"></i></div>
+                            <div>
+                                <div class="card-title">Casos de Uso</div>
+                                <div class="card-subtitle">Aplicações práticas do modo dual</div>
+                            </div>
+                        </div>
+                        <div class="use-case-grid">
+                            <div class="use-case-item">
+                                <div class="use-case-title">
+                                    <i class="fas fa-cogs" style="font-size: 12px;"></i>
+                                    <span>Comissionamento</span>
+                                </div>
+                                <div class="use-case-desc">Configuração inicial via AP, conexão à rede via STA</div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-title">
+                                    <i class="fas fa-bridge" style="font-size: 12px;"></i>
+                                    <span>Bridge de Rede</span>
+                                </div>
+                                <div class="use-case-desc">Conecta dispositivos locais à internet</div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-title">
+                                    <i class="fas fa-undo" style="font-size: 12px;"></i>
+                                    <span>Fallback</span>
+                                </div>
+                                <div class="use-case-desc">Modo AP como backup se STA falhar</div>
+                            </div>
+                            <div class="use-case-item">
+                                <div class="use-case-title">
+                                    <i class="fas fa-tools" style="font-size: 12px;"></i>
+                                    <span>Manutenção</span>
+                                </div>
+                                <div class="use-case-desc">Acesso local sem perder conectividade</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>
+                                <div class="card-title">Considerações Técnicas</div>
+                                <div class="card-subtitle">Limitações e cuidados</div>
+                            </div>
+                        </div>
+                        <div class="technical-specs">
+                            <div class="spec-item">
+                                <div class="spec-value">50%</div>
+                                <div class="spec-label">Throughput</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">2.4GHz</div>
+                                <div class="spec-label">Canal</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-value">4-8</div>
+                                <div class="spec-label">Clientes Max</div>
+                            </div>
+                        </div>
+                        <div class="warning-box">
+                            <div class="warning-text">
+                                <i class="fas fa-bolt" style="color: #FF9800; font-size: 16px;"></i>
+                                <span>Consumo de energia aumenta em 30-40% no modo dual</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-code"></i></div>
+                            <div>
+                                <div class="card-title">Implementação</div>
+                                <div class="card-subtitle">Código básico para modo dual</div>
+                            </div>
+                        </div>
+                        <div class="code-snippet">
+                            <span style="color: #4CAF50;">WiFi</span>.<span
+                                style="color: #2196F3;">mode</span>(WIFI_AP_STA);<br />
+                            <span style="color: #4CAF50;">WiFi</span>.<span style="color: #2196F3;">softAP</span>(<span
+                                style="color: #FF9800;">"ESP32-Config"</span>, <span
+                                style="color: #FF9800;">"senha123"</span>);<br />
+                            <span style="color: #4CAF50;">WiFi</span>.<span style="color: #2196F3;">begin</span>(<span
+                                style="color: #FF9800;">"Wokwi-GUEST"</span>, <span style="color: #FF9800;">""</span>);
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 14px; margin-right: 10px;"></i>
+                <span>Próximo: Segurança Wi-Fi</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

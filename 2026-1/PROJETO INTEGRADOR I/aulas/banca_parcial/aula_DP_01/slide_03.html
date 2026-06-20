@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Jornada de Valor: Principal → Secundária → Resultado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #333; /* Fundo escuro externo para destacar o slide */
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT GRID PRINCIPAL --- */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: grid;
+            grid-template-rows: 100px 1fr;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #0066CC 0%, #004080 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            height: 50px;
+            width: auto;
+        }
+
+        .header-text { font-family: 'Montserrat', sans-serif; }
+        .header-text .title { font-size: 22pt; font-weight: 700; }
+        .header-text .subtitle { font-size: 13pt; }
+
+        .header-right { text-align: right; }
+        .header-right .title { font-size: 14pt; font-weight: 600; }
+        .header-right .subtitle { font-size: 11pt; }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- COLUNA ESQUERDA (DIAGRAMA) --- */
+        .left-column {
+            width: 60%;
+            height: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title-wrap { display: flex; align-items: center; gap: 10px; }
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background: #0066CC;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-box i { font-size: 18pt; color: white; }
+        .section-title { font-size: 16pt; font-weight: 700; color: #1e293b; }
+        .section-subtitle { font-size: 12pt; color: #64748b; }
+
+        .example-badge {
+            background: #fef3c7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #f59e0b;
+        }
+        .example-badge span { font-size: 12pt; font-weight: 600; color: #92400e; }
+
+        /* Flow Diagram */
+        .diagram-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .diagram-step {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-main-box {
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .step-main-box.bg-blue-dark { background: #0066CC; }
+        .step-main-box.bg-blue-light { background: #3B82F6; }
+        .step-main-box.bg-green { background: #10B981; }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: #FF6600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .step-main-box i { font-size: 24pt; margin-bottom: 10px; }
+        .step-title { font-size: 14pt; font-weight: 600; }
+        .step-subtitle { font-size: 11pt; opacity: 0.9; margin-top: 5px; }
+
+        .step-sub-box {
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .step-sub-box p { font-size: 11pt; color: #64748b; }
+
+        .diagram-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .diagram-arrow i { font-size: 24pt; color: #0066CC; }
+
+        /* Definitions Grid */
+        .definitions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .def-card {
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .def-card.orange { background: #fef3c7; border-left: 4px solid #FF6600; }
+        .def-card.blue { background: #dbeafe; border-left: 4px solid #3B82F6; }
+        .def-card.green { background: #d1fae5; border-left: 4px solid #10B981; }
+
+        .def-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .def-header i.orange { color: #FF6600; font-size: 14pt; }
+        .def-header i.blue { color: #3B82F6; font-size: 14pt; }
+        .def-header i.green { color: #10B981; font-size: 14pt; }
+        .def-title { font-size: 13pt; font-weight: 600; color: #1e293b; }
+        .def-text { font-size: 11pt; color: #64748b; }
+
+        /* --- COLUNA DIREITA (DETALHES/PERGUNTAS) --- */
+        .right-column {
+            width: 39%;
+            height: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .right-icon-box {
+            width: 40px;
+            height: 40px;
+            background: #FF6600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-icon-box i { font-size: 18pt; color: white; }
+        .right-title { font-size: 16pt; font-weight: 700; color: #1e293b; }
+        .right-subtitle { font-size: 12pt; color: #64748b; }
+
+        /* Question Cards */
+        .question-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .q-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+        .q-number.bg-blue-dark { background: #0066CC; }
+        .q-number.bg-blue-light { background: #3B82F6; }
+        
+        .q-text-wrap { display: flex; flex-direction: column; }
+        .q-title { font-size: 12pt; font-weight: 600; color: #1e293b; }
+        .q-subtitle { font-size: 11pt; color: #64748b; margin-top: 5px; }
+
+        /* Micro Example */
+        .example-box {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #FF6600;
+        }
+        .example-box-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .example-box-header i { color: #FF6600; font-size: 16pt; }
+        .example-box-title { font-size: 13pt; font-weight: 600; color: #1e293b; }
+        
+        .example-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .example-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .example-item i { color: #10B981; margin-right: 5px; font-size: 11pt; }
+        .example-item p { font-size: 11pt; color: #64748b; }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <img alt="Senac Logo" src="img/image.png" class="header-logo" />
+                <div class="header-text">
+                    <p class="title">JORNADA DE VALOR</p>
+                    <p class="subtitle">Principal → Secundária → Resultado</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <p class="title">Prof. Carlos Bruno</p>
+                <p class="subtitle">FATESE - ADS</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="left-column">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <div class="icon-box">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div>
+                            <p class="section-title">Fluxo de Jornada de Valor</p>
+                            <p class="section-subtitle">Tríade estrutural do projeto</p>
+                        </div>
+                    </div>
+                    <div class="example-badge">
+                        <span>Exemplo: AdoptMatch</span>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-blue-dark">
+                            <div class="step-number">1</div>
+                            <i class="fas fa-star"></i>
+                            <p class="step-title">Principal</p>
+                            <p class="step-subtitle">Killer Feature</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Razão de existência</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-blue-light">
+                            <div class="step-number">2</div>
+                            <i class="fas fa-cogs"></i>
+                            <p class="step-title">Secundária</p>
+                            <p class="step-subtitle">Suporte</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Ponte para principal</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="diagram-step">
+                        <div class="step-main-box bg-green">
+                            <div class="step-number">3</div>
+                            <i class="fas fa-trophy"></i>
+                            <p class="step-title">Resultado</p>
+                            <p class="step-subtitle">Valor Gerado</p>
+                        </div>
+                        <div class="step-sub-box">
+                            <p>Ganho real</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="definitions-grid">
+                    <div class="def-card orange">
+                        <div class="def-header">
+                            <i class="fas fa-star orange"></i>
+                            <p class="def-title">Principal</p>
+                        </div>
+                        <p class="def-text">É a razão da existência. Sem ela, o projeto morre.</p>
+                    </div>
+                    <div class="def-card blue">
+                        <div class="def-header">
+                            <i class="fas fa-cogs blue"></i>
+                            <p class="def-title">Secundária</p>
+                        </div>
+                        <p class="def-text">Só entra no MVP se for a ponte.</p>
+                    </div>
+                    <div class="def-card green">
+                        <div class="def-header">
+                            <i class="fas fa-trophy green"></i>
+                            <p class="def-title">Resultado</p>
+                        </div>
+                        <p class="def-text">Valor real para o cliente.</p>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="right-column">
+                <div class="right-header">
+                    <div class="right-icon-box">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div>
+                        <p class="right-title">Perguntas-Gui</p>
+                        <p class="right-subtitle">Validação da jornada</p>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="q-number bg-blue-dark">1</div>
+                    <div class="q-text-wrap">
+                        <p class="q-title">Qual evento prova que a Killer Feature entregou valor?</p>
+                        <p class="q-subtitle">Ex: Match realizado com sucesso</p>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="q-number bg-blue-light">2</div>
+                    <div class="q-text-wrap">
+                        <p class="q-title">Qual suporte mínimo é indispensável?</p>
+                        <p class="q-subtitle">Ex: Chat para validar visita</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-box-header">
+                        <i class="fas fa-paw"></i>
+                        <p class="example-box-title">AdoptMatch - Exemplo</p>
+                    </div>
+                    <div class="example-grid">
+                        <div class="example-item">
+                            <i class="fas fa-check"></i>
+                            <p>Quiz de afinidade</p>
+                        </div>
+                        <div class="example-item">
+                            <i class="fas fa-check"></i>
+                            <p>Match inteligente</p>
+                        </div>
+                        <div class="example-item">
+                            <i class="fas fa-check"></i>
+                            <p>Chat interno</p>
+                        </div>
+                        <div class="example-item">
+                            <i class="fas fa-check"></i>
+                            <p>-40% devolução</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atividade Prática - Escaneamento e Conexão</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .activity-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .activity-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(33, 150, 243, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .card-subtitle {
+            color: #00BCD4;
+            font-size: 15px;
+        }
+
+        .card-content {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .features-list {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item i {
+            color: #00BCD4;
+            font-size: 12px;
+        }
+
+        .objectives-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .objectives-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .objectives-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .objective-item {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 80px;
+        }
+
+        .objective-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00BCD4;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-text {
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .wokwi-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wokwi-badge i {
+            color: #00BCD4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <h1 class="main-title">Atividade Prática</h1>
+                    <p class="subtitle">Escaneamento e Conexão Wi-Fi no ESP32</p>
+                </div>
+                <div class="wokwi-badge">
+                    <i class="fas fa-microchip"></i>
+                    <span>Simulador Wokwi</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="activity-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Parte 1: WiFi Scanner</div>
+                            <div class="card-subtitle">Escaneamento de redes disponíveis</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Implementar algoritmo para escanear e listar todas as redes Wi-Fi disponíveis, identificando
+                            SSID, RSSI e tipo de segurança.</p>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-wifi"></i>
+                            <span>Scan Networks</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-signal"></i>
+                            <span>RSSI</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-lock"></i>
+                            <span>Segurança</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="activity-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Parte 2: Conexão Automática</div>
+                            <div class="card-subtitle">Resiliência e reconexão</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Desenvolver lógica de conexão automática com tratamento de erros e mecanismos de reconexão
+                            para projetos de campo.</p>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-plug"></i>
+                            <span>Auto Connect</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-redo"></i>
+                            <span>Reconexão</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Resiliência</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="objectives-section">
+                <div class="objectives-header">
+                    <i class="fas fa-bullseye" style="color: #00BCD4; font-size: 20px;"></i>
+                    <div class="objectives-title">Objetivos de Aprendizagem</div>
+                </div>
+                <div class="objectives-grid">
+                    <div class="objective-item">
+                        <div class="objective-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="objective-text">Compreender o processo de escaneamento de redes Wi-Fi</div>
+                    </div>
+                    <div class="objective-item">
+                        <div class="objective-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="objective-text">Implementar conexão automática com tratamento de erros</div>
+                    </div>
+                    <div class="objective-item">
+                        <div class="objective-icon">
+                            <i class="fas fa-sync"></i>
+                        </div>
+                        <div class="objective-text">Desenvolver mecanismos de reconexão resiliente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <span>Próximo: Código Prático</span>
+            </div>
+            <div class="status-item">
+                <span>Duração: 60 minutos</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação: Controller</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+            background-image: radial-gradient(#21262d 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Window / Editor Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .code-area {
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #e6edf3;
+            overflow: hidden;
+        }
+
+        /* Syntax Highlighting (GitHub Dark) */
+        .kwd { color: #ff7b72; }
+        .func { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+        .obj { color: #79c0ff; }
+        .prop { color: #d2a8ff; }
+        .var { color: #c9d1d9; }
+
+        /* Annotation Boxes */
+        .annotation-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .annotation-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .annotation-box.validacao::before { background-color: #d2a8ff; }
+        .annotation-box.erro::before { background-color: #ff7b72; }
+        .annotation-box.sucesso::before { background-color: #238636; }
+
+        .annotation-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .annotation-text {
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        .line-num {
+            color: #484f58;
+            margin-right: 16px;
+            user-select: none;
+            display: inline-block;
+            width: 24px;
+            text-align: right;
+        }
+
+        .indent-1 {
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            margin-left: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-6">
+        <div class="flex items-center justify-between mb-6 border-b border-[#30363d] pb-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i class="fa-solid fa-layer-group text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-white tracking-tight">Implementação: Controller</h1>
+                    <p class="text-gray-400 mt-1">Intermediação, Validação e Status Codes HTTP</p>
+                </div>
+            </div>
+            <div class="px-4 py-1 rounded-full bg-[#161b22] border border-[#30363d] text-xs text-gray-400 mono-font">
+                src/controllers/tasks.controller.js
+            </div>
+        </div>
+        <div class="flex flex-1 gap-8 items-start h-full">
+            <div class="flex-1 h-full">
+                <div class="window-frame h-full">
+                    <div class="window-header">
+                        <div class="flex gap-2 mr-4">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font flex items-center gap-2">
+                            <i class="fa-brands fa-js"></i> tasks.controller.js
+                        </div>
+                    </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="line-num">01</span><span><span class="kwd">const</span> service = <span class="func">require</span>(<span class="str">'../services/tasks.service'</span>);</span></div>
+                        <div class="flex"><span class="line-num">02</span><span></span></div>
+                        <div class="flex"><span class="line-num">03</span><span><span class="kwd">function</span> <span class="func">getAll</span>(req, res) {</span></div>
+                        <div class="flex"><span class="line-num">04</span><span> <span class="kwd indent-1">return</span> res.<span class="func">status</span>(<span class="num">200</span>).<span class="func">json</span>(service.<span class="func">list</span>());</span></div>
+                        <div class="flex"><span class="line-num">05</span><span>}</span></div>
+                        <div class="flex"><span class="line-num">06</span><span></span></div>
+                        <div class="flex"><span class="line-num">07</span><span><span class="kwd">function</span> <span class="func">getById</span>(req, res) {</span></div>
+                        <div class="flex"><span class="line-num">08</span><span> <span class="kwd indent-1">const</span> id = <span class="func">Number</span>(req.params.id);</span></div>
+                        <div class="flex"><span class="line-num">09</span><span> <span class="kwd indent-1">const</span> task = service.<span class="func">findById</span>(id);</span></div>
+                        <div class="flex"><span class="line-num">10</span><span> <span class="comment indent-1">// Validação: Recurso não encontrado</span></span></div>
+                        <div class="flex"><span class="line-num">11</span><span> <span class="kwd indent-1">if</span> (!task) {</span></div>
+                        <div class="flex"><span class="line-num">12</span><span> <span class="kwd indent-2">return</span> res.<span class="func">status</span>(<span class="num">404</span>).<span class="func">json</span>({ msg: <span class="str">'Task não encontrada'</span> });</span></div>
+                        <div class="flex"><span class="line-num">13</span><span class="indent-1"> }</span></div>
+                        <div class="flex"><span class="line-num">14</span><span> <span class="kwd indent-1">return</span> res.<span class="func">status</span>(<span class="num">200</span>).<span class="func">json</span>(task);</span></div>
+                        <div class="flex"><span class="line-num">15</span><span>}</span></div>
+                        <div class="flex"><span class="line-num">16</span><span></span></div>
+                        <div class="flex"><span class="line-num">17</span><span><span class="kwd">function</span> <span class="func">create</span>(req, res) {</span></div>
+                        <div class="flex"><span class="line-num">18</span><span> <span class="kwd indent-1">const</span> { title, done } = req.body;</span></div>
+                        <div class="flex"><span class="line-num">19</span><span> <span class="comment indent-1">// Validação de entrada (input validation)</span></span></div>
+                        <div class="flex"><span class="line-num">20</span><span> <span class="kwd indent-1">if</span> (!title) {</span></div>
+                        <div class="flex"><span class="line-num">21</span><span> <span class="kwd indent-2">return</span> res.<span class="func">status</span>(<span class="num">400</span>).<span class="func">json</span>({ msg: <span class="str">'Title é obrigatório'</span> });</span></div>
+                        <div class="flex"><span class="line-num">22</span><span class="indent-1"> }</span></div>
+                        <div class="flex"><span class="line-num">23</span><span> <span class="kwd indent-1">const</span> newTask = service.<span class="func">create</span>({ title, done });</span></div>
+                        <div class="flex"><span class="line-num">24</span><span> <span class="kwd indent-1">return</span> res.<span class="func">status</span>(<span class="num">201</span>).<span class="func">json</span>(newTask);</span></div>
+                        <div class="flex"><span class="line-num">25</span><span>}</span></div>
+                        <div class="flex"><span class="line-num">26</span><span></span></div>
+                        <div class="flex"><span class="line-num">27</span><span><span class="kwd">module</span>.exports = { getAll, getById, create };</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-1/3 flex flex-col gap-4">
+                <h3 class="text-lg font-semibold text-white mb-2 pl-2 border-l-4 border-purple-500">Destaques da Implementação</h3>
+                <div class="annotation-box validacao">
+                    <div class="flex justify-between items-center">
+                        <span class="annotation-title text-purple-400">Status 400: Bad Request</span>
+                        <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">Linha 21</span>
+                    </div>
+                    <p class="annotation-text">
+                        Se o cliente enviar dados inválidos (ex: faltar o título), o controller deve bloquear e informar o erro antes de chamar a regra de negócio.
+                    </p>
+                </div>
+                <div class="annotation-box erro">
+                    <div class="flex justify-between items-center">
+                        <span class="annotation-title text-red-400">Status 404: Not Found</span>
+                        <span class="text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">Linha 12</span>
+                    </div>
+                    <p class="annotation-text">
+                        Se o recurso solicitado pelo ID não existe, retornamos 404. É responsabilidade do Controller traduzir "null" do Service para uma resposta HTTP.
+                    </p>
+                </div>
+                <div class="annotation-box sucesso">
+                    <div class="flex justify-between items-center">
+                        <span class="annotation-title text-green-400">Status 201: Created</span>
+                        <span class="text-xs bg-green-500/20 text-green-300 px-2 py-0.5 rounded">Linha 24</span>
+                    </div>
+                    <p class="annotation-text">
+                        Para criação de recursos (POST), utilizamos semanticamente o código <strong>201</strong> em vez do 200 genérico, confirmando que o recurso foi criado.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 py-2 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d] mt-6">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>15 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

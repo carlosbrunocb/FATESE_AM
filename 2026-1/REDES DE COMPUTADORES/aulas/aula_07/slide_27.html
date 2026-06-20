@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fluxo do Pacote Entre Roteadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 32pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 28pt;
+        }
+
+        .network-diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 1100px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .network-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .device-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 107, 53, 0.5);
+            position: relative;
+        }
+
+        .device-icon i {
+            font-size: 36pt;
+            color: #ff6b35;
+        }
+
+        .device-label {
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .device-ip {
+            color: #e0e6ed;
+            font-size: 12pt;
+            text-align: center;
+        }
+
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .arrow {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            position: relative;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -5px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #ff6b35;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .packet-flow {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .packet {
+            width: 15px;
+            height: 15px;
+            background: #ff6b35;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .table-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .router-table {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .table-title {
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-title i {
+            color: #ff6b35;
+        }
+
+        .routing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12pt;
+        }
+
+        .routing-table th {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ffffff;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .routing-table td {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e6ed;
+        }
+
+        .routing-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-active {
+            background: #4CAF50;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #e0e6ed;
+            font-size: 12pt;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-active {
+            background: #4CAF50;
+        }
+
+        .legend-inactive {
+            background: #f44336;
+        }
+
+        .legend-route {
+            background: #ff6b35;
+        }
+
+        .packet-info {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e0e6ed;
+            font-size: 13pt;
+        }
+
+        .info-label {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #ffffff;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff6b35;
+            font-size: 14pt;
+        }
+
+        .flow-arrow i {
+            animation: moveArrow 1s infinite;
+        }
+
+        @keyframes moveArrow {
+            0% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .decorative-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="decorative-line"></div>
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-network-wired"></i> Fluxo de Pacotes
+            </div>
+            <div class="main-title">
+                <i class="fas fa-route"></i>
+                Fluxo do Pacote Entre Roteadores
+            </div>
+            <div class="network-diagram">
+                <div class="diagram-container">
+                    <div class="network-flow">
+                        <div class="device-group">
+                            <div class="device-icon">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div class="device-label">PC Origem</div>
+                            <div class="device-ip">192.168.1.10</div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="packet-flow">
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                            </div>
+                        </div>
+                        <div class="device-group">
+                            <div class="device-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="device-label">Roteador A</div>
+                            <div class="device-ip">192.168.1.1</div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="packet-flow">
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                            </div>
+                        </div>
+                        <div class="device-group">
+                            <div class="device-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="device-label">Roteador B</div>
+                            <div class="device-ip">10.0.0.1</div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="packet-flow">
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                            </div>
+                        </div>
+                        <div class="device-group">
+                            <div class="device-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="device-label">Roteador C</div>
+                            <div class="device-ip">172.16.0.1</div>
+                        </div>
+                        <div class="arrow-container">
+                            <div class="arrow"></div>
+                            <div class="packet-flow">
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                                <div class="packet"></div>
+                            </div>
+                        </div>
+                        <div class="device-group">
+                            <div class="device-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="device-label">Servidor</div>
+                            <div class="device-ip">10.0.0.5</div>
+                        </div>
+                    </div>
+                    <div class="packet-info">
+                        <div class="info-item">
+                            <span class="info-label">TTL:</span>
+                            <span class="info-value">64</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Protocolo:</span>
+                            <span class="info-value">TCP</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Porta:</span>
+                            <span class="info-value">80</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Tamanho:</span>
+                            <span class="info-value">1500 bytes</span>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="router-table">
+                            <div class="table-header">
+                                <div class="table-title">
+                                    <i class="fas fa-table"></i>
+                                    Tabela de Roteamento - Roteador A
+                                </div>
+                            </div>
+                            <table class="routing-table">
+                                <thead>
+                                    <tr>
+                                        <th>Destino</th>
+                                        <th>Máscara</th>
+                                        <th>Next Hop</th>
+                                        <th>Interface</th>
+                                        <th>Métrica</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="highlight">192.168.1.0/24</span></td>
+                                        <td>255.255.255.0</td>
+                                        <td>Direto</td>
+                                        <td>Gi0/1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="highlight">10.0.0.0/8</span></td>
+                                        <td>255.0.0.0</td>
+                                        <td>10.0.0.1</td>
+                                        <td>S0/0/0</td>
+                                        <td>10</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="highlight">172.16.0.0/16</span></td>
+                                        <td>255.255.0.0</td>
+                                        <td>172.16.0.1</td>
+                                        <td>Gi0/2</td>
+                                        <td>5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="router-table">
+                            <div class="table-header">
+                                <div class="table-title">
+                                    <i class="fas fa-table"></i>
+                                    Tabela de Roteamento - Roteador B
+                                </div>
+                            </div>
+                            <table class="routing-table">
+                                <thead>
+                                    <tr>
+                                        <th>Destino</th>
+                                        <th>Máscara</th>
+                                        <th>Next Hop</th>
+                                        <th>Interface</th>
+                                        <th>Métrica</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="highlight">10.0.0.0/8</span></td>
+                                        <td>255.0.0.0</td>
+                                        <td>Direto</td>
+                                        <td>Gi0/1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="highlight">192.168.1.0/24</span></td>
+                                        <td>255.255.255.0</td>
+                                        <td>192.168.1.1</td>
+                                        <td>S0/0/0</td>
+                                        <td>10</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="highlight">172.16.0.0/16</span></td>
+                                        <td>255.255.0.0</td>
+                                        <td>172.16.0.1</td>
+                                        <td>Gi0/2</td>
+                                        <td>5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-active"></div>
+                            <span>Ativo</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-route"></div>
+                            <span>Rota Principal</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-inactive"></div>
+                            <span>Inativo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

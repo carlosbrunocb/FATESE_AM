@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Analogia do Hotel - Entendendo DHCP e DNS</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 165, 0, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #ffa500;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #ffa500;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 90px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* Left column - DHCP */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffa500;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-content {
+            font-size: 16px;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .hotel-scenario {
+            background: rgba(255, 165, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .scenario-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .scenario-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 165, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #ffa500;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 15px;
+            color: #ffffff;
+        }
+
+        .step-icon {
+            color: #ffa500;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Right column - DNS */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dns-analogy {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .dns-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .dns-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .dns-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00ffff;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .dns-text {
+            flex: 1;
+            font-size: 15px;
+            color: #ffffff;
+        }
+
+        .dns-icon {
+            color: #00ffff;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .comparison-icon {
+            font-size: 32px;
+            color: #00ffff;
+            margin-bottom: 12px;
+        }
+
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .comparison-desc {
+            font-size: 14px;
+            color: #888888;
+        }
+
+        .moral-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .moral-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .moral-text {
+            font-size: 16px;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 4px solid #00ffff;
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 20px;
+        }
+
+        .highlight-text {
+            font-size: 15px;
+            color: #00ffff;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Analogia do Hotel - Entendendo DHCP e DNS</h1>
+                    <p>Comparando conceitos de rede com situações do dia a dia</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-lightbulb"></i> Analogia Didática
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - DHCP -->
+            <div class="left-column">
+                <div class="content-card" style="flex: 1.2;">
+                    <div class="card-title">
+                        <i class="fas fa-bed"></i>
+                        Check-in no Hotel (DHCP)
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Cenário:</strong> Você chega em um hotel (rede) e precisa de um quarto (IP) para
+                            ficar.</p>
+                        <div class="hotel-scenario">
+                            <div class="scenario-step">
+                                <div class="step-number">1</div>
+                                <div class="step-text">
+                                    <strong>Chegada (Discovery):</strong> Você vai à recepção (Servidor DHCP) e diz que
+                                    precisa de um quarto
+                                </div>
+                                <div class="step-icon">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                            </div>
+                            <div class="scenario-step">
+                                <div class="step-number">2</div>
+                                <div class="step-text">
+                                    <strong>Oferta (Offer):</strong> Recepção verifica quartos livres (pool) e oferece
+                                    uma chave
+                                </div>
+                                <div class="step-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </div>
+                            <div class="scenario-step">
+                                <div class="step-number">3</div>
+                                <div class="step-text">
+                                    <strong>Confirmação (Request):</strong> Você aceita o quarto e formaliza a reserva
+                                </div>
+                                <div class="step-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div class="scenario-step">
+                                <div class="step-number">4</div>
+                                <div class="step-text">
+                                    <strong>Check-in (ACK):</strong> Recepção confirma e entrega a chave com prazo de
+                                    estadia (Lease Time)
+                                </div>
+                                <div class="step-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <i class="fas fa-info-circle"></i> <strong>Renovação:</strong> Quando o prazo está perto
+                                do fim, você renova a reserva (T1/T2). Se não renovar, precisa refazer o check-in.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-card" style="flex: 0.8;">
+                    <div class="card-title">
+                        <i class="fas fa-network-wired"></i>
+                        Processo DORA no Contexto
+                    </div>
+                    <div class="card-content">
+                        <div class="comparison-grid">
+                            <div class="comparison-item">
+                                <div class="comparison-icon">
+                                    <i class="fas fa-bed"></i>
+                                </div>
+                                <div class="comparison-title">Hotel</div>
+                                <div class="comparison-desc">Recepção, quarto, chave</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="comparison-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="comparison-title">DHCP</div>
+                                <div class="comparison-desc">Servidor, IP, lease</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column - DNS -->
+            <div class="right-column">
+                <div class="content-card" style="flex: 1.2;">
+                    <div class="card-title">
+                        <i class="fas fa-map-marked-alt"></i>
+                        Encontrando o Restaurante (DNS)
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Cenário:</strong> Você quer ir ao "Solar do Peixe", mas não sabe o número da sala.
+                        </p>
+                        <div class="dns-analogy">
+                            <div class="dns-step">
+                                <div class="dns-number">1</div>
+                                <div class="dns-text">
+                                    <strong>Consulta:</strong> Você pergunta no guia do hotel (DNS) sobre o restaurante
+                                </div>
+                                <div class="dns-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                            <div class="dns-step">
+                                <div class="dns-number">2</div>
+                                <div class="dns-text">
+                                    <strong>Resolução:</strong> Guia mapeia o nome "Solar do Peixe" para sala 302 (IP)
+                                </div>
+                                <div class="dns-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                            </div>
+                            <div class="dns-step">
+                                <div class="dns-number">3</div>
+                                <div class="dns-text">
+                                    <strong>Navegação:</strong> Com o número em mãos, você chega ao destino
+                                </div>
+                                <div class="dns-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <i class="fas fa-lightbulb"></i> <strong>Importante:</strong> DNS traduz nomes legíveis
+                                em endereços IP numéricos.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-card" style="flex: 0.8;">
+                    <div class="card-title">
+                        <i class="fas fa-balance-scale"></i>
+                        Comparação Final
+                    </div>
+                    <div class="card-content">
+                        <div class="moral-section">
+                            <div class="moral-title">
+                                <i class="fas fa-check-circle"></i>
+                                Moral da História
+                            </div>
+                            <div class="moral-text">
+                                <strong>DHCP</strong> automatiza sua "hospedagem" na rede (endereço IP), enquanto
+                                <strong>DNS</strong> informa "onde" os serviços estão (mapeamento nome → IP).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

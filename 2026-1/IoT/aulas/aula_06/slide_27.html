@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Entregáveis e Versionamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Open+Sans:wght@400;600&amp;family=Roboto+Mono:wght@500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #f8fafc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 30px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 110px;
+            box-sizing: border-box;
+            border-bottom: 4px solid #3b82f6;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            color: #93c5fd;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Content */
+        .content-area {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            width: 100%;
+        }
+
+        .check-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .check-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        .check-status {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            margin-right: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        /* Simulation of checked state for visual purpose */
+        .check-card:hover .check-status {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+
+        .check-card:hover .check-status::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-text {
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .card-desc {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .tech-badge {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            background-color: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Colors */
+        .bg-blue-soft {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .bg-purple-soft {
+            background-color: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .bg-green-soft {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .bg-gray-soft {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .bg-orange-soft {
+            background-color: #ffedd5;
+            color: #ea580c;
+        }
+
+        .bg-teal-soft {
+            background-color: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .submission-info {
+            margin-top: 30px;
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: #92400e;
+            font-size: 0.95rem;
+        }
+
+        .submission-info i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <p class="header-subtitle">Avaliação &amp; Entrega</p>
+                <h1>Entregáveis e Versionamento</h1>
+            </div>
+            <div class="text-white opacity-80">
+                <i class="fas fa-clipboard-check text-4xl"></i>
+            </div>
+        </div>
+        <!-- Content -->
+        <div class="content-area">
+            <div class="checklist-grid">
+                <!-- Item 1: Code -->
+                <div class="check-card">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-blue-soft">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Código Final do Projeto</p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Arquivo <code>main.cpp</code> completo com comentários explicativos.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 2: Simulation -->
+                <div class="check-card">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-green-soft">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Link da Simulação</p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Link público do projeto no <strong>Wokwi</strong> (funcional).</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 3: README -->
+                <div class="check-card">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-gray-soft">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Documentação (README)</p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Instruções breves de montagem e bibliotecas necessárias.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 4: Git Tag -->
+                <div class="check-card">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-purple-soft">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Versionamento Git <span class="tech-badge">v0.1</span></p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Commits semânticos e criação de Tag de release.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 5: Evidence -->
+                <div class="check-card">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-orange-soft">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Evidências de Teste</p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Screenshots do Serial Monitor e do Display OLED.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 6: Bonus -->
+                <div class="check-card border-dashed border-2 border-teal-300">
+                    <div class="check-status"></div>
+                    <div class="icon-box bg-teal-soft">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="card-text">
+                        <div class="card-title">
+                            <p>Bônus: I2C Scanner</p>
+                        </div>
+                        <div class="card-desc">
+                            <p>Incluir script separado para escanear endereços I2C.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Warning Footer -->
+            <div class="submission-info">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p><strong>Atenção:</strong> O projeto deve ser submetido via link do repositório GitHub no portal da
+                    FATESE até o final da aula.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

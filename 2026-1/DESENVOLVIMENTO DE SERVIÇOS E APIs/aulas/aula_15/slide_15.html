@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura para Múltiplas Versões</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Container transformado em Grid */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Cabeçalho automático, conteúdo preenche o resto, rodapé automático */
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Remoção de posições absolutas e larguras fixas */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* O conteúdo principal agora preenche o espaço central do Grid ('1fr') */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            padding: 30px 40px;
+            overflow-y: auto; /* Permite rolar em telas muito pequenas */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .layer-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .layer-icon {
+            width: 36px;
+            height: 36px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .layer-content {
+            flex: 1;
+        }
+
+        .layer-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .layer-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .layer-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .badge-v1 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-v2 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-shared {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .structure-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .tree-icon {
+            width: 22px;
+            height: 22px;
+            background: #e0f2fe;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 11px;
+        }
+
+        .tree-text {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .tree-branch {
+            margin-left: 20px;
+            border-left: 2px dashed #e2e8f0;
+            padding-left: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Rodapé realinhado sem absolutos e com larguras automáticas */
+        .footer {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin: 0 40px 20px 40px; /* Mantém as margens de visual */
+            width: auto;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 18px;
+            border: 1px solid #3b82f6;
+            margin-top: auto;
+        }
+
+        .highlight-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .highlight-text strong {
+            color: #1e40af;
+        }
+        
+        /* Ajuste de responsividade extra para telas menores (Opcional, garante legibilidade) */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .main-content {
+                height: auto;
+                overflow-y: visible;
+            }
+            .slide-container {
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <div class="header-title">Arquitetura para Múltiplas Versões</div>
+                    <div class="header-subtitle">Separação de responsabilidades e organização de código</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Arquitetura</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Estrutura de Camadas</div>
+                                <div class="section-subtitle">Separação de responsabilidades</div>
+                            </div>
+                        </div>
+                        <div class="architecture-diagram">
+                            <div class="layer-row">
+                                <div class="layer-icon"><i class="fas fa-globe"></i></div>
+                                <div class="layer-content">
+                                    <div class="layer-title">Camada de Rotas</div>
+                                    <div class="layer-desc">/api/v1 e /api/v2</div>
+                                </div>
+                                <div style="display:flex; gap: 8px;">
+                                    <div class="layer-badge badge-v1">v1</div>
+                                    <div class="layer-badge badge-v2">v2</div>
+                                </div>
+                            </div>
+                            <div class="layer-row">
+                                <div class="layer-icon"><i class="fas fa-cogs"></i></div>
+                                <div class="layer-content">
+                                    <div class="layer-title">Camada de Controllers</div>
+                                    <div class="layer-desc">v1 e v2 separados</div>
+                                </div>
+                                <div style="display:flex; gap: 8px;">
+                                    <div class="layer-badge badge-v1">v1</div>
+                                    <div class="layer-badge badge-v2">v2</div>
+                                </div>
+                            </div>
+                            <div class="layer-row">
+                                <div class="layer-icon"><i class="fas fa-server"></i></div>
+                                <div class="layer-content">
+                                    <div class="layer-title">Camada de Services</div>
+                                    <div class="layer-desc">Lógica de negócio versionada</div>
+                                </div>
+                                <div style="display:flex; gap: 8px;">
+                                    <div class="layer-badge badge-v1">v1</div>
+                                    <div class="layer-badge badge-v2">v2</div>
+                                </div>
+                            </div>
+                            <div class="layer-row">
+                                <div class="layer-icon"><i class="fas fa-database"></i></div>
+                                <div class="layer-content">
+                                    <div class="layer-title">Camada de Repositories</div>
+                                    <div class="layer-desc">Compartilhada entre versões</div>
+                                </div>
+                                <div class="layer-badge badge-shared">Compartilhado</div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Princípio:</strong> Cada versão mantém seu próprio controller e service, mas
+                                compartilha repositories e models.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-folder-tree"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Estrutura de Pastas</div>
+                                <div class="section-subtitle">Organização do projeto</div>
+                            </div>
+                        </div>
+                        <div class="structure-tree">
+                            <div class="tree-item">
+                                <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                <div class="tree-text">src/</div>
+                            </div>
+                            <div class="tree-branch">
+                                <div class="tree-item">
+                                    <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                    <div class="tree-text">controllers/</div>
+                                </div>
+                                <div class="tree-branch">
+                                    <div class="tree-item">
+                                        <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                        <div class="tree-text">v1/</div>
+                                    </div>
+                                    <div class="tree-item">
+                                        <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                        <div class="tree-text">v2/</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item">
+                                    <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                    <div class="tree-text">services/</div>
+                                </div>
+                                <div class="tree-branch">
+                                    <div class="tree-item">
+                                        <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                        <div class="tree-text">v1/</div>
+                                    </div>
+                                    <div class="tree-item">
+                                        <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                        <div class="tree-text">v2/</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item">
+                                    <div class="tree-icon"><i class="fas fa-folder"></i></div>
+                                    <div class="tree-text">repositories/</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>4 camadas definidas</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SQL Injection - Vulnerabilidade e Mitigação</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #2c5282;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header-info {
+            text-align: right;
+        }
+
+        .header-label {
+            font-size: 11px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-value {
+            font-size: 13px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 70px);
+            padding: 15px 50px 20px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 4px 12px;
+            margin-bottom: 6px;
+        }
+
+        .section-badge span {
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .main-title .highlight {
+            color: #f6ad55;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+        }
+
+        /* Content Layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Left Column - Vulnerability */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        /* Right Column - Mitigation */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        /* Vulnerability Card */
+        .vulnerability-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #f56565;
+        }
+
+        .vulnerability-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .vulnerability-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .vulnerability-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        .vulnerability-subtitle {
+            font-size: 11px;
+            color: #4a5568;
+        }
+
+        .vulnerability-text {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            font-size: 10px;
+            color: #a0aec0;
+            font-weight: 600;
+        }
+
+        .code-language {
+            font-size: 9px;
+            color: #48bb78;
+            background: rgba(72, 187, 120, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .code-content {
+            line-height: 1.5;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+
+        .line-number {
+            color: #4a5568;
+            min-width: 16px;
+            text-align: right;
+        }
+
+        .line-content {
+            color: #e2e8f0;
+        }
+
+        .line-content .comment {
+            color: #48bb78;
+        }
+
+        .line-content .string {
+            color: #f6ad55;
+        }
+
+        .line-content .keyword {
+            color: #f56565;
+        }
+
+        .line-content .function {
+            color: #4299e1;
+        }
+
+        /* Mitigation Card */
+        .mitigation-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #48bb78;
+        }
+
+        .mitigation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .mitigation-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .mitigation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        .mitigation-subtitle {
+            font-size: 11px;
+            color: #4a5568;
+        }
+
+        .mitigation-text {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        /* Security Features */
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .security-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(72, 187, 120, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #48bb78;
+        }
+
+        .security-text {
+            flex: 1;
+        }
+
+        .security-label {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .security-desc {
+            font-size: 9px;
+            color: #718096;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: white;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Decorative Elements */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        .decoration-1 {
+            width: 150px;
+            height: 150px;
+            top: 100px;
+            right: 30px;
+        }
+
+        .decoration-2 {
+            width: 100px;
+            height: 100px;
+            bottom: 100px;
+            left: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header Bar -->
+        <div class="header-bar">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div class="logo-text">FATESE</div>
+                    <div style="font-size: 11px; color: #718096;">Faculdade de Tecnologia do Senac</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-info">
+                    <div class="header-label">Aula</div>
+                    <div class="header-value">15</div>
+                </div>
+                <div class="header-info">
+                    <div class="header-label">Tema</div>
+                    <div class="header-value">SQL Injection</div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="section-badge">
+                    <span>🔒 SEGURANÇA</span>
+                </div>
+                <h1 class="main-title">
+                    SQL <span class="highlight">Injection</span>: Vulnerabilidade e Mitigação
+                </h1>
+                <div class="subtitle">
+                    Entenda como funcionam ataques de injeção SQL e como preveni-los
+                </div>
+            </div>
+            <!-- Content Layout -->
+            <div class="content-layout">
+                <!-- Left Column - Vulnerability -->
+                <div class="left-column">
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-header">
+                            <div class="vulnerability-icon">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            <div>
+                                <div class="vulnerability-title">Vulnerabilidade SQL Injection</div>
+                                <div class="vulnerability-subtitle">Ataque malicioso a banco de dados</div>
+                            </div>
+                        </div>
+                        <div class="vulnerability-text">
+                            Um ataque de SQL Injection ocorre quando um usuário mal-intencionado insere código SQL
+                            malicioso em campos de entrada, manipulando a consulta SQL original do sistema.
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-title">Exemplo de ataque SQLi</div>
+                                <div class="code-language">SQL</div>
+                            </div>
+                            <div class="code-content">
+                                <div class="code-line">
+                                    <div class="line-number">1</div>
+                                    <div class="line-content"><span class="comment">-- Entrada maliciosa no campo de
+                                            login:</span></div>
+                                </div>
+                                <div class="code-line">
+                                    <div class="line-number">2</div>
+                                    <div class="line-content"><span class="string">' OR 1=1 --</span></div>
+                                </div>
+                                <div class="code-line">
+                                    <div class="line-number">3</div>
+                                    <div class="line-content"></div>
+                                </div>
+                                <div class="code-line">
+                                    <div class="line-number">4</div>
+                                    <div class="line-content"><span class="comment">-- Consulta SQL resultante:</span>
+                                    </div>
+                                </div>
+                                <div class="code-line">
+                                    <div class="line-number">5</div>
+                                    <div class="line-content"><span class="keyword">SELECT</span> * <span
+                                            class="keyword">FROM</span> users <span class="keyword">WHERE</span>
+                                        username = <span class="string">'' OR 1=1 --'</span></div>
+                                </div>
+                                <div class="code-line">
+                                    <div class="line-number">6</div>
+                                    <div class="line-content"><span class="keyword">AND</span> password = <span
+                                            class="string">'qualquer_senha'</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vulnerability-card">
+                        <div class="vulnerability-header">
+                            <div class="vulnerability-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <div class="vulnerability-title">Riscos do Ataque</div>
+                                <div class="vulnerability-subtitle">Consequências da vulnerabilidade</div>
+                            </div>
+                        </div>
+                        <div class="vulnerability-text">
+                            Bypass de autenticação, exfiltração de dados sensíveis, modificação ou exclusão de
+                            registros, e potencial acesso total ao sistema.
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Mitigation -->
+                <div class="right-column">
+                    <div class="mitigation-card">
+                        <div class="mitigation-header">
+                            <div class="mitigation-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <div class="mitigation-title">Mitigação e Prevenção</div>
+                                <div class="mitigation-subtitle">Técnicas de defesa</div>
+                            </div>
+                        </div>
+                        <div class="mitigation-text">
+                            Implementar prepared statements, validação de entradas, princípio do menor privilégio e WAF
+                            (Web Application Firewall).
+                        </div>
+                        <div class="security-features">
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="security-text">
+                                    <div class="security-label">Prepared Statements</div>
+                                    <div class="security-desc">Parametrização de queries</div>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="security-text">
+                                    <div class="security-label">Validação</div>
+                                    <div class="security-desc">Sanitização de entradas</div>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="security-text">
+                                    <div class="security-label">Menor Privilégio</div>
+                                    <div class="security-desc">Restrição de acesso</div>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">
+                                    <i class="fas fa-firewall"></i>
+                                </div>
+                                <div class="security-text">
+                                    <div class="security-label">WAF</div>
+                                    <div class="security-desc">Firewall de aplicação</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>SQL Injection: Vulnerabilidade crítica</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-shield-alt" style="color: #f6ad55;"></i>
+                    <span>Mitigação essencial</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-check-circle" style="color: #48bb78;"></i>
+                    <span>Prevenção implementável</span>
+                </div>
+            </div>
+        </div>
+        <!-- Decorative Elements -->
+        <div class="decoration-circle decoration-1"></div>
+        <div class="decoration-circle decoration-2"></div>
+    </div>
+</body>
+
+</html>

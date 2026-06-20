@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia da Resposta HTTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            padding: 1px 0;
+        }
+
+        .line-number {
+            color: #64748b;
+            width: 30px;
+            text-align: right;
+            margin-right: 12px;
+            font-size: 11px;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .http-version {
+            color: #f59e0b;
+        }
+
+        .status-code {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .status-text {
+            color: #3b82f6;
+        }
+
+        .header-key {
+            color: #8b5cf6;
+        }
+
+        .header-value {
+            color: #e2e8f0;
+        }
+
+        .annotation {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            margin: 4px 0;
+        }
+
+        .section-title {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .component-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-8">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-xs font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-1">Anatomia da Resposta HTTP</h1>
+                    <p class="text-gray-400 text-sm">Estrutura completa de uma resposta HTTP</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-sm font-semibold">Response</div>
+                        <div class="text-xs text-gray-400">Status + Headers + Body</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-reply text-blue-400 text-lg"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
+                <!-- Left Column - Code Example -->
+                <div class="flex flex-col gap-2">
+                    <!-- Status Line -->
+                    <div class="component-card flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-sm font-semibold">Linha de Status</h3>
+                            <span class="text-[10px] text-green-400">HTTP/1.1 200 OK</span>
+                        </div>
+                        <div class="code-block mb-2 flex-1">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <div class="code-content">
+                                    <span class="http-version">HTTP/1.1</span> <span class="status-code">200</span>
+                                    <span class="status-text">OK</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <div class="code-content">
+                                    <span class="header-key">Date:</span> <span class="header-value">Wed, 21 Oct 2023
+                                        10:00:00 GMT</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <div class="code-content">
+                                    <span class="header-key">Server:</span> <span
+                                        class="header-value">nginx/1.18.0</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <div class="code-content">
+                                    <span class="header-key">Content-Type:</span> <span
+                                        class="header-value">application/json</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <div class="code-content">
+                                    <span class="header-key">Content-Length:</span> <span
+                                        class="header-value">256</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <div class="code-content">
+                                    <span class="header-key">Cache-Control:</span> <span
+                                        class="header-value">max-age=3600</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <div class="code-content"></div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">{</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">9</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "id": 1,</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">10</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "name": "Product A",</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">11</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "price": 29.99</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">12</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Annotations -->
+                        <div class="highlight-box mt-auto">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-info-circle text-blue-400 text-[10px]"></i>
+                                <span class="text-white text-[10px] font-medium">Componentes Principais</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1 text-[10px]">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                    <span class="text-gray-300">Status HTTP</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span class="text-gray-300">Headers</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                                    <span class="text-gray-300">Body</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
+                                    <span class="text-gray-300">Linha em Branco</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column - Structure Explanation -->
+                <div class="flex flex-col gap-2">
+                    <!-- Structure Breakdown -->
+                    <div class="component-card flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-white text-sm font-semibold">Estrutura da Resposta</h3>
+                            <span class="text-[10px] text-gray-400">4 componentes</span>
+                        </div>
+                        <!-- Status Line -->
+                        <div class="mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-[10px] font-medium">1. Linha de Status</span>
+                                <span class="text-[9px] text-green-400">Obrigatório</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-1.5 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-yellow-400 font-mono text-[10px]">HTTP/1.1</span>
+                                    <span class="text-green-400 font-mono text-[10px]">200</span>
+                                    <span class="text-blue-400 font-mono text-[10px]">OK</span>
+                                </div>
+                                <div class="text-[9px] text-gray-400">
+                                    Versão + Código + Texto de Status
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Headers -->
+                        <div class="mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-[10px] font-medium">2. Headers</span>
+                                <span class="text-[9px] text-blue-400">Metadados</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-1.5 border border-slate-700">
+                                <div class="grid grid-cols-2 gap-1 text-[9px]">
+                                    <div class="text-gray-300">Date: Wed, 21 Oct 2023</div>
+                                    <div class="text-gray-300">Server: nginx</div>
+                                    <div class="text-gray-300">Content-Type: application/json</div>
+                                    <div class="text-gray-300">Content-Length: 256</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Body -->
+                        <div class="mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-[10px] font-medium">3. Body</span>
+                                <span class="text-[9px] text-orange-400">Dados da resposta</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-1.5 border border-slate-700">
+                                <div class="text-[9px] text-gray-400">
+                                    Dados reais retornados pelo servidor (HTML, JSON, etc.)
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Blank Line -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-[10px] font-medium">4. Linha em Branco</span>
+                                <span class="text-[9px] text-gray-400">Separador</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-1.5 border border-slate-700">
+                                <div class="text-[9px] text-gray-400">
+                                    Separa headers do body
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Section -->
+            <div
+                class="mt-4 flex justify-between items-center bg-slate-800/30 p-2.5 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-clock text-blue-400 text-[11px]"></i>
+                        <span class="text-white text-[11px]">Duração: 45 minutos</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar text-blue-400 text-[11px]"></i>
+                        <span class="text-white text-[11px]">Aula 12 de 20</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-400 text-[11px]">Progresso da aula:</span>
+                    <div class="w-24 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-3/5 h-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <span class="text-white text-[11px] font-medium">60%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

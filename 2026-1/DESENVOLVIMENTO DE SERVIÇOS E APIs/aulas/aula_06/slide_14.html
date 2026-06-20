@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Casos de Uso Comuns - Middlewares</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #8CC84B;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Grid Layout */
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 25px;
+            padding-bottom: 10px;
+        }
+
+        .use-case-card {
+            background-color: #252526;
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .use-case-card:hover {
+            transform: translateY(-5px);
+            border-color: #8CC84B;
+            background-color: #2d2d2d;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            margin: 0;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .tag-container {
+            margin-top: auto;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tech-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            background-color: #111;
+            border-radius: 4px;
+            color: #888;
+            font-family: monospace;
+            border: 1px solid #333;
+        }
+
+        /* Specific Card Styles */
+        .card-auth .icon-box {
+            background-color: rgba(66, 133, 244, 0.1);
+            color: #4285F4;
+            border: 1px solid rgba(66, 133, 244, 0.3);
+        }
+
+        .card-validation .icon-box {
+            background-color: rgba(140, 200, 75, 0.1);
+            color: #8CC84B;
+            border: 1px solid rgba(140, 200, 75, 0.3);
+        }
+
+        .card-security .icon-box {
+            background-color: rgba(234, 67, 53, 0.1);
+            color: #EA4335;
+            border: 1px solid rgba(234, 67, 53, 0.3);
+        }
+
+        .card-logging .icon-box {
+            background-color: rgba(251, 188, 4, 0.1);
+            color: #FBBC04;
+            border: 1px solid rgba(251, 188, 4, 0.3);
+        }
+
+        .card-cors .icon-box {
+            background-color: rgba(168, 85, 247, 0.1);
+            color: #A855F7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .card-compression .icon-box {
+            background-color: rgba(236, 72, 153, 0.1);
+            color: #EC4899;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        /* Background Decorations */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.02);
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Elements -->
+        <div class="bg-circle" style="width: 500px; height: 500px; top: -100px; right: -100px;"></div>
+        <div class="bg-circle" style="width: 300px; height: 300px; bottom: -50px; left: -50px;"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <p class="subtitle">Aplicações Práticas</p>
+                <h1 class="title">Casos de Uso Comuns</h1>
+                <p class="text-gray-400 mt-2">Onde e por que utilizamos middlewares no desenvolvimento de APIs robustas.
+                </p>
+            </header>
+            <div class="grid-container">
+                <!-- 1. Authentication -->
+                <div class="use-case-card card-auth">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-id-card-alt"></i>
+                        </div>
+                        <h3 class="card-title">Autenticação &amp; Autorização</h3>
+                    </div>
+                    <p class="card-desc">Verifica a identidade do usuário (ex: token JWT) e suas permissões antes de
+                        permitir acesso a recursos protegidos.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">passport</span>
+                        <span class="tech-tag">jsonwebtoken</span>
+                    </div>
+                </div>
+                <!-- 2. Validation -->
+                <div class="use-case-card card-validation">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <h3 class="card-title">Validação de Dados</h3>
+                    </div>
+                    <p class="card-desc">Garante que o corpo da requisição (body), parâmetros e query strings estejam no
+                        formato correto antes do processamento.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">joi</span>
+                        <span class="tech-tag">express-validator</span>
+                        <span class="tech-tag">yup</span>
+                    </div>
+                </div>
+                <!-- 3. Security -->
+                <div class="use-case-card card-security">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-shield-virus"></i>
+                        </div>
+                        <h3 class="card-title">Segurança &amp; Rate Limit</h3>
+                    </div>
+                    <p class="card-desc">Protege contra ataques comuns (XSS, injeção de headers) e limita o número de
+                        requisições por IP para evitar DDoS.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">helmet</span>
+                        <span class="tech-tag">express-rate-limit</span>
+                    </div>
+                </div>
+                <!-- 4. Logging -->
+                <div class="use-case-card card-logging">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <h3 class="card-title">Logging &amp; Monitoramento</h3>
+                    </div>
+                    <p class="card-desc">Registra detalhes de cada requisição (método, URL, tempo de resposta, status)
+                        para auditoria e debugging.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">morgan</span>
+                        <span class="tech-tag">winston</span>
+                        <span class="tech-tag">pino</span>
+                    </div>
+                </div>
+                <!-- 5. CORS -->
+                <div class="use-case-card card-cors">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <h3 class="card-title">CORS (Cross-Origin)</h3>
+                    </div>
+                    <p class="card-desc">Controla quais domínios externos podem acessar os recursos da API, essencial
+                        para aplicações frontend separadas.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">cors</span>
+                    </div>
+                </div>
+                <!-- 6. Compression/Parsing -->
+                <div class="use-case-card card-compression">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                        </div>
+                        <h3 class="card-title">Parsing &amp; Compressão</h3>
+                    </div>
+                    <p class="card-desc">Prepara os dados da requisição (JSON, URL-encoded) e comprime a resposta (Gzip)
+                        para melhorar a performance.</p>
+                    <div class="tag-container">
+                        <span class="tech-tag">express.json()</span>
+                        <span class="tech-tag">compression</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="flex justify-between items-center pt-4 border-t border-gray-800 text-xs text-gray-500">
+                <p>Aula 06: Middlewares no Express.js</p>
+                <p>Faculdade de Tecnologia do Senac (FATESE)</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

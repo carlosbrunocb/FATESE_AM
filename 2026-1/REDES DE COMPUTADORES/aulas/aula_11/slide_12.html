@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Wireshark - Análise de DNS e DHCP</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        /* Left column - Filters and Packet Analysis */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: #cccccc;
+            line-height: 1.5;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .filter-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00ffff;
+            flex-shrink: 0;
+        }
+
+        .filter-text {
+            flex: 1;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .filter-value {
+            font-size: 13px;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .packet-analysis {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .packet-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 3px solid #00ffff;
+        }
+
+        .packet-field {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field-name {
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .field-value {
+            font-size: 13px;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Right column - DORA Process and Tips */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .dora-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .dora-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 3px solid #00ffff;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00ffff;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-name {
+            font-size: 14px;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .step-detail {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .tips-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .tip-icon {
+            color: #00ffff;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .tip-text {
+            font-size: 13px;
+            color: #cccccc;
+            line-height: 1.4;
+        }
+
+        .command-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 15px 0 0 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ffff;
+            border-left: 3px solid #00ffff;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .status-text {
+            font-size: 11px;
+            color: #888888;
+        }
+
+        .status-value {
+            font-size: 11px;
+            color: #00ffff;
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Wireshark - Análise de DNS e DHCP</h1>
+                    <p>Captura e análise de pacotes de rede</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-filter"></i> Filtros &amp; Análise
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - Filters and Packet Analysis -->
+            <div class="left-column">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-filter"></i>
+                        Filtros Úteis
+                    </div>
+                    <div class="card-content">
+                        <div class="filter-grid">
+                            <div class="filter-item">
+                                <div class="filter-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="filter-text">
+                                    <div class="filter-label">DNS</div>
+                                    <div class="filter-value">dns</div>
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="filter-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="filter-text">
+                                    <div class="filter-label">DHCP</div>
+                                    <div class="filter-value">bootp</div>
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="filter-icon">
+                                    <i class="fas fa-port"></i>
+                                </div>
+                                <div class="filter-text">
+                                    <div class="filter-label">Porta 53</div>
+                                    <div class="filter-value">udp.port == 53</div>
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="filter-icon">
+                                    <i class="fas fa-port"></i>
+                                </div>
+                                <div class="filter-text">
+                                    <div class="filter-label">Porta 67/68</div>
+                                    <div class="filter-value">udp.port == 67 or udp.port == 68</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="command-block">
+                            # Filtro para capturar apenas tráfego DNS e DHCP<br />
+                            (dns or bootp) and (udp.port == 53 or udp.port == 67 or udp.port == 68)
+                        </div>
+                    </div>
+                </div>
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-cube"></i>
+                        Análise de Pacotes
+                    </div>
+                    <div class="card-content">
+                        <div class="packet-analysis">
+                            <div class="packet-row">
+                                <div class="packet-field">
+                                    <span class="field-name">Tipo:</span>
+                                    <span class="field-value">BOOTREQUEST/BOOTREPLY</span>
+                                </div>
+                            </div>
+                            <div class="packet-row">
+                                <div class="packet-field">
+                                    <span class="field-name">Opção 51:</span>
+                                    <span class="field-value">Lease Time (3600s)</span>
+                                </div>
+                            </div>
+                            <div class="packet-row">
+                                <div class="packet-field">
+                                    <span class="field-name">Opção 1:</span>
+                                    <span class="field-value">Subnet Mask (255.255.255.0)</span>
+                                </div>
+                            </div>
+                            <div class="packet-row">
+                                <div class="packet-field">
+                                    <span class="field-name">Opção 3:</span>
+                                    <span class="field-value">Router/Gateway (192.168.1.1)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column - DORA Process and Tips -->
+            <div class="right-column">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-project-diagram"></i>
+                        Processo DORA Capturado
+                    </div>
+                    <div class="card-content">
+                        <div class="dora-flow">
+                            <div class="dora-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-name">Discovery (Broadcast)</div>
+                                    <div class="step-detail">Cliente envia DHCPDISCOVER para 255.255.255.255:67</div>
+                                </div>
+                            </div>
+                            <div class="dora-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-name">Offer (Unicast/Broadcast)</div>
+                                    <div class="step-detail">Servidor responde com DHCPOFFER</div>
+                                </div>
+                            </div>
+                            <div class="dora-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-name">Request (Broadcast)</div>
+                                    <div class="step-detail">Cliente confirma a oferta com DHCPREQUEST</div>
+                                </div>
+                            </div>
+                            <div class="dora-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <div class="step-name">Acknowledgment (ACK)</div>
+                                    <div class="step-detail">Servidor confirma com DHCPACK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Dicas de Operação
+                    </div>
+                    <div class="card-content">
+                        <div class="tips-section">
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="tip-text">
+                                    <strong>Use Follow UDP Stream</strong> para ver a troca completa de mensagens
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="tip-text">
+                                    <strong>Desative Name Resolution</strong> para análise de endereços brutos
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="tip-text">
+                                    <strong>Capture em modo promíscuo</strong> para ver todo o tráfego da rede
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

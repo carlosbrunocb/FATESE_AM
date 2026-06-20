@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Start, Stop, Continue - Exemplos Práticos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 30px 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .header-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+        }
+
+        .header-text p {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 180px);
+        }
+
+        .left-section {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-header i {
+            font-size: 22px;
+            color: #3b82f6;
+            margin-right: 12px;
+        }
+
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .example-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            border-left: 4px solid;
+        }
+
+        .example-item.start {
+            border-left-color: #22c55e;
+        }
+
+        .example-item.stop {
+            border-left-color: #ef4444;
+        }
+
+        .example-item.continue {
+            border-left-color: #3b82f6;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .example-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .example-icon.start {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .example-icon.stop {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .example-icon.continue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 16px;
+        }
+
+        .example-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .context-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tab:not(.active) {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .context-content {
+            display: none;
+        }
+
+        .context-content.active {
+            display: block;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .benefit-icon i {
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .benefit-text {
+            flex: 1;
+            font-size: 15px;
+            color: #475569;
+        }
+
+        .practical-tips {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #475569;
+        }
+
+        .tip-icon {
+            width: 28px;
+            height: 28px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Start, Stop, Continue - Exemplos Práticos</h1>
+                    <p>Aplicação da técnica no contexto acadêmico e profissional de projetos ágeis</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h2>Exemplos por Categoria</h2>
+                        </div>
+                        <div class="context-tabs">
+                            <div class="tab active" data-tab="academic">Contexto Acadêmico</div>
+                            <div class="tab" data-tab="professional">Contexto Profissional</div>
+                        </div>
+                        <div class="context-content active" id="academic">
+                            <div class="examples-grid">
+                                <div class="example-item start">
+                                    <div class="example-header">
+                                        <div class="example-icon start">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="example-title">START</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Definir limites de WIP por coluna no Kanban<br />
+                                        • Revisar PRs diariamente<br />
+                                        • Checagens de qualidade antes do merge
+                                    </div>
+                                </div>
+                                <div class="example-item stop">
+                                    <div class="example-header">
+                                        <div class="example-icon stop">
+                                            <i class="fas fa-stop"></i>
+                                        </div>
+                                        <div class="example-title">STOP</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Iniciar várias tarefas sem terminar<br />
+                                        • Pular code review<br />
+                                        • Mudar prioridade sem alinhar com PO
+                                    </div>
+                                </div>
+                                <div class="example-item continue">
+                                    <div class="example-header">
+                                        <div class="example-icon continue">
+                                            <i class="fas fa-forward"></i>
+                                        </div>
+                                        <div class="example-title">CONTINUE</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Comunicação ativa no WhatsApp/Discord<br />
+                                        • Dailies pontuais e objetivas<br />
+                                        • Dividir histórias grandes
+                                    </div>
+                                </div>
+                                <div class="example-item start">
+                                    <div class="example-header">
+                                        <div class="example-icon start">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="example-title">START</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Registrar impedimentos com label Blocked<br />
+                                        • Reuniões de refinamento quinzenais<br />
+                                        • Demo para stakeholders
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="context-content" id="professional">
+                            <div class="examples-grid">
+                                <div class="example-item start">
+                                    <div class="example-header">
+                                        <div class="example-icon start">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="example-title">START</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Automatizar testes de integração<br />
+                                        • Daily standups de 15 minutos<br />
+                                        • Pair programming em tasks críticas
+                                    </div>
+                                </div>
+                                <div class="example-item stop">
+                                    <div class="example-header">
+                                        <div class="example-icon stop">
+                                            <i class="fas fa-stop"></i>
+                                        </div>
+                                        <div class="example-title">STOP</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Deixar deploy 100% manual<br />
+                                        • Abrir issues sem critérios de aceitação<br />
+                                        • Ignorar débito técnico
+                                    </div>
+                                </div>
+                                <div class="example-item continue">
+                                    <div class="example-header">
+                                        <div class="example-icon continue">
+                                            <i class="fas fa-forward"></i>
+                                        </div>
+                                        <div class="example-title">CONTINUE</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Code reviews colaborativos<br />
+                                        • Documentação de processos<br />
+                                        • Métricas de performance
+                                    </div>
+                                </div>
+                                <div class="example-item start">
+                                    <div class="example-header">
+                                        <div class="example-icon start">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="example-title">START</div>
+                                    </div>
+                                    <div class="example-text">
+                                        • Monitoramento de métricas<br />
+                                        • Feedback contínuo<br />
+                                        • Melhorias incrementais
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-star"></i>
+                            <h2>Dicas de Implementação</h2>
+                        </div>
+                        <div class="practical-tips">
+                            <div class="tip-item">
+                                <div class="tip-icon">1</div>
+                                <div class="tip-content">
+                                    <strong>Priorize:</strong> Escolha 1-3 ações de maior impacto para implementar
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">2</div>
+                                <div class="tip-content">
+                                    <strong>Documente:</strong> Registre decisões em Issues do GitHub
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">3</div>
+                                <div class="tip-content">
+                                    <strong>Acompanhe:</strong> Monitore resultados na próxima Sprint
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">4</div>
+                                <div class="tip-content">
+                                    <strong>Itere:</strong> Ajuste processos com base no feedback
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line"></i>
+                            <h2>Métricas de Sucesso</h2>
+                        </div>
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <strong>Lead Time:</strong> Reduzir em 20%
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <strong>Defeitos:</strong> Reduzir em 30%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-user"></i>
+                        <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>carlos.lopes@am.senac.br</span>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Aula 03 - Gestão de Fluxo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+
+                // Hide all content
+                document.querySelectorAll('.context-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

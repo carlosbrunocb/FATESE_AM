@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Segurança e Autenticação Wi-Fi</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .security-levels {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .security-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .security-item.active {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: rgba(33, 150, 243, 0.5);
+        }
+
+        .security-icon {
+            font-size: 20px;
+            color: #2196F3;
+            margin-bottom: 6px;
+        }
+
+        .security-name {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .security-status {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .handshake-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .handshake-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .handshake-step {
+            text-align: center;
+            flex: 1;
+            padding: 8px 4px;
+            background: rgba(33, 150, 243, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 auto 8px;
+        }
+
+        .step-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .arrow {
+            color: #00BCD4;
+            font-size: 16px;
+            margin: 0 4px;
+        }
+
+        .wifi-library {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .library-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .library-title {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .library-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .library-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .library-icon {
+            color: #00BCD4;
+            font-size: 14px;
+        }
+
+        .library-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .best-practices {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .practice-icon {
+            color: #00BCD4;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .practice-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Segurança e Autenticação Wi-Fi</div>
+                    <div class="subtitle">Proteção e protocolos de segurança no ESP32</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 24px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-shield-alt" style="color: #00BCD4; font-size: 20px; margin-right: 10px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 15px;">Segurança WPA2</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-lock"></i></div>
+                            <div class="card-title">Níveis de Segurança Wi-Fi</div>
+                        </div>
+                        <div class="security-levels">
+                            <div class="security-item active">
+                                <div class="security-icon"><i class="fas fa-lock-open"></i></div>
+                                <div class="security-name">Aberto</div>
+                                <div class="security-status">Inseguro</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon"><i class="fas fa-lock"></i></div>
+                                <div class="security-name">WEP</div>
+                                <div class="security-status">Obsoleto</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon"><i class="fas fa-lock"></i></div>
+                                <div class="security-name">WPA</div>
+                                <div class="security-status">Básico</div>
+                            </div>
+                            <div class="security-item active">
+                                <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
+                                <div class="security-name">WPA2</div>
+                                <div class="security-status">Recomendado</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
+                                <div class="security-name">WPA3</div>
+                                <div class="security-status">Avançado</div>
+                            </div>
+                        </div>
+                        <div class="handshake-container">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <i class="fas fa-handshake" style="color: #2196F3; font-size: 16px;"></i>
+                                <span style="color: #ffffff; font-weight: 600; font-size: 14px;">Handshake WPA2
+                                    4-Way</span>
+                            </div>
+                            <div class="handshake-steps">
+                                <div class="handshake-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text">Negociação<br />nonces</div>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="handshake-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text">Derivação<br />chaves</div>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="handshake-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text">Instalação<br />chaves</div>
+                                </div>
+                                <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="handshake-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-text">Confirmação<br />EAPOL</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="flex-grow: 1;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-book"></i></div>
+                            <div class="card-title">Biblioteca WiFi.h</div>
+                        </div>
+                        <div class="wifi-library">
+                            <div class="library-header">
+                                <i class="fas fa-code" style="color: #2196F3; font-size: 14px;"></i>
+                                <span class="library-title">Funções Principais</span>
+                            </div>
+                            <div class="library-content">
+                                <div class="library-item">
+                                    <div class="library-icon"><i class="fas fa-play"></i></div>
+                                    <div class="library-text">WiFi.begin()</div>
+                                </div>
+                                <div class="library-item">
+                                    <div class="library-icon"><i class="fas fa-info-circle"></i></div>
+                                    <div class="library-text">WiFi.status()</div>
+                                </div>
+                                <div class="library-item">
+                                    <div class="library-icon"><i class="fas fa-broadcast-tower"></i></div>
+                                    <div class="library-text">WiFi.onEvent()</div>
+                                </div>
+                                <div class="library-item">
+                                    <div class="library-icon"><i class="fas fa-cog"></i></div>
+                                    <div class="library-text">WiFi.setHostname()</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-title">Boas Práticas de Segurança</div>
+                        </div>
+                        <div class="best-practices">
+                            <div class="practice-item">
+                                <i class="fas fa-key practice-icon"></i>
+                                <div class="practice-text">Preferir WPA2/WPA3 com senhas fortes (≥12 caracteres)</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-eye-slash practice-icon"></i>
+                                <div class="practice-text">Não ocultar SSID como medida de segurança</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-lock practice-icon"></i>
+                                <div class="practice-text">Usar TLS para dados sensíveis</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-database practice-icon"></i>
+                                <div class="practice-text">Armazenar credenciais com NVS</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-redo practice-icon"></i>
+                                <div class="practice-text">Implementar reconexão resiliente</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-ban practice-icon"></i>
+                                <div class="practice-text">Desativar WPS</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="flex-grow: 1;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="card-title">Recomendações</div>
+                        </div>
+                        <div
+                            style="background: rgba(33, 150, 243, 0.1); border: 1px solid rgba(33, 150, 243, 0.3); border-radius: 10px; padding: 20px;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                <i class="fas fa-info-circle"
+                                    style="color: #00BCD4; font-size: 18px; margin-top: 2px;"></i>
+                                <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6;">
+                                    <span style="color: #00BCD4; font-weight: 700;">Dica:</span> Monitore eventos de
+                                    desconexão e implemente backoff exponencial para tentativas de reconexão.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Atividade Prática</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

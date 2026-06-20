@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Lead Time - Conceito e Cálculo</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a5f 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .header-icon i {
+            font-size: 26px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 25px;
+            height: calc(100% - 170px);
+        }
+
+        .left-section {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-header i {
+            font-size: 22px;
+            color: #3b82f6;
+            margin-right: 12px;
+        }
+
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            flex: 1;
+        }
+
+        .concept-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .concept-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .concept-icon i {
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .concept-content {
+            flex: 1;
+        }
+
+        .concept-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        .concept-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .formula-section {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 0px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .formula-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .formula-header i {
+            font-size: 20px;
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .formula-title {
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 18px;
+        }
+
+        .formula-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            color: #1e3a5f;
+        }
+
+        .formula-part {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .formula-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .formula-value {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .formula-equals {
+            font-size: 24px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .example-card {
+            background: #fef3c7;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #f59e0b;
+            flex: 1;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .example-header i {
+            font-size: 20px;
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #92400e;
+            font-size: 18px;
+        }
+
+        .example-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 16px;
+            color: #78350f;
+            line-height: 1.5;
+        }
+
+        .example-item i {
+            color: #f59e0b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .github-section {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #22c55e;
+            margin-bottom: 0px;
+            flex: 1;
+        }
+
+        .github-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .github-header i {
+            font-size: 20px;
+            color: #22c55e;
+            margin-right: 10px;
+        }
+
+        .github-title {
+            font-weight: 600;
+            color: #166534;
+            font-size: 18px;
+        }
+
+        .github-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .github-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            color: #166534;
+            line-height: 1.5;
+        }
+
+        .github-step i {
+            color: #22c55e;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="header">
+                <div class="header-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Lead Time - Conceito e Cálculo</h1>
+                    <p>Tempo total desde a solicitação até a entrega ao cliente</p>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h2>O que é Lead Time?</h2>
+                        </div>
+                        <div class="concept-grid">
+                            <div class="concept-item">
+                                <div class="concept-icon">
+                                    <i class="fas fa-hourglass-start"></i>
+                                </div>
+                                <div class="concept-content">
+                                    <div class="concept-title">Definição</div>
+                                    <div class="concept-desc">Tempo total desde a solicitação até a entrega ao usuário
+                                        final</div>
+                                </div>
+                            </div>
+                            <div class="concept-item">
+                                <div class="concept-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="concept-content">
+                                    <div class="concept-title">Quando começa</div>
+                                    <div class="concept-desc">No momento do pedido (Issue criada/solicitada)</div>
+                                </div>
+                            </div>
+                            <div class="concept-item">
+                                <div class="concept-icon">
+                                    <i class="fas fa-flag-checkered"></i>
+                                </div>
+                                <div class="concept-content">
+                                    <div class="concept-title">Quando termina</div>
+                                    <div class="concept-desc">Quando está Done/Entregue (Issue fechada)</div>
+                                </div>
+                            </div>
+                            <div class="concept-item">
+                                <div class="concept-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="concept-content">
+                                    <div class="concept-title">Importância</div>
+                                    <div class="concept-desc">Métrica de previsibilidade para o cliente</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-calculator"></i>
+                            <h2>Fórmula de Cálculo</h2>
+                        </div>
+                        <div class="formula-section">
+                            <div class="formula-header">
+                                <i class="fas fa-function"></i>
+                                <div class="formula-title">Fórmula: Lead Time = Data de Entrega - Data de Solicitação
+                                </div>
+                            </div>
+                            <div class="formula-box">
+                                <div class="formula-part">
+                                    <span class="formula-label">Data de Entrega:</span>
+                                    <span class="formula-value">10/05/2024</span>
+                                </div>
+                                <div class="formula-equals">-</div>
+                                <div class="formula-part">
+                                    <span class="formula-label">Data de Solicitação:</span>
+                                    <span class="formula-value">02/05/2024</span>
+                                </div>
+                                <div class="formula-equals">=</div>
+                                <div class="formula-part">
+                                    <span class="formula-label">Lead Time:</span>
+                                    <span class="formula-value" style="color: #22c55e;">8 dias</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fab fa-github"></i>
+                            <h2>Como Medir no GitHub Projects</h2>
+                        </div>
+                        <div class="github-section">
+                            <div class="github-header">
+                                <i class="fas fa-code-branch"></i>
+                                <div class="github-title">Passos para medir Lead Time</div>
+                            </div>
+                            <div class="github-steps">
+                                <div class="github-step">
+                                    <i class="fas fa-check"></i>
+                                    <span>Usar created_at (Issue criada) e closed_at (Issue fechada)</span>
+                                </div>
+                                <div class="github-step">
+                                    <i class="fas fa-check"></i>
+                                    <span>Criar campos de data "Solicitado em" e "Entregue em"</span>
+                                </div>
+                                <div class="github-step">
+                                    <i class="fas fa-check"></i>
+                                    <span>Gerar gráfico em Projects com "Time to completion"</span>
+                                </div>
+                                <div class="github-step">
+                                    <i class="fas fa-check"></i>
+                                    <span>Exportar para planilha e calcular a diferença</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h2>Exemplo Prático</h2>
+                        </div>
+                        <div class="example-card">
+                            <div class="example-header">
+                                <i class="fas fa-rocket"></i>
+                                <div class="example-title">Cenário Real</div>
+                            </div>
+                            <div class="example-list">
+                                <div class="example-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Solicitação em 02/05 e entrega em 10/05 = 8 dias corridos</span>
+                                </div>
+                                <div class="example-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Inclui tempo de espera, desenvolvimento e testes</span>
+                                </div>
+                                <div class="example-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Importante para promessas de entrega ao cliente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-left">
+                    <div class="footer-item">
+                        <i class="fas fa-user"></i>
+                        <span>Prof. Carlos Bruno Oliveira Lopes</span>
+                    </div>
+                    <div class="footer-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>carlos.lopes@am.senac.br</span>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Aula 03 - Gestão de Fluxo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

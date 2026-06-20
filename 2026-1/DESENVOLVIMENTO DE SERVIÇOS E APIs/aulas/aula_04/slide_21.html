@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tratamento Centralizado de Erros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0d1117;
+            background-image: radial-gradient(#21262d 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Window / Editor Styles */
+        .window-frame {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            background-color: #0d1117;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ff5f56;
+        }
+
+        .dot-yellow {
+            background-color: #ffbd2e;
+        }
+
+        .dot-green {
+            background-color: #27c93f;
+        }
+
+        .code-area {
+            padding: 24px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #e6edf3;
+            overflow: hidden;
+        }
+
+        /* Syntax Highlighting (GitHub Dark) */
+        .kwd { color: #ff7b72; }
+        .func { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .comment { color: #8b949e; font-style: italic; }
+        .obj { color: #79c0ff; }
+        .prop { color: #d2a8ff; }
+
+        /* Feature/Step Styles */
+        .feature-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .feature-step:hover {
+            border-color: #58a6ff;
+            background-color: #1c2128;
+            transform: translateX(5px);
+        }
+
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: rgba(235, 87, 87, 0.1);
+            color: #ff7b72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .cmd-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: #c9d1d9;
+        }
+
+        .indent-1 { margin-left: 20px; }
+        .indent-2 { margin-left: 40px; }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-12">
+        <div class="flex items-center justify-between mb-8 border-b border-[#30363d] pb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center border border-red-500/30 text-red-400">
+                    <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white tracking-tight">Tratamento Centralizado de Erros</h1>
+                    <p class="text-gray-400 mt-1">Padronizando exceções com Middlewares e Async/Await</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-1 gap-12 items-start h-full">
+            <div class="flex-1 h-full">
+                <div class="window-frame h-full">
+                    <div class="window-header">
+                        <div class="flex gap-2 mr-4">
+                            <div class="window-dot dot-red"></div>
+                            <div class="window-dot dot-yellow"></div>
+                            <div class="window-dot dot-green"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mono-font flex items-center gap-2">
+                            <i class="fa-solid fa-code-branch"></i> app.js &amp; controllers
+                        </div>
+                    </div>
+                    <div class="code-area mono-font">
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">01</span><span><span class="comment">// 1. Middleware de Erro (app.js)</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">02</span><span>app.<span class="func">use</span>((<span class="prop">err</span>, req, res, next) =&gt; {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">03</span><span class="indent-1"> console.<span class="func">error</span>(err.stack); <span class="comment">// Log do erro</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">04</span><span> <span class="kwd indent-1"> const</span> status = err.status || <span class="num">500</span>;</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">05</span><span class="indent-1"> res.<span class="func">status</span>(status).<span class="func">json</span>({</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">06</span><span class="indent-2"> error: <span class="kwd">true</span>,</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">07</span><span class="indent-2"> message: err.message || <span class="str">'Erro Interno'</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">08</span><span class="indent-1"> });</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">09</span><span>});</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">10</span><span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">11</span><span><span class="comment">// 2. Uso no Controller (tasks.controller.js)</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">12</span><span><span class="kwd">async</span> <span class="kwd">function</span> <span class="func">create</span>(req, res, next) {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">13</span><span> <span class="kwd indent-1">try</span> {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">14</span><span> <span class="kwd indent-2">const</span> task = <span class="kwd">await</span> service.<span class="func">create</span>(req.body);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">15</span><span> <span class="kwd indent-2">return</span> res.<span class="func">status</span>(<span class="num">201</span>).<span class="func">json</span>(task);</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">16</span><span class="indent-1"> } <span class="kwd">catch</span> (error) {</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">17</span><span> <span class="func indent-2">next</span>(error); <span class="comment">// Envia erro para o middleware</span></span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">18</span><span class="indent-1"> }</span></div>
+                        <div class="flex"><span class="text-gray-600 mr-4 select-none">19</span><span>}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-1/3 flex flex-col justify-center gap-4">
+                <h3 class="text-lg font-semibold text-white mb-2 pl-1 border-l-4 border-red-500">Regras Importantes</h3>
+                <div class="feature-step">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-list-ol"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-white mb-1">4 Parâmetros Obrigatórios</p>
+                        <p class="text-sm text-gray-400">
+                            O Express só reconhece como middleware de erro se a função tiver exatamente 4 argumentos:
+                            <code class="bg-gray-800 px-1 rounded text-xs">(err, req, res, next)</code>.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-step">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-arrow-down-long"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-white mb-1">Posição no Código</p>
+                        <p class="text-sm text-gray-400">
+                            Deve ser definido <strong>após</strong> todas as rotas e outros middlewares. É a "rede de
+                            segurança" final da aplicação.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-step">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-share-from-square"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-white mb-1">Função next()</p>
+                        <p class="text-sm text-gray-400">
+                            No controller, capturamos exceções com <code class="bg-gray-800 px-1 rounded text-xs">catch</code> e passamos para o <code class="bg-gray-800 px-1 rounded text-xs">next(error)</code> para delegar o tratamento.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 border border-blue-500/30 bg-blue-500/5 rounded-lg">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-lightbulb text-blue-400"></i>
+                        <span class="text-blue-300 font-semibold text-sm">Dica Pro</span>
+                    </div>
+                    <p class="text-gray-400 text-xs">
+                        Use bibliotecas como <code>express-async-errors</code> para evitar ter que escrever try/catch em
+                        todo controller assíncrono.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 pt-4 flex justify-between items-center text-gray-500 text-sm border-t border-[#30363d] mt-8">
+            <p>Aula 04 • Framework Express.js</p>
+            <p>21 / 25</p>
+        </div>
+    </div>
+</body>
+
+</html>

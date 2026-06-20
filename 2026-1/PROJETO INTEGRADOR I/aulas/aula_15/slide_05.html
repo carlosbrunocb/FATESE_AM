@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Critério da Ficha</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        /* Reset Básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+            background: #F4F6FB;
+        }
+
+        /* Container Principal em Grid Fluid */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #F4F6FB;
+            
+            /* Background Grid Pattern */
+            background-image:
+                linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            
+            /* Estrutura de Linhas: Header, Main e Footer */
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 4rem 6vw;
+            gap: 2rem;
+            z-index: 1;
+        }
+
+        /* --- Cabeçalho --- */
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .header-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #0891B2;
+            letter-spacing: 0.3em;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 72px;
+            color: #0F172A;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- Conteúdo Principal (Grid de Colunas e Linhas) --- */
+        .main-grid {
+            display: grid;
+            /* 3 Colunas: Esquerda (1fr), Centro/Setas (auto), Direita (1.1fr) */
+            grid-template-columns: 1fr max-content 1.1fr;
+            /* 4 Linhas: 1 para títulos das colunas, 3 para os cards alinhados */
+            grid-template-rows: auto 1fr 1fr 1fr;
+            column-gap: 3rem;
+            row-gap: 1.5rem;
+            align-items: stretch;
+            padding-top: 1rem;
+            z-index: 10;
+        }
+
+        /* Títulos Superiores das Colunas */
+        .col-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #475569;
+            letter-spacing: 0.25em;
+            align-self: end; /* Gruda o texto na parte de baixo da linha */
+            margin-bottom: 0.5rem;
+        }
+        .title-left { grid-column: 1; grid-row: 1; }
+        .title-right { grid-column: 3; grid-row: 1; }
+
+        /* Cards da Esquerda */
+        .left-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .card-1 { grid-column: 1; grid-row: 2; }
+        .card-2 { grid-column: 1; grid-row: 3; }
+        .card-3 { grid-column: 1; grid-row: 4; }
+
+        .left-card-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 0.2em;
+            margin-bottom: 8px;
+        }
+        .tag-blue { color: #0891B2; }
+        .tag-green { color: #0F9F5C; }
+        .tag-orange { color: #B45309; }
+
+        .left-card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 24px;
+            color: #0F172A;
+            margin-bottom: 6px;
+        }
+
+        .left-card-desc {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        /* Setas Centrais */
+        .arrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 42px;
+            color: #22D3EE;
+            align-self: center; /* Centraliza a seta na altura do card correspondente */
+            text-align: center;
+            padding: 0 1rem;
+        }
+        .arrow-1 { grid-column: 2; grid-row: 2; }
+        .arrow-2 { grid-column: 2; grid-row: 3; }
+        .arrow-3 { grid-column: 2; grid-row: 4; }
+
+        /* Card Grande da Direita (Ficha da Banca) */
+        .right-card {
+            grid-column: 3;
+            grid-row: 2 / span 3; /* Faz o card ocupar as 3 linhas dos cards da esquerda juntas */
+            background: #0A0E1A;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 90% 90%, rgba(34, 211, 238, 0.2) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .right-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .right-card-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #FBBF24;
+            letter-spacing: 0.25em;
+        }
+
+        .right-card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 40px;
+            color: #FFFFFF;
+            margin: 18px 0 24px 0;
+            line-height: 1.15;
+        }
+
+        .right-card-desc {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            color: #94A3B8;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .right-card-divider {
+            border-top: 1px solid #1E293B;
+            padding-top: 24px;
+        }
+
+        .right-card-subtag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #22D3EE;
+            letter-spacing: 0.2em;
+            margin-bottom: 14px;
+        }
+
+        .right-card-question {
+            font-family: 'Inter', sans-serif;
+            font-size: 19px;
+            color: #E5E7EB;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* --- Rodapé --- */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #94A3B8;
+            letter-spacing: 0.2em;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" data-screen-label="05 Criterio Ficha">
+
+        <header class="header-section" data-object="true" data-object-type="textbox">
+            <div class="header-tag">// MAPA DE PONTUAÇÃO</div>
+            <h1 class="header-title">
+                Como o Capítulo 3 conversa com a <span style="color:#0891B2;">ficha de avaliação</span>
+            </h1>
+        </header>
+
+        <main class="main-grid">
+            
+            <div class="col-title title-left" data-object="true" data-object-type="textbox">
+                O QUE VOCÊ ESCREVE NO CAP. 3
+            </div>
+            <div class="col-title title-right" data-object="true" data-object-type="textbox">
+                CRITÉRIO DA FICHA DA BANCA
+            </div>
+
+            <div class="left-card card-1" data-object="true" data-object-type="shape">
+                <div class="left-card-tag tag-blue">SEÇÃO 3.1</div>
+                <h3 class="left-card-title">Fluxo de Sprints &amp; rotina de trabalho</h3>
+                <p class="left-card-desc">Como a equipe organiza ciclos de entrega, planning, revisão e iteração contínua.</p>
+            </div>
+
+            <div class="left-card card-2" data-object="true" data-object-type="shape">
+                <div class="left-card-tag tag-green">SEÇÃO 3.2</div>
+                <h3 class="left-card-title">Papéis nominais da equipe ágil</h3>
+                <p class="left-card-desc">PO, Scrum Master e Devs com nomes reais dos integrantes atribuídos.</p>
+            </div>
+
+            <div class="left-card card-3" data-object="true" data-object-type="shape">
+                <div class="left-card-tag tag-orange">SEÇÃO 3.3</div>
+                <h3 class="left-card-title">Ferramental de suporte operacional</h3>
+                <p class="left-card-desc">Justificativa prática do GitHub Projects e Figma no projeto.</p>
+            </div>
+
+            <div class="arrow arrow-1" data-object="true" data-object-type="textbox">→</div>
+            <div class="arrow arrow-2" data-object="true" data-object-type="textbox">→</div>
+            <div class="arrow arrow-3" data-object="true" data-object-type="textbox">→</div>
+
+            <div class="right-card" data-object="true" data-object-type="shape">
+                <div class="right-card-content">
+                    <div class="right-card-tag">CRITÉRIO ÚNICO · ATÉ 2,0 PTS</div>
+                    <h2 class="right-card-title">“Estrutura e consistência operacional da proposta”</h2>
+                    <p class="right-card-desc">
+                        Fluxos de trabalho e forma de funcionamento — a banca lê os três itens em conjunto e cruza com o que viu nos protótipos.
+                    </p>
+
+                    <div class="right-card-divider">
+                        <div class="right-card-subtag">PERGUNTA-GUIA</div>
+                        <p class="right-card-question">
+                            "Esse time funcionaria em uma empresa de software de verdade?"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="footer-section">
+            <span data-object="true" data-object-type="textbox">
+                AULA 15 · ABERTURA
+            </span>
+            <span data-object="true" data-object-type="textbox">
+                05 / 35
+            </span>
+        </footer>
+
+    </div>
+</body>
+
+</html>

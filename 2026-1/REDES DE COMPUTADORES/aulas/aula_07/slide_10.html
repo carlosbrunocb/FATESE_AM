@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Processo de Decisão do Roteador</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .process-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: calc(100% - 70px);
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 18pt;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+            border: 2px solid #ff6b35;
+        }
+
+        .step-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .step-title {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-title i {
+            color: #ff6b35;
+            font-size: 14pt;
+        }
+
+        .step-description {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.4;
+        }
+
+        .step-details {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12pt;
+            color: #e0e6ed;
+        }
+
+        .detail-item i {
+            color: #ff6b35;
+            margin-right: 5px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .flow-arrow {
+            color: #ff6b35;
+            font-size: 20pt;
+        }
+
+        .step-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .status-text {
+            font-size: 12pt;
+            color: #e0e6ed;
+        }
+
+        .decision-box {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+
+        .decision-text {
+            color: #ffffff;
+            font-size: 13pt;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .decision-text i {
+            color: #ff6b35;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-route"></i> Processo de Decisão
+            </div>
+            <div class="main-title">
+                <i class="fas fa-cogs"></i>
+                Como o Roteador Decide o Caminho?
+            </div>
+            <div class="process-container">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-search"></i>
+                            Consulta da Tabela de Roteamento
+                        </div>
+                        <div class="step-description">
+                            O roteador recebe o pacote e <span class="highlight">consulta sua tabela de
+                                roteamento</span> para encontrar a melhor correspondência para o endereço IP de destino.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-table"></i> Verifica prefixo
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-filter"></i> Longest Prefix Match
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-calculator"></i>
+                            Resolução do Próximo Salto (Next Hop)
+                        </div>
+                        <div class="step-description">
+                            Resolve o <span class="highlight">endereço IP do próximo salto</span> e determina a
+                            interface de saída para encaminhar o pacote.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-arrow-right"></i> Next Hop: 192.168.1.1
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-network-wired"></i> Interface: Gi0/1
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-clock"></i>
+                            Atualização do TTL e Cabeçalho
+                        </div>
+                        <div class="step-description">
+                            <span class="highlight">Decrementa o TTL</span> (Time to Live) e atualiza o cabeçalho IP se
+                            necessário para evitar loops infinitos.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-hourglass-half"></i> TTL: 64 → 63
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check"></i> Checksum atualizado
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-paper-plane"></i>
+                            Encaminhamento do Pacote
+                        </div>
+                        <div class="step-description">
+                            <span class="highlight">Encaminha o quadro</span> na camada 2 correspondente para o próximo
+                            roteador ou destino final.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-ethernet"></i> Frame Ethernet
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shipping-fast"></i> Envio
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

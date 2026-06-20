@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modos de Operação do ESP32 - Visão Geral</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 18px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mode-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mode-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .mode-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .mode-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .mode-content {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .mode-diagram {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diagram-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .device-icon {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .device-icon i {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .device-label {
+            font-size: 9pt;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .connection-arrow {
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            position: relative;
+        }
+
+        .connection-arrow::after {
+            content: '▶';
+            position: absolute;
+            right: -5px;
+            top: -8px;
+            color: #00BCD4;
+            font-size: 10pt;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-inactive {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: rgba(33, 150, 243, 0.2);
+            color: #ffffff;
+            padding: 14px;
+            text-align: left;
+            font-size: 14pt;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table td {
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12.5pt;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Modos de Operação do ESP32</div>
+                    <div class="subtitle">STA, AP e STA+AP - Visão Geral</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 24px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-network-wired" style="color: #00BCD4; font-size: 20px; margin-right: 10px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 15px;">Wi-Fi Modes</span>
+                </div>
+            </div>
+            <div class="modes-grid">
+                <!-- STA Mode -->
+                <div class="mode-card">
+                    <div>
+                        <div class="mode-header">
+                            <div class="mode-icon"><i class="fas fa-wifi"></i></div>
+                            <div>
+                                <div class="mode-title">Station (STA)</div>
+                                <div class="mode-subtitle">Cliente Wi-Fi</div>
+                            </div>
+                        </div>
+                        <div class="mode-content">
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: #00BCD4;">Descrição:</strong> O ESP32 se conecta a um roteador
+                                existente como cliente
+                            </div>
+                            <div class="mode-diagram">
+                                <div class="diagram-container">
+                                    <div class="device-icon">
+                                        <i class="fas fa-microchip" style="color: #2196F3;"></i>
+                                        <div class="device-label">ESP32</div>
+                                    </div>
+                                    <div class="connection-arrow"></div>
+                                    <div class="device-icon">
+                                        <!-- <i class="fas fa-router" style="color: #00BCD4;"></i> -->
+                                        <img width="36px" src="https://img.icons8.com/color/48/wifi-router.png" alt="Roteador" class="device-img">
+                                        <div class="device-label">Roteador</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 10pt;">
+                                <span style="color: rgba(255,255,255,0.7);">Uso:</span> <span
+                                    style="color: #00BCD4;">Enviar dados para dashboard na nuvem</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-badge status-active">✓ Ativo</div>
+                </div>
+                <!-- AP Mode -->
+                <div class="mode-card">
+                    <div>
+                        <div class="mode-header">
+                            <div class="mode-icon"><i class="fas fa-broadcast-tower"></i></div>
+                            <div>
+                                <div class="mode-title">Access Point (AP)</div>
+                                <div class="mode-subtitle">Criar rede própria</div>
+                            </div>
+                        </div>
+                        <div class="mode-content">
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: #00BCD4;">Descrição:</strong> O ESP32 cria sua própria rede Wi-Fi
+                            </div>
+                            <div class="mode-diagram">
+                                <div class="diagram-container">
+                                    <div class="device-icon">
+                                        <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
+                                        <div class="device-label">Celular</div>
+                                    </div>
+                                    <div class="connection-arrow"></div>
+                                    <div class="device-icon">
+                                        <i class="fas fa-microchip" style="color: #2196F3;"></i>
+                                        <div class="device-label">ESP32</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 10pt;">
+                                <span style="color: rgba(255,255,255,0.7);">Uso:</span> <span
+                                    style="color: #00BCD4;">Configuração inicial sem internet</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-badge status-inactive">✗ Inativo</div>
+                </div>
+                <!-- STA+AP Mode -->
+                <div class="mode-card">
+                    <div>
+                        <div class="mode-header">
+                            <div class="mode-icon"><i class="fas fa-sync-alt"></i></div>
+                            <div>
+                                <div class="mode-title">STA+AP (Dual)</div>
+                                <div class="mode-subtitle">Modo híbrido</div>
+                            </div>
+                        </div>
+                        <div class="mode-content">
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: #00BCD4;">Descrição:</strong> Funciona nos dois modos
+                                simultaneamente
+                            </div>
+                            <div class="mode-diagram">
+                                <div class="diagram-container">
+                                    <div class="device-icon">
+                                        <i class="fas fa-network-wired" style="color: #FF9800;"></i>
+                                        <div class="device-label">Rede</div>
+                                    </div>
+                                    <div class="connection-arrow"></div>
+                                    <div class="device-icon">
+                                        <i class="fas fa-microchip" style="color: #2196F3;"></i>
+                                        <div class="device-label">ESP32</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 10pt;">
+                                <span style="color: rgba(255,255,255,0.7);">Uso:</span> <span
+                                    style="color: #00BCD4;">Bridge de rede ou repetidor</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-badge status-active">✓ Ativo</div>
+                </div>
+            </div>
+            <!-- Comparison Table -->
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Modo</th>
+                        <th style="width: 15%;">Função</th>
+                        <th style="width: 25%;">Vantagens</th>
+                        <th style="width: 25%;">Desvantagens</th>
+                        <th style="width: 20%;">Cenário Ideal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color: #2196F3;">STA</strong></td>
+                        <td>Cliente Wi-Fi</td>
+                        <td>Acesso à internet, DHCP automático</td>
+                        <td>Depende do roteador externo</td>
+                        <td>IoT com nuvem</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: #4CAF50;">AP</strong></td>
+                        <td>Ponto de acesso</td>
+                        <td>Independência total de rede</td>
+                        <td>Sem internet por padrão</td>
+                        <td>Configuração inicial</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: #FF9800;">STA+AP</strong></td>
+                        <td>Modo híbrido</td>
+                        <td>Flexibilidade total de conexão</td>
+                        <td>Maior consumo de energia</td>
+                        <td>Bridge de rede</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Segurança Wi-Fi</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

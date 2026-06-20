@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RBAC na Livraria - Papéis e Regras</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: 93%;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .role-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+            flex: 1;
+        }
+
+        .role-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .role-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .role-icon {
+            width: 56px;
+            height: 56px;
+            background: #f1f5f9;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .role-info {
+            flex: 1;
+        }
+
+        .role-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .role-type {
+            font-size: 15px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .role-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-tag {
+            padding: 6px 16px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-tag i {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .permissions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .permissions-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .permissions-list li i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .permissions-list li.allowed i {
+            color: #22c55e;
+        }
+
+        .permissions-list li.denied i {
+            color: #ef4444;
+        }
+
+        .route-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: auto;
+        }
+
+        .route-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .route-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .route-badge {
+            padding: 6px 12px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .route-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .route-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #475569;
+        }
+
+        .route-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .route-item .method {
+            padding: 4px 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .route-item .path {
+            flex: 1;
+            font-family: 'JetBrains Mono', monospace;
+            color: #0f172a;
+            font-size: 14px;
+        }
+
+        .route-item .access {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .route-item .access.public {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .route-item .access.protected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .security-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .info-item i {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-users-cog"></i> RBAC na Livraria - Papéis e Regras</h1>
+                    <div class="subtitle">Definição de permissões e controle de acesso baseado em papéis para a API da
+                        Livraria</div>
+                </div>
+                <div class="role-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>ADMIN &amp; CLIENTE</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon" style="background: #dbeafe; color: #1e40af;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="role-info">
+                            <div class="role-name">ADMIN</div>
+                            <div class="role-type">Administrador do Sistema</div>
+                        </div>
+                    </div>
+                    <div class="role-actions">
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Gerenciar Catálogo</span>
+                        </div>
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Criar Livros</span>
+                        </div>
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Atualizar Livros</span>
+                        </div>
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Deletar Livros</span>
+                        </div>
+                    </div>
+                    <div class="route-section">
+                        <div class="route-header">
+                            <div class="route-title">Rotas Administrativas</div>
+                            <div class="route-badge">PROTEGIDO</div>
+                        </div>
+                        <div class="route-list">
+                            <div class="route-item">
+                                <i class="fas fa-plus"></i>
+                                <span class="method">POST</span>
+                                <span class="path">/api/livros</span>
+                                <span class="access protected">ADMIN</span>
+                            </div>
+                            <div class="route-item">
+                                <i class="fas fa-edit"></i>
+                                <span class="method">PUT</span>
+                                <span class="path">/api/livros/:id</span>
+                                <span class="access protected">ADMIN</span>
+                            </div>
+                            <div class="route-item">
+                                <i class="fas fa-trash"></i>
+                                <span class="method">DELETE</span>
+                                <span class="path">/api/livros/:id</span>
+                                <span class="access protected">ADMIN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon" style="background: #dcfce7; color: #166534;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="role-info">
+                            <div class="role-name">CLIENTE</div>
+                            <div class="role-type">Usuário Comum</div>
+                        </div>
+                    </div>
+                    <div class="role-actions">
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Visualizar Catálogo</span>
+                        </div>
+                        <div class="action-tag">
+                            <i class="fas fa-check"></i>
+                            <span>Realizar Compras</span>
+                        </div>
+                        <div class="action-tag">
+                            <i class="fas fa-times"></i>
+                            <span>Gerenciar Livros</span>
+                        </div>
+                    </div>
+                    <div class="route-section">
+                        <div class="route-header">
+                            <div class="route-title">Rotas do Cliente</div>
+                            <div class="route-badge">PÚBLICO/PROTEGIDO</div>
+                        </div>
+                        <div class="route-list">
+                            <div class="route-item">
+                                <i class="fas fa-eye"></i>
+                                <span class="method">GET</span>
+                                <span class="path">/api/livros</span>
+                                <span class="access public">PÚBLICO</span>
+                            </div>
+                            <div class="route-item">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="method">POST</span>
+                                <span class="path">/api/livros/:id/comprar</span>
+                                <span class="access protected">CLIENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <div class="security-info">
+                    <div class="info-item">
+                        <i class="fas fa-lock"></i>
+                        <span>Autenticação JWT</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-key"></i>
+                        <span>Role-Based Access Control</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Proteção de Rotas</span>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Sistema Seguro</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

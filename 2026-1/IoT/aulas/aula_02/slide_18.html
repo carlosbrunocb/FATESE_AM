@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Versão 1: O que Observar na Simulação</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden; /* Evita barras de rolagem na tela cheia */
+        }
+
+        .slide-container {
+            width: 100vw; /* Ocupa 100% da largura da tela */
+            height: 100vh; /* Ocupa 100% da altura da tela */
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 5vh 5vw; /* Padding responsivo para manter a proporção */
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 4vw, 44px); /* Fonte responsiva */
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 4vh 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+        }
+
+        .comparison-container {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+        }
+
+        .comparison-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            border: 3px solid;
+        }
+
+        .side-success {
+            border-color: #22c55e;
+        }
+
+        .side-warning {
+            border-color: #dc2626;
+        }
+
+        .side-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid #334155;
+        }
+
+        .side-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid;
+        }
+
+        .icon-success {
+            background-color: #15803d;
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .icon-warning {
+            background-color: #991b1b;
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .side-title {
+            flex: 1;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .item-card {
+            background-color: #0f172a;
+            padding: 18px 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .item-success {
+            border-left-color: #22c55e;
+        }
+
+        .item-warning {
+            border-left-color: #dc2626;
+        }
+
+        .item-icon {
+            min-width: 36px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .item-icon-success {
+            background-color: #15803d;
+            color: #22c55e;
+        }
+
+        .item-icon-warning {
+            background-color: #991b1b;
+            color: #fca5a5;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: clamp(15px, 1.5vw, 17px);
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding-top: 4px;
+        }
+
+        .emphasis-box {
+            background-color: #7c2d12;
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-top: auto; /* Empurra a caixa para o fundo se houver espaço */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .emphasis-icon {
+            min-width: 32px;
+            width: 32px;
+            height: 32px;
+            background-color: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .emphasis-text {
+            flex: 1;
+            color: #fecaca;
+            font-size: clamp(13px, 1.4vw, 15px);
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+            pointer-events: none; /* Não interfere com cliques */
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Versão 1: O que Observar na Simulação</p>
+            </h1>
+            <div class="comparison-container">
+                <div class="comparison-side side-success">
+                    <div class="side-header">
+                        <div class="side-icon icon-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <p class="side-title">O que Funciona</p>
+                    </div>
+                    <div class="items-container">
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-traffic-light"></i>
+                            </div>
+                            <p class="item-text">LEDs seguem a sequência correta: Verde → Amarelo → Vermelho</p>
+                        </div>
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <p class="item-text">Os tempos de cada fase são respeitados (3s, 1s, 3s)</p>
+                        </div>
+                        <div class="item-card item-success">
+                            <div class="item-icon item-icon-success">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <p class="item-text">Lógica de estados simples e fácil de entender para iniciantes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-side side-warning">
+                    <div class="side-header">
+                        <div class="side-icon icon-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p class="side-title">Problemas Críticos</p>
+                    </div>
+                    <div class="items-container" style="height: 100%; display: flex; flex-direction: column;">
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <p class="item-text">Durante cada delay(), o ESP32 não executa MAIS NADA</p>
+                        </div>
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-hand-paper"></i>
+                            </div>
+                            <p class="item-text">Sistema fica "cego e surdo": não lê botões, não processa sensores</p>
+                        </div>
+                        <div class="item-card item-warning">
+                            <div class="item-icon item-icon-warning">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <p class="item-text">Conexões Wi-Fi e MQTT podem cair durante os bloqueios</p>
+                        </div>
+                        <div class="emphasis-box">
+                            <div class="emphasis-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <p class="emphasis-text">Teste: adicione um print() ou leitura de botão — nada responde
+                                enquanto aguarda!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Como Interpretar a Saída do netstat/ss</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;family=Roboto+Mono:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            right: 50px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 200px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .data-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .data-table tr:hover {
+            background: #ebf8ff;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-warning {
+            background: #fef5e7;
+            color: #744210;
+        }
+
+        .status-error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            color: #2c5282;
+            font-size: 12px;
+        }
+
+        .feature-text {
+            font-size: 11px;
+            color: #4a5568;
+            flex: 1;
+        }
+
+        .feature-value {
+            font-size: 10px;
+            color: #718096;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .code-block {
+            background: #1e3a5f;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .code-comment {
+            color: #a0aec0;
+        }
+
+        .code-command {
+            color: #68d391;
+        }
+
+        .code-output {
+            color: #90cdf4;
+        }
+
+        .tip-box {
+            background: #fef5e7;
+            border-left: 4px solid #f6b73c;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .tip-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #744210;
+            margin-bottom: 5px;
+        }
+
+        .tip-text {
+            font-size: 11px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-text {
+            font-size: 11px;
+            color: #4a5568;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .status-icon {
+            color: #2c5282;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            border-radius: 3px;
+            width: 85%;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .highlight {
+            background: #ebf8ff;
+            border-left: 3px solid #2c5282;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .highlight-text {
+            font-size: 11px;
+            color: #2c5282;
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .column-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .column-subtitle {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .value-cell {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            color: #2c5282;
+        }
+
+        .state-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .state-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #f8fafc;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .state-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .state-dot.green {
+            background: #48bb78;
+        }
+
+        .state-dot.yellow {
+            background: #ecc94b;
+        }
+
+        .state-dot.red {
+            background: #f56565;
+        }
+
+        .state-dot.blue {
+            background: #4299e1;
+        }
+
+        .state-text {
+            font-size: 10px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <div>
+                    <div class="header-title">Como Interpretar a Saída do netstat/ss</div>
+                    <div class="header-subtitle">Guia prático para análise de conexões de rede</div>
+                </div>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 13px; color: #a0aec0;">Protocolos</div>
+                    <div style="font-size: 14px; color: white; font-weight: 600;">TCP/UDP</div>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e3a5f; font-size: 18px;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Panel -->
+                <div class="left-panel">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="card-title">Colunas do netstat/ss</div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Coluna</th>
+                                        <th>Significado</th>
+                                        <th>Exemplo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Proto</strong></td>
+                                        <td>Protocolo de transporte</td>
+                                        <td>tcp, udp, tcp6</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Local Address</strong></td>
+                                        <td>IP:Porta do host</td>
+                                        <td>0.0.0.0:443</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Foreign Address</strong></td>
+                                        <td>IP:Porta remota</td>
+                                        <td>192.168.1.1:80</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>State</strong></td>
+                                        <td>Estado da conexão</td>
+                                        <td>ESTABLISHED</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>PID/Program</strong></td>
+                                        <td>Processo dono</td>
+                                        <td>1234/nginx</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="card-title">Estados TCP Comuns</div>
+                        </div>
+                        <div class="state-list">
+                            <div class="state-item">
+                                <div class="state-dot green"></div>
+                                <span class="state-text">ESTABLISHED</span>
+                            </div>
+                            <div class="state-item">
+                                <div class="state-dot yellow"></div>
+                                <span class="state-text">LISTEN</span>
+                            </div>
+                            <div class="state-item">
+                                <div class="state-dot red"></div>
+                                <span class="state-text">TIME_WAIT</span>
+                            </div>
+                            <div class="state-item">
+                                <div class="state-dot blue"></div>
+                                <span class="state-text">CLOSE_WAIT</span>
+                            </div>
+                        </div>
+                        <div class="tip-box" style="margin-top: 10px;">
+                            <div class="tip-title">Dica Importante</div>
+                            <div class="tip-text">Use <code>netstat -ano</code> (Windows) ou <code>ss -tulpn</code>
+                                (Linux) para ver o PID do processo.</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Panel -->
+                <div class="right-panel">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="card-title">Interpretação de Estados</div>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <div><strong>ESTABLISHED</strong></div>
+                                    <div style="font-size: 10px; color: #718096;">Conexão ativa e funcionando</div>
+                                </div>
+                                <div class="feature-value">OK</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-hourglass-half text-yellow-500"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <div><strong>TIME_WAIT</strong></div>
+                                    <div style="font-size: 10px; color: #718096;">Aguardando ACK final</div>
+                                </div>
+                                <div class="feature-value">2×MSL</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-times-circle text-red-500"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <div><strong>CLOSE_WAIT</strong></div>
+                                    <div style="font-size: 10px; color: #718096;">Esperando fechamento</div>
+                                </div>
+                                <div class="feature-value">Wait</div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-sync text-blue-500"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <div><strong>SYN_SENT</strong></div>
+                                    <div style="font-size: 10px; color: #718096;">Iniciando conexão</div>
+                                </div>
+                                <div class="feature-value">Init</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="card-title">Exemplo de Saída</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">
+                                <span class="code-command">$ ss -tulpn | grep :443</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="code-output">tcp LISTEN 0 128 0.0.0.0:443 0.0.0.0:*
+                                    users:(("nginx",pid=1234,fd=6))</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="code-comment"># Interpretação: nginx escutando na porta 443</span>
+                            </div>
+                        </div>
+                        <div class="highlight">
+                            <div class="highlight-text">
+                                <strong>Local:</strong> 0.0.0.0:443 (escuta em todas as interfaces)<br />
+                                <strong>Remote:</strong> 0.0.0.0:* (aceita conexões de qualquer IP)<br />
+                                <strong>PID:</strong> 1234 (processo nginx)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-user-graduate status-icon"></i>
+                    <span>Alunos: Análise e Desenvolvimento de Sistemas</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock status-icon"></i>
+                    <span>Progresso: 85%</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span class="progress-text">Progresso da aula</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

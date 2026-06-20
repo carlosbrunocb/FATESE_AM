@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2: Arquitetura em Camadas (Apresentação)</title>
+    
+    <style>
+        /* --- Estilos Globais --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            /* Modificado para centralizar o slide na tela */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding-bottom: 80px; /* Espaço para os controles */
+        }
+
+        /* --- O Contêiner "Deck de Slides" --- */
+        .slideshow-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden; /* Para conter os slides */
+        }
+
+        /* --- O Slide Individual --- */
+        .slide {
+            padding: 40px 50px;
+            min-height: 400px; /* Altura mínima para parecer um slide */
+            /* Modificado: removida a borda e escondido por padrão */
+            /* border-bottom: 2px solid #eee; */
+            box-sizing: border-box; 
+            flex-direction: column;
+            justify-content: center;
+            
+            /* NOVO: Esconde slides por padrão */
+            display: none; 
+        }
+
+        /* NOVO: Mostra apenas o slide ativo */
+        .slide.active {
+            display: flex;
+        }
+
+        .slide:last-child {
+            border-bottom: none;
+        }
+
+        /* --- Estilos de Título --- */
+        .slide-title {
+            font-size: 2.5em; /* 40px */
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.4em; /* 22px */
+            color: #555;
+            font-weight: 300;
+            margin-bottom: 25px;
+        }
+
+        /* --- Slide de Título (Especial) --- */
+        .title-slide {
+            background-color: #004a99;
+            color: #fff;
+            text-align: center;
+            min-height: 450px;
+        }
+
+        .title-slide h1 {
+            font-size: 3em; /* 48px */
+            margin-bottom: 10px;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8em; /* 28px */
+            font-weight: 400;
+            margin-bottom: 30px;
+            color: #cceeff;
+        }
+
+        .title-slide .institute-info {
+            font-size: 1.1em; /* 18px */
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* --- Slide de Encerramento (Especial) --- */
+        .end-slide {
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .end-slide h2 {
+            font-size: 2.8em;
+            color: #0056b3;
+        }
+
+        .end-slide p {
+            font-size: 1.5em;
+            color: #444;
+        }
+
+        /* --- Formatação de Conteúdo --- */
+        ul, ol {
+            font-size: 1.15em; /* 18px */
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.1em; /* 18px */
+            margin-bottom: 15px;
+        }
+
+        /* --- Bloco de Código --- */
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto; /* Rolagem horizontal para código */
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.95em; /* 15px */
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: inherit;
+        }
+        
+        /* Comentários no código */
+        code .comment {
+            color: #7a7a7a;
+            font-style: italic;
+        }
+
+        /* Palavras-chave */
+        code .keyword {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Strings */
+        code .string {
+            color: #f1fa8c;
+        }
+        
+        /* Funções */
+        code .function {
+            color: #50fa7b;
+        }
+        
+        /* Números */
+        code .number {
+            color: #bd93f9;
+        }
+        
+        /* Nomes de classes e constantes */
+        code .constant {
+            color: #66d9ef;
+        }
+        
+        /* Nomes de parâmetros */
+        code .param {
+            color: #ffb86c;
+        }
+
+        /* --- Estrutura de Pastas --- */
+        .folder-structure {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            line-height: 1.7;
+            font-size: 1.1em;
+        }
+
+        /* --- Classes Utilitárias --- */
+        .center-text {
+            text-align: center;
+        }
+        
+        .diagram {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.2em;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        /* --- Responsividade --- */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 25px 20px;
+                min-height: 300px;
+            }
+
+            .slide-title {
+                font-size: 2em; /* 32px */
+            }
+
+            .title-slide h1 {
+                font-size: 2.2em; /* 35px */
+            }
+
+            .title-slide h2 {
+                font-size: 1.4em; /* 22px */
+            }
+
+            p, ul, ol, .folder-structure {
+                font-size: 1em; /* 16px */
+            }
+            
+            pre {
+                font-size: 0.85em; /* 13.6px */
+            }
+        }
+    </style>
+    
+    <style>
+        .navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navigation-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation-controls button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        .navigation-controls button:disabled {
+            background-color: #c0c0c0;
+            cursor: not-allowed;
+        }
+
+        #slide-counter {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        #destaque {
+            background-color: lightgoldenrodyellow;
+            padding: 0px 3px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slideshow-container">
+
+        <div class="slide title-slide">
+            <div class="institute-info">
+                <p>FACULDADE DE TECNOLOGIA SENAC - FATESE</p>
+                <p>Curso de Análise e Desenvolvimento de Sistemas</p>
+                <p>Disciplina: Desenvolvimento de Serviços e APIs</p>
+            </div>
+            <h1>Aula 2 - Arquitetura em Camadas</h1>
+            <h2>Refatorando nossa API com Rotas, Controllers e Services</h2>
+            <div class="institute-info">
+                <p>Professor: Carlos Bruno Oliveira Lopes</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">🗺️ O que vamos ver hoje?</h2>
+            <div class="slide-content">
+                <ul>
+                    <li>Por que separar nossa aplicação?</li>
+                    <li>O conceito de <strong>Separação de Responsabilidades (SoC)</strong>.</li>
+                    <li>O Papel de cada camada:
+                        <ul>
+                            <li><strong>Rotas (Routes)</strong></li>
+                            <li><strong>Controladores (Controllers)</strong></li>
+                            <li><strong>Serviços (Services)</strong></li>
+                        </ul>
+                    </li>
+                    <li>Mão na Massa: Estruturando nosso projeto.</li>
+                    <li>Instalando e configurando o <strong>Nodemon</strong>.</li>
+                    <li>O middleware <code>express.json()</code>.</li>
+                    <li>Refatorando nosso código para a nova arquitetura.</li>
+                    <li>Lidando com parâmetros: <code>req.params</code>, <code>req.query</code> e <code>req.body</code>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">🎯 Objetivos da Aula</h2>
+            <div class="slide-content">
+                <p>Ao final desta aula, você será capaz de:</p>
+                <ul>
+                    <li>Compreender a importância da <strong>Separação de Responsabilidades (Separation of Concerns)</strong>.</li>
+                    <li>Estruturar um projeto Node.js em camadas: <strong>Rotas, Controllers e Services</strong>.</li>
+                    <li>Refatorar o "Hello World" (e mais) para essa arquitetura.</li>
+                    <li>Diferenciar e utilizar os diferentes tipos de parâmetros de requisição (<strong>Params, Query e Body</strong>).</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">🤔 O Problema: O "Monstro" <span id="destaque">index.js</span></h2>
+            <div class="slide-content">
+                <p>Na nossa primeira aula, criamos um servidor e uma rota "Hello World", tudo no mesmo arquivo <code>index.js</code>.</p>
+                <p>Isso funciona para um exemplo simples, mas...</p>
+                <p><strong>O que acontece quando tivermos 50 rotas?</strong> (Usuários, Produtos, Pedidos, Pagamentos...)</p>
+                <ul>
+                    <li>O arquivo <code>index.js</code> se tornará gigante e ilegível.</li>
+                    <li>A lógica de negócio (como calcular um frete) ficará misturada com a lógica de HTTP (<code>req</code>, <code>res</code>).</li>
+                    <li>Dar manutenção será um pesadelo.</li>
+                    <li>Testar partes específicas do código será quase impossível.</li>
+                </ul>
+                <p><strong>Precisamos de organização!</strong></p>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">💡 A Solução: Arquitetura em Camadas</h2>
+            <div class="slide-content">
+                <p>Vamos organizar nosso código dividindo as responsabilidades em "camadas" lógicas.</p>
+                <p>O princípio por trás disso é chamado de:</p>
+                <h3 class="center-text" style="color: #0056b3;">Separação de Responsabilidades<br>(Separation of Concerns - SoC)</h3>
+                <p>A ideia é simples: <strong>cada parte do seu código deve ter uma, e apenas uma, responsabilidade.</strong></p>
+                <ul>
+                    <li>Um arquivo que define rotas SÓ deve definir rotas.</li>
+                    <li>Um arquivo que tem lógica de negócio SÓ deve ter lógica de negócio.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">🏗️ Nosso Diagrama de Camadas</h2>
+            <div class="slide-content">
+                <p>Vamos visualizar como uma requisição vai fluir pelo nosso sistema:</p>
+                <div class="diagram">
+                    <p>Cliente (Insomnia / Browser)</p>
+                    <p>⬇️</p>
+                    <p><code>index.js</code> (Ponto de Entrada)</p>
+                    <p>⬇️</p>
+                    <p><strong>Camada de Rotas (Routes)</strong><br><em>"Qual URL é essa? Para quem eu mando?"</em></p>
+                    <p>⬇️</p>
+                    <p><strong>Camada de Controle (Controllers)</strong><br><em>"Ok, recebi. Pego os dados (req) e chamo o Serviço."</em></p>
+                    <p>⬇️</p>
+                    <p><strong>Camada de Serviço (Services)</strong><br><em>"Aqui está a lógica de negócio. Vou processar e te devolver."</em></p>
+                    <p>⬇️</p>
+                    <p><strong>(Futuramente: Camada de Dados / Model)</strong><br><em>"Vou buscar ou salvar isso no Banco de Dados."</em></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">Camada 1: Rotas (Routes)</h2>
+            <div class="slide-content">
+                <p>É o <strong>"Porteiro"</strong> da sua aplicação.</p>
+                <ul>
+                    <li><strong>Responsabilidade Única:</strong> Definir os <em>endpoints</em> (URLs) e quais verbos HTTP (GET, POST, PUT, DELETE) eles aceitam.</li>
+                    <li>Sabe qual rota (ex: <code>/users</code>) deve chamar qual função do <em>Controller</em> (ex: <code>userController.getAll</code>).</li>
+                    <li>Não sabe NADA sobre lógica de negócio.</li>
+                    <li>Não sabe NADA sobre banco de dados.</li>
+                    <li>Apenas direciona o tráfego.</li>
+                </ul>
+                <p><strong>Exemplo:</strong> "Ah, uma requisição <code>GET</code> para <code>/users/:id</code>? Mande para o <code>userController.getById</code>."</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">Camada 2: Controladores (Controllers)</h2>
+            <div class="slide-content">
+                <p>É o <strong>"Orquestrador"</strong> da requisição.</p>
+                <ul>
+                    <li><strong>Responsabilidade Única:</strong> Orquestrar o fluxo da requisição.</li>
+                    <li>Recebe os objetos <code>req</code> (Requisição) e <code>res</code> (Resposta).</li>
+                    <li>Extrai dados da requisição (ex: <code>req.body</code>, <code>req.params.id</code>).</li>
+                    <li><strong>Chama a camada de Serviço</strong> para executar a lógica de negócio, passando os dados necessários.</li>
+                    <li>Recebe a resposta do Serviço e envia de volta ao cliente (ex: <code>res.json(...)</code> ou <code>res.status(404).json(...)</code>).</li>
+                    <li><strong>Não deve conter lógica de negócio!</strong> (Ex: NUNCA fazer um cálculo de desconto aqui).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">Camada 3: Serviços (Services)</h2>
+            <div class="slide-content">
+                <p>É o <strong>"Cérebro"</strong> da aplicação. Aqui mora a lógica de negócio.</p>
+                <ul>
+                    <li><strong>Responsabilidade Única:</strong> Conter a lógica de negócio pura (<em>Business Logic</em>).</li>
+                    <li>Define "COMO" as coisas são feitas.
+                        <ul>
+                            <li>"Como buscar um usuário no banco de dados."</li>
+                            <li>"Como validar se um CPF é válido."</li>
+                            <li>"Como calcular o total de um pedido."</li>
+                        </ul>
+                    </li>
+                    <li><strong>Não deve saber sobre <code>req</code> ou <code>res</code>!</strong></li>
+                    <li>Recebe dados puros (ex: um <code>id</code> ou um objeto <code>userData</code>) e retorna dados puros (ex: um objeto <code>user</code> ou um <code>array</code>).</li>
+                    <li>Isso torna a lógica de negócio testável e reutilizável.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">🧑‍💻 Mão na Massa: Estruturando o Projeto</h2>
+            <div class="slide-content">
+                <p>Vamos organizar nosso projeto! Crie esta estrutura de pastas:</p>
+                <div class="folder-structure">
+                    / (pasta_do_projeto)
+                    <br>├── node_modules/
+                    <br>├── <strong>src/</strong>
+                    <br>│&nbsp;&nbsp;&nbsp;├── <strong>controllers/</strong>
+                    <br>│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── user.controller.js
+                    <br>│&nbsp;&nbsp;&nbsp;├── <strong>routes/</strong>
+                    <br>│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── index.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>(Opcional, para juntar rotas)</em>
+                    <br>│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── user.routes.js
+                    <br>│&nbsp;&nbsp;&nbsp;├── <strong>services/</strong>
+                    <br>│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── user.service.js
+                    <br>│&nbsp;&nbsp;&nbsp;└── <strong>index.js</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>(Nosso arquivo principal)</em>
+                    <br>├── package.json
+                    <br>└── package-lock.json
+                </div>
+                <p class="center-text" style="margin-top: 20px;"><strong>(Mova seu <code>index.js</code> para dentro da pasta <code>/src</code>)</strong></p>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">⚙️ Facilitando a Vida: Nodemon</h2>
+            <div class="slide-content">
+                <p>Cansado de ter que parar e iniciar o servidor (<code>node src/index.js</code>) a cada mudança?</p>
+                <p>O <strong>Nodemon</strong> reinicia automaticamente o servidor quando detecta alterações nos arquivos.</p>
+                <p>1. Instale como uma dependência de desenvolvimento (<code>-D</code>):</p>
+                <pre><code>npm install nodemon -D</code></pre>
+                <p>2. Configure seu <code>package.json</code> para usá-lo:</p>
+                <pre><code><span class="comment">// package.json</span>
+{
+  ...
+  <span class="string">"scripts"</span>: {
+    <span class="string">"start"</span>: <span class="string">"node src/index.js"</span>,
+    <span class="string">"dev"</span>: <span class="string">"nodemon src/index.js"</span>
+  },
+  ...
+}</code></pre>
+                <p>Agora, rode <code>npm run dev</code> para iniciar o servidor!</p>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">🧱 O Middleware <span id="destaque">express.json()</span></h2>
+            <div class="slide-content">
+                <p>Quando um cliente envia dados para nossa API (ex: em uma requisição <code>POST</code>), ele geralmente envia em formato JSON no "corpo" (body) da requisição.</p>
+                <p>Por padrão, o Express não sabe como ler esse JSON.</p>
+                <p>Precisamos adicionar um <strong>middleware</strong> (um "plugin") nativo do Express para "traduzir" esse JSON para um objeto JavaScript que possamos usar em <code>req.body</code>.</p>
+                <p>Adicione esta linha ao seu <code>src/index.js</code>, <strong>antes</strong> de definir as rotas:</p>
+                <pre><code><span class="comment">// Em src/index.js</span>
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> app = <span class="function">express</span>();
+
+<span class="comment">// Middleware para ler JSON</span>
+app.<span class="function">use</span>(express.<span class="function">json</span>());
+
+<span class="comment">// ... resto do seu código (rotas, etc) ...</span>
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">Refatoração: Camada de Serviço</h2>
+            <p class="slide-subtitle"><code>src/services/user.service.js</code></p>
+            <div class="slide-content">
+                <p>Aqui fica a lógica de negócio. Por enquanto, vamos simular um banco de dados com um array.</p>
+                <pre><code><span class="comment">// Por enquanto, simulando um banco de dados</span>
+<span class="keyword">const</span> users = [{ <span class="param">id</span>: <span class="number">1</span>, <span class="param">name</span>: <span class="string">'João'</span> }];
+
+<span class="keyword">class</span> <span class="constant">UserService</span> {
+  <span class="function">getAll</span>() {
+    <span class="comment">// Lógica de negócio (ex: buscar no DB)</span>
+    <span class="keyword">return</span> users;
+  }
+
+  <span class="function">create</span>(<span class="param">userData</span>) {
+    <span class="comment">// Lógica de negócio (ex: validar dados, inserir no DB)</span>
+    <span class="keyword">const</span> newUser = { <span class="param">id</span>: users.length + <span class="number">1</span>, ...userData };
+    users.<span class="function">push</span>(newUser);
+    <span class="keyword">return</span> newUser;
+  }
+
+  <span class="function">getById</span>(<span class="param">id</span>) {
+     <span class="comment">// Lógica (ex: buscar por ID)</span>
+     <span class="keyword">return</span> users.<span class="function">find</span>(<span class="param">u</span> => u.id === <span class="function">parseInt</span>(id));
+  }
+}
+
+<span class="comment">// Exportamos uma *instância* da classe</span>
+module.exports = <span class="keyword">new</span> <span class="constant">UserService</span>();
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">Refatoração: Camada de Controle</h2>
+            <p class="slide-subtitle"><code>src/controllers/user.controller.js</code></p>
+            <div class="slide-content">
+                <p>O orquestrador. Importa o Serviço, chama os métodos e envia a resposta.</p>
+                <pre><code><span class="keyword">const</span> userService = <span class="function">require</span>(<span class="string">'../services/user.service'</span>);
+
+<span class="keyword">class</span> <span class="constant">UserController</span> {
+  <span class="comment">// Método para buscar todos os usuários</span>
+  <span class="keyword">async</span> <span class="function">getAll</span>(<span class="param">req</span>, <span class="param">res</span>) {
+    <span class="keyword">const</span> users = userService.<span class="function">getAll</span>();
+    res.<span class="function">json</span>({ <span class="param">success</span>: <span class="keyword">true</span>, <span class="param">data</span>: users });
+  }
+
+  <span class="comment">// Método para criar um novo usuário</span>
+  <span class="keyword">async</span> <span class="function">create</span>(<span class="param">req</span>, <span class="param">res</span>) {
+    <span class="comment">// req.body - Vem do middleware express.json()</span>
+    <span class="keyword">const</span> newUser = userService.<span class="function">create</span>(req.body);
+    <span class="comment">// 201 = Created (Sucesso ao criar)</span>
+    res.<span class="function">status</span>(<span class="number">201</span>).<span class="function">json</span>({ <span class="param">success</span>: <span class="keyword">true</span>, <span class="param">data</span>: newUser });
+  }
+  
+  <span class="comment">// ... continua no próximo slide ...</span>
+}
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">Refatoração: Camada de Controle (Cont.)</h2>
+            <p class="slide-subtitle"><code>src/controllers/user.controller.js</code></p>
+            <div class="slide-content">
+                <p>Continuando nosso Controller, agora com o método <code>getById</code>.</p>
+                <pre><code><span class="comment">// ... continuação ...</span>
+
+<span class="keyword">class</span> <span class="constant">UserController</span> {
+  <span class="comment">// ... métodos getAll e create ...</span>
+
+  <span class="comment">// Método para buscar usuário por ID</span>
+  <span class="keyword">async</span> <span class="function">getById</span>(<span class="param">req</span>, <span class="param">res</span>) {
+     <span class="comment">// req.params - Vem da URL (ex: /users/1)</span>
+     <span class="keyword">const</span> user = userService.<span class="function">getById</span>(req.params.id);
+     
+     <span class="keyword">if</span> (!user) {
+        <span class="comment">// 404 = Not Found</span>
+        <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ <span class="param">success</span>: <span class="keyword">false</span>, <span class="param">message</span>: <span class="string">'Usuário não encontrado'</span> });
+     }
+     
+     res.<span class="function">json</span>({ <span class="param">success</span>: <span class="keyword">true</span>, <span class="param">data</span>: user });
+  }
+}
+
+module.exports = <span class="keyword">new</span> <span class="constant">UserController</span>();
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">🎁 Parâmetros de Requisição</h2>
+            <div class="slide-content">
+                <p>De onde vêm os dados que o Controller recebe? (<code>req</code>)</p>
+                <ul>
+                    <li>
+                        <strong><code>req.params</code> (Route Params)</strong>
+                        <ul>
+                            <li>Vêm como parte da URL, para identificar um recurso específico.</li>
+                            <li>Ex: <code>/users/<strong>:id</strong></code> (<code>/users/<strong>1</strong></code>) ➡️ <code>req.params.id</code> será <code>"1"</code>.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong><code>req.body</code> (Request Body)</strong>
+                        <ul>
+                            <li>Vêm no "corpo" da requisição, invisível na URL.</li>
+                            <li>Usado para enviar dados complexos (JSON).</li>
+                            <li>Ex: <code>POST /users</code> com JSON <code>{"name": "Maria"}</code> ➡️ <code>req.body.name</code> será <code>"Maria"</code>.</li>
+                            <li>(Requer <code>app.use(express.json())</code>)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong><code>req.query</code> (Query Params)</strong>
+                        <ul>
+                            <li>Vêm no final da URL após <code>?</code>, para filtros, busca ou paginação.</li>
+                            <li>Ex: <code>/users<strong>?search=joao&amp;page=2</strong></code> ➡️ <code>req.query.search</code> será <code>"joao"</code>.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">Refatoração: Camada de Rotas</h2>
+            <p class="slide-subtitle"><code>src/routes/user.routes.js</code></p>
+            <div class="slide-content">
+                <p>O "Porteiro". Define os caminhos e os conecta aos métodos do Controller.</p>
+                <pre><code><span class="keyword">const</span> { <span class="constant">Router</span> } = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> userController = <span class="function">require</span>(<span class="string">'../controllers/user.controller'</span>);
+
+<span class="keyword">const</span> router = <span class="function">Router</span>();
+
+<span class="comment">// Rota para buscar todos os usuários</span>
+router.<span class="function">get</span>(<span class="string">'/users'</span>, userController.getAll);
+
+<span class="comment">// Rota para criar um novo usuário</span>
+router.<span class="function">post</span>(<span class="string">'/users'</span>, userController.create);
+
+<span class="comment">// Rota com parâmetro (req.params.id)</span>
+router.<span class="function">get</span>(<span class="string">'/users/:id'</span>, userController.getById);
+
+module.exports = router;
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">Refatoração: Arquivo Principal</h2>
+            <p class="slide-subtitle"><code>src/index.js</code></p>
+            <div class="slide-content">
+                <p>Nosso <code>index.js</code> ficou muito mais limpo! Ele só configura o servidor e "usa" as rotas.</p>
+                <pre><code><span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="comment">// Importamos o arquivo de rotas de usuário</span>
+<span class="keyword">const</span> userRoutes = <span class="function">require</span>(<span class="string">'./routes/user.routes'</span>);
+
+<span class="keyword">const</span> app = <span class="function">express</span>();
+<span class="keyword">const</span> PORT = <span class="number">3000</span>;
+
+<span class="comment">// Middleware para ler JSON</span>
+app.<span class="function">use</span>(express.<span class="function">json</span>());
+
+<span class="comment">// Usar as rotas de usuário</span>
+<span class="comment">// Todas as rotas em 'userRoutes' terão o prefixo '/api'</span>
+app.<span class="function">use</span>(<span class="string">'/api'</span>, userRoutes); <span class="comment">// Ex: /api/users, /api/users/1</span>
+
+app.<span class="function">listen</span>(PORT, () => {
+  console.<span class="function">log</span>(<span class="string">`Servidor rodando em http://localhost:<span class="variable">${PORT}</span>`</span>);
+});
+</code></pre>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2 class="slide-title">🌀 O Fluxo Completo (Revisão)</h2>
+            <div class="slide-content">
+                <p>O que acontece em uma requisição <code>POST /api/users</code> com o JSON <code>{"name": "Maria"}</code>?</p>
+                <ol>
+                    <li>O <strong>Insomnia</strong> envia a requisição.</li>
+                    <li>O <strong><code>index.js</code></strong> (servidor) recebe.</li>
+                    <li>O middleware <code>express.json()</code> lê o body <code>{"name": "Maria"}</code> e o coloca em <code>req.body</code>.</li>
+                    <li>O <code>app.use('/api', userRoutes)</code> vê o prefixo <code>/api</code> e passa a requisição para <strong><code>user.routes.js</code></strong>.</li>
+                    <li>O <code>router.post('/users', ...)</code> bate com a rota e o verbo. Ele chama <strong><code>userController.create</code></strong>.</li>
+                    <li>O <strong><code>userController.create</code></strong> é executado. Ele pega <code>req.body</code>.</li>
+                    <li>Ele chama <strong><code>userService.create(req.body)</code></strong>, passando <code>{"name": "Maria"}</code>.</li>
+                    <li>O <strong><code>userService.create</code></strong> (lógica de negócio) cria o <code>newUser</code> (ex: <code>{id: 2, name: "Maria"}</code>) e o retorna.</li>
+                    <li>O <strong><code>userController</code></strong> recebe <code>newUser</code> e envia a resposta: <code>res.status(201).json(...)</code>.</li>
+                    <li>O <strong>Insomnia</strong> recebe a resposta JSON com status 201.</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">🧪 Hora de Testar! (Insomnia)</h2>
+            <div class="slide-content">
+                <p>Abra o Insomnia (ou Postman) e teste todas as rotas que criamos (verifique se seu servidor está rodando com <code>npm run dev</code>):</p>
+                <ol>
+                    <li>
+                        <strong>Criar um usuário (POST)</strong>
+                        <ul>
+                            <li><strong>Verbo:</strong> <code>POST</code></li>
+                            <li><strong>URL:</strong> <code>http://localhost:3000/api/users</code></li>
+                            <li><strong>Body:</strong> Selecione "JSON" e cole: <code>{ "name": "Maria" }</code></li>
+                            <li>Clique "Send". Você deve receber o usuário criado com um ID.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Buscar todos os usuários (GET)</strong>
+                        <ul>
+                            <li><strong>Verbo:</strong> <code>GET</code></li>
+                            <li><strong>URL:</strong> <code>http://localhost:3000/api/users</code></li>
+                            <li>Clique "Send". Você deve ver a lista com "João" e "Maria".</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Buscar por ID (GET)</strong>
+                        <ul>
+                            <li><strong>Verbo:</strong> <code>GET</code></li>
+                            <li><strong>URL:</strong> <code>http://localhost:3000/api/users/2</code></li>
+                            <li>Clique "Send". Você deve ver apenas "Maria".</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <h2 class="slide-title">✅ Resumo da Aula</h2>
+            <div class="slide-content">
+                <p>O que aprendemos hoje:</p>
+                <ul>
+                    <li>Por que a <strong>Separação de Responsabilidades (SoC)</strong> é crucial para a manutenibilidade e escalabilidade.</li>
+                    <li>Como estruturar um projeto em 3 camadas principais:
+                        <ul>
+                            <li><strong>Rotas:</strong> O porteiro (URLs e Verbos).</li>
+                            <li><strong>Controllers:</strong> O orquestrador (<code>req</code>, <code>res</code>, chama o serviço).</li>
+                            <li><strong>Services:</strong> O cérebro (Lógica de Negócio pura).</li>
+                        </ul>
+                    </li>
+                    <li>Como usar o <strong>Nodemon</strong> para agilizar o desenvolvimento.</li>
+                    <li>A importância do middleware <strong><code>express.json()</code></strong> para ler o <code>req.body</code>.</li>
+                    <li>A diferença entre <strong><code>req.params</code></strong>, <strong><code>req.query</code></strong> e <strong><code>req.body</code></strong>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide end-slide">
+            <h2>Obrigado!</h2>
+            <p>Dúvidas?</p>
+            <br>
+            <p style="font-size: 1.2em; color: #555;"><strong>Próxima aula:</strong><br>Middleware (Conceito e Aplicação)</p>
+        </div>
+
+    </div>
+    
+    <div class="navigation-controls">
+        <button id="prevBtn">Anterior</button>
+        <span id="slide-counter">1 / 22</span>
+        <button id="nextBtn">Próximo</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Seleciona todos os elementos que são slides
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            
+            // Seleciona os botões e o contador
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slide-counter');
+            
+            let currentSlideIndex = 0; // Começa no primeiro slide (índice 0)
+
+            function showSlide(index) {
+                // 1. Esconde todos os slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                // 2. Mostra o slide no índice desejado
+                if (slides[index]) {
+                    slides[index].classList.add('active');
+                }
+                
+                // 3. Atualiza o contador
+                slideCounter.textContent = `${index + 1} / ${totalSlides}`;
+                
+                // 4. Habilita/desabilita botões
+                prevBtn.disabled = (index === 0);
+                nextBtn.disabled = (index === totalSlides - 1);
+            }
+
+            // Adiciona os eventos de clique
+            nextBtn.addEventListener('click', () => {
+                if (currentSlideIndex < totalSlides - 1) {
+                    currentSlideIndex++;
+                    showSlide(currentSlideIndex);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    showSlide(currentSlideIndex);
+                }
+            });
+
+            // Adiciona navegação pelo teclado (setas Esquerda/Direita)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click(); // Simula clique no botão "Próximo"
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click(); // Simula clique no botão "Anterior"
+                }
+            });
+
+            // Mostra o primeiro slide ao carregar a página
+            showSlide(currentSlideIndex);
+        });
+    </script>
+
+</body>
+</html>

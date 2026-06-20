@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Protocolo HTTP: Estrutura e Funcionamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 25px;
+            overflow: hidden;
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .section-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .section-content {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .http-structure {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .http-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .http-method {
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .http-url {
+            color: #94a3b8;
+            flex: 1;
+        }
+
+        .http-version {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .port-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .port-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .port-number {
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+            padding: 2px 6px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .methods-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .method-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .method-icon {
+            width: 30px;
+            height: 30px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .method-text {
+            flex: 1;
+        }
+
+        .method-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .method-desc {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .status-codes {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .status-code {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .esp32-webserver {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+
+        .esp32-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .esp32-icon {
+            width: 25px;
+            height: 25px;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .esp32-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .esp32-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Protocolo HTTP: Estrutura e Funcionamento</h1>
+                        <p>Comunicação web na Internet das Coisas</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="port-info">
+                        <div class="port-item">
+                            <span>Porta:</span>
+                            <span class="port-number">80</span>
+                            <span>(HTTP)</span>
+                        </div>
+                        <div class="port-item">
+                            <span>Porta:</span>
+                            <span class="port-number">443</span>
+                            <span>(HTTPS)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="section-title">Estrutura da Requisição HTTP</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="http-structure">
+                                <div class="http-line">
+                                    <span class="http-method">GET</span>
+                                    <span class="http-url">/ligar</span>
+                                    <span class="http-version">HTTP/1.1</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">Host: 192.168.1.10</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">User-Agent: Mozilla/5.0</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">Accept: text/html</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 12px; color: #94a3b8;">
+                                <strong>Linha de requisição:</strong> MÉTODO + Recurso + Versão HTTP
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="section-title">Estrutura da Resposta HTTP</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="http-structure">
+                                <div class="http-line">
+                                    <span class="http-method">HTTP/1.1</span>
+                                    <span class="http-url">200 OK</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">Content-Type: text/html</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">Content-Length: 1234</span>
+                                </div>
+                                <div class="http-line">
+                                    <span style="color: #94a3b8; font-size: 12px;">Connection: close</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 12px; color: #94a3b8;">
+                                <strong>Linha de status:</strong> Versão + Código + Mensagem
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="section-title">Métodos HTTP Comuns</div>
+                        </div>
+                        <div class="methods-grid">
+                            <div class="method-item">
+                                <div class="method-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="method-text">
+                                    <div class="method-name">GET</div>
+                                    <div class="method-desc">Recuperar recurso</div>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <div class="method-icon">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <div class="method-text">
+                                    <div class="method-name">POST</div>
+                                    <div class="method-desc">Criar recurso</div>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <div class="method-icon">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="method-text">
+                                    <div class="method-name">PUT</div>
+                                    <div class="method-desc">Atualizar recurso</div>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <div class="method-icon">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                                <div class="method-text">
+                                    <div class="method-name">DELETE</div>
+                                    <div class="method-desc">Remover recurso</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="section-title">ESP32 como WebServer</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="esp32-webserver">
+                                <div class="esp32-header">
+                                    <div class="esp32-icon">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="esp32-title">Servidor Embarcado</div>
+                                </div>
+                                <div class="esp32-desc">
+                                    O ESP32 atua como servidor HTTP, processando requisições e controlando dispositivos
+                                    físicos via GPIO.
+                                </div>
+                            </div>
+                            <div class="status-codes">
+                                <div class="status-item">
+                                    <span class="status-code">200</span>
+                                    <span>OK</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-code">404</span>
+                                    <span>Not Found</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-code">500</span>
+                                    <span>Error</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="section-title">Portas e Protocolos</div>
+                        </div>
+                        <div class="section-content">
+                            <div style="font-size: 13px; color: #e2e8f0; line-height: 1.4;">
+                                <strong>Porta 80:</strong> Padrão HTTP<br />
+                                <strong>Porta 443:</strong> HTTPS (TLS/SSL)<br />
+                                <strong>Porta 8080:</strong> Alternativa HTTP
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

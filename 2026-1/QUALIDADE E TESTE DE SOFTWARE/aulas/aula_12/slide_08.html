@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pirâmide de Testes e o lugar do UAT</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        /* Pyramid container */
+        .pyramid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        /* Pyramid layers */
+        .pyramid-layer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pyramid-layer:hover {
+            transform: scale(1.02);
+        }
+
+        /* Layer 1: Unit Tests (Base) */
+        .layer-unit {
+            width: 600px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Layer 2: Integration Tests */
+        .layer-integration {
+            width: 500px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Layer 3: E2E Tests */
+        .layer-e2e {
+            width: 400px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Layer 4: UAT */
+        .layer-uat {
+            width: 350px;
+            /* Widened for text */
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Layer content */
+        .layer-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .layer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .layer-info {
+            flex: 1;
+        }
+
+        .layer-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .layer-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .layer-stats {
+            text-align: right;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            white-space: nowrap;
+            /* Prevent stats wrapping */
+        }
+
+        /* Characteristics */
+        .characteristics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .characteristic-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .characteristic-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .characteristic-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .characteristic-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .characteristic-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .characteristic-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .characteristic-icon.orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .characteristic-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .characteristic-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Status row */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-color.unit {
+            background: #22c55e;
+        }
+
+        .legend-color.integration {
+            background: #3b82f6;
+        }
+
+        .legend-color.e2e {
+            background: #8b5cf6;
+        }
+
+        .legend-color.uat {
+            background: #f97316;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Pirâmide</span> de Testes
+                </div>
+                <div class="subtitle">
+                    Hierarquia de testes e posicionamento do UAT no ciclo de desenvolvimento
+                </div>
+            </div>
+            <!-- Pyramid -->
+            <div class="pyramid-container">
+                <!-- Layer 4: UAT -->
+                <div class="pyramid-layer">
+                    <div class="layer-uat">
+                        <div class="layer-content">
+                            <div class="layer-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="layer-info">
+                                <div class="layer-title">UAT - Teste de Aceitação</div>
+                                <div class="layer-desc">Validação por usuários reais</div>
+                            </div>
+                        </div>
+                        <div class="layer-stats">
+                            <div><i class="fas fa-clock"></i> Rápido</div>
+                            <div><i class="fas fa-users"></i> Usuários</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Layer 3: E2E Tests -->
+                <div class="pyramid-layer">
+                    <div class="layer-e2e">
+                        <div class="layer-content">
+                            <div class="layer-icon">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div class="layer-info">
+                                <div class="layer-title">Testes E2E/UI</div>
+                                <div class="layer-desc">Fluxos ponta a ponta via interface</div>
+                            </div>
+                        </div>
+                        <div class="layer-stats">
+                            <div><i class="fas fa-clock"></i> Lento</div>
+                            <div><i class="fas fa-bug"></i> Frágil</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Layer 2: Integration Tests -->
+                <div class="pyramid-layer">
+                    <div class="layer-integration">
+                        <div class="layer-content">
+                            <div class="layer-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="layer-info">
+                                <div class="layer-title">Testes de Integração</div>
+                                <div class="layer-desc">APIs, BD, mensageria, contratos</div>
+                            </div>
+                        </div>
+                        <div class="layer-stats">
+                            <div><i class="fas fa-clock"></i> Moderado</div>
+                            <div><i class="fas fa-link"></i> APIs</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Layer 1: Unit Tests -->
+                <div class="pyramid-layer">
+                    <div class="layer-unit">
+                        <div class="layer-content">
+                            <div class="layer-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="layer-info">
+                                <div class="layer-title">Testes Unitários</div>
+                                <div class="layer-desc">Funções e regras isoladas</div>
+                            </div>
+                        </div>
+                        <div class="layer-stats">
+                            <div><i class="fas fa-clock"></i> Rápido</div>
+                            <div><i class="fas fa-check-circle"></i> Alta cobertura</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Characteristics -->
+            <div class="characteristics">
+                <div class="characteristic-card">
+                    <div class="characteristic-header">
+                        <div class="characteristic-icon green">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="characteristic-title">Unitários</div>
+                    </div>
+                    <div class="characteristic-desc">Rápidos, baratos, alta cobertura de código. Feedback imediato para
+                        devs.</div>
+                </div>
+                <div class="characteristic-card">
+                    <div class="characteristic-header">
+                        <div class="characteristic-icon blue">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="characteristic-title">Integração</div>
+                    </div>
+                    <div class="characteristic-desc">Verificam interação entre componentes e contratos de APIs.</div>
+                </div>
+                <div class="characteristic-card">
+                    <div class="characteristic-header">
+                        <div class="characteristic-icon purple">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="characteristic-title">E2E/UI</div>
+                    </div>
+                    <div class="characteristic-desc">Fluxos ponta a ponta, mais lentos e frágeis.</div>
+                </div>
+                <div class="characteristic-card">
+                    <div class="characteristic-header">
+                        <div class="characteristic-icon orange">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="characteristic-title">UAT</div>
+                    </div>
+                    <div class="characteristic-desc">Validação de valor, poucas sessões, alto valor.</div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>4 camadas de teste</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>UAT no topo</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Base: Unitários</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

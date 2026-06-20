@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stateful vs Stateless - Conceitos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .comparison-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            width: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 4px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.stateful {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .card-icon.stateless {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-description {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            color: #cbd5e1;
+        }
+
+        .feature-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .feature-dot.stateful {
+            background: #f59e0b;
+        }
+
+        .feature-dot.stateless {
+            background: #8b5cf6;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .table-header {
+            margin-bottom: 20px;
+        }
+
+        .table-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-label {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+
+        .comparison-values {
+            display: flex;
+            gap: 20px;
+            width: 220px;
+            justify-content: flex-end;
+        }
+
+        .comparison-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            min-width: 90px;
+        }
+
+        .value-stateful {
+            color: #f59e0b;
+        }
+
+        .value-stateless {
+            color: #8b5cf6;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .pros-cons-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .pros-cons-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pros-cons-list {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Stateful vs Stateless</h1>
+                        <p class="subtitle">Comparação de arquiteturas de autenticação</p>
+                    </div>
+                </div>
+                <div class="comparison-badge">
+                    <i class="fas fa-server"></i>
+                    <span>Arquitetura de APIs</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon stateful">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="card-title">Stateful (Sessões)</div>
+                        </div>
+                        <div class="card-description">
+                            O servidor mantém o estado da sessão do usuário em memória ou banco de dados. Cada
+                            requisição verifica a sessão no servidor.
+                        </div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <div class="feature-dot stateful"></div>
+                                <span>Armazena sessão no servidor</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateful"></div>
+                                <span>Usa cookies de sessão</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateful"></div>
+                                <span>Requer gerenciamento de estado</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateful"></div>
+                                <span>Maior consumo de memória</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-header">
+                            <div class="card-icon stateless">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="card-title">Stateless (JWT)</div>
+                        </div>
+                        <div class="card-description">
+                            O servidor não mantém estado. O token JWT carrega toda a informação necessária para
+                            autenticação de forma independente.
+                        </div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <div class="feature-dot stateless"></div>
+                                <span>Token auto-contido</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateless"></div>
+                                <span>Sem estado no servidor</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateless"></div>
+                                <span>Escalabilidade horizontal</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-dot stateless"></div>
+                                <span>Menor consumo de recursos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="comparison-table">
+                        <div class="table-header">
+                            <div class="table-title">Comparação de Características</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Armazenamento</div>
+                            <div class="comparison-values">
+                                <div class="comparison-value value-stateful"><i class="fas fa-check"></i> Servidor</div>
+                                <div class="comparison-value value-stateless"><i class="fas fa-check"></i> Cliente</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Escalabilidade</div>
+                            <div class="comparison-values">
+                                <div class="comparison-value value-stateful"><i class="fas fa-times"></i> Limitada</div>
+                                <div class="comparison-value value-stateless"><i class="fas fa-check"></i> Alta</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Complexidade</div>
+                            <div class="comparison-values">
+                                <div class="comparison-value value-stateful"><i class="fas fa-exclamation"></i> Alta
+                                </div>
+                                <div class="comparison-value value-stateless"><i class="fas fa-check"></i> Baixa</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Segurança</div>
+                            <div class="comparison-values">
+                                <div class="comparison-value value-stateful"><i class="fas fa-check"></i> Boa</div>
+                                <div class="comparison-value value-stateless"><i class="fas fa-check"></i> Boa</div>
+                            </div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-label">Performance</div>
+                            <div class="comparison-values">
+                                <div class="comparison-value value-stateful"><i class="fas fa-minus"></i> Média</div>
+                                <div class="comparison-value value-stateless"><i class="fas fa-check"></i> Alta</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros-cons-item">
+                            <div class="pros-cons-title">
+                                <i class="fas fa-plus-circle" style="color: #10b981;"></i>
+                                <span>Prós do JWT</span>
+                            </div>
+                            <div class="pros-cons-list">
+                                • Escalabilidade<br />
+                                • Stateless<br />
+                                • Menor latência
+                            </div>
+                        </div>
+                        <div class="pros-cons-item">
+                            <div class="pros-cons-title">
+                                <i class="fas fa-minus-circle" style="color: #ef4444;"></i>
+                                <span>Contras do JWT</span>
+                            </div>
+                            <div class="pros-cons-list">
+                                • Token maior<br />
+                                • Sem revogação<br />
+                                • Expiração fixa
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

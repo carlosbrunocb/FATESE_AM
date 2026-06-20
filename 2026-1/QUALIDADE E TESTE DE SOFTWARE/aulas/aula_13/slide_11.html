@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Conceitos de Localização de Elementos (Locators)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f8f9fa;
+            font-family: 'Open Sans', sans-serif;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 50px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a5fb4 0%, #1c71d8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: calc(100% - 110px);
+        }
+
+        .intro-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #1a5fb4;
+        }
+
+        .intro-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro-title i {
+            color: #1a5fb4;
+        }
+
+        .intro-text {
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .locators-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            flex: 1;
+        }
+
+        .locator-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .locator-card:hover {
+            border-color: #1a5fb4;
+            transform: translateY(-2px);
+        }
+
+        .locator-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .locator-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .locator-id {
+            background: #e7f3ff;
+            color: #1a5fb4;
+        }
+
+        .locator-name {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .locator-xpath {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .locator-css {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .locator-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .locator-desc {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .locator-example {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            color: #495057;
+            border-left: 3px solid #1a5fb4;
+            overflow-x: hidden;
+            word-break: break-all;
+        }
+
+        .locator-example code {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .locator-example code:last-child {
+            margin-bottom: 0;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(26, 95, 180, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a5fb4;
+        }
+
+        .highlight-text {
+            background: #e7f3ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1a5fb4;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Localização de Elementos (Locators)</h1>
+                    <p>Como identificar e interagir com elementos em páginas web</p>
+                </div>
+            </div>
+            <div class="tech-badge">
+                <i class="fas fa-search"></i>
+                <span>Selenium Locators</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="intro-section">
+                <div class="intro-title">
+                    <i class="fas fa-info-circle"></i>
+                    Visão Geral
+                </div>
+                <div class="intro-text">
+                    Para interagir com um site, o script precisa "encontrar" os elementos (botões, campos de texto,
+                    links). Os <span class="highlight-text">locators</span> são estratégias usadas para identificar
+                    elementos no DOM. Cada método tem suas vantagens e é adequado para diferentes cenários.
+                </div>
+            </div>
+            <div class="locators-grid">
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon locator-id">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <div class="locator-title">ID</div>
+                    </div>
+                    <div class="locator-desc">
+                        O mais rápido e seguro. Geralmente único na página. Ideal para elementos com identificador
+                        específico.
+                    </div>
+                    <div class="locator-example">
+                        <code>driver.find_element(By.ID, "login-btn")</code>
+                        <code>driver.find_element(By.ID, "email")</code>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon locator-name">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="locator-title">Name</div>
+                    </div>
+                    <div class="locator-desc">
+                        Útil para campos de formulário. Pode não ser único, mas é comum em inputs.
+                    </div>
+                    <div class="locator-example">
+                        <code>driver.find_element(By.NAME, "q")</code>
+                        <code>driver.find_element(By.NAME, "username")</code>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon locator-xpath">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <div class="locator-title">XPath</div>
+                    </div>
+                    <div class="locator-desc">
+                        Caminho na estrutura XML do HTML. Muito potente, mas pode ser frágil.
+                    </div>
+                    <div class="locator-example">
+                        <code>//div[@id='main']</code>
+                        <code>//input[@name='email']</code>
+                    </div>
+                </div>
+                <div class="locator-card">
+                    <div class="locator-header">
+                        <div class="locator-icon locator-css">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="locator-title">CSS Selector</div>
+                    </div>
+                    <div class="locator-desc">
+                        Baseado nas classes de estilo. Geralmente mais rápido que o XPath.
+                    </div>
+                    <div class="locator-example">
+                        <code>.btn-primary</code>
+                        <code>#login-form input</code>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 5px;">
+                <div
+                    style="flex: 1; background: white; border-radius: 12px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-lightbulb" style="color: #1a5fb4;"></i>
+                        <span style="font-weight: 600; font-size: 14px; color: #212529;">Dica Importante</span>
+                    </div>
+                    <div style="font-size: 13px; color: #495057;">
+                        Prefira <strong>ID</strong> quando disponível. Use <strong>XPath</strong> ou
+                        <strong>CSS</strong> para elementos dinâmicos. Evite localizadores baseados em posição ou texto.
+                    </div>
+                </div>
+                <div
+                    style="flex: 1; background: white; border-radius: 12px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #856404;"></i>
+                        <span style="font-weight: 600; font-size: 14px; color: #212529;">Atenção</span>
+                    </div>
+                    <div style="font-size: 13px; color: #495057;">
+                        Localizadores frágeis podem quebrar com mudanças na interface. Sempre verifique a estabilidade.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-user" style="margin-right: 5px;"></i> Prof. Carlos Bruno Oliveira Lopes</span>
+                <span><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> Aula 13</span>
+            </div>
+            <div class="footer-right">
+                <span><i class="fas fa-clock" style="margin-right: 5px;"></i> 170 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

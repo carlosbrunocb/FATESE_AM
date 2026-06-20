@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estudo de Caso: Problema da Livraria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* AJUSTE AQUI: Mudança para CSS Grid no container principal */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Cabeçalho, Conteúdo (expande), Rodapé */
+            gap: 15px; /* Espaçamento entre as linhas do grid */
+            padding-bottom: 20px; /* Mantém a margem inferior do rodapé */
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* AJUSTE AQUI: Removido position absolute e largura fixa */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-height: 100px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* AJUSTE AQUI: Removido position absolute, permitindo fluidez no Grid */
+        .main-content {
+            padding: 0 40px;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow-y: auto; /* Adicionado para permitir rolagem caso a tela seja muito pequena */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #ef4444;
+            position: relative;
+        }
+
+        .problem-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .problem-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .problem-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .problem-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .problem-text strong {
+            color: #dc2626;
+        }
+
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .issue-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: #fef2f2;
+            border-radius: 8px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .issue-icon {
+            width: 24px;
+            height: 24px;
+            background: #fecaca;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .issue-content {
+            flex: 1;
+        }
+
+        .issue-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .issue-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #10b981;
+            height: 100%;
+        }
+
+        .solution-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .solution-text {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .solution-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .solution-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #10b981;
+        }
+
+        .solution-icon {
+            width: 28px;
+            height: 28px;
+            background: #10b981;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .solution-content {
+            flex: 1;
+        }
+
+        .solution-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .solution-desc {
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        /* AJUSTE AQUI: Removido absolute. Agora utiliza margens regulares para se ajustar ao Grid */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            margin: 0 40px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .impact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            flex-grow: 1;
+        }
+
+        .impact-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .impact-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .impact-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .impact-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* MEDIA QUERY ADICIONADO PARA RESPONSIVIDADE EM TELAS MENORES */
+        @media (max-width: 960px) {
+            .content-grid {
+                grid-template-columns: 1fr; /* Colunas empilham na vertical em telas menores */
+                height: auto;
+            }
+            body, .slide-container {
+                overflow-y: auto; /* Permite rolar a página em dispositivos móveis */
+            }
+            .header, .footer {
+                flex-wrap: wrap; /* Permite a quebra de linha dos itens do cabeçalho/rodapé */
+                padding: 15px 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div>
+                    <div class="header-title">Estudo de Caso: Problema da Livraria</div>
+                    <div class="header-subtitle">Análise de um cenário real de API em produção</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Versionamento</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="problem-card">
+                        <div class="problem-header">
+                            <div class="problem-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <div class="problem-title">O Problema do Mundo Real</div>
+                            </div>
+                        </div>
+                        <div class="problem-text">
+                            O catálogo da nossa <strong>livraria cresceu muito</strong>. Retornar um array com
+                            <strong>10.000 livros</strong> de uma vez na rota <code
+                                style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px;">GET /livros</code>
+                            está <strong>travando o banco de dados</strong> e causando timeouts na aplicação.
+                        </div>
+                        <div class="issue-list">
+                            <div class="issue-item">
+                                <div class="issue-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="issue-content">
+                                    <div class="issue-title">Sobrecarga do Banco</div>
+                                    <div class="issue-desc">Consulta retorna 10.000+ registros simultaneamente</div>
+                                </div>
+                            </div>
+                            <div class="issue-item">
+                                <div class="issue-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="issue-content">
+                                    <div class="issue-title">Timeout</div>
+                                    <div class="issue-desc">Requisições demoram mais de 30s para responder</div>
+                                </div>
+                            </div>
+                            <div class="issue-item">
+                                <div class="issue-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="issue-content">
+                                    <div class="issue-title">App Mobile</div>
+                                    <div class="issue-desc">Aplicativo móvel travando ao carregar lista</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="impact-card">
+                        <div class="impact-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Impacto da Performance</span>
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <div class="impact-number">10K+</div>
+                                <div class="impact-label">Registros</div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-number">30s+</div>
+                                <div class="impact-label">Tempo Resposta</div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-number">100%</div>
+                                <div class="impact-label">CPU Usage</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="solution-box">
+                        <div class="solution-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>A Solução Proposta</span>
+                        </div>
+                        <div class="solution-text">
+                            Para resolver o problema de performance, precisamos implementar <strong>paginação</strong>
+                            na API. No entanto, isso representa uma <strong>Breaking Change</strong> - mudar de um array
+                            simples para um objeto com metadados de paginação.
+                        </div>
+                        <div class="solution-list">
+                            <div class="solution-item">
+                                <div class="solution-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="solution-content">
+                                    <div class="solution-name">V1 Legada</div>
+                                    <div class="solution-desc">Manter /api/v1/livros</div>
+                                </div>
+                            </div>
+                            <div class="solution-item">
+                                <div class="solution-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <div class="solution-content">
+                                    <div class="solution-name">V2 Nova</div>
+                                    <div class="solution-desc">Criar /api/v2/livros</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="solution-text"
+                            style="margin-top: 25px; font-size: 14px; font-style: italic; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
+                            Estratégia: Manter a v1 intacta para compatibilidade e criar a v2 com paginação.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-warning">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Problema Identificado</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

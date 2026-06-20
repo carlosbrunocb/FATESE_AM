@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercícios Práticos - Versionamento de APIs</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* GRID PRINCIPAL */
+        .slide-container {
+            display: grid;
+            grid-template-rows: 100px 1fr auto; /* Header, Conteúdo, Footer */
+            width: 100vw;
+            height: 100vh;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        /* Mantendo o padrão de fundo */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            padding: 25px 40px;
+            overflow-y: auto; /* Permite scroll se o conteúdo exceder a tela */
+            z-index: 5;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            flex-grow: 1;
+        }
+
+        .exercise-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.2s ease;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .exercise-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exercise-status {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .exercise-desc {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .exercise-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .footer {
+            margin: 0 40px 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 54px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .difficulty-badge {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .difficulty-easy {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .difficulty-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .difficulty-hard {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Ajuste para telas menores */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title { font-size: 20px; }
+            .footer { flex-wrap: wrap; height: auto; padding: 10px; gap: 10px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                    <div class="header-title">Exercícios Práticos</div>
+                    <div class="header-subtitle">Atividades para consolidar o aprendizado de versionamento</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Exercícios de Implementação</div>
+                                <div class="section-subtitle">Desenvolvimento prático de código</div>
+                            </div>
+                        </div>
+                        <div class="exercise-list">
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-puzzle-piece"></i> Exercício 1: Paginação Avançada
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Implementar paginação por padrão na v2 com limites válidos: 10, 25, 50
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">JavaScript</span>
+                                    <span class="tag">MongoDB</span>
+                                    <span class="difficulty-badge difficulty-easy">Fácil</span>
+                                </div>
+                            </div>
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-sort"></i> Exercício 2: Ordenação
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Implementar ordenação (titulo asc/desc) na v2 sem quebrar contrato
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">API</span>
+                                    <span class="tag">Query</span>
+                                    <span class="difficulty-badge difficulty-medium">Médio</span>
+                                </div>
+                            </div>
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-clock"></i> Exercício 3: Headers Sunset
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Expor header Sunset com data simulada e link de migração
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">HTTP</span>
+                                    <span class="tag">Headers</span>
+                                    <span class="difficulty-badge difficulty-easy">Fácil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Desafios Avançados</div>
+                                <div class="section-subtitle">Exercícios de nível superior</div>
+                            </div>
+                        </div>
+                        <div class="exercise-list">
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-link"></i> Desafio 1: Hiperlinks
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Criar endpoint GET /livros/:id em v2 com hiperlinks (self)
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">REST</span>
+                                    <span class="tag">HATEOAS</span>
+                                    <span class="difficulty-badge difficulty-hard">Difícil</span>
+                                </div>
+                            </div>
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-file-code"></i> Desafio 2: OpenAPI
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Atualizar documentação OpenAPI v1 e v2 com exemplos
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">Swagger</span>
+                                    <span class="tag">Docs</span>
+                                    <span class="difficulty-badge difficulty-medium">Médio</span>
+                                </div>
+                            </div>
+                            <div class="exercise-item">
+                                <div class="exercise-header">
+                                    <div class="exercise-title">
+                                        <i class="fas fa-shield-alt"></i> Desafio 3: Testes
+                                    </div>
+                                    <div class="exercise-status status-pending">Pendente</div>
+                                </div>
+                                <div class="exercise-desc">
+                                    Implementar testes de contrato para validação de versões
+                                </div>
+                                <div class="exercise-tags">
+                                    <span class="tag">Testing</span>
+                                    <span class="tag">Quality</span>
+                                    <span class="difficulty-badge difficulty-hard">Difícil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-success">
+                <i class="fas fa-check-circle"></i>
+                <span>5 exercícios disponíveis</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

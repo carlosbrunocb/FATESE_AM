@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Boas Práticas de ACLs - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+    <style>
+        .rule-card {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">Regras de Ouro e Boas Práticas para ACLs</span>
+            <span class="slide-header-tag">Boas Práticas</span>
+        </div>
+
+        <!-- Regras Lógicas de Posicionamento (Esquerda) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 100px; top: 180px; width: 820px; height: 740px; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 25px; border-bottom: 2px solid var(--senac-blue); padding-bottom: 10px;">
+                Onde Posicionar as ACLs na Rede?
+            </h3>
+
+            <!-- Regra 1 -->
+            <div class="rule-card" style="border-left: 5px solid var(--senac-blue);">
+                <strong style="font-size: 22px; color: var(--senac-dark-blue);">1. Regra para ACL Standard
+                    (Padrão):</strong>
+                <p style="font-size: 18px; line-height: 1.5; color: var(--text-main); margin: 5px 0 0 0;">
+                    Sempre posicione as ACLs Padrão <strong>o mais próximo possível do DESTINO</strong> do tráfego.
+                    <br><em style="color: var(--text-muted);">Por quê?</em> Como ela filtra apenas por IP de origem, se
+                    posicionada perto da origem, ela bloqueará o host de acessar qualquer outro segmento da rede, e não
+                    apenas o destino pretendido.
+                </p>
+            </div>
+
+            <!-- Regra 2 -->
+            <div class="rule-card" style="border-left: 5px solid var(--senac-orange); margin-bottom: 0;">
+                <strong style="font-size: 22px; color: var(--senac-orange);">2. Regra para ACL Extended
+                    (Estendida):</strong>
+                <p style="font-size: 18px; line-height: 1.5; color: var(--text-main); margin: 5px 0 0 0;">
+                    Sempre posicione as ACLs Estendidas <strong>o mais próximo possível da ORIGEM</strong> do tráfego.
+                    <br><em style="color: var(--text-muted);">Por quê?</em> Ela possui filtros específicos de IP de
+                    destino e portas. Bloquear na origem evita que pacotes indesejados atravessem toda a infraestrutura
+                    e consumam banda desnecessária dos roteadores intermediários.
+                </p>
+            </div>
+        </div>
+
+        <!-- Regras Gerais de Engenharia (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: 740px; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 25px; border-bottom: 2px solid var(--senac-orange); padding-bottom: 10px;">
+                Diretrizes Gerais de Engenharia de Redes
+            </h3>
+
+            <ul class="custom-list" style="margin-bottom: 25px;">
+                <li style="font-size: 20px; margin-bottom: 15px;">
+                    <strong>Uma ACL por Interface, por Protocolo, por Sentido:</strong> No Cisco IOS, você só pode
+                    aplicar no máximo uma ACL por interface para IP de entrada (in) e uma ACL para IP de saída (out).
+                </li>
+                <li style="font-size: 20px; margin-bottom: 15px;">
+                    <strong>Ordene as Regras por Especificidade:</strong> Posicione as regras mais específicas (ex:
+                    bloquear host individual) no <strong>topo</strong> da lista, e as regras mais gerais (ex: permitir
+                    sub-rede ou any) no final. Caso contrário, a regra geral engolirá o pacote primeiro (shadowing).
+                </li>
+                <li style="font-size: 20px; margin-bottom: 15px;">
+                    <strong>Edição Cuidadosa:</strong> No Cisco IOS clássico, ao tentar remover uma única linha de uma
+                    ACL numerada usando o comando <code>no</code>, <strong>toda a ACL é excluída</strong>! Use ACLs
+                    nomeadas ou edite em blocos no bloco de notas antes de colar.
+                </li>
+                <li style="font-size: 20px; margin-bottom: 0;">
+                    <strong>Cuidado com DHCP e Multicast:</strong> O "deny any" implícito pode bloquear requisições DHCP
+                    de novas máquinas na rede se não houver permissão explícita para portas UDP 67 e 68.
+                </li>
+            </ul>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 19/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

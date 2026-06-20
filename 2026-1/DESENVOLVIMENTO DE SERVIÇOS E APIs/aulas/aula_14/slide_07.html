@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>OpenAPI Specification (OAS)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 107vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 16px;
+            display: block;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            gap: 60px;
+            z-index: 10;
+        }
+
+        .left-section {
+            flex: 1;
+            max-width: auto;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 36px;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .info-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .info-desc {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .right-section {
+            flex: 0 0 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin-top: 10px;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 24px;
+        }
+
+        .feature-title {
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e2e8f0;
+            font-size: 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item i {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .code-key {
+            color: #3b82f6;
+        }
+
+        .code-string {
+            color: #10b981;
+        }
+
+        .code-number {
+            color: #f59e0b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: #10b981;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-badge i {
+            font-size: 10px;
+        }
+
+        .decorative-element {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Desenvolvimento de Serviços e APIs
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content" data-object="true" data-object-type="layout">
+            <div class="left-section">
+                <div class="section-title">
+                    <i class="fas fa-file-code"></i>
+                    OpenAPI Specification (OAS)
+                </div>
+                <div class="section-subtitle">
+                    Padrão aberto para descrever APIs REST em JSON/YAML
+                </div>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Padrão Aberto</div>
+                            <div class="info-desc">Especificação independente de linguagem e framework para descrever
+                                APIs RESTful</div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Formato JSON/YAML</div>
+                            <div class="info-desc">Descrição em formato JSON ou YAML, agnóstica a linguagens de
+                                programação</div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Suporte Completo</div>
+                            <div class="info-desc">Suporta descrição de endpoints, schemas, segurança, servers e mais
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="feature-title">Características Principais</div>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Endpoints HTTP (GET, POST, PUT, DELETE)</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Schemas de requisição e resposta</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Parâmetros de query, path, header e body</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Códigos de status HTTP</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Esquemas de segurança (OAuth, JWT, API Key)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-header" style="margin-bottom: 8px;">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="feature-title">Exemplo de Estrutura</div>
+                    </div>
+                    <div class="code-block"><div class="code-line">
+                            <span class="code-key">"openapi"</span>: <span class="code-string">"3.0.0"</span>,
+                        </div>
+                        <div class="code-line">
+                            <span class="code-key">"info"</span>: {
+                        </div>
+                        <div class="code-line" style="padding-left: 20px;">
+                            <span class="code-key">"title"</span>: <span class="code-string">"API Livraria"</span>,
+                        </div>
+                        <div class="code-line" style="padding-left: 20px;">
+                            <span class="code-key">"version"</span>: <span class="code-string">"1.0.0"</span>
+                        </div>
+                        <div class="code-line">
+                            },
+                        </div>
+                        <div class="code-line">
+                            <span class="code-key">"paths"</span>: {
+                        </div>
+                        <div class="code-line" style="padding-left: 20px;">
+                            <span class="code-key">"/livros"</span>: { ... }
+                        </div>
+                        <div class="code-line">
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="decorative-element"></div>
+    </div>
+</body>
+
+</html>

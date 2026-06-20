@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Padrão MVC - Conceito</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: #63b3ed;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        /* Main Content */
+        .content-area {
+            position: absolute;
+            top: 110px;
+            left: 50px;
+            width: 95%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* MVC Diagram Section */
+        .mvc-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mvc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .mvc-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mvc-subtitle {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        /* MVC Diagram */
+        .mvc-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border: 2px dashed #e2e8f0;
+            flex: 1;
+        }
+
+        .mvc-component {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            min-height: 280px;
+        }
+
+        .mvc-component.model {
+            border-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+
+        .mvc-component.view {
+            border-color: #63b3ed;
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+        }
+
+        .mvc-component.controller {
+            border-color: #ed8936;
+            background: linear-gradient(135deg, #fffaf0 0%, #fed7aa 100%);
+        }
+
+        .component-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .component-icon.model {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .component-icon.view {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+        }
+
+        .component-icon.controller {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .component-title {
+            font-size: 18pt;
+            font-weight: 700;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .component-description {
+            font-size: 12pt;
+            color: #4a5568;
+            text-align: center;
+            line-height: 1.3;
+            min-height: 32px;
+        }
+
+        .component-responsibility {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12pt;
+            color: #4a5568;
+            margin-top: auto;
+            width: 100%;
+            line-height: 1.5;
+        }
+
+        /* Arrows */
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0 5px;
+            width: 60px;
+        }
+
+        .arrow {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-size: 16px;
+        }
+
+        .arrow-label {
+            font-size: 11pt;
+            color: #718096;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        /* Component Details */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14pt;
+            color: white;
+        }
+
+        .detail-icon.model {
+            background: #48bb78;
+        }
+
+        .detail-icon.view {
+            background: #63b3ed;
+        }
+
+        .detail-icon.controller {
+            background: #ed8936;
+        }
+
+        .detail-title {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .detail-description {
+            font-size: 12pt;
+            color: #718096;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 25px;
+            left: 50px;
+            right: 50px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            z-index: 20;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-layer-group header-icon"></i>
+                <span>Padrão MVC - Conceito</span>
+            </div>
+            <div class="header-subtitle">Model-View-Controller: Separação de Responsabilidades</div>
+        </div>
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- MVC Section -->
+            <div class="mvc-section">
+                <div class="mvc-header">
+                    <div class="mvc-title">
+                        <i class="fas fa-project-diagram" style="color: #63b3ed;"></i>
+                        <span>Arquitetura MVC</span>
+                    </div>
+                    <div class="mvc-subtitle">Três componentes interconectados</div>
+                </div>
+                <div class="mvc-diagram">
+                    <!-- Model -->
+                    <div class="mvc-component model">
+                        <div class="component-icon model">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="component-title">Model</div>
+                        <div class="component-description">Gerencia dados, lógica e regras do aplicativo</div>
+                        <div class="component-responsibility">
+                            <strong>Responsabilidades:</strong><br />
+                            • Validar dados<br />
+                            • Aplicar regras de negócio<br />
+                            • Persistência no banco
+                        </div>
+                    </div>
+                    <!-- Arrows -->
+                    <div class="arrow-container">
+                        <div class="arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="arrow-label">Atualiza</div>
+                        <div class="arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div class="arrow-label">Notifica</div>
+                    </div>
+                    <!-- View -->
+                    <div class="mvc-component view">
+                        <div class="component-icon view">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="component-title">View</div>
+                        <div class="component-description">Interface do usuário e apresentação</div>
+                        <div class="component-responsibility">
+                            <strong>Responsabilidades:</strong><br />
+                            • Exibir dados<br />
+                            • Capturar interações<br />
+                            • Formatação visual
+                        </div>
+                    </div>
+                    <!-- Arrows -->
+                    <div class="arrow-container">
+                        <div class="arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="arrow-label">Comanda</div>
+                        <div class="arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div class="arrow-label">Retorna</div>
+                    </div>
+                    <!-- Controller -->
+                    <div class="mvc-component controller">
+                        <div class="component-icon controller">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="component-title">Controller</div>
+                        <div class="component-description">Aceita entrada e converte em comandos</div>
+                        <div class="component-responsibility">
+                            <strong>Responsabilidades:</strong><br />
+                            • Receber requisições<br />
+                            • Processar entradas<br />
+                            • Coordenar Model e View
+                        </div>
+                    </div>
+                </div>
+                <!-- Component Details -->
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon model">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="detail-title">Model</div>
+                        </div>
+                        <div class="detail-description">
+                            Gerencia dados e regras de negócio. É independente da interface do usuário.
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon view">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="detail-title">View</div>
+                        </div>
+                        <div class="detail-description">
+                            Apresenta dados ao usuário. Em APIs RESTful, retorna JSON/XML.
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div class="detail-icon controller">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="detail-title">Controller</div>
+                        </div>
+                        <div class="detail-description">
+                            Coordena as interações entre Model e View, processando requisições.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <i class="fas fa-info-circle"></i>
+                <span>Próximo: Diagrama de Fluxo MVC</span>
+            </div>
+            <div class="footer-right">
+                <div class="status-badge status-success">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span>Conceito Fundamental</span>
+                </div>
+                <div class="status-badge status-info">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    <span>Em andamento</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

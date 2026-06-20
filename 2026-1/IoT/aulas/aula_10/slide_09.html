@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Implementação do Código - Parte 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto+Mono:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .code-section {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            flex: 0.6;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 0;
+        }
+
+        .right-column {
+            flex: 0.4;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        .code-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .code-icon {
+            width: 30px;
+            height: 30px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .code-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .code-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            overflow: auto;
+            flex: 1;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 0;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .step-number {
+            width: 22px;
+            height: 22px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .error-section {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 12px 15px;
+            flex-shrink: 0;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .error-icon {
+            width: 26px;
+            height: 26px;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 12px;
+        }
+
+        .error-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .error-list {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .error-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #94a3b8;
+            flex: 1 1 45%;
+        }
+
+        .error-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .highlight {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #22c55e;
+        }
+
+        .number {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Implementação do Código - Parte 1</h1>
+                        <p>WiFi, Servidor Web e Configuração de Rotas</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span style="color: #94a3b8; font-size: 14px;">ESP32 + Arduino IDE</span>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="code-section">
+                    <!-- Left Column -->
+                    <div class="left-column">
+                        <div class="code-card">
+                            <div class="code-header">
+                                <div class="code-icon">
+                                    <i class="fas fa-wifi"></i>
+                                </div>
+                                <div class="code-title">Conexão WiFi e Configuração</div>
+                            </div>
+                            <div class="code-content"><span class="comment">// 1. Credenciais WiFi</span>
+<span class="keyword">const char</span>* <span class="highlight">ssid</span> = <span
+                                    class="string">"Wokwi-GUEST"</span>;
+<span class="keyword">const char</span>* <span class="highlight">password</span> = <span
+                                    class="string">""</span>;
+
+<span class="comment">// 2. Instâncias do servidor</span>
+<span class="keyword">WebServer</span> <span class="highlight">server</span>(<span class="number">80</span>);
+<span class="keyword">const int</span> <span class="highlight">pinoLED</span> = <span class="number">2</span>;
+
+<span class="comment">// 3. Função para gerar HTML</span>
+<span class="keyword">String</span> <span class="highlight">gerarHTML</span>() {
+    <span class="keyword">String</span> html = <span class="string">"&lt;!DOCTYPE html&gt;&lt;html&gt;"</span>;
+    html += <span class="string">"&lt;head&gt;&lt;meta charset=\"UTF-8\"&gt;&lt;title&gt;ESP32 WebServer&lt;/title&gt;&lt;/head&gt;"</span>;
+    html += <span class="string">"&lt;body&gt;&lt;h1&gt;Painel de Controle IoT&lt;/h1&gt;"</span>;
+    html += <span class="string">"&lt;a href=\"/ligar\"&gt;LIGAR&lt;/a&gt;"</span>;
+    html += <span class="string">"&lt;a href=\"/desligar\"&gt;DESLIGAR&lt;/a&gt;"</span>;
+    html += <span class="string">"&lt;/body&gt;&lt;/html&gt;"</span>;
+    <span class="keyword">return</span> html;
+}                            </div>
+                        </div>
+                        <div class="code-card">
+                            <div class="code-header">
+                                <div class="code-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="code-title">Setup e Inicialização</div>
+                            </div>
+                            <div class="code-content"><span class="comment">// 4. Setup do ESP32</span>
+<span class="keyword">void</span> <span class="highlight">setup</span>() {
+    <span class="highlight">Serial</span>.<span class="highlight">begin</span>(<span class="number">115200</span>);
+    <span class="highlight">pinMode</span>(pinoLED, <span class="keyword">OUTPUT</span>);
+    <span class="highlight">digitalWrite</span>(pinoLED, <span class="keyword">LOW</span>);
+
+    <span class="comment">// Conexão WiFi</span>
+    <span class="highlight">Serial</span>.<span class="highlight">print</span>(<span
+    class="string">"Conectando ao Wi-Fi..."</span>);
+    <span class="highlight">WiFi</span>.<span class="highlight">begin</span>(ssid, password);
+    <span class="keyword">while</span> (<span class="highlight">WiFi</span>.<span class="highlight">status</span>() != <span class="keyword">WL_CONNECTED</span>) {
+        <span class="highlight">delay</span>(<span class="number">500</span>);
+        <span class="highlight">Serial</span>.<span class="highlight">print</span>(<span class="string">"."</span>);
+    }
+
+    <span class="comment">// IP do servidor</span>
+    <span class="highlight">Serial</span>.<span class="highlight">println</span>(<span class="string">"\nConectado!"</span>);
+    <span class="highlight">Serial</span>.<span class="highlight">print</span>(<span class="string">"IP: "</span>);
+    <span class="highlight">Serial</span>.<span class="highlight">println</span>(<span class="highlight">WiFi</span>.<span class="highlight">localIP</span>());
+
+    <span class="comment">// Configura rotas</span>
+    server.<span class="highlight">on</span>(<span class="string">"/"</span>, <span class="keyword">HTTP_GET</span>, <span class="highlight">rotaRaiz</span>);
+    server.<span class="highlight">on</span>(<span class="string">"/ligar"</span>, <span class="keyword">HTTP_GET</span>, <span class="highlight">rotaLigar</span>);
+    server.<span class="highlight">on</span>(<span class="string">"/desligar"</span>, <span class="keyword">HTTP_GET</span>, <span class="highlight">rotaDesligar</span>);
+
+    server.<span class="highlight">begin</span>();
+    <span class="highlight">Serial</span>.<span class="highlight">println</span>(<span class="string">"Servidor iniciado"</span>);
+}
+
+<span class="keyword">void</span> <span class="highlight">loop</span>() {
+    server.<span class="highlight">handleClient</span>();
+}                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column -->
+                    <div class="right-column">
+                        <div class="step-item">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <div class="step-title">Credenciais WiFi</div>
+                            </div>
+                            <div class="step-desc">Configure SSID e senha da rede. No Wokwi use "Wokwi-GUEST" sem senha.
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <div class="step-title">Instâncias WebServer</div>
+                            </div>
+                            <div class="step-desc">Crie instância do servidor na porta 80 e defina o pino do LED.</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <div class="step-title">Setup e Conexão</div>
+                            </div>
+                            <div class="step-desc">Inicialize Serial, configure pinos e conecte ao WiFi.</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-header">
+                                <div class="step-number">4</div>
+                                <div class="step-title">Configuração de Rotas</div>
+                            </div>
+                            <div class="step-desc">Defina rotas para /, /ligar, /desligar com handlers.</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-header">
+                                <div class="step-number">5</div>
+                                <div class="step-title">Loop Principal</div>
+                            </div>
+                            <div class="step-desc">Mantenha o servidor escutando com handleClient().</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Error Section -->
+                <div class="error-section">
+                    <div class="error-header">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="error-title">Erros Comuns e Diagnósticos</div>
+                    </div>
+                    <div class="error-list">
+                        <div class="error-item">
+                            <div class="error-dot"></div>
+                            <span><strong>SSID/senha incorretos</strong> → WiFi.status() != WL_CONNECTED</span>
+                        </div>
+                        <div class="error-item">
+                            <div class="error-dot"></div>
+                            <span><strong>IP não aparece</strong> → Verifique Serial.begin e baud rate</span>
+                        </div>
+                        <div class="error-item">
+                            <div class="error-dot"></div>
+                            <span><strong>Rotas não respondem</strong> → Confira server.on() e server.begin()</span>
+                        </div>
+                        <div class="error-item">
+                            <div class="error-dot"></div>
+                            <span><strong>LED não acende</strong> → Verifique pinMode e digitalWrite</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

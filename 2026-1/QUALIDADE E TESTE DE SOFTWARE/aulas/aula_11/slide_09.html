@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Matriz de Priorização (Criticidade × Frequência)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 60px;
+            padding: 20px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .matrix-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .matrix-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .matrix-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .matrix-legend {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .quadrant {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .quadrant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .quadrant-id {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13pt;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .quadrant-priority {
+            padding: 3px 6px;
+            border-radius: 12px;
+            font-size: 10pt;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .priority-low {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .quadrant-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .quadrant-action {
+            font-size: 12pt;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .quadrant-action strong {
+            color: #1e293b;
+        }
+
+        .quadrant-examples {
+            font-size: 11pt;
+            color: #64748b;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .examples-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .example-tag {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10pt;
+        }
+
+        .practical-rule {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 6px;
+        }
+
+        .rule-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .rule-icon {
+            width: 22px;
+            height: 22px;
+            background: #dcfce7;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rule-icon i {
+            color: #16a34a;
+            font-size: 11pt;
+        }
+
+        .rule-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13pt;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .rule-text {
+            font-size: 12pt;
+            color: #166534;
+            line-height: 1.4;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Matriz de Priorização (Criticidade × Frequência)</div>
+                    <div class="aula-subtitle">Quadrantes de priorização e ações recomendadas</div>
+                </div>
+                <div class="header-right">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 13pt; color: #64748b;">Prioridade:</div>
+                        <div style="display: flex; gap: 5px;">
+                            <div style="width: 20px; height: 20px; background: #fee2e2; border-radius: 4px;"></div>
+                            <div style="width: 20px; height: 20px; background: #fef3c7; border-radius: 4px;"></div>
+                            <div style="width: 20px; height: 20px; background: #dbeafe; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="matrix-container">
+                    <div class="matrix-header">
+                        <div class="matrix-title">Análise de Priorização 2x2</div>
+                        <div class="matrix-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #fee2e2;"></div>
+                                <span>Alta Criticidade</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #fef3c7;"></div>
+                                <span>Alta Frequência</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-grid">
+                        <!-- Q1: Alta Criticidade, Alta Frequência -->
+                        <div class="quadrant" style="border-left: 4px solid #dc2626;">
+                            <div class="quadrant-header">
+                                <div class="quadrant-id">Q1 - Alta Criticidade × Alta Frequência</div>
+                                <div class="quadrant-priority priority-high">PRIORIDADE MÁXIMA</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="quadrant-action">
+                                    <strong>Ação:</strong> Smoke diária + regressão focada a cada PR; alta cobertura
+                                    automatizada
+                                </div>
+                                <div class="quadrant-examples">
+                                    <strong>Exemplos:</strong>
+                                    <div class="examples-list">
+                                        <span class="example-tag">Autenticação</span>
+                                        <span class="example-tag">Checkout</span>
+                                        <span class="example-tag">Faturamento</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Q2: Alta Criticidade, Baixa Frequência -->
+                        <div class="quadrant" style="border-left: 4px solid #f59e0b;">
+                            <div class="quadrant-header">
+                                <div class="quadrant-id">Q2 - Alta Criticidade × Baixa Frequência</div>
+                                <div class="quadrant-priority priority-medium">PRIORIDADE ALTA</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="quadrant-action">
+                                    <strong>Ação:</strong> Regressão completa a cada alteração + smoke em releases
+                                </div>
+                                <div class="quadrant-examples">
+                                    <strong>Exemplos:</strong>
+                                    <div class="examples-list">
+                                        <span class="example-tag">Cálculo de impostos</span>
+                                        <span class="example-tag">Antifraude</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Q3: Baixa Criticidade, Alta Frequência -->
+                        <div class="quadrant" style="border-left: 4px solid #3b82f6;">
+                            <div class="quadrant-header">
+                                <div class="quadrant-id">Q3 - Baixa Criticidade × Alta Frequência</div>
+                                <div class="quadrant-priority priority-low">PRIORIDADE MÉDIA</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="quadrant-action">
+                                    <strong>Ação:</strong> Testes rápidos (unit + smoke) + amostragem
+                                </div>
+                                <div class="quadrant-examples">
+                                    <strong>Exemplos:</strong>
+                                    <div class="examples-list">
+                                        <span class="example-tag">Ajustes cosméticos</span>
+                                        <span class="example-tag">Textos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Q4: Baixa Criticidade, Baixa Frequência -->
+                        <div class="quadrant" style="border-left: 4px solid #10b981;">
+                            <div class="quadrant-header">
+                                <div class="quadrant-id">Q4 - Baixa Criticidade × Baixa Frequência</div>
+                                <div class="quadrant-priority priority-low">PRIORIDADE BAIXA</div>
+                            </div>
+                            <div class="quadrant-content">
+                                <div class="quadrant-action">
+                                    <strong>Ação:</strong> Regressão mínima; suíte completa apenas em releases maiores
+                                </div>
+                                <div class="quadrant-examples">
+                                    <strong>Exemplos:</strong>
+                                    <div class="examples-list">
+                                        <span class="example-tag">Relatórios internos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="practical-rule">
+                        <div class="rule-header">
+                            <div class="rule-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="rule-title">Regra Prática de Priorização</div>
+                        </div>
+                        <div class="rule-text">
+                            <strong>Comece por Q1 e Q2;</strong> ajuste a densidade de testes conforme risco e histórico
+                            de falhas. Componentes de alta criticidade devem ter cobertura de testes mais densa e
+                            execução mais frequente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+                <span style="font-size: 13px; color: #64748b;">|</span>
+                <span class="footer-text">9 de 30 slides</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

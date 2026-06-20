@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desencapsulamento no Destino</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 40px 22px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 32pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: baseline;
+            gap: 15px;
+            line-height: 1.1;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 28pt;
+        }
+
+        .process-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: calc(100% - 70px);
+            overflow: hidden;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 18px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .process-step:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+            border: 2px solid #ff6b35;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-title {
+            color: #ffffff;
+            font-size: 15pt;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.2;
+        }
+
+        .step-title i {
+            color: #ff6b35;
+            font-size: 13pt;
+        }
+
+        .step-description {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.35;
+        }
+
+        .step-details {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12pt;
+            color: #e0e6ed;
+        }
+
+        .detail-item i {
+            color: #ff6b35;
+            margin-right: 5px;
+            font-size: 11pt;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .arrow-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1px 0;
+        }
+
+        .arrow-icon {
+            color: #ff6b35;
+            font-size: 18pt;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 75%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13pt;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            padding-left: 12px;
+            margin-top: 2px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .status-text {
+            font-size: 11pt;
+            color: #e0e6ed;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 0 20px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-arrow {
+            color: #ff6b35;
+            font-size: 16pt;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b35;
+            font-size: 12pt;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-layer-group"></i> Desencapsulamento
+            </div>
+            <div class="main-title">
+                <i class="fas fa-box-open"></i>
+                Desencapsulamento no Destino - Processo Passo a Passo
+            </div>
+            <div class="process-container">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-ethernet"></i>
+                            Recepção do Quadro (Frame) na Interface de Rede
+                        </div>
+                        <div class="step-description">
+                            O quadro Ethernet chega à <span class="highlight">NIC (Network Interface Card)</span> do
+                            dispositivo destino e é validado pelo <span class="highlight">checksum (FCS)</span>.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-check-circle"></i> Validação FCS
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-network-wired"></i> MAC destino verificado
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shield-alt"></i> CRC check
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="arrow-container">
+                    <i class="fas fa-arrow-down arrow-icon"></i>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-layer-group"></i>
+                            Remoção do Cabeçalho L2 e Entrega ao IP
+                        </div>
+                        <div class="step-description">
+                            O <span class="highlight">cabeçalho Ethernet é removido</span> e o pacote IP é extraído e
+                            entregue à Camada 3 para processamento.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-file-alt"></i> Cabeçalho L2 removido
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-arrow-up"></i> Entrega ao IP
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-info-circle"></i> Protocolo identificado
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="arrow-container">
+                    <i class="fas fa-arrow-down arrow-icon"></i>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-search"></i>
+                            Validação IP, TTL e Checksum
+                        </div>
+                        <div class="step-description">
+                            O <span class="highlight">IP valida TTL</span>, checksum e entrega o pacote à Camada 4
+                            (Transporte) para processamento final.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-hourglass-half"></i> TTL verificado
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check-double"></i> Checksum validado
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-layer-group"></i> Entrega à Camada 4
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+                <div class="arrow-container">
+                    <i class="fas fa-arrow-down arrow-icon"></i>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">
+                            <i class="fas fa-file-import"></i>
+                            Entrega dos Dados à Aplicação
+                        </div>
+                        <div class="step-description">
+                            A <span class="highlight">aplicação consome os dados</span> após o desencapsulamento
+                            completo através de todas as camadas.
+                        </div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <i class="fas fa-desktop"></i> Aplicação recebe dados
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check"></i> Processamento completo
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-database"></i> Dados disponíveis
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <div class="status-text">Ativo</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

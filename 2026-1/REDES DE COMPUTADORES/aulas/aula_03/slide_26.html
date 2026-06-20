@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hub - Domínio de Colisão</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            /* Ajustado para 100% da largura da tela */
+            height: 100vh;
+            /* Ajustado para 100% da altura da tela */
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100vw;
+            /* Ajustado para 100% da largura da tela */
+            height: 100vh;
+            /* Ajustado para 100% da altura da tela */
+            display: flex;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Left Content Panel (40%) */
+        .left-panel {
+            width: 40%;
+            padding: 5%;
+            /* Usando porcentagem para escalar melhor em tela cheia */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #ffffff;
+            z-index: 10;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+            border-left: 6px solid #ef4444;
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.5vw;
+            /* Texto escalável para não quebrar em telas menores */
+            color: #111827;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1vw;
+            color: #6b7280;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content-text {
+            color: #374151;
+            font-size: 1.2vw;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background-color: #fef2f2;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid #fecaca;
+        }
+
+        .highlight-title {
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight-title i {
+            margin-right: 10px;
+        }
+
+        .highlight-text {
+            font-size: 1.1vw;
+            color: #7f1d1d;
+            margin: 0;
+        }
+
+        /* Right Diagram Panel (60%) */
+        .right-panel {
+            width: 60%;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagram-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .diagram-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 90vh;
+        }
+
+        /* Decorative Elements */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #ef4444;
+            opacity: 0.05;
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 50px;
+            left: -50px;
+        }
+
+        ul.custom-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.custom-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+        }
+
+        ul.custom-list li::before {
+            content: '\f071';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 4px;
+            color: #ef4444;
+            font-size: 1vw;
+        }
+
+        .footer-page {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            color: #94a3b8;
+            font-size: 1vw;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* SVG Diagram Styles */
+        .pc-icon {
+            fill: #e2e8f0;
+            stroke: #475569;
+            stroke-width: 2;
+        }
+
+        .pc-screen {
+            fill: #94a3b8;
+        }
+
+        .pc-base {
+            fill: #475569;
+        }
+
+        .hub-box {
+            fill: #fecaca;
+            stroke: #ef4444;
+            stroke-width: 2;
+        }
+
+        .sw-box {
+            fill: #d1fae5;
+            stroke: #10b981;
+            stroke-width: 2;
+        }
+
+        .cable {
+            stroke: #94a3b8;
+            stroke-width: 3;
+        }
+
+        .domain-hub {
+            fill: rgba(239, 68, 68, 0.08);
+            stroke: #ef4444;
+            stroke-width: 2.5;
+            stroke-dasharray: 8, 8;
+        }
+
+        .domain-sw {
+            fill: rgba(16, 185, 129, 0.08);
+            stroke: #10b981;
+            stroke-width: 2.5;
+            stroke-dasharray: 6, 6;
+        }
+
+        .svg-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            fill: #1f2937;
+            text-anchor: middle;
+            font-weight: 700;
+        }
+
+        .svg-domain-label {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .text-hub {
+            fill: #b91c1c;
+        }
+
+        .text-sw {
+            fill: #047857;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="header-section">
+                <h2>Limitações Físicas</h2>
+                <h1>Hub: O Domínio de Colisão Único</h1>
+            </div>
+            <div class="content-text">
+                <p class="mb-4">Em um Hub, todas as portas estão eletricamente conectadas a um único barramento interno.
+                    Isso cria um único domínio de colisão gigante.</p>
+                <ul class="custom-list">
+                    <li>
+                        <p><strong>Meio Compartilhado:</strong> Todos os dispositivos competem pela mesma largura de
+                            banda simultaneamente.</p>
+                    </li>
+                    <li>
+                        <p><strong>Half-Duplex:</strong> Um dispositivo só pode transmitir ou receber por vez, nunca
+                            ambos.</p>
+                    </li>
+                    <li>
+                        <p><strong>Colisões Frequentes:</strong> Se dois dispositivos tentam falar ao mesmo tempo, os
+                            sinais se misturam e os dados são perdidos.</p>
+                    </li>
+                </ul>
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Impacto na Performance</span>
+                    </div>
+                    <p class="highlight-text">Quanto mais dispositivos são adicionados ao Hub, maior a chance de colisão
+                        e menor o throughput efetivo da rede. É um gargalo arquitetural.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="decoration-circle circle-1"></div>
+            <div class="decoration-circle circle-2"></div>
+
+            <div class="diagram-container">
+                <!-- Using the generated image comparing Hub vs Switch to illustrate the single collision domain concept -->
+                <img alt="Diagrama ilustrando o domínio de colisão único em um Hub vs Switch" class="diagram-image"
+                    src="imagens/Hub_vs_Switch.png" />
+
+
+                <!-- <svg viewBox="0 0 800 640" class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <g id="pc">
+                            <rect x="-20" y="-15" width="40" height="24" rx="2" class="pc-icon"/>
+                            <path d="M -8 15 L -4 9 L 4 9 L 8 15 Z" class="pc-screen" />
+                            <rect x="-12" y="15" width="24" height="3" rx="1" class="pc-base" />
+                        </g>
+                    </defs>
+
+                    <line x1="100" y1="320" x2="700" y2="320" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10,10" />
+
+                    <g id="hub-section">
+                        <line x1="400" y1="60" x2="400" y2="160" class="cable"/>
+                        <line x1="540" y1="160" x2="400" y2="160" class="cable"/>
+                        <line x1="400" y1="260" x2="400" y2="160" class="cable"/>
+                        <line x1="260" y1="160" x2="400" y2="160" class="cable"/>
+
+                        <circle cx="400" cy="160" r="130" class="domain-hub"/>
+                        <text x="400" y="20" class="svg-domain-label text-hub" text-anchor="middle">1 DOMÍNIO DE COLISÃO GIGANTE</text>
+
+                        <use href="#pc" x="400" y="60"/>
+                        <use href="#pc" x="540" y="160"/>
+                        <use href="#pc" x="400" y="260"/>
+                        <use href="#pc" x="260" y="160"/>
+
+                        <rect x="360" y="140" width="80" height="40" rx="8" class="hub-box" />
+                        <text x="400" y="165" class="svg-label text-hub">HUB</text>
+                    </g>
+
+                    <g id="switch-section">
+                        <line x1="400" y1="380" x2="400" y2="480" class="cable"/>
+                        <line x1="540" y1="480" x2="400" y2="480" class="cable"/>
+                        <line x1="400" y1="580" x2="400" y2="480" class="cable"/>
+                        <line x1="260" y1="480" x2="400" y2="480" class="cable"/>
+
+                        <ellipse cx="400" cy="415" rx="35" ry="60" class="domain-sw"/>
+                        <ellipse cx="495" cy="480" rx="60" ry="35" class="domain-sw"/>
+                        <ellipse cx="400" cy="545" rx="35" ry="60" class="domain-sw"/>
+                        <ellipse cx="305" cy="480" rx="60" ry="35" class="domain-sw"/>
+                        
+                        <text x="400" y="350" class="svg-domain-label text-sw" text-anchor="middle">4 DOMÍNIOS DE COLISÃO (1 POR PORTA)</text>
+
+                        <use href="#pc" x="400" y="380"/>
+                        <use href="#pc" x="540" y="480"/>
+                        <use href="#pc" x="400" y="580"/>
+                        <use href="#pc" x="260" y="480"/>
+
+                        <rect x="360" y="460" width="80" height="40" rx="8" class="sw-box" />
+                        <text x="400" y="485" class="svg-label text-sw">SWITCH</text>
+                    </g>
+                </svg> -->
+            </div>
+
+            <div class="footer-page">26/36</div>
+        </div>
+    </div>
+</body>
+
+</html>

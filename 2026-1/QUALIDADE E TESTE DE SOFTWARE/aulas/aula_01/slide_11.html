@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Casos Históricos de Falhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Brand Colors */
+        .senac-blue { color: #003DA5; }
+        .bg-senac-blue { background-color: #003DA5; }
+        .senac-orange { color: #F68D2E; }
+        .bg-senac-orange { background-color: #F68D2E; }
+        .text-senac-orange { color: #F68D2E; }
+
+        /* Fonts */
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+        .font-opensans { font-family: 'Open Sans', sans-serif; }
+
+        /* Timeline Specific Styles */
+        .timeline-line-bg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #e5e7eb;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+
+        .timeline-line-active {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #003DA5 0%, #003DA5 80%, #F68D2E 100%); /* Gradient transition */
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .arrow-end {
+            position: absolute;
+            right: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            border-left: 18px solid #F68D2E; /* Changed to match gradient end */
+            z-index: 2;
+        }
+
+        .timeline-item {
+            position: relative;
+            z-index: 10;
+            width: 33.33%;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timeline-marker {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #003DA5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #003DA5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 20;
+            transition: transform 0.3s ease;
+        }
+        
+        @media (min-width: 1280px) {
+            .timeline-marker {
+                width: 90px;
+                height: 90px;
+                font-size: 2.2rem;
+                border-width: 5px;
+            }
+        }
+
+        .era-label {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6b7280;
+            white-space: nowrap;
+            background-color: #f3f4f6;
+            padding: 6px 14px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @media (min-width: 1280px) {
+            .era-label {
+                font-size: 1rem;
+                padding: 8px 18px;
+                top: -55px;
+            }
+        }
+
+        .item-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-top: 6px solid #003DA5;
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        @media (min-width: 1280px) {
+            .item-content {
+                padding: 2rem;
+                border-top-width: 8px;
+            }
+        }
+
+        /* Staggering Logic */
+        .timeline-item:nth-child(odd) {
+            justify-content: flex-end;
+            padding-bottom: 3rem; /* Space between icon and line */
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-marker {
+            order: 2; /* Marker below content */
+            margin-top: 2rem;
+        }
+
+        .timeline-item:nth-child(odd) .item-content {
+            order: 1; /* Content above marker */
+        }
+
+        .timeline-item:nth-child(even) {
+            justify-content: flex-start;
+            padding-top: 3rem;
+        }
+
+        .timeline-item:nth-child(even) .timeline-marker {
+            order: 1; /* Marker above content */
+            margin-bottom: 2rem;
+            border-color: #F68D2E;
+            color: #F68D2E;
+        }
+
+        .timeline-item:nth-child(even) .item-content {
+            order: 2; /* Content below marker */
+            border-top-color: #F68D2E;
+        }
+        
+        .timeline-item:nth-child(even) .era-label {
+            top: auto;
+            bottom: -45px;
+        }
+        
+        @media (min-width: 1280px) {
+            .timeline-item:nth-child(even) .era-label {
+                bottom: -55px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="px-12 xl:px-16 pt-8 xl:pt-12 pb-4 bg-white z-20">
+            <div class="h-1 w-20 bg-senac-orange mb-4"></div>
+            <h2 class="font-opensans text-gray-500 uppercase tracking-widest text-xs xl:text-sm font-semibold mb-1">Por que testar?</h2>
+            <h1 class="font-montserrat font-bold text-3xl xl:text-4xl text-gray-800">
+                Casos Históricos de <span class="senac-blue">Falhas</span>
+            </h1>
+            <p class="font-opensans text-gray-600 mt-2 xl:mt-4 max-w-4xl text-sm xl:text-lg leading-relaxed">
+                O custo da falta de qualidade pode ser calculado em milhões de dólares ou, pior, em vidas humanas.
+            </p>
+        </div>
+
+        <div class="flex-1 flex items-center justify-center px-8 xl:px-16 relative w-full h-full">
+            <div class="w-full relative h-full flex items-center justify-center">
+                
+                <div class="timeline-line-bg"></div>
+                <div class="timeline-line-active"></div>
+                <div class="arrow-end"></div>
+
+                <div class="flex w-full justify-between relative z-10 h-3/4"> <div class="timeline-item">
+                        <div class="item-content hover:-translate-y-2 transition-transform duration-300">
+                            <h3 class="font-montserrat font-bold text-lg xl:text-2xl text-gray-800 mb-1">Therac-25</h3>
+                            <p class="font-opensans text-[10px] xl:text-xs font-bold text-senac-blue mb-3 xl:mb-4 uppercase tracking-wide">
+                                Saúde e Segurança
+                            </p>
+                            
+                            <p class="font-opensans text-sm xl:text-lg text-gray-700 mb-2 font-bold">"Overdose de Radiação"</p>
+                            <p class="font-opensans text-xs xl:text-sm text-gray-500 leading-relaxed mb-3">
+                                Falha crítica de software (race condition) resultou na morte de pacientes.
+                            </p>
+                            
+                            <div class="bg-blue-50 border border-blue-100 rounded-lg p-2 xl:p-3 mt-auto">
+                                <span class="font-semibold text-senac-blue text-xs xl:text-sm block">
+                                    <i class="fas fa-graduation-cap mr-1"></i> Lição:
+                                </span>
+                                <span class="text-xs xl:text-sm text-gray-700">Sistemas críticos exigem validação rigorosa e redundância.</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-marker bg-white">
+                            <i class="fas fa-radiation-alt"></i>
+                            <div class="era-label">1985–1987</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-white">
+                            <i class="fas fa-rocket"></i>
+                            <div class="era-label">1996</div>
+                        </div>
+
+                        <div class="item-content hover:translate-y-2 transition-transform duration-300">
+                            <h3 class="font-montserrat font-bold text-lg xl:text-2xl text-gray-800 mb-1">Ariane 5</h3>
+                            <p class="font-opensans text-[10px] xl:text-xs font-bold text-senac-orange mb-3 xl:mb-4 uppercase tracking-wide">
+                                Aeroespacial
+                            </p>
+                            
+                            <p class="font-opensans text-sm xl:text-lg text-gray-700 mb-2 font-bold">"Explosão no Lançamento"</p>
+                            <p class="font-opensans text-xs xl:text-sm text-gray-500 leading-relaxed mb-3">
+                                Reutilização de código causou <i>integer overflow</i>. Prejuízo de US$ 370 mi.
+                            </p>
+
+                            <div class="bg-orange-50 border border-orange-100 rounded-lg p-2 xl:p-3 mt-auto">
+                                <span class="font-semibold text-senac-orange text-xs xl:text-sm block">
+                                    <i class="fas fa-graduation-cap mr-1"></i> Lição:
+                                </span>
+                                <span class="text-xs xl:text-sm text-gray-700">Testes de integração devem considerar o contexto real.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="item-content hover:-translate-y-2 transition-transform duration-300">
+                            <h3 class="font-montserrat font-bold text-lg xl:text-2xl text-gray-800 mb-1">Knight Capital</h3>
+                            <p class="font-opensans text-[10px] xl:text-xs font-bold text-senac-blue mb-3 xl:mb-4 uppercase tracking-wide">
+                                Mercado Financeiro
+                            </p>
+                            
+                            <p class="font-opensans text-sm xl:text-lg text-gray-700 mb-2 font-bold">"Erro de Trading"</p>
+                            <p class="font-opensans text-xs xl:text-sm text-gray-500 leading-relaxed mb-3">
+                                Código morto ativado acidentalmente. Prejuízo de US$ 440 mi em minutos.
+                            </p>
+
+                            <div class="bg-blue-50 border border-blue-100 rounded-lg p-2 xl:p-3 mt-auto">
+                                <span class="font-semibold text-senac-blue text-xs xl:text-sm block">
+                                    <i class="fas fa-graduation-cap mr-1"></i> Lição:
+                                </span>
+                                <span class="text-xs xl:text-sm text-gray-700">Gestão de configuração e uso correto de feature toggles.</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-marker bg-white">
+                            <i class="fas fa-chart-line"></i>
+                            <div class="era-label">2012</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-6 right-8 text-right z-30">
+            <p class="font-opensans text-xs xl:text-sm font-bold text-gray-400">11</p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modelo OSI - Camada 3</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-title {
+            font-size: 36pt;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .main-title i {
+            color: #ff6b35;
+            font-size: 32pt;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: calc(100% - 70px);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .concept-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 18px;
+            border-left: 4px solid #ff6b35;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-box h3 {
+            color: #ffffff;
+            font-size: 16pt;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-box h3 i {
+            color: #ff6b35;
+        }
+
+        .concept-text {
+            color: #e0e6ed;
+            font-size: 13pt;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: #e0e6ed;
+            font-size: 13pt;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: #ff6b35;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .osi-diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .osi-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .osi-layer {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .osi-layer:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .layer-number {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 12pt;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .layer-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .layer-name {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .layer-function {
+            color: #e0e6ed;
+            font-size: 11pt;
+            text-align: right;
+        }
+
+        .layer-3 {
+            background: rgba(255, 107, 53, 0.3) !important;
+            border: 2px solid #ff6b35;
+        }
+
+        .layer-3 .layer-number {
+            background: #ff6b35;
+        }
+
+        .layer-3 .layer-name {
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            width: 40%;
+            transition: width 0.3s ease;
+        }
+
+        .section-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .key-info {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .info-item i {
+            color: #ff6b35;
+            font-size: 16pt;
+            margin-bottom: 4px;
+        }
+
+        .info-item span {
+            color: #e0e6ed;
+            font-size: 11pt;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="slide-content">
+            <div class="section-badge">
+                <i class="fas fa-layer-group"></i> Camada 3
+            </div>
+            <div class="main-title">
+                <i class="fas fa-network-wired"></i>
+                Modelo OSI - Foco na Camada 3 (Rede)
+            </div>
+            <div class="content-wrapper">
+                <div class="left-panel">
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Camada 3 - Rede (Network Layer)
+                        </h3>
+                        <div class="concept-text">
+                            A <span class="highlight">Camada 3</span> é responsável por:
+                        </div>
+                        <div class="bullet-point">Endereçamento lógico (IP) e roteamento</div>
+                        <div class="bullet-point">Encaminhamento de pacotes entre redes diferentes</div>
+                        <div class="bullet-point">Determinação do melhor caminho para o destino</div>
+                        <div class="bullet-point">Gerenciamento de congestionamento</div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-cube"></i>
+                            Componentes da Camada 3
+                        </h3>
+                        <div class="key-info">
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>Roteadores</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-table"></i>
+                                <span>Tabela de Rotas</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-route"></i>
+                                <span>Protocolos IP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-box">
+                        <h3>
+                            <i class="fas fa-info-circle"></i>
+                            Importância do Roteamento
+                        </h3>
+                        <div class="concept-text">
+                            Sem o roteamento, um dispositivo na sub-rede <span class="highlight">192.168.1.0/24</span>
+                            nunca conseguiria alcançar um servidor na rede <span class="highlight">10.0.0.0/8</span>.
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="osi-diagram">
+                        <div class="osi-layers">
+                            <div class="osi-layer">
+                                <div class="layer-number">7</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Aplicação</div>
+                                    <div class="layer-function">HTTP, FTP, SMTP</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer">
+                                <div class="layer-number">6</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Apresentação</div>
+                                    <div class="layer-function">Criptografia, Compressão</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer">
+                                <div class="layer-number">5</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Sessão</div>
+                                    <div class="layer-function">Gerenciamento de Sessão</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer">
+                                <div class="layer-number">4</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Transporte</div>
+                                    <div class="layer-function">TCP, UDP</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer layer-3">
+                                <div class="layer-number">3</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">REDE (IP, Roteamento)</div>
+                                    <div class="layer-function">Endereçamento, Roteamento</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer">
+                                <div class="layer-number">2</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Enlace</div>
+                                    <div class="layer-function">MAC, Switching</div>
+                                </div>
+                            </div>
+                            <div class="osi-layer">
+                                <div class="layer-number">1</div>
+                                <div class="layer-content">
+                                    <div class="layer-name">Física</div>
+                                    <div class="layer-function">Cabeamento, Sinais</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; text-align: center;">
+                            <div
+                                style="display: inline-block; background: rgba(255, 107, 53, 0.2); border-radius: 10px; padding: 10px 20px;">
+                                <div style="color: #ff6b35; font-size: 12pt; font-weight: 600;">
+                                    <i class="fas fa-star" style="margin-right: 5px;"></i>
+                                    Camada 3 em Destaque
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

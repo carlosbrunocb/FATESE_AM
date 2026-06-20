@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercícios POO - Cálculo de Imposto CLT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #004a91;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #004a91;
+            margin: 0;
+        }
+        .header p {
+            margin: 2px 0;
+            font-size: 0.9em;
+            color: #333;
+        }
+        h2 {
+            color: #004a91;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #0056b3;
+        }
+        .questao {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .hint-box, .info-box, .code-box {
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .hint-box {
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 5px solid #2196F3;
+        }
+        .code-box {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap; /* Garante a quebra de linha em blocos de código */
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #destaque{
+            background-color: lightsteelblue;
+            border-radius: 3px;
+            padding: 0px 3px;
+            margin: 0px 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <p>FACULDADE DE TECNOLOGIA SENAC - FATESE</p>
+            <p>Curso de Análise e Desenvolvimento de Sistemas</p>
+            <p>Disciplina: Programação Orientada a Objetos</p>
+            <p>Professor: Carlos Bruno Oliveira Lopes</p>
+            <h1>Lista de Exercícios: Cálculo de Imposto CLT com POO</h1>
+        </div>
+
+        <h2>Objetivo</h2>
+        <p>Esta lista de exercícios tem como objetivo guiá-lo na construção de um sistema orientado a objetos para calcular os impostos e o salário líquido de um funcionário CLT. Utilizaremos os conceitos de <strong>Composição</strong> vistos na <strong>Aula 04</strong> para estruturar nosso código de forma coesa e modular.</p>
+        <p>O sistema deve receber como entrada o <strong>salário bruto</strong> e o <strong>número de dependentes</strong> e calcular/armazenar os seguintes atributos:</p>
+        <ul>
+            <li>FGTS pago pela empresa (<code>fgts_empresa</code>)</li>
+            <li>INSS retido (<code>inss_retido</code>)</li>
+            <li>Dedução por dependentes (<code>deducao_dependentes</code>)</li>
+            <li>Base de cálculo do IRPF (<code>base_calculo_irpf</code>)</li>
+            <li>Imposto de Renda Retido na Fonte (<code>irpf_retido</code>)</li>
+            <li>Salário Líquido (<code>salario_liquido</code>)</li>
+        </ul>
+        <p>A cada questão, construiremos partes da solução final, culminando em um conjunto de classes coesas que geram um relatório em string.</p>
+
+        <div class="info-box">
+            <h3>Informações Teóricas Essenciais (Valores Fictícios/Exemplos para 2024)</h3>
+            <p>Para resolver os exercícios, você precisará destas tabelas e valores:</p>
+
+            <p><strong>1. FGTS (Fundo de Garantia por Tempo de Serviço):</strong></p>
+            <ul>
+                <li>Alíquota: 8% sobre o salário bruto (pago pela empresa, não descontado do funcionário).</li>
+            </ul>
+
+            <p><strong>2. Dedução por Dependente (para base do IRPF):</strong></p>
+            <ul>
+                <li>Valor: R$ 189,59 por dependente.</li>
+            </ul>
+
+            <p><strong>3. Tabela Progressiva do INSS (Contribuição Previdenciária):</strong></p>
+            <p>O cálculo é feito faixa por faixa sobre o salário bruto.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Salário de Contribuição (R$)</th>
+                        <th>Alíquota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Até R$ 1.412,00</td>
+                        <td>7,5%</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 1.412,01 até R$ 2.666,68</td>
+                        <td>9%</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 2.666,69 até R$ 4.000,03</td>
+                        <td>12%</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 4.000,04 até R$ 7.786,02 (Teto)</td>
+                        <td>14%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><strong>Exemplo Cálculo INSS (Salário R$ 3.000,00):</strong><br>
+                - Faixa 1: R$ 1.412,00 * 7,5% = R$ 105,90<br>
+                - Faixa 2: (R$ 2.666,68 - R$ 1.412,00) * 9% = R$ 1.254,68 * 9% = R$ 112,92<br>
+                - Faixa 3: (R$ 3.000,00 - R$ 2.666,68) * 12% = R$ 333,32 * 12% = R$ 39,99<br>
+                - <strong>Total INSS:</strong> R$ 105,90 + R$ 112,92 + R$ 39,99 = <strong>R$ 258,81</strong>
+            </p>
+
+            <p><strong>4. Tabela Progressiva do IRPF (Imposto de Renda Retido na Fonte):</strong></p>
+            <p>A base de cálculo é: <code>Salário Bruto - INSS Retido - (Nº Dependentes * 189,59)</code>.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Base de Cálculo (R$)</th>
+                        <th>Alíquota</th>
+                        <th>Parcela a Deduzir (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Até R$ 2.259,20</td>
+                        <td>0%</td>
+                        <td>R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 2.259,21 até R$ 2.826,65</td>
+                        <td>7,5%</td>
+                        <td>R$ 169,44</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 2.826,66 até R$ 3.751,05</td>
+                        <td>15%</td>
+                        <td>R$ 381,44</td>
+                    </tr>
+                    <tr>
+                        <td>De R$ 3.751,06 até R$ 4.664,68</td>
+                        <td>22,5%</td>
+                        <td>R$ 662,77</td>
+                    </tr>
+                    <tr>
+                        <td>Acima de R$ 4.664,68</td>
+                        <td>27,5%</td>
+                        <td>R$ 896,00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><strong>Exemplo Cálculo IRPF:</strong><br>
+                - Base de Cálculo: R$ 3.000,00 (Salário) - R$ 258,81 (INSS) - 0 (Dependentes) = R$ 2.741,19<br>
+                - Cálculo (Faixa 7,5%): (R$ 2.741,19 * 7,5%) - R$ 169,44 = R$ 205,59 - R$ 169,44 = <strong>R$ 36,15 (IRPF Retido)</strong>
+            </p>
+        </div>
+
+        <ol>
+
+            <li class="questao">
+                <h3>Questão 1: A Classe Principal (Entradas)</h3>
+                <p>Crie uma classe chamada <span id="destaque">CalculoCLT</span>. O construtor (<span id="destaque">__init__</span>) desta classe deve receber e armazenar o <span id="destaque">salario_bruto</span> e o `numero_dependentes` como atributos.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> Lembre-se da estrutura básica de uma classe em Python:
+                    <pre><code>class MinhaClasse:
+    def __init__(self, parametro1, parametro2):
+        self.atributo1 = parametro1
+        self.atributo2 = parametro2</code></pre>
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 2: Definindo o Estado (Atributos de Saída)</h3>
+                <p>Modifique a classe <span id="destaque">CalculoCLT</span>. Além dos atributos de entrada, inicialize no construtor (<span id="destaque">__init__</span>) todos os atributos que precisaremos calcular. Inicialize-os com <span id="destaque">None</span> ou <span id="destaque">0.0</span>.</p>
+                <p>Os atributos são: <span id="destaque">fgts_empresa</span>, <span id="destaque">inss_retido</span>, <span id="destaque">deducao_dependentes</span>, <span id="destaque">base_calculo_irpf</span>, <span id="destaque">irpf_retido</span> e <span id="destaque">salario_liquido</span>.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> Isso é importante para definir o "estado" do seu objeto. Mesmo que ainda não saibamos calcular, já deixamos claro quais dados o objeto irá armazenar.
+                    <pre><code>class CalculoCLT:
+    def __init__(self, salario_bruto, numero_dependentes):
+        self.salario_bruto = salario_bruto
+        self.numero_dependentes = numero_dependentes
+        
+        # Atributos de saída
+        self.fgts_empresa = 0.0
+        self.inss_retido = 0.0
+        # ... continue para os outros ...</code></pre>
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 3: O Primeiro Cálculo (Método Simples)</h3>
+                <p>Adicione um método privado <span id="destaque">_calcular_fgts</span> à classe <span id="destaque">CalculoCLT</span>. Este método deve calcular 8% do <span id="destaque">salario_bruto</span> e armazenar no atributo <span id="destaque">self.fgts_empresa</span>.</p>
+                <p>Crie também um método público <span id="destaque">processar_calculo</span> que, por enquanto, apenas chamará o <span id="destaque">_calcular_fgts</span>. Altere o <span id="destaque">__init__</span> para chamar <span id="destaque">self.processar_calculo()</span> no final.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> Métodos privados em Python são indicados com um underscore (<code>_</code>) no início. O cálculo é <code>self.salario_bruto * 0.08</code>. O método <code>processar_calculo</code> servirá para orquestrar todas as nossas chamadas de cálculo futuramente.
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 4: Aplicando Composição (Aula 04) - Calculador de INSS</h3>
+                <p>Aqui aplicaremos o conceito de <strong>Composição</strong> (Aula 04). O cálculo do INSS é complexo (progressivo) e não queremos que a classe <span id="destaque">CalculoCLT</span> tenha essa responsabilidade (Princípio da Responsabilidade Única).</p>
+                <p>Crie uma <strong>nova classe</strong> chamada <span id="destaque">CalculadorINSS</span>. Esta classe deve ter um único método público <span id="destaque">calcular(salario_bruto)</span> que recebe o salário bruto e <strong>retorna</strong> o valor total do INSS retido, com base na tabela progressiva fornecida.</p>
+                <div class="hint-box">
+                    <strong>Dica (Conceito da Aula 04):</strong> Estamos modelando uma relação "parte-de" (Composição). O <span id="destaque">CalculadorINSS</span> é uma "parte" essencial do <span id="destaque">CalculoCLT</span>. A classe <span id="destaque">CalculadorINSS</span> não precisa de um <span id="destaque">__init__</span> complexo, ela pode ter apenas o método <span id="destaque">calcular</span> (ou pode ser um método estático, se preferir).
+                    <p><strong>Dica (Lógica):</strong> Você precisará de vários <span id="destaque">if/elif/else</span> para calcular o valor de cada faixa e somá-los, conforme o exemplo na tabela de INSS.</p>
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 5: Integrando o Componente INSS (Composição)</h3>
+                <p>Modifique a classe <span id="destaque">CalculoCLT</span>:</p>
+                <ol>
+                    <li>No <span id="destaque">__init__</span>, crie uma instância do <span id="destaque">CalculadorINSS</span> e armazene-a em um atributo (ex: <span id="destaque">self._calculador_inss = CalculadorINSS()</span>). Isso é a <strong>Composição</strong>! </li>
+                    <li>Crie um método privado <span id="destaque">_calcular_inss</span>.</li>
+                    <li>Dentro de <span id="destaque">_calcular_inss</span>, use o objeto composto (<code>self._calculador_inss</code>) para calcular o imposto (<code>self._calculador_inss.calcular(self.salario_bruto)</code>) e armazene o resultado em <span id="destaque">self.inss_retido</span>.</li>
+                    <li>Adicione a chamada <span id="destaque">self._calcular_inss()</span> dentro do método <span id="destaque">processar_calculo()</span>.</li>
+                </ol>
+                <div class="hint-box">
+                    <strong>Dica:</strong> A classe <span id="destaque">CalculoCLT</span> não sabe <strong>como</strong> o INSS é calculado, ela apenas <strong>delega</strong> essa tarefa ao seu componente (<span id="destaque">CalculadorINSS</span>). Isso torna o código muito mais limpo e fácil de manter.
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 6: Cálculo da Base do IRPF</h3>
+                <p>Agora que temos o INSS, podemos calcular a base do IRPF.</p>
+                <p>Crie dois métodos privados em <span id="destaque">CalculoCLT</span>:</p>
+                <ol>
+                    <li><code>_calcular_deducao_dependentes</code>: Deve calcular <code>self.numero_dependentes * 189.59</code> e salvar em <span id="destaque">self.deducao_dependentes</span>.</li>
+                    <li><code>_calcular_base_irpf</code>: Deve calcular <code>self.salario_bruto - self.inss_retido - self.deducao_dependentes</code> e salvar em <span id="destaque">self.base_calculo_irpf</span>.</li>
+                </ol>
+                <p>Adicione a chamada desses métodos ao <span id="destaque">processar_calculo()</span>. <strong>Importante:</strong> A ordem importa! Eles devem ser chamados *depois* do cálculo do INSS.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> O método <span id="destaque">processar_calculo</span> está se tornando um orquestrador. A ordem deve ser: <code>_calcular_fgts</code>, <code>_calcular_inss</code>, <code>_calcular_deducao_dependentes</code>, <code>_calcular_base_irpf</code>.
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 7: Aplicando Composição (Aula 04) - Calculador de IRPF</h3>
+                <p>Similar à Questão 4, o cálculo do IRPF também é complexo. Vamos usar <strong>Composição</strong> novamente.</p>
+                <p>Crie uma <strong>nova classe</strong> chamada <span id="destaque">CalculadorIRPF</span>. Ela deve ter um método <span id="destaque">calcular(base_calculo)</span> que recebe a base de cálculo (calculada na Q6) e <strong>retorna</strong> o valor do imposto retido, com base na tabela progressiva e nas parcelas a deduzir.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> A lógica aqui é diferente do INSS. Você encontra a faixa correta (<code>if/elif/else</code>) e aplica a fórmula: <code>(base_calculo * aliquota) - parcela_a_deduzir</code>.
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 8: Integrando o Componente IRPF e Calculando o Salário Líquido</h3>
+                <p>Vamos finalizar os cálculos na classe <span id="destaque">CalculoCLT</span>:</p>
+                <ol>
+                    <li>No <span id="destaque">__init__</span>, crie a instância do <span id="destaque">CalculadorIRPF</span> (<code>self._calculador_irpf = CalculadorIRPF()</code>). (Composição!) </li>
+                    <li>Crie o método privado <span id="destaque">_calcular_irpf</span>. Nele, use o componente (<code>self._calculador_irpf.calcular(self.base_calculo_irpf)</code>) e salve em <span id="destaque">self.irpf_retido</span>.</li>
+                    <li>Crie o método privado <span id="destaque">_calcular_salario_liquido</span>. Ele deve calcular <code>self.salario_bruto - self.inss_retido - self.irpf_retido</code> e salvar em <span id="destaque">self.salario_liquido</span>.</li>
+                    <li>Adicione as chamadas <code>_calcular_irpf()</code> e <code>_calcular_salario_liquido()</code> ao método <span id="destaque">processar_calculo()</span>, na ordem correta.</li>
+                </ol>
+                <div class="hint-box">
+                    <strong>Dica:</strong> Seu método <span id="destaque">processar_calculo</span> agora deve orquestrar todos os passos, garantindo que um cálculo que depende de outro (ex: IRPF depende da Base, que depende do INSS) seja executado na sequência correta.
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 9: Gerando o Relatório (String)</h3>
+                <p>O cálculo está completo, mas precisamos exibi-lo.</p>
+                <p>Adicione um método público <span id="destaque">gerar_relatorio()</span> à classe <span id="destaque">CalculoCLT</span>. Este método não deve calcular nada, apenas <strong>retornar uma string</strong> contendo todos os atributos calculados (FGTS, INSS, Base IRPF, IRPF Retido, Salário Líquido, etc.) de forma legível.</p>
+                <div class="hint-box">
+                    <strong>Dica:</strong> Use f-strings (formatted strings) do Python para montar a string. Por exemplo:
+<pre><code>def gerar_relatorio(self):
+    relatorio = f"--- Relatório de Cálculo CLT ---\n"
+    relatorio += f"Salário Bruto: R$ {self.salario_bruto:,.2f}\n"
+    relatorio += f"INSS Retido: R$ {self.inss_retido:,.2f}\n"
+    # ... continue para os outros atributos ...
+    return relatorio
+</code></pre>
+                </div>
+            </li>
+
+            <li class="questao">
+                <h3>Questão 10: Solução Final, Testes e Formatação</h3>
+                <p>Junte todas as classes (<span id="destaque">CalculoCLT</span>, <span id="destaque">CalculadorINSS</span>, <span id="destaque">CalculadorIRPF</span>) em um único script. Agora, teste sua solução.</p>
+                <p><strong>Parte A: Testes</strong><br>
+                Instancie a classe <span id="destaque">CalculoCLT</span> e imprima o relatório gerado para, no mínimo, os três casos de teste abaixo:</p>
+                <ul>
+                    <li><strong>Caso 1 (Isento de IRPF):</strong> Salário Bruto: R$ 2.000,00, 0 dependentes.</li>
+                    <li><strong>Caso 2 (IRPF Faixa Média):</strong> Salário Bruto: R$ 3.500,00, 1 dependente.</li>
+                    <li><strong>Caso 3 (IRPF Faixa Alta):</strong> Salário Bruto: R$ 7.000,00, 2 dependentes.</li>
+                </ul>
+
+                <p><strong>Parte B: Dicas de Formatação do Relatório</strong><br>
+                Como você pode tornar seu relatório (a string gerada na Questão 9) mais agradável e alinhado? O usuário do seu sistema (ex: um funcionário) precisa entender o que é desconto e o que é provento.</p>
+
+                <div class="hint-box">
+                    <strong>Dica de Formatação (Parte B):</strong>
+                    <p>f-strings permitem controlar o alinhamento. <code>{valor:10.2f}</code> alinha o número em 10 espaços. <code>{texto:&lt;20}</code> alinha o texto à esquerda em 20 espaços. <code>{texto:&gt;20}</code> alinha à direita.</p>
+                    <p>Você pode tentar um formato de "Holerite", separando Proventos (Salário Bruto) de Descontos (INSS, IRPF) e mostrando os Resumos (Líquido, FGTS).</p>
+                    <p>Exemplo de formatação avançada (tente implementar):</p>
+<pre><code>def gerar_relatorio_formatado(self):
+    # Definindo larguras
+    desc_width = 30
+    val_width = 12
+
+    # Função auxiliar para formatar moeda
+    def f_moeda(valor):
+        return f"R$ {valor:>{val_width - 3},.2f}"
+
+    # Montando a string
+    rel = "=" * (desc_width + val_width + 1) + "\n"
+    rel += f"{'Holerite de Pagamento':^{desc_width + val_width}}\n"
+    rel += "=" * (desc_width + val_width + 1) + "\n"
+
+    # Entradas
+    rel += f"{'Salário Bruto:':<{desc_width}}{f_moeda(self.salario_bruto)}\n"
+    rel += f"{'Dependentes:':<{desc_width}}{self.numero_dependentes:>{val_width}}\n"
+    rel += "-" * (desc_width + val_width + 1) + "\n"
+    
+    # Descontos
+    rel += f"{'Descontos':^{desc_width + val_width}}\n"
+    rel += f"{'  (-) INSS Retido:':<{desc_width}}{f_moeda(self.inss_retido)}\n"
+    rel += f"{'  (-) IRPF Retido:':<{desc_width}}{f_moeda(self.irpf_retido)}\n"
+    rel += "-" * (desc_width + val_width + 1) + "\n"
+
+    # Líquido
+    rel += f"{'SALÁRIO LÍQUIDO:':<{desc_width}}{f_moeda(self.salario_liquido)}\n"
+    rel += "=" * (desc_width + val_width + 1) + "\n"
+
+    # Resumo (Valores da Empresa)
+    rel += f"{'Resumo (Empresa)':^{desc_width + val_width}}\n"
+    rel += f"{'FGTS (8%):':<{desc_width}}{f_moeda(self.fgts_empresa)}\n"
+    rel += "-" * (desc_width + val_width + 1) + "\n"
+
+    return rel
+</code></pre>
+                </div>
+            </li>
+
+        </ol>
+
+    </div>
+
+</body>
+</html>

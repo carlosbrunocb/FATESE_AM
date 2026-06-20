@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Web Services REST vs SOAP - Comparação</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 155px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 535px;
+            /* Slightly increased to fill space */
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header {
+            display: flex;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            padding: 14px 25px;
+            /* Increased padding */
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            /* Increased */
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            /* Increased */
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .table-body {
+            padding: 0;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 25px;
+            /* Increased vertical padding to use space */
+            align-items: center;
+            flex: 1;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: #f7fafc;
+        }
+
+        .col-category {
+            flex: 0 0 170px;
+            /* Widened slightly */
+            font-weight: 600;
+            color: #1a365d;
+            font-size: 14px;
+            /* Increased from 13px */
+        }
+
+        .col-rest {
+            flex: 1;
+            padding: 0 20px;
+            /* Increased from 12px */
+            border-left: 2px solid #e2e8f0;
+        }
+
+        .col-soap {
+            flex: 1;
+            padding: 0 20px;
+            /* Increased from 12px */
+            border-left: 2px solid #e2e8f0;
+        }
+
+        .col-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            /* Increased */
+        }
+
+        .col-icon {
+            width: 24px;
+            /* Fixed clipping: increased width/height from 22px to ensure icon fits */
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .rest-icon {
+            background: #e6fffa;
+            color: #319795;
+        }
+
+        .soap-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .col-title {
+            font-weight: 700;
+            font-size: 13px;
+            /* Increased */
+        }
+
+        .rest-title {
+            color: #319795;
+        }
+
+        .soap-title {
+            color: #d97706;
+        }
+
+        .col-content {
+            font-size: 12.5px;
+            /* Increased from 11.5px to use space and improve readability */
+            color: #4a5568;
+            line-height: 1.4;
+            /* Increased from 1.3 */
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 22px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            /* Slightly more padding */
+            border-radius: 4px;
+            font-size: 10.5px;
+            margin-right: 5px;
+            margin-bottom: 3px;
+        }
+
+        .rest-tag {
+            background: #e6fffa;
+            color: #319795;
+        }
+
+        .soap-tag {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .advantage {
+            color: #38a169;
+            font-weight: 600;
+        }
+
+        .disadvantage {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-network-wired"></i> Web Services REST vs SOAP
+                </div>
+                <div class="page-subtitle">
+                    Comparação de paradigmas, características, segurança e casos de uso
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Integração Web Services</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="comparison-table">
+                    <div class="table-header">
+                        <div class="header-left">
+                            <div class="header-icon"><i class="fas fa-balance-scale"></i></div>
+                            <div>
+                                <div class="header-text">Comparação REST vs SOAP</div>
+                                <div class="header-subtitle">Análise de arquitetura, protocolos e integração</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-body">
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-bullseye"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Paradigma
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-header">
+                                    <div class="col-icon rest-icon"><i class="fas fa-cloud"></i></div>
+                                    <div class="col-title rest-title">REST</div>
+                                </div>
+                                <div class="col-content">
+                                    <span class="feature-tag rest-tag">Estilo Arquitetural</span>
+                                    <span class="feature-tag rest-tag">Recursos</span>
+                                    <div style="margin-top: 2px;">Arquitetura baseada em recursos e verbos HTTP</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-header">
+                                    <div class="col-icon soap-icon"><i class="fas fa-envelope"></i></div>
+                                    <div class="col-title soap-title">SOAP</div>
+                                </div>
+                                <div class="col-content">
+                                    <span class="feature-tag soap-tag">Protocolo</span>
+                                    <span class="feature-tag soap-tag">Mensagens</span>
+                                    <div style="margin-top: 2px;">Protocolo específico para troca de mensagens</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-file-contract"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Contrato
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-content">
+                                    <span class="advantage"><i class="fas fa-check"></i> OpenAPI/JSON Schema</span>
+                                    <div style="margin-top: 2px;">Flexível, evolução rápida</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-content">
+                                    <span class="disadvantage"><i class="fas fa-times"></i> WSDL/XSD</span>
+                                    <div style="margin-top: 2px;">Forte tipagem, rígido</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-shield-alt"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Segurança
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-content">
+                                    <span class="feature-tag rest-tag">TLS</span>
+                                    <span class="feature-tag rest-tag">OAuth2</span>
+                                    <div style="margin-top: 2px;">TLS, OAuth2/OIDC, JWT</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-content">
+                                    <span class="feature-tag soap-tag">WS-Security</span>
+                                    <span class="feature-tag soap-tag">XMLDSig</span>
+                                    <div style="margin-top: 2px;">WS-Security, XMLDSig, MTOM</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-tachometer-alt"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Performance
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-content">
+                                    <span class="advantage"><i class="fas fa-check"></i> Cache HTTP nativo</span>
+                                    <div style="margin-top: 2px;">Cacheável, mais leve</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-content">
+                                    <span class="disadvantage"><i class="fas fa-times"></i> Overhead maior</span>
+                                    <div style="margin-top: 2px;">Menor cacheabilidade</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-mobile-alt"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Casos de Uso
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-content">
+                                    <span class="feature-tag rest-tag">APIs Públicas</span>
+                                    <span class="feature-tag rest-tag">Mobile</span>
+                                    <div style="margin-top: 2px;">APIs REST, SPAs, apps móveis</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-content">
+                                    <span class="feature-tag soap-tag">B2B</span>
+                                    <span class="feature-tag soap-tag">Governamental</span>
+                                    <div style="margin-top: 2px;">Integrações corporativas, legado</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-category">
+                                <i class="fas fa-tools"
+                                    style="color: #3182ce; margin-right: 8px; width: 16px;"></i>Ferramentas
+                            </div>
+                            <div class="col-rest">
+                                <div class="col-content">
+                                    <span class="feature-tag rest-tag">Postman</span>
+                                    <span class="feature-tag rest-tag">Express</span>
+                                    <div style="margin-top: 2px;">Postman, Insomnia, Express</div>
+                                </div>
+                            </div>
+                            <div class="col-soap">
+                                <div class="col-content">
+                                    <span class="feature-tag soap-tag">SoapUI</span>
+                                    <span class="feature-tag soap-tag">WSDL</span>
+                                    <div style="margin-top: 2px;">SoapUI, WSDL tooling</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Configuração Cisco CLI - Segurança de Redes</title>
+    <link rel="stylesheet" href="./assets/theme.css">
+</head>
+
+<body>
+    <div class="slide-container">
+
+        <!-- Chrome Header -->
+        <div class="slide-header">
+            <span class="slide-header-title">Configuração Lógica: Cisco IOS CLI</span>
+            <span class="slide-header-tag">Comandos Práticos</span>
+        </div>
+
+        <!-- Passos de Configuração (Esquerda) -->
+        <div data-object="true" data-object-type="textbox" class="content-card"
+            style="position: absolute; left: 100px; top: 180px; width: 800px; height: 740px; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-blue); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--senac-blue); padding-bottom: 10px;">
+                Passo a Passo de Configuração
+            </h3>
+            <p style="font-size: 24px; line-height: 1.5; color: var(--text-main); margin-bottom: 20px;">
+                Para aplicar as políticas de segurança no roteador central Cisco, devemos seguir três etapas principais
+                no modo de configuração global:
+            </p>
+
+            <ul class="custom-list" style="margin-bottom: 25px;">
+                <li style="font-size: 20px; margin-bottom: 15px;">
+                    <strong>Etapa 1 (Definição do Bloqueio):</strong> Escrevemos a linha da ACL estendida que nega o
+                    acesso HTTP do PC alvo para a porta 80 do Servidor Web.
+                </li>
+                <li style="font-size: 20px; margin-bottom: 15px;">
+                    <strong>Etapa 2 (Permissão Geral):</strong> Inserimos a regra que permite todo o restante do tráfego
+                    IP de qualquer origem para qualquer destino.
+                </li>
+                <li style="font-size: 20px; margin-bottom: 0;">
+                    <strong>Etapa 3 (Associação Física):</strong> Acessamos o modo de configuração da interface Gig0/0
+                    (LAN de Origem) e aplicamos a ACL no fluxo de entrada (inbound).
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tela do Roteador / CLI Cisco (Direita) -->
+        <div data-object="true" data-object-type="textbox" class="content-card-orange"
+            style="position: absolute; left: 960px; top: 180px; width: 860px; height: auto; z-index: 10;">
+            <h3
+                style="font-size: 32px; font-weight: 800; color: var(--senac-orange); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--senac-orange); padding-bottom: 10px;">
+                Entradas de Comando no Cisco Terminal
+            </h3>
+
+            <!-- CLI Simulada -->
+            <div class="code-block" style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">Router> <strong>enable</strong>
+Router# <strong>configure terminal</strong>
+Router(config)#
+Router(config)# <span style="color: #6A9955;">! Passo 1: Nega HTTP do host para o servidor</span>
+Router(config)# <strong>access-list 101 deny tcp host 192.168.1.10 host 192.168.2.50 eq 80</strong>
+Router(config)#
+Router(config)# <span style="color: #6A9955;">! Passo 2: Permite todo o restante do tráfego</span>
+Router(config)# <strong>access-list 101 permit ip any any</strong>
+Router(config)#
+Router(config)# <span style="color: #6A9955;">! Passo 3: Entrar na interface mais próxima da origem</span>
+Router(config)# <strong>interface GigabitEthernet0/0</strong>
+Router(config-if)# <strong>ip access-group 101 in</strong>
+Router(config-if)# <strong>end</strong>
+Router# <strong>write memory</strong> <span style="color: #6A9955;">! Salva as configurações</span> </div>
+            <div
+                style="background-color: rgba(46, 125, 50, 0.05); border-left: 5px solid var(--success-color); padding: 15px 20px; border-radius: 4px; font-size: 18px; line-height: 1.5;">
+                <strong style="color: var(--success-color);">Validação Rápida da ACL:</strong>
+                Para visualizar se as regras foram cadastradas e verificar as contagens de hits dos pacotes de dados,
+                execute o comando:
+                <br><code
+                    style="font-size: 20px; font-weight: bold; color: var(--senac-dark-blue);">Router# show access-lists</code>.
+            </div>
+        </div>
+
+        <!-- Chrome Footer -->
+        <div class="slide-footer">
+            <span class="slide-footer-left">Segurança de Redes: Firewalls e ACLs</span>
+            <span class="slide-footer-right">Slide 21/30</span>
+        </div>
+
+    </div>
+</body>
+
+</html>

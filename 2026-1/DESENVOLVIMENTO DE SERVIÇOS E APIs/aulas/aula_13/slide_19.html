@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>JWT com Role no Payload (Auth Service)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            flex: 1;
+            height: calc(100% - 80px);
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .code-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-icon {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .code-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .code-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.35;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .code-line {
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+            white-space: pre-wrap;
+        }
+
+        .code-keyword {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-function {
+            color: #fbbf24;
+        }
+
+        .code-number {
+            color: #f472b6;
+        }
+
+        .code-variable {
+            color: #c4b5fd;
+        }
+
+        .code-property {
+            color: #67e8f9;
+        }
+
+        .code-value {
+            color: #f472b6;
+        }
+
+        .config-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .config-icon {
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .config-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .config-content {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .config-item i {
+            color: #3b82f6;
+            font-size: 13px;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .config-value {
+            color: #64748b;
+            margin-left: auto;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .key-point i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .jwt-payload {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #334155;
+        }
+
+        .jwt-header {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .jwt-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            color: #86efac;
+            line-height: 1.4;
+        }
+
+        .jwt-part {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .jwt-label {
+            color: #93c5fd;
+            min-width: 60px;
+        }
+
+        .jwt-value {
+            color: #f472b6;
+        }
+
+        .arrow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .arrow i {
+            font-size: 18px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid #3b82f6;
+            margin-top: 5px;
+        }
+
+        .info-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-content {
+            font-size: 12px;
+            color: #1e40af;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-key"></i> JWT com Role no Payload (Auth Service)</h1>
+                    <div class="subtitle">Atualização do serviço de autenticação para incluir roles no token JWT</div>
+                </div>
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Implementação Completa</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="code-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="code-title">Auth Service - Login com Role</div>
+                        </div>
+                        <div class="code-content">
+                            <div class="code-line"><span class="code-comment">// src/services/authService.js</span>
+                            </div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-keyword">const</span> <span
+                                    class="code-function">login</span> = <span class="code-keyword">async</span> (<span
+                                    class="code-variable">email</span>, <span class="code-variable">senha</span>) =&gt; {</div>
+                            <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">const</span> <span
+                                    class="code-variable">usuario</span> = <span class="code-keyword">await</span> <span
+                                    class="code-variable">usuarioRepository</span>.<span
+                                    class="code-function">buscarPorEmail</span>(<span
+                                    class="code-variable">email</span>);</div>
+                            <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">if</span> (!<span
+                                    class="code-variable">usuario</span>) <span class="code-keyword">throw</span> <span
+                                    class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Credenciais inválidas."</span>);</div> <div 
+                                    class="code-line"></div> <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">const</span> <span
+                                    class="code-variable">senhaCorreta</span> = <span class="code-keyword">await</span>
+                                <span class="code-variable">bcrypt</span>.<span
+                                    class="code-function">compare</span>(<span class="code-variable">senha</span>, <span
+                                    class="code-variable">usuario</span>.<span class="code-property">senha</span>);</div>
+                            <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">if</span> (!<span
+                                    class="code-variable">senhaCorreta</span>) <span class="code-keyword">throw</span>
+                                <span class="code-keyword">new</span> <span class="code-function">Error</span>(<span
+                                    class="code-string">"Credenciais inválidas."</span>);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"> <span class="code-comment" style="margin-left: 20px;">// NOVO: Adicionando o "role" no Payload do Token</span></div>
+                            <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">const</span> <span
+                                    class="code-variable">token</span> = <span class="code-variable">jwt</span>.<span
+                                    class="code-function">sign</span>(</div>
+                            <div class="code-line" style="margin-left: 40px;">{</div>
+                            <div class="code-line"> <span class="code-property" style="margin-left: 60px;">id</span>: <span
+                                    class="code-variable">usuario</span>.<span class="code-property" >_id</span>,</div>
+                            <div class="code-line"> <span class="code-property" style="margin-left: 60px;">email</span>: <span
+                                    class="code-variable">usuario</span>.<span class="code-property">email</span>,</div>
+                            <div class="code-line"> <span class="code-property" style="margin-left: 60px;">role</span>: <span
+                                    class="code-variable">usuario</span>.<span class="code-property">role</span> <span
+                                    class="code-comment">// &lt;-- O cargo viaja no token</span></div>
+                            <div class="code-line" style="margin-left: 40px;">},</div>
+                            <div class="code-line"> <span class="code-variable" style="margin-left: 40px;">CHAVE_SECRETA</span>,</div>
+                            <div class="code-line" style="margin-left: 40px;">{ <span class="code-property">expiresIn</span>: <span
+                                    class="code-string">'2h'</span> }</div>
+                            <div class="code-line" style="margin-left: 20px;">);</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"> <span class="code-keyword" style="margin-left: 20px;">return</span> {</div>
+                            <div class="code-line"> <span class="code-property" style="margin-left: 40px;">usuario</span>: { <span
+                                    class="code-property">nome</span>: <span class="code-variable">usuario</span>.<span
+                                    class="code-property">nome</span>, <span class="code-property">role</span>: <span
+                                    class="code-variable">usuario</span>.<span class="code-property">role</span> },</div>
+                            <div class="code-line"> <span class="code-property" style="margin-left: 40px;">token</span>: <span class="code-variable">token</span></div>
+                            <div class="code-line" style="margin-left: 20px;">};</div>
+                            <div class="code-line">};</div> </div> </div>
+                </div>
+                <div class="right-column">
+                    <div class="config-card">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="config-title">Estrutura do Token JWT</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="jwt-payload">
+                                <div class="jwt-header">
+                                    <i class="fas fa-key"></i> Payload do Token
+                                </div>
+                                <div class="jwt-content">
+                                    <div class="jwt-part">
+                                        <div class="jwt-label">id:</div>
+                                        <div class="jwt-value">"507f1f77bcf86cd799439011"</div>
+                                    </div>
+                                    <div class="jwt-part">
+                                        <div class="jwt-label">email:</div>
+                                        <div class="jwt-value">"usuario@email.com"</div>
+                                    </div>
+                                    <div class="jwt-part">
+                                        <div class="jwt-label">role:</div>
+                                        <div class="jwt-value">"ADMIN"</div>
+                                    </div>
+                                    <div class="jwt-part">
+                                        <div class="jwt-label">iat:</div>
+                                        <div class="jwt-value">1704067200</div>
+                                    </div>
+                                    <div class="jwt-part">
+                                        <div class="jwt-label">exp:</div>
+                                        <div class="jwt-value">1704070800</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-box">
+                                <div class="info-title">
+                                    <i class="fas fa-info-circle"></i> Importante
+                                </div>
+                                <div class="info-content">
+                                    O <span class="highlight">role</span> no payload permite que o middleware de
+                                    autorização verifique permissões sem consultar o banco de dados.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-card">
+                        <div class="config-header">
+                            <div class="config-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="config-title">Fluxo de Autorização</div>
+                        </div>
+                        <div class="config-content">
+                            <div class="config-item">
+                                <i class="fas fa-user"></i>
+                                <span class="config-label">Login:</span>
+                                <span class="config-value">Usuário autentica</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-key"></i>
+                                <span class="config-label">Token:</span>
+                                <span class="config-value">JWT gerado com role</span>
+                            </div>
+                            <div class="config-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="config-label">Verificação:</span>
+                                <span class="config-value">Middleware checa role</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

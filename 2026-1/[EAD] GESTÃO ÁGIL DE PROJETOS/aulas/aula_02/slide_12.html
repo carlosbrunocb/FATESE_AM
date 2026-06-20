@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Planning Poker - Gestão Ágil de Projetos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo i {
+            color: #fbbf24;
+            font-size: 24px;
+        }
+
+        .header-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-subtitle {
+            color: #e0e7ff;
+            font-size: 13px;
+        }
+
+        /* Main content */
+        .main-content {
+            position: absolute;
+            top: 75px;
+            left: 30px;
+            right: 30px;
+            bottom: 65px;
+            z-index: 5;
+        }
+
+        /* Title section */
+        .title-section {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .course-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e3a8a;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .course-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin-left: 45px;
+        }
+
+        /* Content layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            height: 520px;
+        }
+
+        /* Left panel - Process */
+        .left-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .panel-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3a8a;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .step-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .step-item:hover {
+            background: #f1f5f9;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 3px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .benefit-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .benefit-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            line-height: 1.2;
+        }
+
+        /* Right panel - Diagram */
+        .right-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diagram-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .diagram-image {
+            width: 88%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .practices-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .practices-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .practices-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .practice-tag {
+            background: white;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .practice-tag i {
+            font-size: 11px;
+            color: #3b82f6;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            font-size: 14px;
+            color: white;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .footer-icon {
+            color: #fbbf24;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header bar -->
+        <div class="header-bar">
+            <div class="header-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <div class="header-text">FATESE - Gestão Ágil de Projetos</div>
+            </div>
+            <div class="header-subtitle">Análise e Desenvolvimento de Sistemas</div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Title section -->
+            <div class="title-section">
+                <div>
+                    <div class="course-title">
+                        <i class="fas fa-poker-chip" style="color: #3b82f6;"></i>
+                        Planning Poker: Técnica de Estimativa por Consenso
+                    </div>
+                    <div class="course-subtitle">
+                        Método colaborativo para estimar esforço e complexidade de User Stories
+                    </div>
+                </div>
+            </div>
+            <!-- Content layout -->
+            <div class="content-layout">
+                <!-- Left panel - Process -->
+                <div class="left-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="panel-title">Processo de Planning Poker</div>
+                    </div>
+                    <div class="process-steps">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">PO apresenta a User Story</div>
+                                <div class="step-desc">Product Owner descreve a funcionalidade e objetivos do item do
+                                    backlog</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Time discute e esclarece dúvidas</div>
+                                <div class="step-desc">Desenvolvedores fazem perguntas para entender requisitos e
+                                    dependências</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Cada membro escolhe um card secretamente</div>
+                                <div class="step-desc">Todos selecionam cartas com estimativas sem revelar para evitar
+                                    viés</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Todos revelam os cards simultaneamente</div>
+                                <div class="step-desc">Exposição simultânea para evitar influência entre membros</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Discussão e consenso</div>
+                                <div class="step-desc">Extremos justificam estimativas até chegar a consenso</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="benefit-text">Múltiplas perspectivas</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="benefit-text">Reduz viés de âncora</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="benefit-text">Melhora acurácia</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="benefit-text">Alinhamento do time</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right panel - Diagram -->
+                <div class="right-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="panel-title">Visualização do Processo</div>
+                    </div>
+                    <div class="diagram-container">
+                        <img alt="Processo de Planning Poker" class="diagram-image"
+                            src="imagens/Processo_de_Planning_Poker.png" />
+                    </div>
+                    <div class="practices-section">
+                        <div class="practices-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Boas Práticas
+                        </div>
+                        <div class="practices-list">
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Mesma escala para todos</span>
+                            </div>
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>História de referência</span>
+                            </div>
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Participantes multifuncionais</span>
+                            </div>
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Timebox nas rodadas</span>
+                            </div>
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Não fazer média</span>
+                            </div>
+                            <div class="practice-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Registrar estimativa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <span><i class="fas fa-calendar-alt footer-icon"></i> 21 de Abril de 2026</span>
+                <span><i class="fas fa-clock footer-icon"></i> 1 hora</span>
+            </div>
+            <div class="footer-right">
+                <span>Slide 12 de 18</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

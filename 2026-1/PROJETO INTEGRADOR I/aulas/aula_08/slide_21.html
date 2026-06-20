@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Priorização: Killer Feature vs Suporte</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .header-title {
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 2px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .comparison-container {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .left-panel,
+        .right-panel {
+            flex: 0 0 calc(50% - 10px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .comparison-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .comparison-icon.killer {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .comparison-icon.support {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .comparison-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .comparison-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .feature-label {
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-right: 5px;
+        }
+
+        .example-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: auto;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .example-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .example-text {
+            font-size: 12px;
+            color: #1e3a5f;
+            line-height: 1.4;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .example-highlight {
+            background: #dbeafe;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+
+        .question-text {
+            font-size: 13px;
+            color: #92400e;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-icon {
+            color: #f59e0b;
+            font-size: 14px;
+        }
+
+        .priority-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .priority-badge {
+            background: #ef4444;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .priority-text {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .footer-right {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            width: 85%;
+            border-radius: 0 2px 2px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-sort-amount-down"></i>
+                </div>
+                <div>
+                    <div class="header-title">Priorização: Killer Feature vs Suporte</div>
+                    <div class="header-subtitle">Como identificar e priorizar funcionalidades essenciais</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-filter"></i> Priorização
+                </div>
+                <div class="badge">
+                    <i class="fas fa-clock"></i> 10 min
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section-title">Priorização: Killer Feature vs Suporte</div>
+            <div class="section-description">
+                Aprenda a distinguir entre funcionalidades essenciais (Killer Features) e secundárias (Suporte de Valor)
+                para priorizar o desenvolvimento do seu projeto.
+            </div>
+            <div class="comparison-container">
+                <div class="left-panel">
+                    <div class="comparison-card">
+                        <div class="comparison-header">
+                            <div class="comparison-icon killer">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="comparison-title">Killer Feature (Essencial)</div>
+                        </div>
+                        <div class="comparison-content">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Definição:</span> Se não for implementada, o
+                                        problema central persiste
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Exemplo:</span> Quiz de Afinidade, Relatório de
+                                        Match
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Prioridade:</span> Altíssima - Resolve o problema
+                                        principal
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="example-box">
+                                <div class="example-header">
+                                    <div class="example-label">
+                                        <i class="fas fa-clipboard-check"></i> US01 - Quiz de Afinidade:
+                                    </div>
+                                </div>
+                                <div class="example-text">
+                                    "Como <span class="example-highlight">Adotante</span>, quero <span
+                                        class="example-highlight">responder ao Quiz de Afinidade</span>, para <span
+                                        class="example-highlight">receber sugestões de pets compatíveis</span>."
+                                </div>
+                                <div class="priority-indicator">
+                                    <span class="priority-badge">Altíssima</span>
+                                    <span class="priority-text">Principal (Killer)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="comparison-card">
+                        <div class="comparison-header">
+                            <div class="comparison-icon support">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="comparison-title">Suporte de Valor (Secundária)</div>
+                        </div>
+                        <div class="comparison-content">
+                            <div class="feature-list">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Definição:</span> Agrega valor mas não resolve o
+                                        problema sozinha
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Exemplo:</span> Chat pós-match, Favoritar pets
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <span class="feature-label">Prioridade:</span> Média - Melhora experiência
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="example-box">
+                                <div class="example-header">
+                                    <div class="example-label">
+                                        <i class="fas fa-comments"></i> US03 - Chat com ONG:
+                                    </div>
+                                </div>
+                                <div class="example-text">
+                                    "Como <span class="example-highlight">Adotante</span>, quero <span
+                                        class="example-highlight">abrir chat com a ONG</span>, para <span
+                                        class="example-highlight">agendar visita e tirar dúvidas</span>."
+                                </div>
+                                <div class="priority-indicator">
+                                    <span class="priority-badge" style="background: #f59e0b;">Média</span>
+                                    <span class="priority-text">Secundária (Suporte)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="question-box">
+                <div class="question-text">
+                    <i class="fas fa-question-circle question-icon"></i>
+                    <span class="feature-label">Pergunta-chave:</span> "Se essa US não for feita, o problema central
+                    continua existindo?"
+                </div>
+                <div class="priority-indicator" style="margin-top: 6px;">
+                    <span class="priority-badge" style="background: #10b981;">Sim</span>
+                    <span class="priority-text">→ Prioridade Alta/Killer</span>
+                    <span style="margin-left: 20px;">
+                        <span class="priority-badge" style="background: #f59e0b;">Não</span>
+                        <span class="priority-text">→ Prioridade Média/Suporte</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>25/04/2026</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Carlos Bruno Oliveira Lopes</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <i class="fas fa-graduation-cap"></i> FATESE - ADS
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

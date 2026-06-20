@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Código Completo — Blink + Serial (ESP32)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .header-section {
+            background-color: #1e3a5f;
+            padding: 30px 80px 20px 80px;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .title-accent {
+            color: #ff9933;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 35px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .functions-section {
+            display: flex;
+            gap: 30px;
+        }
+
+        .function-card {
+            flex: 1;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #ff9933;
+        }
+
+        .function-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .function-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #1e3a5f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .function-icon i {
+            color: #ff9933;
+            font-size: 20px;
+        }
+
+        .function-name {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+
+        .function-description {
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: #555555;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .code-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #ff9933;
+        }
+
+        .code-block {
+            flex: 1;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px 25px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #d4d4d4;
+        }
+
+        .code-line {
+            margin: 0;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .type {
+            color: #4ec9b0;
+        }
+
+        .function {
+            color: #dcdcaa;
+        }
+
+        .number {
+            color: #b5cea8;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .tip-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9933;
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .tip-icon {
+            color: #ff9933;
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            flex: 1;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e3a5f;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .decoration-circle {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            border: 3px solid rgba(255, 153, 51, 0.3);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="title">
+                <p>Código Completo — <span class="title-accent">Blink + Serial</span></p>
+            </h1>
+            <div class="decoration-circle"></div>
+        </div>
+        <div class="content-wrapper">
+            <div class="functions-section">
+                <div class="function-card">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <p class="function-name">Controle de LED</p>
+                    </div>
+                    <p class="function-description">O código alterna o estado do LED conectado ao GPIO 2, ligando-o por 500ms e desligando-o por 500ms, criando o efeito de piscar.</p>
+                </div>
+                <div class="function-card">
+                    <div class="function-header">
+                        <div class="function-icon">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <p class="function-name">Monitor Serial</p>
+                    </div>
+                    <p class="function-description">Mensagens são enviadas via Serial a 115200 baud para monitorar o estado do LED em tempo real, facilitando debugging e validação.</p>
+                </div>
+            </div>
+            <div class="code-section">
+                <p class="code-header">Exemplo Completo — ESP32 Blink com Saída Serial</p>
+                <div class="code-block">
+                    <pre>
+<p class="code-line"><span class="comment">// Define o pino do LED (GPIO 2 é comum em ESP32)</span>
+<span class="keyword">const</span> <span class="type">int</span> LED = <span class="number">2</span>;</p>
+<p class="code-line"><span class="keyword">void</span> <span class="function">setup</span>() {
+    <span class="comment">// Configura o pino como saída</span>
+    <span class="function">pinMode</span>(LED, OUTPUT);
+    <span class="comment">// Inicia comunicação serial a 115200 baud</span>
+    Serial.<span class="function">begin</span>(<span class="number">115200</span>);
+    Serial.<span class="function">println</span>(<span class="string">"ESP32 Iniciando..."</span>);
+}</p>
+<p class="code-line"><span class="keyword">void</span> <span class="function">loop</span>() {
+    <span class="function">digitalWrite</span>(LED, HIGH); <span class="comment">// Liga o LED</span>
+    Serial.<span class="function">println</span>(<span class="string">"LED ON"</span>);
+    <span class="function">delay</span>(<span class="number">500</span>);
+    <span class="function">digitalWrite</span>(LED, LOW); <span class="comment">// Desliga o LED</span>
+    Serial.<span class="function">println</span>(<span class="string">"LED OFF"</span>);
+    <span class="function">delay</span>(<span class="number">500</span>);
+}</p></pre>
+                </div>
+            </div>
+            <div class="tip-box">
+                <i class="fas fa-exclamation-triangle tip-icon"></i>
+                <p class="tip-text"><strong>Observações importantes:</strong> Ajuste o pino conforme seu hardware específico. Sempre use resistor em série (220-330Ω) ao conectar LEDs externos. No Wokwi, adicione o resistor no diagrama entre o GPIO e o anodo do LED. Pinos strapping (0, 2, 5, 12, 15) devem ser usados com atenção durante o boot.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

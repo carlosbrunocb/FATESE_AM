@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tipos de Registros DNS - Aula 11</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 5px;
+            flex: 1;
+        }
+
+        .dns-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dns-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #00ffff;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .record-type {
+            display: inline-block;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 13px;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+
+        .record-example {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ffff;
+            margin-bottom: 12px;
+            word-break: break-all;
+        }
+
+        .record-description {
+            font-size: 13px;
+            color: #cccccc;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .record-usage {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .usage-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 11px;
+            color: #888888;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .highlight {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .bottom-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .info-value {
+            font-size: 13px;
+            color: #00ffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Tipos de Registros DNS</h1>
+                    <p>Registros essenciais para resolução de nomes</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-database"></i> 9 Tipos Principais
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-title">
+                <i class="fas fa-th-large"></i>
+                Registros DNS Essenciais
+            </div>
+            <!-- Cards Grid -->
+            <div class="cards-grid">
+                <!-- A Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">A Record</div>
+                                <div class="card-subtitle">IPv4 Address</div>
+                            </div>
+                        </div>
+                        <div class="record-type">A</div>
+                        <div class="record-example">www.example.com → 192.168.1.100</div>
+                        <div class="record-description">Mapeia nome de domínio para endereço IPv4</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">Web</span>
+                        <span class="usage-tag">Email</span>
+                    </div>
+                </div>
+                <!-- AAAA Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-globe-americas"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">AAAA Record</div>
+                                <div class="card-subtitle">IPv6 Address</div>
+                            </div>
+                        </div>
+                        <div class="record-type">AAAA</div>
+                        <div class="record-example">www.example.com → 2001:db8::1</div>
+                        <div class="record-description">Mapeia nome de domínio para endereço IPv6</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">IPv6</span>
+                        <span class="usage-tag">Future</span>
+                    </div>
+                </div>
+                <!-- CNAME Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">CNAME Record</div>
+                                <div class="card-subtitle">Canonical Name</div>
+                            </div>
+                        </div>
+                        <div class="record-type">CNAME</div>
+                        <div class="record-example">www → web-01.example.com</div>
+                        <div class="record-description">Cria alias para outro domínio</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">Alias</span>
+                        <span class="usage-tag">Redirect</span>
+                    </div>
+                </div>
+                <!-- MX Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">MX Record</div>
+                                <div class="card-subtitle">Mail Exchange</div>
+                            </div>
+                        </div>
+                        <div class="record-type">MX</div>
+                        <div class="record-example">10 mail.example.com</div>
+                        <div class="record-description">Define servidor de email para o domínio</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">Email</span>
+                        <span class="usage-tag">Priority</span>
+                    </div>
+                </div>
+                <!-- PTR Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">PTR Record</div>
+                                <div class="card-subtitle">Pointer</div>
+                            </div>
+                        </div>
+                        <div class="record-type">PTR</div>
+                        <div class="record-example">1.100.168.192.in-addr.arpa → host</div>
+                        <div class="record-description">Mapeamento reverso IP para nome</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">Reverse</span>
+                        <span class="usage-tag">Security</span>
+                    </div>
+                </div>
+                <!-- NS Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">NS Record</div>
+                                <div class="card-subtitle">Name Server</div>
+                            </div>
+                        </div>
+                        <div class="record-type">NS</div>
+                        <div class="record-example">example.com → ns1.example.com</div>
+                        <div class="record-description">Define servidor DNS autoritativo</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">DNS</span>
+                        <span class="usage-tag">Authority</span>
+                    </div>
+                </div>
+                <!-- SOA Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">SOA Record</div>
+                                <div class="card-subtitle">Start of Authority</div>
+                            </div>
+                        </div>
+                        <div class="record-type">SOA</div>
+                        <div class="record-example">Serial: 2024010101</div>
+                        <div class="record-description">Informações sobre a zona DNS</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">Zone</span>
+                        <span class="usage-tag">Admin</span>
+                    </div>
+                </div>
+                <!-- TXT Record -->
+                <div class="dns-card">
+                    <div class="status-indicator"></div>
+                    <div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">TXT Record</div>
+                                <div class="card-subtitle">Text</div>
+                            </div>
+                        </div>
+                        <div class="record-type">TXT</div>
+                        <div class="record-example">"v=spf1 include:_spf..."</div>
+                        <div class="record-description">Registro de texto para verificação</div>
+                    </div>
+                    <div class="record-usage">
+                        <span class="usage-tag">SPF</span>
+                        <span class="usage-tag">DKIM</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Info -->
+            <div class="bottom-info">
+                <div class="info-item">
+                    <span class="info-label">Total de Registros:</span>
+                    <span class="info-value">9 tipos principais</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Porta DNS:</span>
+                    <span class="info-value">53 (UDP/TCP)</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Cache:</span>
+                    <span class="info-value">Ativado</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

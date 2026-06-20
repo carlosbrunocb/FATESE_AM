@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Parte 1: WiFi Scanner - Conceito</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 15px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .concept-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12pt;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .scan-process {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .process-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .process-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(33, 150, 243, 0.5);
+            position: relative;
+        }
+
+        .step-circle i {
+            font-size: 20px;
+            color: #2196F3;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #00BCD4;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .step-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .arrow-connector {
+            flex: 0 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '▶';
+            position: absolute;
+            right: -5px;
+            top: -8px;
+            color: #00BCD4;
+            font-size: 12px;
+        }
+
+        .rssi-scale {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rssi-bar {
+            flex: 1;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .rssi-fill {
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .rssi-excellent {
+            background: #4CAF50;
+            width: 90%;
+        }
+
+        .rssi-good {
+            background: #8BC34A;
+            width: 70%;
+        }
+
+        .rssi-weak {
+            background: #FFC107;
+            width: 50%;
+        }
+
+        .rssi-poor {
+            background: #FF5722;
+            width: 30%;
+        }
+
+        .rssi-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            min-width: 80px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11pt;
+            color: #00BCD4;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            margin-top: 10px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .code-keyword {
+            color: #FF6B6B;
+        }
+
+        .code-function {
+            color: #4ECDC4;
+        }
+
+        .code-comment {
+            color: #95A5A6;
+        }
+
+        .energy-warning {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .warning-icon {
+            color: #FFC107;
+            font-size: 18px;
+        }
+
+        .warning-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Parte 1: WiFi Scanner - Conceito</div>
+                    <div class="subtitle">Ensinando o ESP32 a "ouvir" o ambiente e listar redes disponíveis</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 24px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-search" style="color: #00BCD4; font-size: 20px; margin-right: 10px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 15px;">Escaneamento</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-bullseye"></i></div>
+                            <div class="card-title">Objetivo</div>
+                        </div>
+                        <div class="concept-text">
+                            O <span class="highlight">WiFi Scanner</span> é o primeiro passo de qualquer dispositivo
+                            inteligente: "ouvir" o ambiente para encontrar redes disponíveis. A função <span
+                                class="highlight">WiFi.scanNetworks()</span> retorna o número de redes encontradas e
+                            permite acessar informações como SSID e RSSI.
+                        </div>
+                        <div class="scan-process">
+                            <div class="process-steps">
+                                <div class="process-step">
+                                    <div class="step-circle">
+                                        <i class="fas fa-wifi"></i>
+                                        <div class="step-number">1</div>
+                                    </div>
+                                    <div class="step-label">Ativar STA</div>
+                                    <div class="step-desc">WiFi.mode(WIFI_STA)</div>
+                                </div>
+                                <div class="arrow-connector">
+                                    <div class="arrow-line"></div>
+                                </div>
+                                <div class="process-step">
+                                    <div class="step-circle">
+                                        <i class="fas fa-search"></i>
+                                        <div class="step-number">2</div>
+                                    </div>
+                                    <div class="step-label">Scan</div>
+                                    <div class="step-desc">WiFi.scanNetworks()</div>
+                                </div>
+                                <div class="arrow-connector">
+                                    <div class="arrow-line"></div>
+                                </div>
+                                <div class="process-step">
+                                    <div class="step-circle">
+                                        <i class="fas fa-list"></i>
+                                        <div class="step-number">3</div>
+                                    </div>
+                                    <div class="step-label">Resultado</div>
+                                    <div class="step-desc">SSID + RSSI</div>
+                                </div>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-line"><span class="code-keyword">int</span> <span
+                                        class="code-function">n</span> = <span
+                                        class="code-function">WiFi.scanNetworks</span>();</div>
+                                <div class="code-line"><span class="code-comment">// Retorna: número de redes
+                                        encontradas</span></div>
+                                <div class="code-line"><span class="code-comment">// Para cada rede: WiFi.SSID(i),
+                                        WiFi.RSSI(i)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-signal"></i></div>
+                            <div class="card-title">Interpretação de RSSI</div>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-label">Excelente</div>
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-excellent"></div>
+                            </div>
+                            <div class="rssi-label">-30 dBm</div>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-label">Bom</div>
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-good"></div>
+                            </div>
+                            <div class="rssi-label">-50 a -67 dBm</div>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-label">Fraco</div>
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-weak"></div>
+                            </div>
+                            <div class="rssi-label">-70 a -80 dBm</div>
+                        </div>
+                        <div class="rssi-scale">
+                            <div class="rssi-label">Limite</div>
+                            <div class="rssi-bar">
+                                <div class="rssi-fill rssi-poor"></div>
+                            </div>
+                            <div class="rssi-label">&lt; -85 dBm</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="card-title">Consumo de Energia</div>
+                        </div>
+                        <div class="concept-text" style="font-size: 12pt; margin-bottom: 20px;">
+                            O scan consome energia considerável. Para dispositivos a bateria, recomenda-se:
+                        </div>
+                        <div class="energy-warning" style="margin-bottom: 12px;">
+                            <i class="fas fa-battery-half warning-icon"></i>
+                            <div class="warning-text">
+                                <strong>Intervalo adequado:</strong> 5s no laboratório, aumente em produção para reduzir
+                                consumo
+                            </div>
+                        </div>
+                        <div class="energy-warning">
+                            <i class="fas fa-clock warning-icon"></i>
+                            <div class="warning-text">
+                                <strong>Frequência:</strong> Varreduras menos frequentes para poupar bateria
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: 250px;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="card-title">Observações</div>
+                        </div>
+                        <div class="concept-text" style="font-size: 12pt; line-height: 2.0;">
+                            • O scan bloqueia o loop principal<br />
+                            • Use <span class="highlight">WiFi.scanNetworks(true)</span> para modo assíncrono<br />
+                            • Evite escanear durante transmissões críticas<br />
+                            • Impacto no throughput e latência
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Atividade Prática</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Código Completo</span>
+            </div>
+            <div class="status-item">
+                <i class="far fa-clock" style="margin-right: 8px;"></i>
+                <span>Duração: 60 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

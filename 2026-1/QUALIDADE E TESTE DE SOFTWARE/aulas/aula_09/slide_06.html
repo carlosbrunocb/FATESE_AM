@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Métricas de Cobertura - Visão Geral</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 600px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 20px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr 1fr;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6eef7 100%);
+            padding: 16px 20px;
+            border-bottom: 2px solid #e2e8f0;
+            align-items: center;
+        }
+
+        .table-header-item {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-header-item i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr 1fr;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .table-row:hover {
+            background: #f8fafc;
+        }
+
+        .table-row:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .table-cell {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .metric-name {
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .metric-icon {
+            width: 28px;
+            height: 28px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-good {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* MC/DC Note */
+        .mcdc-note {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #f59e0b;
+            margin-bottom: 20px;
+        }
+
+        .mcdc-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mcdc-content {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 4px;
+            width: 80%;
+        }
+
+        /* Legend */
+        .legend-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-color.good {
+            background: #22c55e;
+        }
+
+        .legend-color.warning {
+            background: #f59e0b;
+        }
+
+        .legend-color.info {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Métricas</span> de Cobertura - Visão Geral
+                    <span style="font-size: 16px; color: #64748b; font-weight: 500; margin-left: 15px;">Comparação de
+                        técnicas de medição</span>
+                </div>
+                <div class="subtitle">
+                    Análise comparativa das métricas: instruções, decisões, condições e caminhos
+                </div>
+            </div>
+            <!-- Table Container -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-header-item">
+                        <i class="fas fa-chart-bar"></i>
+                        Métrica
+                    </div>
+                    <div class="table-header-item">
+                        <i class="fas fa-bullseye"></i>
+                        O que mede
+                    </div>
+                    <div class="table-header-item">
+                        <i class="fas fa-calculator"></i>
+                        Como calcular
+                    </div>
+                    <div class="table-header-item">
+                        <i class="fas fa-check-circle"></i>
+                        Vantagens
+                    </div>
+                    <div class="table-header-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Limitações
+                    </div>
+                    <div class="table-header-item">
+                        <i class="fas fa-file-code"></i>
+                        Exemplo
+                    </div>
+                </div>
+                <!-- Row 1: Statement Coverage -->
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div class="metric-name">
+                            <div class="metric-icon">
+                                <i class="fas fa-file-code"></i>
+                            </div>
+                            Instruções (Statement)
+                        </div>
+                    </div>
+                    <div class="table-cell">
+                        % de linhas executadas
+                    </div>
+                    <div class="table-cell">
+                        Linhas exec./Linhas executáveis
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-good">Simples, rápida</span>
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-warning">Não garante ramos</span>
+                    </div>
+                    <div class="table-cell">
+                        1-2 testes
+                    </div>
+                </div>
+                <!-- Row 2: Branch Coverage -->
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div class="metric-name">
+                            <div class="metric-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            Decisões (Branch)
+                        </div>
+                    </div>
+                    <div class="table-cell">
+                        % de ramos T/F
+                    </div>
+                    <div class="table-cell">
+                        Ramos cobertos/Total de ramos
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-good">Exercita if/switch</span>
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-warning">Ignora combinações</span>
+                    </div>
+                    <div class="table-cell">
+                        ≥2 por decisão
+                    </div>
+                </div>
+                <!-- Row 3: Condition Coverage -->
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div class="metric-name">
+                            <div class="metric-icon">
+                                <i class="fas fa-equals"></i>
+                            </div>
+                            Condições (Condition)
+                        </div>
+                    </div>
+                    <div class="table-cell">
+                        Subexpressões booleanas
+                    </div>
+                    <div class="table-cell">
+                        Condições em T/F / Total
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-good">Detecta curto-circuito</span>
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-warning">Não garante efeito</span>
+                    </div>
+                    <div class="table-cell">
+                        Vários por decisão
+                    </div>
+                </div>
+                <!-- Row 4: Path Coverage -->
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div class="metric-name">
+                            <div class="metric-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            Caminhos (Path)
+                        </div>
+                    </div>
+                    <div class="table-cell">
+                        Combinações de caminhos
+                    </div>
+                    <div class="table-cell">
+                        Caminhos percorridos/Total
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-good">Mais exaustiva</span>
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-tag status-warning">Explode com laços</span>
+                    </div>
+                    <div class="table-cell">
+                        Apenas trechos pequenos
+                    </div>
+                </div>
+            </div>
+            <!-- MC/DC Note -->
+            <div class="mcdc-note">
+                <div class="mcdc-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Nota sobre MC/DC (Modified Condition/Decision Coverage)
+                </div>
+                <div class="mcdc-content">
+                    <strong>MC/DC:</strong> Cada condição deve influenciar isoladamente o resultado da decisão. Usado em
+                    sistemas críticos (aviônica, médico) para garantir que cada condição tenha efeito independente no
+                    resultado final.
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="status-info">
+                    <div class="status-dot"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <div class="legend-color good"></div>
+                        <span>Simples</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color warning"></div>
+                        <span>Limitada</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color info"></div>
+                        <span>Complexa</span>
+                    </div>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-text">Progresso: 75%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

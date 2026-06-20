@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>GitHub Pull Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #F5F5F5;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Styles (Mantendo consistência com Slide 12) */
+        .header-bar {
+            background-color: #0055A4;
+            padding: 25px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 38px;
+            color: white;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Layout Principal */
+        .content-wrapper {
+            flex: 1;
+            padding: 40px 60px;
+            display: grid;
+            grid-template-columns: 45% 52%; /* Coluna esquerda menor, direita maior */
+            gap: 3%;
+            align-items: center;
+        }
+
+        /* Coluna Esquerda: Mockup do Browser */
+        .browser-mockup {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Altura fixa para alinhar */
+            transform: rotate(-1deg);
+            transition: transform 0.3s ease;
+        }
+
+        .browser-mockup:hover {
+            transform: rotate(0deg) scale(1.01);
+        }
+
+        .browser-header {
+            background-color: #E5E7EB;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 8px;
+            border-bottom: 1px solid #D1D5DB;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #EF4444; }
+        .dot-yellow { background-color: #F59E0B; }
+        .dot-green { background-color: #10B981; }
+
+        .url-bar {
+            background-color: white;
+            height: 24px;
+            border-radius: 4px;
+            flex: 1;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .image-area {
+            flex: 1;
+            position: relative;
+            background-color: #f3f4f6;
+            overflow: hidden;
+        }
+
+        .image-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+        }
+
+        /* Coluna Direita: Cards */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            justify-content: center;
+        }
+
+        /* Cards Superiores (Conceito) */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid #0055A4;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0055A4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+
+        /* Card de Fluxo (Stepper) */
+        .workflow-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .stepper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Linha vertical conectando os passos */
+        .stepper::before {
+            content: '';
+            position: absolute;
+            left: 20px; /* Alinhado com o centro dos ícones */
+            top: 15px;
+            bottom: 35px;
+            width: 2px;
+            background-color: #E5E7EB;
+            z-index: 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 15px;
+        }
+        
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid #0055A4;
+            color: #0055A4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover .step-icon {
+            background-color: #0055A4;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-content h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 2px;
+        }
+
+        .step-content p {
+            font-size: 14px;
+            color: #6B7280;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Estilo especial para o último passo (Sucesso) */
+        .step-success .step-icon {
+            border-color: #10B981;
+            color: #10B981;
+        }
+        
+        .step-success:hover .step-icon {
+            background-color: #10B981;
+            color: white;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar">
+            <div class="header-left">
+                <i class="fab fa-github header-icon"></i>
+                <h1 class="title">GitHub Pull Request (PR)</h1>
+            </div>
+            <div class="logo-container">
+                <img src="imagens/Senac_logo.svg.png" alt="Senac Logo" class="logo-img">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="browser-mockup">
+                <div class="browser-header">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                    <div class="url-bar">
+                        <i class="fas fa-lock" style="margin-right: 5px; font-size: 10px;"></i>
+                        github.com/projeto/pulls
+                    </div>
+                </div>
+                <div class="image-area">
+                    <img src="https://page.gensparksite.com/slides_images/96f342ff0fe9f99c04a09918765fb770.webp" 
+                         alt="Interface do GitHub Pull Request"
+                         onerror="this.src='https://placehold.co/600x800/f3f4f6/0055a4?text=GitHub+PR+Screenshot+Placeholder'" />
+                </div>
+            </div>
+
+            <div class="right-section">
+                
+                <div class="concept-grid">
+                    <div class="info-card">
+                        <div class="card-title">
+                            <i class="fas fa-question-circle"></i> O que é?
+                        </div>
+                        <p class="card-text">Solicitação formal para integrar alterações de código. É o coração da colaboração assíncrona.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-title">
+                            <i class="fas fa-shield-alt"></i> Para que serve?
+                        </div>
+                        <p class="card-text">Rastreabilidade, controle de qualidade (code review) e CI/CD antes do merge final.</p>
+                    </div>
+                </div>
+
+                <div class="workflow-card">
+                    <h3 class="workflow-title">Fluxo de Trabalho</h3>
+                    <div class="stepper">
+                        <div class="step-item">
+                            <div class="step-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>1. Criação da Branch</h4>
+                                <p>Desenvolva em uma branch isolada com commits pequenos.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-icon">
+                                <i class="fas fa-file-import"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>2. Abertura do PR</h4>
+                                <p>Crie o PR com título claro, descrição e checklist de tarefas.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>3. Code Review</h4>
+                                <p>Revisores comentam, sugerem mudanças e aprovam.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item step-success">
+                            <div class="step-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>4. Merge & Close</h4>
+                                <p>Após aprovação e testes (CI), o código é integrado à main.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

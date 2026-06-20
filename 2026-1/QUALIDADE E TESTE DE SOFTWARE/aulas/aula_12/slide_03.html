@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agenda e Cronograma - 170 minutos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+
+        /* Background elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header bar */
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            z-index: 10;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .duration-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .duration-badge i {
+            color: #3b82f6;
+        }
+
+        /* Timeline container */
+        .timeline-container {
+            position: relative;
+            margin-top: 50px;
+            padding: 20px 0;
+        }
+
+        /* Timeline line */
+        .timeline-line {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                    rgba(59, 130, 246, 0.3) 0%,
+                    rgba(139, 92, 246, 0.3) 50%,
+                    rgba(236, 72, 153, 0.3) 100%);
+            border-radius: 2px;
+        }
+
+        /* Timeline items */
+        .timeline-items {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 10;
+        }
+
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .timeline-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .timeline-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .timeline-duration {
+            font-size: 13px;
+            color: #3b82f6;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Timeline dot */
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 3px solid #ffffff;
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Time labels */
+        .time-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 0 20px;
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Status indicators */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.pending {
+            background: #f97316;
+        }
+
+        .status-dot.completed {
+            background: #3b82f6;
+        }
+
+        /* Activity cards */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .activity-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .activity-icon {
+            font-size: 24px;
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+
+        .activity-name {
+            font-size: 13px;
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background -->
+        <div class="bg-pattern"></div>
+        <!-- Header bar -->
+        <div class="header-bar"></div>
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="title-section">
+                <div class="main-title">
+                    <span>Agenda</span> e Cronograma
+                </div>
+                <div class="subtitle">
+                    Estrutura da aula de 170 minutos (2h 50min)
+                </div>
+                <div class="duration-badge">
+                    <i class="fas fa-clock"></i>
+                    <span>170 minutos total</span>
+                </div>
+            </div>
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-items">
+                    <!-- Item 1: Teoria UAT -->
+                    <div class="timeline-item">
+                        <div class="timeline-card">
+                            <div class="timeline-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="timeline-title">Teoria UAT</div>
+                            <div class="timeline-duration">30 min</div>
+                            <div class="timeline-description">Definições, quem executa e importância do Contrato de
+                                Aceite</div>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <!-- Item 2: Alfa vs Beta -->
+                    <div class="timeline-item">
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="timeline-title">Alfa vs Beta</div>
+                            <div class="timeline-duration">40 min</div>
+                            <div class="timeline-description">Estratégias de lançamento e diferenças técnicas</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #8b5cf6;"></div>
+                    </div>
+                    <!-- Item 3: Intervalo -->
+                    <div class="timeline-item">
+                        <div class="timeline-card"
+                            style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3);">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #22c55e, #10b981);">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="timeline-title">Intervalo</div>
+                            <div class="timeline-duration">15 min</div>
+                            <div class="timeline-description">Pausa para descanso</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #22c55e;"></div>
+                    </div>
+                    <!-- Item 4: Exemplos e Casos -->
+                    <div class="timeline-item">
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #f97316, #fb923c);">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="timeline-title">Exemplos e Casos</div>
+                            <div class="timeline-duration">45 min</div>
+                            <div class="timeline-description">Análise de documentos de aceite e checklists</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #f97316;"></div>
+                    </div>
+                    <!-- Item 5: Laboratório -->
+                    <div class="timeline-item">
+                        <div class="timeline-card">
+                            <div class="timeline-icon" style="background: linear-gradient(135deg, #ec4899, #f472b6);">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="timeline-title">Laboratório</div>
+                            <div class="timeline-duration">40 min</div>
+                            <div class="timeline-description">Simulação de sessão de UAT</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #ec4899;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Activity grid -->
+            <div class="activity-grid">
+                <div class="activity-card">
+                    <div class="activity-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="activity-name">Validação</div>
+                    <div class="activity-time">30 min</div>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-icon"><i class="fas fa-users"></i></div>
+                    <div class="activity-name">Testes</div>
+                    <div class="activity-time">40 min</div>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-icon"><i class="fas fa-pause-circle"></i></div>
+                    <div class="activity-name">Pausa</div>
+                    <div class="activity-time">15 min</div>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="activity-name">Análise</div>
+                    <div class="activity-time">45 min</div>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-icon"><i class="fas fa-laptop-code"></i></div>
+                    <div class="activity-name">Prática</div>
+                    <div class="activity-time">40 min</div>
+                </div>
+            </div>
+            <!-- Status row -->
+            <div class="status-row">
+                <div class="status-item">
+                    <div class="status-dot completed"></div>
+                    <span>5 atividades principais</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot pending"></div>
+                    <span>1 intervalo incluído</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot completed"></div>
+                    <span>Atividade prática final</span>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</body>
+
+</html>

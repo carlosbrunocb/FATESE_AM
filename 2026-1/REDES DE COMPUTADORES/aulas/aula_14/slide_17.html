@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>WPA2 - Características e Criptografia</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Decorative elements */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #4a90d9;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            padding: 0 50px 30px 50px;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Title section */
+        .title-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 180px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #4a90d9;
+        }
+
+        .section-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Security cards */
+        .security-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .security-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(74, 144, 217, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90d9;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .security-content {
+            flex: 1;
+        }
+
+        .security-title {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .security-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Feature list */
+        .feature-list {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+        }
+
+        .feature-title {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .feature-item i {
+            color: #4a90d9;
+            font-size: 12px;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Technical details */
+        .tech-details {
+            background: rgba(74, 144, 217, 0.1);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-top: 5px;
+        }
+
+        .tech-title {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .tech-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tech-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tech-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .tech-value {
+            color: #4a90d9;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-progress {
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, #4a90d9, #357abd);
+            border-radius: 0 3px 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">
+                    REDES<span>COMP</span>
+                </div>
+            </div>
+            <div class="page-title">
+                <i class="fas fa-lock"></i> Segurança WPA2
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="left-section">
+                    <div class="title-section">
+                        <div class="section-title">
+                            <i class="fas fa-lock"></i>
+                            WPA2 - Características e Criptografia
+                        </div>
+                        <div class="section-subtitle">
+                            WPA2 é o padrão de segurança mais utilizado, oferecendo criptografia robusta através do
+                            protocolo CCMP/AES.
+                        </div>
+                    </div>
+                    <div class="security-card" style="height: 150px;">
+                        <div class="security-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="security-content">
+                            <div class="security-title">Criptografia CCMP/AES</div>
+                            <div class="security-description">
+                                Utiliza o modo Counter Mode with CBC-MAC Protocol (CCMP) com criptografia AES de 128
+                                bits, oferecendo alta segurança e proteção contra ataques.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-title">
+                            <i class="fas fa-check-circle"></i>
+                            Características Principais
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Autenticação 802.1X para redes empresariais</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>PSK (Pre-Shared Key) para redes residenciais</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Integridade de dados via MIC (Message Integrity Check)</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Proteção contra replay attacks</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-section">
+                    <div class="security-card" style="height: 140px;">
+                        <div class="security-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="security-content">
+                            <div class="security-title">4-Way Handshake</div>
+                            <div class="security-description">
+                                Processo de autenticação que deriva chaves de sessão (PTK) e de grupo (GTK) de forma
+                                segura.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tech-details" style="flex: 1;">
+                        <div class="tech-title">Detalhes Técnicos</div>
+                        <div class="tech-item">
+                            <div class="tech-label">Algoritmo de criptografia</div>
+                            <div class="tech-value">AES-128-CCMP</div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-label">Tamanho da chave</div>
+                            <div class="tech-value">128 bits</div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-label">Modo de operação</div>
+                            <div class="tech-value">Counter Mode</div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-label">Integridade</div>
+                            <div class="tech-value">CBC-MAC</div>
+                        </div>
+                    </div>
+                    <div class="security-card" style="height: 140px;">
+                        <div class="security-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="security-content">
+                            <div class="security-title">Vulnerabilidades Conhecidas</div>
+                            <div class="security-description">
+                                Ataque KRACK (2017) - Exigiu patches em clientes e APs. Sempre mantenha sistemas
+                                atualizados.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-progress"></div>
+        </div>
+    </div>
+</body>
+
+</html>

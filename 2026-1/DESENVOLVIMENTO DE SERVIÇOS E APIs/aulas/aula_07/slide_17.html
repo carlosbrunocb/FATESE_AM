@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Integração com Sistemas Legados - Desafios e Estratégias</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 32px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 155px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 30px;
+            height: auto;
+        }
+
+        .left-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #1a365d;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .challenge-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .challenge-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .challenge-icon.error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .challenge-icon.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .challenge-icon.success {
+            background: #c6f6d5;
+            color: #38a169;
+        }
+
+        .challenge-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1a365d;
+        }
+
+        .challenge-text {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .strategy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .strategy-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #4a5568;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .strategy-item:last-child {
+            border-bottom: none;
+        }
+
+        .strategy-item i {
+            color: #3182ce;
+            font-size: 14px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .strategy-item strong {
+            color: #1a365d;
+            font-weight: 700;
+        }
+
+        .roadmap-box {
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            border: 1px solid #90cdf4;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: auto;
+        }
+
+        .roadmap-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #2c5282;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .roadmap-text {
+            font-size: 14px;
+            color: #2b6cb0;
+            line-height: 1.6;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 25px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .highlight {
+            color: #2c5282;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-plug"></i> Integração com Sistemas Legados
+                </div>
+                <div class="page-subtitle">
+                    Desafios, estratégias, padrões e roadmap de migração
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Formatos de Dados</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="card-title">Desafios da Integração</div>
+                        </div>
+                        <div class="challenges-grid">
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <div class="challenge-icon error"><i class="fas fa-file-contract"></i></div>
+                                    <div class="challenge-title">Formatos Distintos</div>
+                                </div>
+                                <div class="challenge-text">
+                                    • <span class="highlight">XML</span> vs JSON<br />
+                                    • <span class="highlight">Contratos rígidos</span> (XSD)<br />
+                                    • <span class="highlight">Autenticação</span> SOAP
+                                </div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <div class="challenge-icon warning"><i class="fas fa-clock"></i></div>
+                                    <div class="challenge-title">Performance</div>
+                                </div>
+                                <div class="challenge-text">
+                                    • <span class="highlight">Payloads maiores</span><br />
+                                    • <span class="highlight">Parsing custoso</span><br />
+                                    • <span class="highlight">Timeouts</span> externos
+                                </div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <div class="challenge-icon success"><i class="fas fa-shield-alt"></i></div>
+                                    <div class="challenge-title">Resiliência</div>
+                                </div>
+                                <div class="challenge-text">
+                                    • <span class="highlight">Retries</span> exponenciais<br />
+                                    • <span class="highlight">Circuit breaker</span><br />
+                                    • <span class="highlight">Bulkhead</span> pattern
+                                </div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <div class="challenge-icon error"><i class="fas fa-bug"></i></div>
+                                    <div class="challenge-title">Erros</div>
+                                </div>
+                                <div class="challenge-text">
+                                    • <span class="highlight">Parsing</span> XML<br />
+                                    • <span class="highlight">Validação</span> XSD<br />
+                                    • <span class="highlight">Encoding</span> UTF-8
+                                </div>
+                            </div>
+                        </div>
+                        <div class="roadmap-box">
+                            <div class="roadmap-title">
+                                <i class="fas fa-route" style="color: #3182ce;"></i> Roadmap de Migração
+                            </div>
+                            <div class="roadmap-text">
+                                • <span class="highlight">Fase 1:</span> Análise e mapeamento<br />
+                                • <span class="highlight">Fase 2:</span> Implementação de adapters<br />
+                                • <span class="highlight">Fase 3:</span> Testes e validação<br />
+                                • <span class="highlight">Fase 4:</span> Deploy e monitoramento
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="card-title">Estratégias de Integração</div>
+                        </div>
+                        <div class="strategy-list">
+                            <div class="strategy-item">
+                                <i class="fas fa-layer-group"></i>
+                                <span><strong>Anti-Corruption Layer:</strong> Isolar sistemas legados</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span><strong>Mapeamento:</strong> XSD → Modelo interno (DTOs)</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-network-wired"></i>
+                                <span><strong>Adapter Pattern:</strong> Client dedicado para parceiro</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-sync-alt"></i>
+                                <span><strong>Resiliência:</strong> Retries, circuit breaker</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-eye"></i>
+                                <span><strong>Observabilidade:</strong> Logs estruturados</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-check-double"></i>
+                                <span><strong>Testes:</strong> Contrato e mocks</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-lock"></i>
+                                <span><strong>Segurança:</strong> Mitigar XXE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

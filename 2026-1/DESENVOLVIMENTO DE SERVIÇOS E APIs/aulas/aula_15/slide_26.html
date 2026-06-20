@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boas Práticas Adicionais de Versionamento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden; /* Mantém a estética de slide em tela cheia */
+        }
+
+        /* CONTAINER PRINCIPAL EM GRID */
+        .slide-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Header (auto), Conteúdo (flexível), Footer (auto) */
+            width: 100vw;
+            height: 100vh;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            z-index: 1;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            padding: 30px 40px;
+            z-index: 1;
+            overflow-y: auto; /* Permite scroll interno se a tela for muito pequena */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            height: 100%; /* Ajustado para preencher o espaço do grid */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .practices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .practice-icon {
+            width: 24px;
+            height: 24px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .practice-content {
+            flex: 1;
+        }
+
+        .practice-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .practice-description {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            flex-grow: 1;
+        }
+
+        .code-header {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        .code-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .code-comment { color: #64748b; }
+        .code-string { color: #a5f3fc; }
+        .code-keyword { color: #60a5fa; font-weight: 600; }
+
+        /* FOOTER */
+        .footer {
+            margin: 0 40px 20px 40px; /* Margens para não encostar nas bordas */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #3b82f6;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .highlight-text strong {
+            color: #1e40af;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .feature-item i {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .feature-text {
+            color: #475569;
+        }
+
+        /* Responsividade para telas menores (opcional, mas bom ter) */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            body { overflow-y: auto; }
+            .slide-container { height: auto; min-height: 100vh; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div>
+                    <div class="header-title">Boas Práticas Adicionais de Versionamento</div>
+                    <div class="header-subtitle">Estratégias avançadas para manutenção de APIs</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Práticas Avançadas</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Compatibilidade Progressiva</div>
+                                <div class="section-subtitle">Evolução sem quebrar contratos</div>
+                            </div>
+                        </div>
+                        <div class="practices-list">
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">
+                                        Adicione campos como opcionais
+                                        <span style="color: #10b981; font-size: 11px; font-weight: 700; white-space: nowrap;">✓ Recomendado</span>
+                                    </div>
+                                    <div class="practice-description">
+                                        Sempre adicione novos campos como opcionais primeiro, permitindo que clientes existentes não quebrem.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">
+                                        Feature flags e rollouts controlados
+                                        <span style="color: #10b981; font-size: 11px; font-weight: 700; white-space: nowrap;">✓ Estratégia</span>
+                                    </div>
+                                    <div class="practice-description">
+                                        Use feature flags para controlar a disponibilidade de novas funcionalidades gradualmente.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="practice-title">
+                                        Observabilidade por versão
+                                        <span style="color: #10b981; font-size: 11px; font-weight: 700; white-space: nowrap;">✓ Monitoramento</span>
+                                    </div>
+                                    <div class="practice-description">
+                                        Implemente métricas específicas por versão: tráfego, erros, latência, taxa de sucesso.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Dica:</strong> Mantenha testes de contrato (Pact, Schemathesis) para validar compatibilidade entre versões.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Testes e Validação</div>
+                                <div class="section-subtitle">Garantia de qualidade e contratos</div>
+                            </div>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="feature-text">Testes de contrato</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="feature-text">Validação de schema</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="feature-text">Smoke tests</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="feature-text">Testes de integração</span>
+                            </div>
+                        </div>
+                        <div class="code-block" style="margin-top: 15px; padding: 15px;">
+                            <div class="code-header">
+                                <div class="code-title">Exemplo de teste de contrato</div>
+                            </div>
+                            <div class="code-content" style="font-size: 12px; line-height: 1.6;">
+                                <span class="code-comment">// Teste de compatibilidade entre v1 e v2</span><br />
+                                <span class="code-keyword">describe</span>(<span class="code-string">'API Version Compatibility'</span>, () =&gt; {<br />
+                                    &nbsp;&nbsp;<span class="code-keyword">it</span>(<span class="code-string">'v1 response matches schema'</span>, async () =&gt; {<br />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">const</span> response = <span class="code-keyword">await</span> request.get(<span class="code-string">'/api/v1/livros'</span>);<br />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;expect(response.body).toMatchSchema(v1Schema);<br />
+                                    &nbsp;&nbsp;});<br />
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>5 práticas implementadas</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

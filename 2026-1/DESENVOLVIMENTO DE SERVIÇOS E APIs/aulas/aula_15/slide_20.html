@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 2: Service V1 (Legado Compatível)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #f8fafc;
+            
+            /* Alterações para o formato GRID Responsivo */
+            display: grid;
+            grid-template-rows: 100px 1fr auto;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(59,130,246,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .course-code {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .main-content {
+            width: 100%;
+            height: 100%;
+            padding: 30px 40px;
+            z-index: 10;
+            overflow-y: auto; /* Permite rolagem se o conteúdo for maior que a tela */
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            height: 100%;
+        }
+
+        /* Responsividade extra para telas menores (opcional) */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .header-title {
+                font-size: 22px;
+            }
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            flex-grow: 1;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .code-header {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            line-height: 1.45;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-string {
+            color: #a5f3fc;
+        }
+
+        .code-keyword {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .code-function {
+            color: #c084fc;
+        }
+
+        .code-variable {
+            color: #fca5a5;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #3b82f6;
+            margin-top: 15px;
+        }
+
+        .explanation-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation-text {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border-radius: 6px;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            margin-top: 10px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+            margin: 0 40px 20px 40px; /* Substitui o modelo left/bottom absoluto */
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .footer-item i {
+            color: #3b82f6;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .compatibility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #dcfce7;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #166534;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div>
+                    <div class="header-title">Passo 2: Service V1 (Legado Compatível)</div>
+                    <div class="header-subtitle">Implementação do serviço mantendo compatibilidade com versão anterior
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="course-name">Desenvolvimento de APIs</div>
+                <div class="course-code">Aula 15 - Prática</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Código do Service V1</div>
+                                <div class="section-subtitle">src/services/v1/livroService.js</div>
+                            </div>
+                        </div>
+                        <div class="step-indicator">
+                            <div class="step-number">2</div>
+                            <div class="step-text">Criar serviço mantendo comportamento legado</div>
+                        </div>
+                        <div class="code-block" style="padding-bottom: 24px;">
+                            <div class="code-header">
+                                <div class="code-title">livroService.js</div>
+                                <div style="color: #94a3b8; font-size: 12px;">JavaScript</div>
+                            </div>
+                            <div class="code-content">
+                                <span class="code-keyword">const</span> livroRepository = <span
+                                    class="code-function">require</span>(<span
+                                    class="code-string">'../../repositories/livroRepository'</span>);<br /><br />
+                                <span class="code-comment">// Service V1: Mantém compatibilidade total</span><br />
+                                <span class="code-keyword">const</span> <span class="code-function">listarTodosV1</span>
+                                = <span class="code-keyword">async</span> (titulo) =&gt; {<br />
+                                  <span class="code-comment">// Passamos limite 0 para trazer todos os
+                                    registros</span><br />
+                                  <span class="code-comment">// Mantendo comportamento exato da V1 original</span><br />
+                                  <span class="code-keyword">return</span> <span class="code-keyword">await</span>
+                                livroRepository.buscarTodos(titulo, <span class="code-variable">1</span>, <span
+                                    class="code-variable">0</span>);<br />
+                                };<br /><br />
+                                <span class="code-comment">// Exportação do serviço V1</span><br />
+                                <span class="code-keyword">module.exports</span> = { <br />
+                                  listarTodosV1<br />
+                                };
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div>
+                                <div class="section-title">Explicação Detalhada</div>
+                                <div class="section-subtitle">Compatibilidade com versão anterior</div>
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <div class="explanation-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Por que manter V1?
+                            </div>
+                            <div class="explanation-text">
+                                O serviço V1 preserva o comportamento original da API, garantindo que clientes
+                                existentes continuem funcionando sem necessidade de atualização.
+                            </div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <strong>Características:</strong><br />
+                                • <strong>Sem paginação:</strong> Retorna array completo<br />
+                                • <strong>Formato simples:</strong> Array plano de objetos<br />
+                                • <strong>Sem metadados:</strong> Apenas dados brutos
+                            </div>
+                        </div>
+                        <div class="explanation-box" style="margin-top: 15px;">
+                            <div class="explanation-title">
+                                <i class="fas fa-check-circle"></i>
+                                Compatibilidade Garantida
+                            </div>
+                            <div class="explanation-text">
+                                <span class="compatibility-badge" style="margin-bottom: 8px;">
+                                    <i class="fas fa-check"></i>
+                                    API V1 Estável
+                                </span>
+                                <br />
+                                Clientes legados funcionam sem alterações
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <i class="fas fa-clock"></i>
+                <span>Duração: 3h (180 min)</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Data: 22/05/2026</span>
+            </div>
+            <div class="footer-item">
+                <i class="fas fa-user"></i>
+                <span>Prof. Carlos Bruno</span>
+            </div>
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i>
+                <span>Service V1 implementado</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

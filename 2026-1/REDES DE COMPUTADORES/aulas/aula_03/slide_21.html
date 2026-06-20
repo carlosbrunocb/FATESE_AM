@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Endereçamento MAC - Estrutura</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Open+Sans:wght@300;400;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Left Content Panel (40%) */
+        .left-panel {
+            width: 40%;
+            padding: 60px 40px 60px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #ffffff;
+            z-index: 10;
+        }
+
+        .header-section {
+            margin-bottom: 40px;
+            border-left: 6px solid #3b82f6;
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #111827;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content-text {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background-color: #eff6ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .highlight-title {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight-title i {
+            margin-right: 10px;
+        }
+
+        .highlight-text {
+            font-size: 14px;
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        /* Right Diagram Panel (60%) */
+        .right-panel {
+            width: 60%;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagram-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            padding: 20px;
+        }
+
+        /* MAC Address Visualization Styles */
+        .mac-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .mac-hex {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .byte-box {
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .byte-box.oui {
+            border-color: #3b82f6;
+            color: #1e40af;
+            background-color: #eff6ff;
+        }
+
+        .byte-box.nic {
+            border-color: #10b981;
+            color: #065f46;
+            background-color: #ecfdf5;
+        }
+
+        .bracket-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .bracket-group {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .bracket-line {
+            width: 90%;
+            height: 15px;
+            border-left: 2px solid;
+            border-right: 2px solid;
+            border-bottom: 2px solid;
+            margin-bottom: 10px;
+        }
+
+        .bracket-group.oui .bracket-line {
+            border-color: #3b82f6;
+        }
+
+        .bracket-group.nic .bracket-line {
+            border-color: #10b981;
+        }
+
+        .group-label {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .group-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .oui-text {
+            color: #1e40af;
+        }
+
+        .nic-text {
+            color: #065f46;
+        }
+
+        .bit-info {
+            margin-top: 40px;
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bit-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Decorative Elements */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            opacity: 0.05;
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 50px;
+            left: -50px;
+        }
+
+        ul.custom-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.custom-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        ul.custom-list li::before {
+            content: '\f2c2';
+            /* ID card icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #3b82f6;
+        }
+
+        .footer-page {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            color: #94a3b8;
+            font-size: 12px;
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="header-section">
+                <h2>Identidade na Rede</h2>
+                <h1>Endereçamento MAC (Media Access Control)</h1>
+            </div>
+            <div class="content-text">
+                <p class="mb-4">O MAC Address é o identificador físico único gravado na placa de rede (NIC) pelo
+                    fabricante.</p>
+                <ul class="custom-list">
+                    <li>
+                        <p><strong>Estrutura:</strong> 48 bits (6 bytes) representados em notação hexadecimal (ex:
+                            00:1A:2B:3C:4D:5E).</p>
+                    </li>
+                    <li>
+                        <p><strong>Tipos de Endereço:</strong></p>
+                        <p style="font-size: 14px; margin-top: 5px; color: #6b7280;">• Unicast: Um único destino
+                            (padrão).</p>
+                        <p style="font-size: 14px; margin-top: 2px; color: #6b7280;">• Multicast: Grupo de dispositivos.
+                        </p>
+                        <p style="font-size: 14px; margin-top: 2px; color: #6b7280;">• Broadcast: Todos na rede
+                            (FF:FF:FF:FF:FF:FF).</p>
+                    </li>
+                </ul>
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>Importante</span>
+                    </div>
+                    <p class="highlight-text">O endereço MAC é "plano" e não hierárquico como o IP. Ele serve apenas
+                        para entrega local (dentro do mesmo segmento de rede ou VLAN).</p>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="decoration-circle circle-1"></div>
+            <div class="decoration-circle circle-2"></div>
+            <div class="diagram-container">
+                <div class="mac-visual">
+                    <div class="mac-hex">
+                        <div class="byte-box oui">00</div>
+                        <div class="byte-box oui">1A</div>
+                        <div class="byte-box oui">2B</div>
+                        <div style="display:flex; align-items:center; color:#9ca3af;">:</div>
+                        <div class="byte-box nic">3C</div>
+                        <div class="byte-box nic">4D</div>
+                        <div class="byte-box nic">5E</div>
+                    </div>
+                    <div class="bracket-container">
+                        <div class="bracket-group oui">
+                            <div class="bracket-line"></div>
+                            <div class="group-label oui-text">OUI</div>
+                            <div class="group-desc">Organizationally Unique Identifier<br />(Identificador do
+                                Fabricante)</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">Primeiros 24 bits (3 bytes)
+                            </div>
+                        </div>
+                        <div class="bracket-group nic">
+                            <div class="bracket-line"></div>
+                            <div class="group-label nic-text">NIC Specific</div>
+                            <div class="group-desc">Network Interface Controller<br />(Número de Série da Placa)</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">Últimos 24 bits (3 bytes)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bit-info">
+                        <div style="display: flex; align-items: center;">
+                            <span class="bit-dot" style="background-color: #ef4444; margin-right: 8px;"></span>
+                            <div>
+                                <strong>Bit I/G (Individual/Group):</strong><br />
+                                0 = Unicast, 1 = Multicast
+                            </div>
+                        </div>
+                        <div style="width: 1px; height: 30px; background-color: #e5e7eb; margin: 0 15px;"></div>
+                        <div style="display: flex; align-items: center;">
+                            <span class="bit-dot" style="background-color: #f59e0b; margin-right: 8px;"></span>
+                            <div>
+                                <strong>Bit U/L (Universal/Local):</strong><br />
+                                0 = Universal, 1 = Local Admin
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-page">21/36</div>
+        </div>
+    </div>
+</body>
+
+</html>

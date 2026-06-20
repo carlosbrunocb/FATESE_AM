@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Passo 3 - Evoluindo a Camada de Controle</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 125vh;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 32px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 155px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #1a365d;
+        }
+
+        .code-block {
+            background: #1a365d;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10.5pt;
+            color: #e2e8f0;
+            overflow: hidden;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .code-line {
+            white-space: pre-wrap;
+        }
+
+        .code-key {
+            color: #63b3ed;
+        }
+
+        .code-string {
+            color: #f6e05e;
+        }
+
+        .code-comment {
+            color: #a0aec0;
+        }
+
+        .code-function {
+            color: #f6ad55;
+        }
+
+        .code-number {
+            color: #fc8181;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 25px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            color: #4a5568;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #3182ce;
+            line-height: 1.4;
+        }
+
+        .feature-item i {
+            color: #3182ce;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .feature-item strong {
+            color: #1a365d;
+        }
+
+        .highlight-box {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 5px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #2c5282;
+            line-height: 1.5;
+        }
+
+        .step-number {
+            background: #3182ce;
+            color: white;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-code"></i> Passo 3 - Evoluindo a Camada de Controle
+                </div>
+                <div class="page-subtitle">
+                    Implementação do livroController.js com Content Negotiation e integração com fornecedor
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Laboratório Prático</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-file-code"></i></div>
+                            <div class="card-title">src/controllers/livroController.js</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-key">const</span> livroService = <span
+                                    class="code-key">require</span>(<span
+                                    class="code-string">'../services/livroService'</span>);</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"><span class="code-key">const</span> <span
+                                    class="code-function">listarLivros</span> = (req, res, next) =&gt; {</div>
+                            <div class="code-line"> <span class="code-key">try</span> {</div>
+                            <div class="code-line"> &nbsp;&nbsp;res.set(<span class="code-string">'Vary'</span>, <span
+                                    class="code-string">'Accept'</span>);</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;const</span> accept = req.headers[<span
+                                    class="code-string">'accept'</span>] || <span class="code-string">''</span>;</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"> <span class="code-comment">&nbsp;&nbsp;// 406 se o cliente pedir um formato não suportado</span></div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;if</span> (accept &amp;&amp;!(accept.includes(<span class="code-string">'application/json'</span>) ||
+       accept.includes(<span class="code-string">'application/xml'</span>))) {</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;&nbsp;&nbsp;return</span> res.status(<span class="code-number">406</span>).send(<span class="code-string">'Not Acceptable'</span>);</div>
+                            <div class="code-line"> &nbsp;&nbsp;}</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"> <span class="code-comment">&nbsp;&nbsp;// Negociação para XML</span></div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;if</span> (accept.includes(<span class="code-string">'application/xml'</span>)) {</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;&nbsp;&nbsp;const</span> xmlData = livroService.listarTodosComoXML();</div>
+                            <div class="code-line"> &nbsp;&nbsp;&nbsp;&nbsp;res.type(<span class="code-string">'application/xml'</span>);</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;&nbsp;&nbsp;return</span> res.status(<span
+                                    class="code-number">200</span>).send(xmlData);</div>
+                            <div class="code-line"> &nbsp;&nbsp;}</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"> <span class="code-comment">&nbsp;&nbsp;// Padrão: JSON</span></div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;const</span> livros = livroService.listarTodos();</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;return</span> res.status(<span
+                                    class="code-number">200</span>).json(livros);</div>
+                            <div class="code-line"> } <span class="code-key">catch</span> (error) {</div>
+                            <div class="code-line"> &nbsp;&nbsp;next(error);</div>
+                            <div class="code-line"> }</div>
+                            <div class="code-line">};</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"><span class="code-key">const</span> <span class="code-function">buscarFornecedor</span> = <span class="code-key">async</span> (req, res, next) =&gt; {</div>
+                            <div class="code-line"> <span class="code-key">try</span> {</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;const</span> dadosConvertidos = <span class="code-key">await</span> livroService.buscarLivrosFornecedor();</div>
+                            <div class="code-line"> <span class="code-key">&nbsp;&nbsp;return</span> res.status(<span
+                                    class="code-number">200</span>).json({ <span class="code-key">origem</span>: <span
+                                    class="code-string">'Fornecedor Legado'</span>, <span class="code-key">dados</span>: dadosConvertidos });</div>
+                            <div class="code-line"> } <span class="code-key">catch</span> (error) {</div>
+                            <div class="code-line"> &nbsp;&nbsp;next(error);</div>
+                            <div class="code-line"> }</div>
+                            <div class="code-line">};</div>
+                            <div class="code-line"> </div>
+                            <div class="code-line"><span class="code-key">module.exports</span> = { listarLivros, buscarFornecedor };</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="card-title">Fluxo de Processamento</div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <strong>Leitura do Header:</strong> Controller lê Accept e define Content-Type
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <strong>Negociação:</strong> Decide entre JSON ou XML baseado no Accept
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <strong>Delegação:</strong> Chama serviço para conversão/formato
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-title">Validações</div>
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <i class="fas fa-exclamation-circle" style="color: #3182ce; margin-right: 8px;"></i>
+                                <strong>Importante:</strong> Controller define Vary: Accept para compatibilidade com
+                                caches
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 13px; color: #4a5568;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <i class="fas fa-info-circle" style="color: #3182ce; margin-top: 2px;"></i>
+                                <span>Retorna 406 quando formato não é suportado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

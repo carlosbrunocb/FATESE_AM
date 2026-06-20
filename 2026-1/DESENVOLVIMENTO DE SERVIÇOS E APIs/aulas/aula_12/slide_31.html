@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exercícios Práticos - Desafios JWT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        .header-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .difficulty-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .exercise-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .exercise-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .exercise-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .exercise-desc {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .exercise-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .challenge-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            height: 100%;
+        }
+
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .challenge-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f59e0b;
+            font-size: 18px;
+        }
+
+        .challenge-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .challenge-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .challenge-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .challenge-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .challenge-text {
+            font-size: 14px;
+            color: #e2e8f0;
+            flex: 1;
+        }
+
+        .challenge-difficulty {
+            font-size: 12px;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-comment {
+            color: #6b7280;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-string {
+            color: #98c379;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div>
+                        <div class="header-title">Exercícios Práticos</div>
+                        <div class="header-subtitle">Desafios guiados sobre implementação JWT</div>
+                    </div>
+                </div>
+                <div class="difficulty-badge">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Intermediário</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <div class="exercise-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="exercise-title">Exercício 1: Criar Rota GET /api/auth/me</div>
+                        </div>
+                        <div class="exercise-desc">
+                            Implemente uma rota protegida que retorna os dados do usuário autenticado baseado no token
+                            JWT.
+                        </div>
+                        <div class="exercise-steps">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-text">Criar middleware <code>autenticaJWT</code> para validar o
+                                        token</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-text">Implementar rota GET /api/auth/me no controller</div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-text">Retornar dados do usuário (exceto senha) do token
+                                        decodificado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <div class="exercise-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="exercise-title">Exercício 2: Adicionar Controle de Acesso por Role</div>
+                        </div>
+                        <div class="exercise-desc">
+                            Adicione campo <code>role</code> ao usuário e implemente verificação de permissões para
+                            operações administrativas.
+                        </div>
+                        <div class="code-snippet">
+                            <span class="code-comment">// Verificação de role no middleware</span><br />
+                            <span class="code-keyword">if</span> (req.usuarioLogado.role !== <span
+                                class="code-string">'admin'</span>) {<br />
+                              <span class="code-keyword">return</span> res.status(403).json({ erro: <span
+                                class="code-string">'Acesso negado'</span> });<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="challenge-card">
+                        <div class="challenge-header">
+                            <div class="challenge-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="challenge-title">Desafios Extras</div>
+                        </div>
+                        <div class="challenge-list">
+                            <div class="challenge-item">
+                                <div class="challenge-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="challenge-text">Implementar refresh token</div>
+                                <div class="challenge-difficulty">Difícil</div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="challenge-text">Centralizar tratamento de erros</div>
+                                <div class="challenge-difficulty">Médio</div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="challenge-text">Testes com Supertest</div>
+                                <div class="challenge-difficulty">Médio</div>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-checkbox"><i class="fas fa-check"></i></div>
+                                <div class="challenge-text">Lista de revogação de tokens</div>
+                                <div class="challenge-difficulty">Avançado</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progresso</span>
+                                <span>65%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

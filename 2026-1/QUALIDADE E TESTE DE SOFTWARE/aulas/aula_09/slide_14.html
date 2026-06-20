@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Cobertura de Caminho (Path Coverage)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef7 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Pattern */
+        .header-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 600px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border-bottom-left-radius: 100%;
+            z-index: 1;
+        }
+
+        .header-pattern::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 100%);
+            border-bottom-left-radius: 100%;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 25px 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .logo-text strong {
+            color: #1e293b;
+            font-size: 17px;
+            display: block;
+        }
+
+        .course-info {
+            text-align: right;
+        }
+
+        .course-name {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .module-name {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Title Section */
+        .title-section {
+            margin-bottom: 15px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-title .highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 0 0 15px 0;
+            flex-grow: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .info-card-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .info-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .info-card-content {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Formula Section */
+        .formula-section {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6eef7 100%);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .formula-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .formula-box {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid #3b82f6;
+            text-align: center;
+        }
+
+        .formula-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-explanation {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        /* Path Info */
+        .path-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .path-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .path-item i {
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        /* Diagram Container */
+        .diagram-container {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .diagram-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .diagram-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .path-visual {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .path-nodes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .node.start {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #22c55e;
+        }
+
+        .node.decision {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .node.process {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #3b82f6;
+        }
+
+        .node.end {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .arrow {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .path-labels {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .key-point i {
+            color: #3b82f6;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .warning-icon {
+            color: #f59e0b;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .warning-text {
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-pattern"></div>
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="logo-text">
+                        <strong>FATESE</strong>
+                        Faculdade de Tecnologia
+                    </div>
+                </div>
+                <div class="course-info">
+                    <div class="course-name">Qualidade e Teste de Software</div>
+                    <div class="module-name">Módulo III - Planejamento e Gerenciamento de Testes</div>
+                </div>
+            </div>
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="main-title">
+                    <span class="highlight">Cobertura</span> de Caminho (Path Coverage)
+                    <span style="font-size: 14px; color: #64748b; font-weight: 500; margin-left: 15px;">Execução de
+                        combinações completas de caminhos</span>
+                </div>
+                <div class="subtitle">
+                    Técnica mais exaustiva: percorre todas as combinações possíveis de caminhos desde o início até o fim
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="left-column">
+                    <!-- Definition Card -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="info-card-title">O que é Path Coverage?</div>
+                        </div>
+                        <div class="info-card-content">
+                            <p style="margin-bottom: 8px;"><strong>Definição:</strong> Mede a execução de combinações
+                                completas de caminhos do início ao fim de uma função ou módulo.</p>
+                            <div class="formula-section">
+                                <div class="formula-box">
+                                    <div class="formula-text">C_path = (caminhos executados / total de caminhos) × 100%
+                                    </div>
+                                    <div class="formula-explanation">Mede a porcentagem de caminhos percorridos</div>
+                                </div>
+                            </div>
+                            <div class="key-points" style="margin-top: 10px;">
+                                <div class="key-point">
+                                    <i class="fas fa-check"></i>
+                                    <span><strong>Exaustiva:</strong> Testa todas as combinações possíveis</span>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check"></i>
+                                    <span><strong>Complexidade:</strong> Pode gerar explosão combinatória</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Strategy Card -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="info-card-title">Estratégias de Teste</div>
+                        </div>
+                        <div class="info-card-content">
+                            <div class="path-info">
+                                <div class="path-item">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span><strong>Limitar iterações:</strong> Usar k-loop para loops</span>
+                                </div>
+                                <div class="path-item">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span><strong>Caminhos independentes:</strong> Foco em base paths</span>
+                                </div>
+                                <div class="path-item">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span><strong>Priorizar críticos:</strong> Cenários de alto risco</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <!-- Diagram Card -->
+                    <div class="diagram-container">
+                        <div class="diagram-header">
+                            <div class="diagram-title">Exemplo de CFG com 4 Caminhos</div>
+                            <div style="font-size: 12px; color: #64748b;">2 decisões binárias</div>
+                        </div>
+                        <div class="diagram-content">
+                            <div class="path-visual">
+                                <div class="path-nodes">
+                                    <div class="node start">
+                                        <i class="fas fa-play"></i>
+                                        <span>Start</span>
+                                    </div>
+                                    <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="node decision">
+                                        <i class="fas fa-question"></i>
+                                        <span>if (A)</span>
+                                    </div>
+                                    <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="node decision">
+                                        <i class="fas fa-question"></i>
+                                        <span>if (B)</span>
+                                    </div>
+                                    <div class="arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="node end">
+                                        <i class="fas fa-flag"></i>
+                                        <span>End</span>
+                                    </div>
+                                </div>
+                                <div class="path-labels">
+                                    <span>Caminho 1: A=T, B=T</span>
+                                    <span>Caminho 2: A=T, B=F</span>
+                                    <span>Caminho 3: A=F, B=T</span>
+                                    <span>Caminho 4: A=F, B=F</span>
+                                </div>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">4</div>
+                                    <div class="stat-label">Caminhos</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">100%</div>
+                                    <div class="stat-label">Cobertura</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">2</div>
+                                    <div class="stat-label">Decisões</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- When to Use -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="info-card-title">Quando Usar?</div>
+                        </div>
+                        <div class="info-card-content">
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <i class="fas fa-check"></i>
+                                    <span><strong>Funções pequenas:</strong> Com lógica simples</span>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check"></i>
+                                    <span><strong>Código crítico:</strong> Segurança/financeiro</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #64748b;">
+                    <div style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%;"></div>
+                    <span>Em andamento</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-size: 13px; color: #64748b;">Progresso: 75%</div>
+                    <div style="width: 200px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                        <div
+                            style="height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 4px; width: 75%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

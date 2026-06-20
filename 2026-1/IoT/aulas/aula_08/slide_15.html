@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Análise do Código - Conexão Automática</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 93.8%;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .code-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-icon {
+            color: #00BCD4;
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e0e0e0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 18px;
+            border-radius: 8px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .line-number {
+            color: #666;
+            width: 25px;
+            text-align: right;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .code-text {
+            color: #e0e0e0;
+            white-space: pre;
+        }
+
+        .code-keyword {
+            color: #ff79c6;
+        }
+
+        .code-string {
+            color: #f1fa8c;
+        }
+
+        .code-comment {
+            color: #6272a4;
+        }
+
+        .code-function {
+            color: #8be9fd;
+        }
+
+        .explanation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+            flex-grow: 1;
+        }
+
+        .explanation-title {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .explanation-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .progress-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 140px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #00BCD4);
+            border-radius: 3px;
+            width: 85%;
+        }
+
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+
+        .key-icon {
+            color: #00BCD4;
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .function-badge {
+            display: inline-block;
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <h1 class="main-title">Conexão Automática - Análise do Código</h1>
+                    <p class="subtitle">Implementação de reconexão automática e tratamento de erros</p>
+                </div>
+                <div class="progress-indicator">
+                    <span class="progress-text">Progresso: 85%</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-code code-icon"></i>
+                                <span>Função conectarWiFi()</span>
+                            </div>
+                            <div class="function-badge">void conectarWiFi()</div>
+                        </div>
+                        <div class="code-content">
+                            <div class="code-line"><span class="line-number">1</span><span class="code-text"><span
+                                        class="code-keyword">void</span> <span
+                                        class="code-function">conectarWiFi</span>() {</span></div>
+                            <div class="code-line"><span class="line-number">2</span><span class="code-text">  Serial.<span class="code-function">print</span>(<span
+                                        class="code-string">"Conectando a: "</span>);</span></div>
+                            <div class="code-line"><span class="line-number">3</span><span class="code-text">  Serial.<span class="code-function">println</span>(ssid);</span></div>
+                            <div class="code-line"><span class="line-number">4</span><span class="code-text">  WiFi.<span
+                                        class="code-function">mode</span>(WIFI_STA);</span></div>
+                            <div class="code-line"><span class="line-number">5</span><span class="code-text">  WiFi.<span
+                                        class="code-function">begin</span>(ssid, password);</span></div>
+                            <div class="code-line"><span class="line-number">6</span><span class="code-text"> <span 
+                                        class="code-keyword"> while</span> (WiFi.<span
+                                        class="code-function">status</span>() != WL_CONNECTED) {</span></div>
+                            <div class="code-line"><span class="line-number">7</span><span class="code-text"> <span
+                                        class="code-function">   delay</span>(500); Serial.<span
+                                        class="code-function">print</span>(<span class="code-string">"."</span>);</span>
+                            </div>
+                            <div class="code-line"><span class="line-number">8</span><span class="code-text">  }</span>
+                            </div>
+                            <div class="code-line"><span class="line-number">9</span><span class="code-text">  Serial.<span class="code-function">println</span>(<span
+                                        class="code-string">"\nConectado!"</span>);</span></div>
+                            <div class="code-line"><span class="line-number">10</span><span class="code-text">}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="explanation-card">
+                        <div class="explanation-title">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Análise da Função</span>
+                        </div>
+                        <div class="explanation-text">
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>WiFi.mode(WIFI_STA):</strong> Define o ESP32 como estação</div>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>WiFi.begin():</strong> Inicia a tentativa de conexão
+                                    </div>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>Feedback visual:</strong> Pontos no Serial indicam progresso</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-sync-alt code-icon"></i>
+                                <span>Monitor de Conexão</span>
+                            </div>
+                            <div class="function-badge">void loop()</div>
+                        </div>
+                        <div class="code-content">
+                            <div class="code-line"><span class="line-number">1</span><span class="code-text"><span
+                                        class="code-keyword">void</span> <span class="code-function">loop</span>() {</span></div>
+                            <div class="code-line"><span class="line-number">2</span><span class="code-text">  <span
+                                        class="code-keyword">if</span> (WiFi.<span class="code-function">status</span>() != WL_CONNECTED) {</span></div>
+                            <div class="code-line"><span class="line-number">3</span><span class="code-text">    Serial.<span class="code-function">println</span>(<span 
+                                class="code-string">"Conexão perdida!"</span>);</span></div>
+                            <div class="code-line"><span class="line-number">4</span><span class="code-text">    <span class="code-function">conectarWiFi</span>();</span></div>
+                            <div class="code-line"><span class="line-number">5</span><span class="code-text">  }</span>
+                            </div>
+                            <div class="code-line"><span class="line-number">6</span><span class="code-text">  <span
+                                        class="code-comment">// Código principal aqui</span></span></div>
+                            <div class="code-line"><span class="line-number">7</span><span class="code-text">  <span
+                                        class="code-function">delay</span>(10000);</span></div>
+                            <div class="code-line"><span class="line-number">8</span><span class="code-text">}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="explanation-card">
+                        <div class="explanation-title">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Estratégia de Reconexão</span>
+                        </div>
+                        <div class="explanation-text">
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>Verificação contínua:</strong> WiFi.status() no loop
+                                    </div>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>Reconexão automática:</strong> Chama conectarWiFi()
+                                    </div>
+                                </div>
+                                <div class="key-point">
+                                    <i class="fas fa-check key-icon"></i>
+                                    <div class="key-text"><strong>Timeout:</strong> 10s entre verificações</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Análise do código em andamento</span>
+            </div>
+            <div class="status-item">
+                <span>Próximo: Boas práticas</span>
+            </div>
+            <div class="status-item">
+                <span>Tempo restante: 15 min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

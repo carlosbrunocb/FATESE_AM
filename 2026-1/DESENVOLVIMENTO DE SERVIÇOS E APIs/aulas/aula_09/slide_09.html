@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 9 - Models, Instâncias e Middlewares do Mongoose</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Source Sans 3', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 105vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 50px;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-text p {
+            font-size: 15px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main content area */
+        .main-content {
+            display: flex;
+            gap: 25px;
+            height: auto;
+        }
+
+        .left-column {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Code block */
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d4d4d4;
+            overflow: hidden;
+            border-left: 4px solid #00ED64;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 2px;
+        }
+
+        .code-line-number {
+            color: #555;
+            min-width: 25px;
+            text-align: right;
+            user-select: none;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        /* CRUD operations */
+        .crud-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .crud-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .crud-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .crud-text {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        /* Query helpers */
+        .query-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .query-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .query-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .query-text {
+            flex: 1;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .query-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        /* Flow diagram */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            border: 2px solid #00ED64;
+            color: #00ED64;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .step-arrow {
+            color: #00ED64;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        /* Best practices */
+        .best-practices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .practice-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .practice-text {
+            flex: 1;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: #00a854;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Models, Instâncias e Middlewares</h1>
+                    <p>CRUD, Query Helpers e Hooks do Mongoose</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-database"></i> MongoDB
+                </div>
+                <div class="badge">
+                    <i class="fas fa-leaf"></i> Mongoose
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Left column -->
+            <div class="left-column">
+                <!-- CRUD Operations -->
+                <div class="card" style="flex: 1.2;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="card-title">Operações CRUD com Mongoose</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="crud-grid">
+                            <div class="crud-item">
+                                <div class="crud-icon"><i class="fas fa-plus"></i></div>
+                                <div class="crud-text"><strong>Create:</strong> await Livro.create()</div>
+                            </div>
+                            <div class="crud-item">
+                                <div class="crud-icon"><i class="fas fa-search"></i></div>
+                                <div class="crud-text"><strong>Read:</strong> await Livro.find()</div>
+                            </div>
+                            <div class="crud-item">
+                                <div class="crud-icon"><i class="fas fa-edit"></i></div>
+                                <div class="crud-text"><strong>Update:</strong> findByIdAndUpdate()</div>
+                            </div>
+                            <div class="crud-item">
+                                <div class="crud-icon"><i class="fas fa-trash"></i></div>
+                                <div class="crud-text"><strong>Delete:</strong> deleteOne()</div>
+                            </div>
+                        </div>
+                        <div class="code-block" style="margin-top: 5px;">
+                            <div class="code-line"><span class="code-line-number">1</span><span
+                                    class="code-content"><span class="code-comment">// Exemplo de CRUD</span></span>
+                            </div>
+                            <div class="code-line"><span class="code-line-number">2</span><span
+                                    class="code-content"><span class="code-keyword">const</span> livro = <span
+                                        class="code-keyword">await</span> Livro.create({ titulo: <span
+                                        class="code-string">"Clean Code"</span> });</span></div>
+                            <div class="code-line"><span class="code-line-number">3</span><span
+                                    class="code-content"><span class="code-keyword">const</span> livros = <span
+                                        class="code-keyword">await</span> Livro.find({ ano: { $gte: 2020 }
+                                    }).lean();</span></div>
+                            <div class="code-line"><span class="code-line-number">4</span><span
+                                    class="code-content"><span class="code-keyword">await</span>
+                                    Livro.findByIdAndUpdate(id, { $set: { titulo: <span
+                                        class="code-string">"Novo"</span> } });</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Middleware Timeline -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-stream"></i>
+                        </div>
+                        <div class="card-title">Fluxo de Middlewares</div>
+                    </div>
+                    <div class="card-content" style="gap: 15px;">
+                        <div class="flow-diagram">
+                            <div class="flow-step">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-text">Validate</div>
+                            </div>
+                            <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step">
+                                <div class="step-icon"><i class="fas fa-save"></i></div>
+                                <div class="step-text">Pre-save</div>
+                            </div>
+                            <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step">
+                                <div class="step-icon"><i class="fas fa-database"></i></div>
+                                <div class="step-text">Save</div>
+                            </div>
+                            <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="flow-step">
+                                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                                <div class="step-text">Post-save</div>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line"><span class="code-line-number">1</span><span
+                                    class="code-content">LivroSchema.pre(<span class="code-string">'save'</span>, <span
+                                        class="code-keyword">function</span>(next) {</span></div>
+                            <div class="code-line"><span class="code-line-number">2</span><span class="code-content">
+                                    <span class="code-keyword">this</span>.updatedAt = <span
+                                        class="code-keyword">new</span> Date(); next();</span></div>
+                            <div class="code-line"><span class="code-line-number">3</span><span
+                                    class="code-content">});</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right column -->
+            <div class="right-column">
+                <!-- Query Helpers -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="card-title">Query Helpers</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="query-list">
+                            <div class="query-item">
+                                <div class="query-icon"><i class="fas fa-filter"></i></div>
+                                <div class="query-text">.where('ano').gte(2020)</div>
+                                <div class="query-badge">Filter</div>
+                            </div>
+                            <div class="query-item">
+                                <div class="query-icon"><i class="fas fa-sort"></i></div>
+                                <div class="query-text">.sort({ ano: -1 })</div>
+                                <div class="query-badge">Sort</div>
+                            </div>
+                            <div class="query-item">
+                                <div class="query-icon"><i class="fas fa-eye"></i></div>
+                                <div class="query-text">.select('titulo autor')</div>
+                                <div class="query-badge">Select</div>
+                            </div>
+                            <div class="query-item">
+                                <div class="query-icon"><i class="fas fa-bolt"></i></div>
+                                <div class="query-text">.lean() <span class="highlight">Performance</span></div>
+                                <div class="query-badge">Fast</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Best Practices -->
+                <div class="card" style="flex: 1;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title">Boas Práticas</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="best-practices">
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-bolt"></i></div>
+                                <div class="practice-text">Use <span class="highlight">.lean()</span> para consultas
+                                    apenas leitura</div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-search"></i></div>
+                                <div class="practice-text">Crie índices para campos de busca frequentes</div>
+                            </div>
+                            <div class="practice-item">
+                                <div class="practice-icon"><i class="fas fa-shield-alt"></i></div>
+                                <div class="practice-text">Valide dados antes de salvar no banco</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

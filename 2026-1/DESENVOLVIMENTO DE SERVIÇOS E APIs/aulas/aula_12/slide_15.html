@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Fluxo Completo de Autenticação JWT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 36px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .flow-steps {
+            display: flex;
+            gap: 24px;
+            height: 400px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            opacity: 0.5;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .step-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-desc {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .step-details {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-icon {
+            color: #3b82f6;
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .detail-text {
+            font-size: 13.5px;
+            color: #e2e8f0;
+            line-height: 1.2;
+        }
+
+        .token-info {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: auto;
+        }
+
+        .token-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 24px;
+        }
+
+        .token-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .token-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 6px;
+        }
+
+        .token-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .highlight {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .success-check {
+            color: #10b981;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Fluxo Completo de Autenticação JWT</h1>
+                        <p class="subtitle">Processo de login, geração de token e validação de acesso</p>
+                    </div>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Segurança Stateless</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="flow-steps">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Login do Usuário</div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-desc">Cliente envia email e senha para o endpoint <span
+                                    class="highlight">/auth/login</span></div>
+                            <div class="step-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-envelope"></i></div>
+                                    <div class="detail-text">Email: usuario@exemplo.com</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-lock"></i></div>
+                                    <div class="detail-text">Senha: ****** (criptografada)</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-server"></i></div>
+                                    <div class="detail-text">Endpoint: POST /api/auth/login</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Validação de Credenciais</div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-desc">Servidor verifica credenciais e emite JWT válido por <span
+                                    class="highlight">1 hora</span></div>
+                            <div class="step-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-check-circle"></i></div>
+                                    <div class="detail-text">Credenciais válidas</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-key"></i></div>
+                                    <div class="detail-text">Token gerado com assinatura</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-clock"></i></div>
+                                    <div class="detail-text">Expiração: 1h</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Armazenamento do Token</div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-desc">Cliente armazena token e envia em requisições subsequentes</div>
+                            <div class="step-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-save"></i></div>
+                                    <div class="detail-text">Armazenado em localStorage</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-header"></i></div>
+                                    <div class="detail-text">Header: Authorization</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-code"></i></div>
+                                    <div class="detail-text">Bearer &lt;token&gt;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Validação e Acesso</div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-desc">Middleware valida token e autoriza acesso à rota protegida</div>
+                            <div class="step-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-shield-alt"></i></div>
+                                    <div class="detail-text">Token verificado</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-check"></i></div>
+                                    <div class="detail-text">Acesso autorizado</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon"><i class="fas fa-lock-open"></i></div>
+                                    <div class="detail-text">Recurso acessível</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="token-info">
+                    <div class="token-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="token-content">
+                        <div class="token-title">Token JWT Gerado (Exemplo)</div>
+                        <div class="token-text">
+                            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMyIsImVtYWlsIjoidXN1YXJpb0BleGVtcGxvLmNvbSIsImlhdCI6MTY5ODc2NTQzMiwiZXhwIjoxNjk4NzY5MDMyfQ...
+                        </div>
+                    </div>
+                    <div class="success-check">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Anatomia da Requisição HTTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            padding: 1px 0;
+        }
+
+        .line-number {
+            color: #64748b;
+            width: 30px;
+            text-align: right;
+            margin-right: 12px;
+            font-size: 11px;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .http-method {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .http-url {
+            color: #3b82f6;
+        }
+
+        .http-version {
+            color: #f59e0b;
+        }
+
+        .header-key {
+            color: #8b5cf6;
+        }
+
+        .header-value {
+            color: #e2e8f0;
+        }
+
+        .annotation {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            margin: 4px 0;
+        }
+
+        .section-title {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .component-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-10">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-xs font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-1">Anatomia da Requisição HTTP</h1>
+                    <p class="text-gray-400 text-sm">Estrutura completa de uma requisição HTTP</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-sm font-semibold">Request</div>
+                        <div class="text-xs text-gray-400">Método + Headers + Body</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-code text-blue-400 text-lg"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-2 gap-4 flex-1">
+                <!-- Left Column - Code Example -->
+                <div class="flex flex-col gap-3">
+                    <!-- Request Line -->
+                    <div class="component-card flex-1">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-white text-base font-semibold">Linha de Requisição</h3>
+                            <span class="text-xs text-blue-400">GET /products?page=2 HTTP/1.1</span>
+                        </div>
+                        <div class="code-block mb-3">
+                            <div class="code-line">
+                                <span class="line-number">1</span>
+                                <div class="code-content">
+                                    <span class="http-method">GET</span> <span class="http-url">/products?page=2</span>
+                                    <span class="http-version">HTTP/1.1</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">2</span>
+                                <div class="code-content">
+                                    <span class="header-key">Host:</span> <span
+                                        class="header-value">api.example.com</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">3</span>
+                                <div class="code-content">
+                                    <span class="header-key">User-Agent:</span> <span class="header-value">Mozilla/5.0
+                                        (Windows NT 10.0; Win64; x64)</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">4</span>
+                                <div class="code-content">
+                                    <span class="header-key">Accept:</span> <span
+                                        class="header-value">application/json</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">5</span>
+                                <div class="code-content">
+                                    <span class="header-key">Authorization:</span> <span class="header-value">Bearer
+                                        token123</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">6</span>
+                                <div class="code-content">
+                                    <span class="header-key">Content-Type:</span> <span
+                                        class="header-value">application/json</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">7</span>
+                                <div class="code-content"></div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">8</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">{</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">9</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "name": "Product A",</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">10</span>
+                                <div class="code-content">
+                                    <span class="text-gray-400" style="margin-left: 20px;"> "price": 29.99</span>
+                                </div>
+                            </div>
+                            <div class="code-line">
+                                <span class="line-number">11</span>
+                                <div class="code-content">
+                                    <span class="text-green-400">}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Annotations -->
+                        <div class="highlight-box">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-info-circle text-blue-400 text-sm"></i>
+                                <span class="text-white text-xs font-medium">Componentes Principais</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                    <span class="text-gray-300">Método HTTP</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span class="text-gray-300">URL do recurso</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                                    <span class="text-gray-300">Headers</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
+                                    <span class="text-gray-300">Body (opcional)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Right Column - Structure Explanation -->
+                <div class="flex flex-col gap-3">
+                    <!-- Structure Breakdown -->
+                    <div class="component-card flex-1">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-white text-base font-semibold">Estrutura da Requisição</h3>
+                            <span class="text-xs text-gray-400">4 componentes</span>
+                        </div>
+                        <!-- Request Line -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-xs font-medium">1. Linha de Requisição</span>
+                                <span class="text-[10px] text-green-400">Obrigatório</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-green-400 font-mono text-xs">GET</span>
+                                    <span class="text-blue-400 font-mono text-xs">/products?page=2</span>
+                                    <span class="text-yellow-400 font-mono text-xs">HTTP/1.1</span>
+                                </div>
+                                <div class="text-[10px] text-gray-400">
+                                    Método + URL + Versão HTTP
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Headers -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-xs font-medium">2. Headers</span>
+                                <span class="text-[10px] text-blue-400">Metadados</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="grid grid-cols-2 gap-1 text-[11px]">
+                                    <div class="text-gray-300">Host: api.example.com</div>
+                                    <div class="text-gray-300">Accept: application/json</div>
+                                    <div class="text-gray-300">User-Agent: Mozilla/5.0</div>
+                                    <div class="text-gray-300">Authorization: Bearer token</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Body -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-xs font-medium">3. Body (Opcional)</span>
+                                <span class="text-[10px] text-orange-400">Para POST/PUT</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="text-[10px] text-gray-400">
+                                    Dados enviados para o servidor (JSON, XML, etc.)
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Blank Line -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-white text-xs font-medium">4. Linha em Branco</span>
+                                <span class="text-[10px] text-gray-400">Separador</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
+                                <div class="text-[10px] text-gray-400">
+                                    Separa headers do body
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer Section -->
+                <div
+                    class="mt-auto flex justify-between items-center bg-slate-800/30 p-3 rounded-xl border border-slate-700/50">
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-clock text-blue-400 text-sm"></i>
+                            <span class="text-white text-sm">Duração: 45 minutos</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-calendar text-blue-400 text-sm"></i>
+                            <span class="text-white text-sm">Aula 12 de 20</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-400 text-sm">Progresso da aula:</span>
+                        <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <div class="w-3/5 h-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        </div>
+                        <span class="text-white text-sm font-medium">60%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

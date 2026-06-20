@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gradle: Automação de Build</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Montserrat:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-color: #F8F9FA;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Android Brand Colors */
+        .text-android-green { color: #3DDC84; }
+        .bg-android-green { background-color: #3DDC84; }
+        .text-android-navy { color: #073042; }
+        .bg-android-navy { background-color: #073042; }
+        .border-android-green { border-color: #3DDC84; }
+
+        /* Code Editor Theme */
+        .editor-bg { background-color: #2B2D30; }
+        .editor-sidebar { background-color: #1E1F22; border-right: 1px solid #3E4145; }
+        .code-keyword { color: #CC7832; }
+        .code-string { color: #6A8759; }
+        .code-number { color: #6897BB; }
+        .code-comment { color: #808080; }
+        .code-property { color: #9876AA; }
+        .code-function { color: #FFC66D; }
+        .code-text { color: #A9B7C6; }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5vh 1.5vw;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2vh;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateX(5px);
+            border-left-color: #3DDC84;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .icon-box {
+            min-width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background-color: #E8F5E9;
+            color: #3DDC84;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        .code-window {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8vh; /* Responsivo */
+            line-height: 1.5;
+            height: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gradle-logo-bg {
+            position: absolute;
+            bottom: -5vh;
+            right: -5vw;
+            font-size: 30vh;
+            color: #073042;
+            opacity: 0.03;
+            transform: rotate(-15deg);
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 relative">
+    <i class="fas fa-hammer gradle-logo-bg"></i>
+    
+    <div class="flex w-full h-full p-12 gap-10 relative z-10">
+        <div class="w-5/12 flex flex-col justify-center h-full">
+            <div class="mb-8">
+                <div class="flex items-center mb-2">
+                    <img alt="Android Logo" class="h-8 mr-3 opacity-80"
+                        src="https://www.genspark.ai/image_placeholder.png" />
+                    <span class="text-sm font-bold text-gray-500 tracking-widest uppercase">Ferramentas de Build</span>
+                </div>
+                <h1 class="text-5xl font-extrabold text-android-navy font-montserrat leading-tight mb-4">
+                    Gradle
+                </h1>
+                <p class="text-2xl text-gray-600 font-light">Sua "linha de montagem" automatizada.</p>
+            </div>
+            
+            <div class="flex flex-col justify-between flex-grow max-h-[50vh]">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-cogs"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">Automação Completa</h3>
+                        <p class="text-sm text-gray-500">Compila código, processa recursos, roda testes e empacota tudo em um APK ou AAB.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-cubes"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">Gestão de Dependências</h3>
+                        <p class="text-sm text-gray-500">Baixa e gerencia bibliotecas externas (Retrofit, Room, Coil) automaticamente.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-tachometer-alt"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-1 text-lg">Build Types &amp; Flavors</h3>
+                        <p class="text-sm text-gray-500">Gera versões diferentes (Debug vs Release, Free vs Pro) do mesmo código.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p class="text-sm text-blue-800 flex items-center">
+                    <i class="fas fa-lightbulb mr-3 text-blue-500 text-lg"></i>
+                    <strong>Dica:</strong> O Gradle usa cache e build incremental para não recompilar o que não mudou.
+                </p>
+            </div>
+        </div>
+
+        <div class="w-7/12 flex flex-col justify-center items-center h-full">
+            <div class="code-window w-full editor-bg">
+                <div class="bg-[#2B2D30] px-4 py-3 flex items-center border-b border-[#1E1F22] flex-shrink-0">
+                    <div class="flex space-x-2 mr-4">
+                        <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+                    </div>
+                    <span class="text-gray-400 text-xs font-mono ml-2">build.gradle.kts (Module: app)</span>
+                </div>
+                
+                <div class="flex flex-1 overflow-hidden">
+                    <div class="editor-sidebar w-9 flex flex-col items-end pr-2 text-gray-600 select-none flex-shrink-0" style="font-size: 13px;">
+                        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+                        <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+                        <div>21</div><div>22</div><div>23</div>
+                    </div>
+                    
+                    <div class="p-4 overflow-auto code-text w-full" style="font-family: 'Courier New', Courier, monospace;">
+                        <div class="mb-4">
+                            <span class="code-keyword">plugins</span> {
+                            <span class="code-function">id</span>(<span class="code-string">"com.android.application"</span>)
+                            <span class="code-function">id</span>(<span class="code-string">"org.jetbrains.kotlin.android"</span>)
+                            }
+                        </div>
+                        <div class="mb-4">
+                            <span class="code-keyword">android</span> {
+                            <span class="code-property">namespace</span> = <span class="code-string">"com.example.myapp"</span>
+                            <span class="code-property">compileSdk</span> = <span class="code-number">34</span>
+                            <span class="code-keyword">defaultConfig</span> {
+                                <span class="code-property">applicationId</span> = <span class="code-string">"com.example.myapp"</span>
+                                <span class="code-property">minSdk</span> = <span class="code-number">24</span> <span class="code-comment">// Android 7.0+</span>
+                                <span class="code-property">targetSdk</span> = <span class="code-number">34</span>
+                                <span class="code-property">versionCode</span> = <span class="code-number">1</span>
+                                <span class="code-property">versionName</span> = <span class="code-string">"1.0"</span>
+                            }
+
+                            <span class="code-keyword">buildTypes</span> {
+                                <span class="code-function">release</span> {
+                                <span class="code-property">isMinifyEnabled</span> = <span class="code-keyword">true</span>
+                                <span class="code-function">proguardFiles</span>(...)
+                                }
+                            }
+                            }
+                        </div>
+                        <div>
+                            <span class="code-keyword">dependencies</span> {
+                            <span class="code-comment">// Android Core &amp; UI</span>
+                            <span class="code-function">implementation</span>(<span class="code-string">"androidx.core:core-ktx:1.12.0"</span>)
+                            <span class="code-function">implementation</span>(<span class="code-string">"androidx.appcompat:appcompat:1.6.1"</span>)
+
+                            <span class="code-comment">// Networking</span>
+                            <span class="code-function">implementation</span>(<span class="code-string">"com.squareup.retrofit2:retrofit:2.9.0"</span>)
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-[#1E1F22] px-4 py-1 flex justify-between items-center text-[10px] text-gray-500 border-t border-[#3E4145] flex-shrink-0">
+                    <div>Kotlin Script</div>
+                    <div>UTF-8</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

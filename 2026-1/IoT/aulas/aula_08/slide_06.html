@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modo Access Point (AP) - Detalhado</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .concept-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .highlight {
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .topology-diagram {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .topology-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .topology-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 55px;
+            height: 55px;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(33, 150, 243, 0.5);
+        }
+
+        .step-icon i {
+            font-size: 22px;
+            color: #2196F3;
+        }
+
+        .step-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .step-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+        }
+
+        .gateway-info {
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .gateway-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .gateway-value {
+            color: #00BCD4;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .use-case {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .use-case-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .use-case-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .tech-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .spec-item {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spec-icon {
+            color: #2196F3;
+            font-size: 18px;
+        }
+
+        .spec-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .spec-value {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .security-practices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .practice-icon {
+            color: #00BCD4;
+            font-size: 15px;
+        }
+
+        .practice-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Modo Access Point (AP)</div>
+                    <div class="subtitle">ESP32 como ponto de acesso Wi-Fi</div>
+                </div>
+                <div class="status-pill"
+                    style="background: rgba(33, 150, 243, 0.1); padding: 10px 25px; border-radius: 30px; border: 1px solid rgba(33, 150, 243, 0.2); display: flex; align-items: center;">
+                    <i class="fas fa-broadcast-tower" style="color: #2196F3; font-size: 18px; margin-right: 12px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 15px;">SoftAP</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="card-title">Conceito</div>
+                        </div>
+                        <div class="concept-text">
+                            O ESP32 atua como <span class="highlight">ponto de acesso Wi-Fi</span>, criando sua própria
+                            rede para que outros dispositivos se conectem. Ideal para <span
+                                class="highlight">configuração inicial</span>, <span class="highlight">captive
+                                portal</span> e controle local sem internet.
+                        </div>
+                        <div class="topology-diagram">
+                            <div class="topology-container">
+                                <div class="topology-step">
+                                    <div class="step-icon"><i class="fas fa-mobile-alt"></i></div>
+                                    <div class="step-label">Dispositivos</div>
+                                    <div class="step-desc">Clientes</div>
+                                </div>
+                                <div class="topology-step" style="flex: 0.5;">
+                                    <i class="fas fa-arrow-right" style="color: #2196F3; font-size: 20px;"></i>
+                                </div>
+                                <div class="topology-step">
+                                    <div class="step-icon"><i class="fas fa-microchip"></i></div>
+                                    <div class="step-label">ESP32</div>
+                                    <div class="step-desc">SoftAP Mode</div>
+                                </div>
+                            </div>
+                            <div class="gateway-info">
+                                <div class="gateway-label">Gateway:</div>
+                                <div class="gateway-value">192.168.4.1</div>
+                                <div class="gateway-label">| DHCP:</div>
+                                <div class="gateway-value">192.168.4.2-254</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="flex-grow: 1;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-list-check"></i></div>
+                            <div class="card-title">Casos de Uso</div>
+                        </div>
+                        <div class="use-cases">
+                            <div class="use-case">
+                                <div class="use-case-title">
+                                    <i class="fas fa-cog" style="color: #00BCD4;"></i>
+                                    <span>Configuração Inicial</span>
+                                </div>
+                                <div class="use-case-desc">Setup inicial sem internet, captive portal</div>
+                            </div>
+                            <div class="use-case">
+                                <div class="use-case-title">
+                                    <i class="fas fa-shield-alt" style="color: #00BCD4;"></i>
+                                    <span>Rede Local</span>
+                                </div>
+                                <div class="use-case-desc">Controle offline, painel embarcado</div>
+                            </div>
+                            <div class="use-case">
+                                <div class="use-case-title">
+                                    <i class="fas fa-wifi" style="color: #00BCD4;"></i>
+                                    <span>Isolamento</span>
+                                </div>
+                                <div class="use-case-desc">Rede privada, segurança extra</div>
+                            </div>
+                            <div class="use-case">
+                                <div class="use-case-title">
+                                    <i class="fas fa-tools" style="color: #00BCD4;"></i>
+                                    <span>Manutenção</span>
+                                </div>
+                                <div class="use-case-desc">Diagnóstico e debugging em campo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="card-title">Características Técnicas</div>
+                        </div>
+                        <div class="tech-specs">
+                            <div class="spec-item">
+                                <i class="fas fa-users spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Clientes Máx</div>
+                                    <div class="spec-value">4-8 dispositivos</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-network-wired spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">DHCP</div>
+                                    <div class="spec-value">Servidor Interno</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-lock spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Segurança</div>
+                                    <div class="spec-value">WPA2 Personal</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-broadcast-tower spec-icon"></i>
+                                <div class="spec-text">
+                                    <div class="spec-label">Canais</div>
+                                    <div class="spec-value">1-13 (2.4GHz)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="flex-grow: 1;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="card-title">Boas Práticas de Segurança</div>
+                        </div>
+                        <div class="security-practices">
+                            <div class="practice-item">
+                                <i class="fas fa-key practice-icon"></i>
+                                <div class="practice-text">Senha robusta ≥ 8 caracteres (WPA2)</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-eye-slash practice-icon"></i>
+                                <div class="practice-text">Ocultar SSID após configuração concluída</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-clock practice-icon"></i>
+                                <div class="practice-text">Desativar AP após provisionamento inicial</div>
+                            </div>
+                            <div class="practice-item">
+                                <i class="fas fa-power-off practice-icon"></i>
+                                <div class="practice-text">Ajustar potência de rádio conforme ambiente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Escaneamento de Redes</span>
+            </div>
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

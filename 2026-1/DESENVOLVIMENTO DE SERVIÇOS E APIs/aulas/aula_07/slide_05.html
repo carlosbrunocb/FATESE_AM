@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>O que é JSON? - Definição, Características e Vantagens</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Open+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            transform: skewY(-1.5deg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            padding: 35px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 36px;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 155px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 0 50px;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .left-column {
+            flex: 1.3;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18pt;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 17pt;
+            color: #1a365d;
+        }
+
+        .card-content {
+            font-size: 13pt;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .highlight {
+            color: #2c5282;
+            font-weight: 700;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13pt;
+            color: #4a5568;
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item i {
+            color: #3182ce;
+            font-size: 11pt;
+            margin-top: 3px;
+        }
+
+        .feature-item strong {
+            color: #1a365d;
+        }
+
+        .code-block {
+            background: #1a365d;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12pt;
+            color: #e2e8f0;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .code-line {
+            margin-bottom: 5px;
+        }
+
+        .code-comment {
+            color: #68d391;
+        }
+
+        .code-string {
+            color: #f6e05e;
+        }
+
+        .code-number {
+            color: #fc8181;
+        }
+
+        .code-key {
+            color: #63b3ed;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+            z-index: 4;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 22px;
+            right: 50px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .advantage-item {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .advantage-icon {
+            color: #38a169;
+            font-size: 14pt;
+        }
+
+        .advantage-text {
+            font-size: 12pt;
+            color: #2f855a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div>
+                <div class="page-title">
+                    <i class="fas fa-file-code"></i> O que é JSON?
+                </div>
+                <div class="page-subtitle">
+                    JavaScript Object Notation - Definição, características e vantagens
+                </div>
+            </div>
+            <div style="text-align: right; color: white;">
+                <div style="font-size: 15px; font-weight: 600;">Aula 07</div>
+                <div style="font-size: 14px; opacity: 0.85; margin-top: 2px;">Formatos de Dados</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="card-title">Definição</div>
+                        </div>
+                        <div class="card-content">
+                            <span class="highlight">JSON (JavaScript Object Notation)</span> é um formato leve de troca
+                            de dados, legível por humanos e fácil de processar por máquinas. É derivado da sintaxe do
+                            JavaScript e se tornou o padrão de facto para APIs REST.
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Tipos nativos:</strong> string, number, boolean, null, object,
+                                    array</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Sintaxe enxuta:</strong> Estrutura chave-valor e arrays</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Serialização:</strong> JSON.stringify() para converter em string</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Desserialização:</strong> JSON.parse() para converter em objeto</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-code"></i></div>
+                            <div class="card-title">Exemplo JSON</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line">{</div>
+                            <div class="code-line"> <span class="code-key">"id"</span>: <span
+                                    class="code-number">1</span>,</div>
+                            <div class="code-line"> <span class="code-key">"titulo"</span>: <span
+                                    class="code-string">"1984"</span>,</div>
+                            <div class="code-line"> <span class="code-key">"autor"</span>: <span
+                                    class="code-string">"George Orwell"</span>,</div>
+                            <div class="code-line"> <span class="code-key">"ano"</span>: <span
+                                    class="code-number">1949</span>,</div>
+                            <div class="code-line"> <span class="code-key">"disponivel"</span>: <span
+                                    class="code-number">true</span>,</div>
+                            <div class="code-line"> <span class="code-key">"tags"</span>: [<span
+                                    class="code-string">"distopia"</span>, <span class="code-string">"clássico"</span>]
+                            </div>
+                            <div class="code-line">}</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div class="right-column">
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-star"></i></div>
+                            <div class="card-title">Vantagens do JSON</div>
+                        </div>
+                        <div class="advantages-grid">
+                            <div class="advantage-item">
+                                <div class="advantage-icon"><i class="fas fa-bolt"></i></div>
+                                <div class="advantage-text">Menor verbosidade</div>
+                            </div>
+                            <div class="advantage-item">
+                                <div class="advantage-icon"><i class="fas fa-rocket"></i></div>
+                                <div class="advantage-text">Parseamento rápido</div>
+                            </div>
+                            <div class="advantage-item">
+                                <div class="advantage-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <div class="advantage-text">Ideal para mobile</div>
+                            </div>
+                            <div class="advantage-item">
+                                <div class="advantage-icon"><i class="fas fa-globe"></i></div>
+                                <div class="advantage-text">Suporte universal</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 25px; font-size: 13pt; color: #4a5568;">
+                            <i class="fas fa-info-circle" style="color: #3182ce;"></i> <span class="highlight">JSON é o
+                                formato preferido</span> para APIs REST e SPAs
+                        </div>
+                    </div>
+                    <div class="info-card" style="height: auto;">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="card-title">Limitações e Atenções</div>
+                        </div>
+                        <div class="feature-list" style="margin-top: 10px;">
+                            <div class="feature-item">
+                                <i class="fas fa-times-circle" style="color: #e53e3e;"></i>
+                                <span><strong>Sem comentários:</strong> JSON não suporta comentários</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-times-circle" style="color: #e53e3e;"></i>
+                                <span><strong>Sem tipo Date:</strong> Use ISO 8601 para datas</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-times-circle" style="color: #e53e3e;"></i>
+                                <span><strong>Segurança:</strong> Nunca use eval() para parse</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-info">
+            Desenvolvimento de Serviços e APIs | Aula 07
+        </div>
+        <div class="status-bar"></div>
+    </div>
+</body>
+
+</html>

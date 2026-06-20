@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 04 - Leitura do LDR</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Open+Sans:wght@400;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            transform-origin: top left;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        /* Syntax Highlighting Classes */
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        /* int, void, const, float */
+        .code-control {
+            color: #c586c0;
+        }
+
+        /* if, else, return */
+        .code-function {
+            color: #dcdcaa;
+        }
+
+        /* setup, loop, pinMode */
+        .code-number {
+            color: #b5cea8;
+        }
+
+        /* 34, 115200 */
+        .code-string {
+            color: #ce9178;
+        }
+
+        /* "Valor:" */
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* // comments */
+        .code-type {
+            color: #4ec9b0;
+        }
+
+        /* Serial */
+        .code-plain {
+            color: #d4d4d4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 40px; top: 40px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 40px; top: 680px; width: 1200px; height: 4px; background-color: #e0e0e0; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 0; top: 40px; width: 150px; height: 4px; background-color: #004080; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 1200px; top: 650px; width: 40px; height: 30px; z-index: 10; text-align: right;">
+            <p style="font-family: 'Open Sans', sans-serif; font-size: 14px; color: #999;">21</p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 60px; width: 1000px; height: 60px; z-index: 10;">
+            <p style="font-family: 'Roboto', sans-serif; font-size: 48px; color: #004080; font-weight: 700;">
+                Leitura do LDR - Exemplo
+            </p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 120px; width: 1000px; height: 40px; z-index: 10;">
+            <p style="font-family: 'Open Sans', sans-serif; font-size: 20px; color: #555; font-weight: 400;">
+                Monitoramento de luminosidade com conversão de dados para escala percentual.
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 190px; width: 680px; height: 480px; background-color: #1e1e1e; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 80px; top: 190px; width: 680px; height: 36px; background-color: #252526; border-top-left-radius: 8px; border-top-right-radius: 8px; z-index: 2;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 95px; top: 202px; width: 12px; height: 12px; background-color: #ff5f56; border-radius: 50%; z-index: 3;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 115px; top: 202px; width: 12px; height: 12px; background-color: #ffbd2e; border-radius: 50%; z-index: 3;">
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 135px; top: 202px; width: 12px; height: 12px; background-color: #27c93f; border-radius: 50%; z-index: 3;">
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 0; top: 198px; width: 1280px; height: 20px; z-index: 3; text-align: center; pointer-events: none;">
+            <p style="font-family: 'Open Sans', sans-serif; font-size: 12px; color: #999; margin-left: -520px;">
+                leitura_ldr.ino</p>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 100px; top: 235px; width: 640px; height: 425px; z-index: 10;">
+            <p
+                style="font-family: 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.4; color: #d4d4d4;">
+                <span class="code-comment">// Pino onde está o nó do divisor de tensão</span><br />
+                <span class="code-keyword">const</span> <span class="code-keyword">int</span> <span
+                    class="code-plain">pinoLDR</span> = <span class="code-number">32</span>; <br />
+                <br />
+                <span class="code-keyword">void</span> <span class="code-function">setup</span>() {<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">begin</span>(<span
+                    class="code-number">115200</span>);<br />
+                &nbsp;&nbsp;<span class="code-function">pinMode</span>(<span class="code-plain">pinoLDR</span>, <span
+                    class="code-keyword">INPUT</span>);<br />
+                }<br />
+                <br />
+                <span class="code-keyword">void</span> <span class="code-function">loop</span>() {<br />
+                &nbsp;&nbsp;<span class="code-comment">// 1. Leitura bruta (0 a 4095)</span><br />
+                &nbsp;&nbsp;<span class="code-keyword">int</span> <span class="code-plain">leitura</span> = <span
+                    class="code-function">analogRead</span>(<span class="code-plain">pinoLDR</span>);<br />
+                <br />
+                &nbsp;&nbsp;<span class="code-comment">// 2. Conversão para porcentagem (aprox.)</span><br />
+                &nbsp;&nbsp;<span class="code-comment">// Assumindo montagem: +Luz -&gt; +Tensão</span><br />
+                &nbsp;&nbsp;<span class="code-keyword">float</span> <span class="code-plain">porcentagem</span> = (<span
+                    class="code-plain">leitura</span> / <span class="code-number">4095.0</span>) * <span
+                    class="code-number">100.0</span>;<br />
+                &nbsp;&nbsp;<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">print</span>(<span
+                    class="code-string">"LDR Bruto: "</span>);<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">print</span>(<span
+                    class="code-plain">leitura</span>);<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">print</span>(<span
+                    class="code-string">" | Luz: "</span>);<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">print</span>(<span
+                    class="code-plain">porcentagem</span>);<br />
+                &nbsp;&nbsp;<span class="code-type">Serial</span>.<span class="code-function">println</span>(<span
+                    class="code-string">"%"</span>);<br />
+                &nbsp;&nbsp;<br />
+                &nbsp;&nbsp;<span class="code-function">delay</span>(<span class="code-number">500</span>);<br />
+                }
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 800px; top: 190px; width: 420px; height: 110px; background-color: #e3f2fd; border-left: 5px solid #1976d2; border-radius: 4px; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 820px; top: 205px; width: 30px; height: 30px; z-index: 10; color: #1976d2;">
+            <i class="fa-solid fa-bolt" style="font-size: 24px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 860px; top: 200px; width: 340px; height: 90px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #0d47a1; font-weight: 700; margin-bottom: 5px;">
+                O Divisor de Tensão</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 14px; color: #333; line-height: 1.4;">
+                O LDR varia resistência, não voltagem. É necessário um resistor fixo (10kΩ) em série para criar um nó de
+                tensão mensurável no pino 32.
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 800px; top: 320px; width: 420px; height: 110px; background-color: #fff3e0; border-left: 5px solid #f57c00; border-radius: 4px; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 820px; top: 335px; width: 30px; height: 30px; z-index: 10; color: #f57c00;">
+            <i class="fa-solid fa-calculator" style="font-size: 24px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 860px; top: 330px; width: 340px; height: 90px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #e65100; font-weight: 700; margin-bottom: 5px;">
+                Normalização de Dados</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 14px; color: #333; line-height: 1.4;">
+                Transformamos a escala abstrata (0-4095) em algo legível (0-100%) usando regra de três. A leitura
+                <code>analogRead</code> retorna <code>int</code>, então divida por <code>4095.0</code> (float).
+            </p>
+        </div>
+        <div data-object="true" data-object-type="shape"
+            style="position: absolute; left: 800px; top: 450px; width: 420px; height: 160px; background-color: #f3e5f5; border-left: 5px solid #ab47bc; border-radius: 4px; z-index: 1;">
+        </div>
+        <div data-object="true" data-object-type="icon"
+            style="position: absolute; left: 820px; top: 465px; width: 30px; height: 30px; z-index: 10; color: #ab47bc;">
+            <i class="fa-solid fa-lightbulb" style="font-size: 24px;"></i>
+        </div>
+        <div data-object="true" data-object-type="textbox"
+            style="position: absolute; left: 860px; top: 460px; width: 340px; height: 140px; z-index: 10;">
+            <p
+                style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #7b1fa2; font-weight: 700; margin-bottom: 5px;">
+                Comportamento da Luz</p>
+            <p style="font-family: 'Roboto', sans-serif; font-size: 14px; color: #333; line-height: 1.4;">
+                Na configuração LDR no VCC e Resistor no GND:<br />
+                • <strong>Mais Luz</strong> = Menor Resistência LDR = <strong>Maior Tensão</strong> (Valor perto de
+                4095).<br />
+                • <strong>Escuro</strong> = Maior Resistência LDR = <strong>Menor Tensão</strong> (Valor perto de 0).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function redimensionarSlide() {
+            const slide = document.querySelector('.slide-container');
+            const larguraOriginal = 1280;
+            const alturaOriginal = 720;
+            const larguraJanela = window.innerWidth;
+
+            // Calcula a proporção baseada na largura atual da tela
+            const proporcao = larguraJanela / larguraOriginal;
+
+            // Aplica a escala via CSS transform
+            slide.style.transform = `scale(${proporcao})`;
+
+            // Ajusta a altura da página para acomodar o slide redimensionado, permitindo o scroll vertical (overflow-y)
+            document.body.style.minHeight = `${alturaOriginal * proporcao}px`;
+        }
+
+        // Executa ao carregar a página
+        window.addEventListener('DOMContentLoaded', redimensionarSlide);
+        
+        // Executa toda vez que a janela for redimensionada
+        window.addEventListener('resize', redimensionarSlide);
+    </script>
+</body>
+
+</html>

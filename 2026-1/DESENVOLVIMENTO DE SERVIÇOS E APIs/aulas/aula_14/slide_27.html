@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boas Práticas de Documentação de APIs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: #94a3b8;
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .course-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .course-info span {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            z-index: 10;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-left: 40px;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .practice-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.3s ease;
+            height: 180px;
+        }
+
+        .practice-card:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .practice-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .practice-content {
+            flex: 1;
+        }
+
+        .practice-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .practice-desc {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .practice-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: #3b82f6;
+            font-size: 12px;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .checklist-item i {
+            color: #10b981;
+            font-size: 12px;
+        }
+
+        .bottom-section {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .tip-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tip-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 20px;
+        }
+
+        .tip-content {
+            flex: 1;
+        }
+
+        .tip-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tip-text {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: #3b82f6;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-indicator i {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="logo-text">
+                    FATESE
+                    <span>Faculdade de Tecnologia</span>
+                </div>
+            </div>
+            <div class="course-info">
+                <span>Aula 14</span> • Boas Práticas de Documentação
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div>
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-check-circle"></i>
+                        Boas Práticas de Documentação de APIs
+                    </div>
+                </div>
+                <div class="section-subtitle">
+                    Diretrizes essenciais para criar documentação clara, completa e útil para desenvolvedores
+                </div>
+            </div>
+            <div class="practices-grid">
+                <div class="practice-card">
+                    <div class="practice-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="practice-content">
+                        <div class="practice-title">
+                            Descrição Clara de Parâmetros
+                            <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 12px;"></i>
+                        </div>
+                        <div class="practice-desc">
+                            Documente todos os parâmetros com tipos, exemplos e descrições detalhadas. Inclua
+                            informações sobre valores obrigatórios vs opcionais.
+                        </div>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Nome, tipo e descrição</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Exemplos de valores válidos</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Indique parâmetros obrigatórios</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-card">
+                    <div class="practice-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="practice-content">
+                        <div class="practice-title">
+                            Tratamento de Erros
+                            <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 12px;"></i>
+                        </div>
+                        <div class="practice-desc">
+                            Documente todos os códigos de erro possíveis com mensagens claras e payloads de erro
+                            padronizados para facilitar o debug.
+                        </div>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Códigos HTTP (400, 401, 403, 500)</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Mensagens de erro descritivas</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Exemplos de respostas de erro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-card">
+                    <div class="practice-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="practice-content">
+                        <div class="practice-title">
+                            Organização e Tags
+                            <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 12px;"></i>
+                        </div>
+                        <div class="practice-desc">
+                            Use tags para agrupar endpoints relacionados. Defina servers para diferentes ambientes (dev,
+                            staging, prod).
+                        </div>
+                        <div class="practice-tags">
+                            <span class="tag">Tags</span>
+                            <span class="tag">Servers</span>
+                            <span class="tag">Versionamento</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-card">
+                    <div class="practice-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="practice-content">
+                        <div class="practice-title">
+                            Schemas Reutilizáveis
+                            <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 12px;"></i>
+                        </div>
+                        <div class="practice-desc">
+                            Defina schemas reutilizáveis em components/schemas para evitar duplicação e garantir
+                            consistência.
+                        </div>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Schemas em components</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check"></i>
+                                <span>Referências com $ref</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="tip-content">
+                        <div class="tip-title">Dica: Documentação Viva</div>
+                        <div class="tip-text">Mantenha a documentação atualizada com o código. Use CI/CD para validar e
+                            publicar automaticamente.</div>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="tip-content">
+                        <div class="tip-title">Automação</div>
+                        <div class="tip-text">Automatize validação de specs e geração de clientes/SDKs a partir da
+                            documentação.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

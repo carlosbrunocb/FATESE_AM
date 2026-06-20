@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Métodos HTTP e Endpoints</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+
+        /* Container principal agora é um Flexbox vertical que ocupa a tela toda */
+        .slide-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .method-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 14px 20px;
+            transition: all 0.3s ease;
+            display: grid;
+            /* Grid responsiva: em telas pequenas vira lista, em grandes vira tabela */
+            grid-template-columns: 1fr; 
+            gap: 10px;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .method-card, .table-header {
+                grid-template-columns: 120px 1fr 120px 160px;
+                gap: 15px;
+            }
+        }
+
+        .method-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            min-width: 65px;
+        }
+
+        .status-code {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .http-get { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .http-post { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .http-put { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .http-patch { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .http-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .status-2xx { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-4xx { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .status-5xx { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .table-header {
+            display: none; /* Escondido no mobile */
+            background: rgba(30, 41, 59, 0.8);
+            padding: 14px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            .table-header { display: grid; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="w-full bg-slate-900/80 border-b border-white/10 px-6 md:px-12 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-exchange-alt text-blue-500 text-2xl"></i>
+                <span class="text-lg md:text-xl font-semibold">Métodos HTTP e Endpoints</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-4 text-slate-400 text-sm">
+                <span>Aula 11</span>
+                <span class="opacity-30">|</span>
+                <span>REST APIs</span>
+            </div>
+        </header>
+
+        <main class="flex-grow flex flex-col mx-auto w-full p-6 md:p-10 gap-8">
+            
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3">
+                    <i class="fas fa-network-wired text-blue-500 mr-3"></i>Métodos HTTP para APIs REST
+                </h1>
+                <p class="text-slate-400 text-lg">
+                    Compreenda os métodos HTTP mais utilizados e seus códigos de status
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <div class="table-header">
+                    <div>Método</div>
+                    <div>Descrição & Exemplo</div>
+                    <div class="text-center">Idempotente</div>
+                    <div class="text-center">Status Code</div>
+                </div>
+
+                <div class="method-card">
+                    <div><span class="method-badge http-get">GET</span></div>
+                    <div>
+                        <div class="text-slate-100 font-medium"><strong>Buscar dados</strong> - Recupera recursos</div>
+                        <div class="text-xs text-slate-400 font-mono mt-1">GET /api/v1/clima?lat=-3.11&lon=-60.02</div>
+                    </div>
+                    <div class="text-center text-emerald-400 text-sm md:block flex justify-between">
+                        <span class="md:hidden text-slate-500">Idempotente:</span>
+                        <span><i class="fas fa-check-circle"></i> Sim</span>
+                    </div>
+                    <div class="text-center"><span class="status-code status-2xx">200 OK</span></div>
+                </div>
+
+                <div class="method-card">
+                    <div><span class="method-badge http-post">POST</span></div>
+                    <div>
+                        <div class="text-slate-100 font-medium"><strong>Criar recurso</strong> - Envia novos dados</div>
+                        <div class="text-xs text-slate-400 font-mono mt-1">POST /api/v1/sensores {"temp":28.5}</div>
+                    </div>
+                    <div class="text-center text-red-400 text-sm md:block flex justify-between">
+                        <span class="md:hidden text-slate-500">Idempotente:</span>
+                        <span><i class="fas fa-times-circle"></i> Não</span>
+                    </div>
+                    <div class="text-center"><span class="status-code status-2xx">201 Created</span></div>
+                </div>
+
+                <div class="method-card">
+                    <div><span class="method-badge http-put">PUT</span></div>
+                    <div>
+                        <div class="text-slate-100 font-medium"><strong>Atualizar</strong> - Substitui recurso</div>
+                        <div class="text-xs text-slate-400 font-mono mt-1">PUT /api/v1/dispositivos/123</div>
+                    </div>
+                    <div class="text-center text-emerald-400 text-sm md:block flex justify-between">
+                        <span class="md:hidden text-slate-500">Idempotente:</span>
+                        <span><i class="fas fa-check-circle"></i> Sim</span>
+                    </div>
+                    <div class="text-center"><span class="status-code status-2xx">200 OK</span></div>
+                </div>
+
+                <div class="method-card">
+                    <div><span class="method-badge http-delete">DELETE</span></div>
+                    <div>
+                        <div class="text-slate-100 font-medium"><strong>Remover</strong> - Exclui do servidor</div>
+                        <div class="text-xs text-slate-400 font-mono mt-1">DELETE /api/v1/alertas/77</div>
+                    </div>
+                    <div class="text-center text-emerald-400 text-sm md:block flex justify-between">
+                        <span class="md:hidden text-slate-500">Idempotente:</span>
+                        <span><i class="fas fa-check-circle"></i> Sim</span>
+                    </div>
+                    <div class="text-center"><span class="status-code status-2xx">204 No Content</span></div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-6 p-4 bg-slate-800/50 rounded-lg border border-white/5 w-fit">
+                <div class="flex items-center gap-2">
+                    <span class="status-code status-2xx !min-width-0 px-2 py-1">2xx</span>
+                    <span class="text-sm text-slate-400">Sucesso</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="status-code status-4xx !min-width-0 px-2 py-1">4xx</span>
+                    <span class="text-sm text-slate-400">Erro Cliente</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="status-code status-5xx !min-width-0 px-2 py-1">5xx</span>
+                    <span class="text-sm text-slate-400">Erro Servidor</span>
+                </div>
+            </div>
+        </main>
+
+        <footer class="w-full px-6 md:px-12 py-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 mt-auto">
+            <div class="flex items-center gap-3 text-slate-400 text-sm">
+                <i class="fas fa-info-circle text-blue-500"></i>
+                <span>Foco: Consumo de JSON com ESP32</span>
+            </div>
+            <div class="flex items-center gap-3 text-slate-500 text-xs md:text-sm">
+                <i class="fas fa-calendar-alt"></i>
+                <span>16 de Maio de 2026</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

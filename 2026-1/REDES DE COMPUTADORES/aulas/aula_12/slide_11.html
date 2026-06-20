@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Métodos HTTP - Visão Geral</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            filter: blur(60px);
+        }
+
+        .method-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            transition: transform 0.3s ease, background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .method-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .method-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .method-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .method-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .method-get {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .method-post {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .method-put {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .method-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .method-patch {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .feature-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .feature-icon.safe {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .feature-icon.idempotent {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .feature-icon.cache {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.safe {
+            background: #22c55e;
+        }
+
+        .legend-dot.idempotent {
+            background: #3b82f6;
+        }
+
+        .legend-dot.cache {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Pattern -->
+        <div class="grid-pattern"></div>
+        <!-- Glow Effect -->
+        <div class="glow-effect"></div>
+        <!-- Main Content -->
+        <div class="relative z-10 h-full flex flex-col p-10">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span class="text-emerald-400 text-sm font-medium">Aula 12 • Redes de Computadores</span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white mb-1">Métodos HTTP - Visão Geral</h1>
+                    <p class="text-gray-400 text-base">Compreenda os métodos HTTP, suas características e quando usá-los
+                    </p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-white text-base font-semibold">5 métodos principais</div>
+                        <div class="text-sm text-gray-400">para operações CRUD</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-code text-blue-400 text-lg"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Grid -->
+            <div class="grid grid-cols-5 gap-4 mb-4 flex-1">
+                <!-- GET Method -->
+                <div class="method-card">
+                    <div class="method-header">
+                        <div class="flex items-center gap-2">
+                            <div class="method-name text-green-400">GET</div>
+                            <span class="method-badge method-get">Safe</span>
+                        </div>
+                        <div class="text-xs text-gray-400">Retrieve</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">Recuperar recursos do servidor</div>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon safe">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="text-gray-300">Safe</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon idempotent">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <span class="text-gray-300">Idempotent</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon cache">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="text-gray-300">Cacheable</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <span class="text-gray-300">Read-only</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- POST Method -->
+                <div class="method-card">
+                    <div class="method-header">
+                        <div class="flex items-center gap-2">
+                            <div class="method-name text-blue-400">POST</div>
+                            <span class="method-badge method-post">Create</span>
+                        </div>
+                        <div class="text-xs text-gray-400">Create</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">Criar novos recursos</div>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Safe</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Idempotent</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon cache">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="text-gray-300">Not Cacheable</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <span class="text-gray-300">Create</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- PUT Method -->
+                <div class="method-card">
+                    <div class="method-header">
+                        <div class="flex items-center gap-2">
+                            <div class="method-name text-yellow-400">PUT</div>
+                            <span class="method-badge method-put">Update</span>
+                        </div>
+                        <div class="text-xs text-gray-400">Replace</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">Atualizar recurso completo</div>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Safe</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon idempotent">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <span class="text-gray-300">Idempotent</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Cacheable</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <span class="text-gray-300">Replace</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- DELETE Method -->
+                <div class="method-card">
+                    <div class="method-header">
+                        <div class="flex items-center gap-2">
+                            <div class="method-name text-red-400">DELETE</div>
+                            <span class="method-badge method-delete">Remove</span>
+                        </div>
+                        <div class="text-xs text-gray-400">Delete</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">Remover recursos</div>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Safe</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon idempotent">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <span class="text-gray-300">Idempotent</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Cacheable</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                            <span class="text-gray-300">Remove</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- PATCH Method -->
+                <div class="method-card">
+                    <div class="method-header">
+                        <div class="flex items-center gap-2">
+                            <div class="method-name text-purple-400">PATCH</div>
+                            <span class="method-badge method-patch">Partial</span>
+                        </div>
+                        <div class="text-xs text-gray-400">Modify</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">Atualização parcial</div>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Safe</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Idempotent</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <span class="text-gray-300">Not Cacheable</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <span class="text-gray-300">Partial</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Section -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Left: Characteristics -->
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-white text-sm font-semibold">Características dos Métodos</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="legend-item mb-0">
+                                <div class="legend-dot safe"></div>
+                                <span class="text-xs text-gray-300">Safe</span>
+                            </div>
+                            <div class="legend-item mb-0">
+                                <div class="legend-dot idempotent"></div>
+                                <span class="text-xs text-gray-300">Idempotent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white/5 rounded-lg p-3">
+                            <div class="text-green-400 text-xs font-medium mb-1">Safe Methods</div>
+                            <div class="text-xs text-gray-300">GET, HEAD, OPTIONS, TRACE</div>
+                            <div class="text-[11px] text-gray-400 mt-1">Não modificam recursos</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-3">
+                            <div class="text-blue-400 text-xs font-medium mb-1">Idempotent</div>
+                            <div class="text-xs text-gray-300">GET, PUT, DELETE</div>
+                            <div class="text-[11px] text-gray-400 mt-1">Mesmo resultado ao repetir</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-3">
+                            <div class="text-yellow-400 text-xs font-medium mb-1">Not Safe</div>
+                            <div class="text-xs text-gray-300">POST, PUT, DELETE, PATCH</div>
+                            <div class="text-[11px] text-gray-400 mt-1">Podem modificar recursos</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Best Practices -->
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-white text-sm font-semibold">Boas Práticas</h3>
+                        <span class="text-xs text-gray-400">RESTful API</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+                        <div class="flex items-center gap-2 text-xs text-gray-300">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            <span>Use GET para recuperar dados</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-gray-300">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            <span>Use POST para criar recursos</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-gray-300">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            <span>Use PUT para atualizar completamente</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-gray-300">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            <span>Use PATCH para atualização parcial</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bcrypt - Hashing de Senhas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 106vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .card-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .card-icon.orange {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .card-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-text {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            border-left: 3px solid #3b82f6;
+            line-height: 1.4;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-keyword {
+            color: #3b82f6;
+        }
+
+        .code-string {
+            color: #10b981;
+        }
+
+        .highlight-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 12px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .process-step {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin: 0 auto 8px;
+        }
+
+        .step-text {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .arrow-icon {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .stats-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .stats-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            border-radius: 4px;
+        }
+
+        .security-level {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .level-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .level-value {
+            font-size: 13px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table td {
+            color: #e2e8f0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .status-dot.green {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">Bcrypt - Hashing de Senhas</h1>
+                        <p class="subtitle">Criptografia segura com salt e rounds</p>
+                    </div>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Hashing Seguro</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="concept-card" style="flex: 1.4;">
+                        <div class="card-header">
+                            <div class="card-icon blue">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="card-title">O que é Bcrypt?</div>
+                        </div>
+                        <div class="card-text">
+                            Bcrypt é um algoritmo de hashing de senhas que aplica um salt aleatório e um fator de custo
+                            (rounds) para tornar o processo de hashing mais lento e resistente a ataques de força bruta.
+                        </div>
+                        <div class="code-block">
+                            <span class="code-comment">// Instalação</span><br />
+                            <span class="code-keyword">npm install</span> <span
+                                class="code-string">bcryptjs</span><br /><br />
+                            <span class="code-comment">// Hashing de senha</span><br />
+                            <span class="code-keyword">const</span> hash = <span class="code-keyword">await</span>
+                            bcrypt.hash(password, <span class="code-string">10</span>);
+                        </div>
+                        <div class="highlight-box">
+                            <div class="highlight-text">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Usa algoritmo Blowfish adaptado para hashing de senhas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card" style="flex: 0.8;">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="card-title">Processo de Hashing</div>
+                        </div>
+                        <div class="process-flow">
+                            <div class="process-step">
+                                <div class="step-number">1</div>
+                                <div class="step-text">Senha + Salt</div>
+                            </div>
+                            <i class="fas fa-arrow-right arrow-icon"></i>
+                            <div class="process-step">
+                                <div class="step-number">2</div>
+                                <div class="step-text">Rounds (10x)</div>
+                            </div>
+                            <i class="fas fa-arrow-right arrow-icon"></i>
+                            <div class="process-step">
+                                <div class="step-number">3</div>
+                                <div class="step-text">Hash Final</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="concept-card" style="flex: 1;">
+                        <div class="card-header">
+                            <div class="card-icon orange">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="card-title">Armazenamento Seguro</div>
+                        </div>
+                        <table class="comparison-table">
+                            <tr>
+                                <th>Campo</th>
+                                <th>Tipo</th>
+                                <th>Segurança</th>
+                            </tr>
+                            <tr>
+                                <td>senha</td>
+                                <td>String</td>
+                                <td><span class="status-dot green"></span>Hash</td>
+                            </tr>
+                            <tr>
+                                <td>salt</td>
+                                <td>String</td>
+                                <td><span class="status-dot green"></span>Automático</td>
+                            </tr>
+                            <tr>
+                                <td>rounds</td>
+                                <td>Number</td>
+                                <td><span class="status-dot green"></span>10+</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="stats-container">
+                        <div class="stats-header">
+                            <div class="stats-title">Fator de Custo</div>
+                            <div class="stats-value">10 rounds</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%;"></div>
+                        </div>
+                        <div class="security-level">
+                            <div class="level-label">Recomendado: 10-12 rounds</div>
+                            <div class="level-value">Seguro</div>
+                        </div>
+                    </div>
+                    <div class="concept-card" style="flex: 1.1;">
+                        <div class="card-header">
+                            <div class="card-icon purple">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-title">Tempo de Processamento</div>
+                        </div>
+                        <div class="card-text">
+                            A cada aumento de 1 no fator de custo, o tempo de processamento dobra.
+                        </div>
+                        <div class="code-block">
+                            <span class="code-comment">// Comparação de tempo</span><br />
+                            bcrypt.hash(pw, <span class="code-string">8</span>) → ~50ms<br />
+                            bcrypt.hash(pw, <span class="code-string">10</span>) → ~200ms<br />
+                            bcrypt.hash(pw, <span class="code-string">12</span>) → ~800ms
+                        </div>
+                    </div>
+                    <div class="concept-card" style="flex: 0.9;">
+                        <div class="card-header">
+                            <div class="card-icon green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Validação de Senha</div>
+                        </div>
+                        <div class="code-block">
+                            <span class="code-keyword">const</span> isValid = <span class="code-keyword">await</span>
+                            bcrypt.compare(<br />
+                              password,<br />
+                              hashFromDB<br />
+                            );
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

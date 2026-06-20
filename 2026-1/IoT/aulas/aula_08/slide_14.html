@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Conexão Automática - Código Completo</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            width: 93.8%;
+            height: auto;
+            /* Reduced from 620 to avoid bottom overlap */
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #00BCD4;
+            font-weight: 600;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .left-panel,
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .code-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            height: 100%;
+            /* Ensure card fills panel */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5pt;
+            /* Slightly increased for readability since we have space now */
+            line-height: 1.35;
+            color: #ffffff;
+            overflow: hidden;
+            flex: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 1px 0;
+        }
+
+        .line-number {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            width: 20px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .code-content {
+            color: #ffffff;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #8be9fd;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .comment {
+            color: #6272a4;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .output-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .output-title {
+            color: #00BCD4;
+            font-weight: 600;
+            font-size: 12.5pt;
+        }
+
+        .output-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11pt;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            background: transparent;
+            z-index: 20;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .function-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .function-item {
+            background: rgba(33, 150, 243, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .function-name {
+            color: #00BCD4;
+            font-size: 11pt;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .function-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 9pt;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Conexão Automática - Código Completo</div>
+                    <div class="subtitle">Implementação com reconexão automática e tratamento de erros</div>
+                </div>
+                <div class="status-item"
+                    style="background: rgba(0, 188, 212, 0.1); padding: 12px 24px; border-radius: 30px; border: 1px solid rgba(0, 188, 212, 0.2);">
+                    <i class="fas fa-wifi" style="color: #00BCD4; font-size: 20px; margin-right: 10px;"></i>
+                    <span style="color: #fff; font-weight: 600; font-size: 15px;">WiFi.h</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="code-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-file-code"></i></div>
+                            <div class="card-title">Código Fonte</div>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-line"><span class="line-number">1</span><span class="code-content"><span
+                                        class="keyword">#include</span> <span
+                                        class="string">&lt;WiFi.h&gt;</span></span></div>
+                            <div class="code-line"><span class="line-number">2</span><span class="code-content"></span>
+                            </div>
+                            <div class="code-line"><span class="line-number">3</span><span class="code-content"><span
+                                        class="keyword">const char</span>* ssid = <span
+                                        class="string">"Wokwi-GUEST"</span>;</span></div>
+                            <div class="code-line"><span class="line-number">4</span><span class="code-content"><span
+                                        class="keyword">const char</span>* password = <span
+                                        class="string">""</span>;</span></div>
+                            <div class="code-line"><span class="line-number">5</span><span class="code-content"></span>
+                            </div>
+                            <div class="code-line"><span class="line-number">6</span><span class="code-content"><span
+                                        class="keyword">void</span> <span class="function">conectarWiFi</span>() {</span></div>
+                            <div class="code-line"><span class="line-number">7</span><span class="code-content">   <span
+                                        class="function">Serial.print</span>(<span class="string">"Conectando a: "</span>);</span></div>
+                            <div class="code-line"><span class="line-number">8</span><span class="code-content">   <span
+                                        class="function">Serial.println</span>(ssid);</span></div>
+                            <div class="code-line"><span class="line-number">9</span><span class="code-content">   <span
+                                        class="function">WiFi.begin</span>(ssid, password);</span></div>
+                            <div class="code-line"><span class="line-number">10</span><span class="code-content">   <span
+                                        class="keyword">while</span> (<span class="function">WiFi.status</span>() != WL_CONNECTED) {</span></div>
+                            <div class="code-line"><span class="line-number">11</span><span class="code-content">      <span
+                                        class="function">delay</span>(<span class="number">500</span>);</span></div>
+                            <div class="code-line"><span class="line-number">12</span><span class="code-content">      <span
+                                        class="function">Serial.print</span>(<span class="string">"."</span>);</span>
+                            </div>
+                            <div class="code-line"><span class="line-number">13</span><span class="code-content">   }</span></div>
+                            <div class="code-line"><span class="line-number">14</span><span class="code-content">   <span
+                                        class="function">Serial.println</span>(<span
+                                        class="string">"\nConectado!"</span>);</span></div>
+                            <div class="code-line"><span class="line-number">15</span><span class="code-content">   <span
+                                        class="function">Serial.print</span>(<span class="string">"IP: "</span>);</span>
+                            </div>
+                            <div class="code-line"><span class="line-number">16</span><span class="code-content">   <span
+                                        class="function">Serial.println</span>(<span
+                                        class="function">WiFi.localIP</span>());</span></div>
+                            <div class="code-line"><span class="line-number">17</span><span
+                                    class="code-content">}</span></div>
+                            <div class="code-line"><span class="line-number">18</span><span class="code-content"></span>
+                            </div>
+                            <div class="code-line"><span class="line-number">19</span><span class="code-content"><span
+                                        class="keyword">void</span> <span class="function">loop</span>() {</span></div>
+                            <div class="code-line"><span class="line-number">20</span><span class="code-content">   <span
+                                        class="keyword">if</span> (<span class="function">WiFi.status</span>() != WL_CONNECTED) {</span></div>
+                            <div class="code-line"><span class="line-number">21</span><span class="code-content">      <span
+                                        class="function">Serial.println</span>(<span class="string">"Conexão perdida! Reconectando..."</span>);</span></div>
+                            <div class="code-line"><span class="line-number">22</span><span class="code-content">      <span
+                                        class="function">conectarWiFi</span>();</span></div>
+                            <div class="code-line"><span class="line-number">23</span><span class="code-content">   }</span></div>
+                            <div class="code-line"><span class="line-number">24</span><span class="code-content">   <span
+                                        class="function">delay</span>(<span class="number">10000</span>);</span></div>
+                            <div class="code-line"><span class="line-number">25</span><span
+                                    class="code-content">}</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="code-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-terminal"></i></div>
+                            <div class="card-title">Monitor de Saúde</div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-header">
+                                <i class="fas fa-heartbeat" style="color: #4CAF50; font-size: 16px;"></i>
+                                <div class="output-title">Status da Conexão</div>
+                            </div>
+                            <div class="output-content">
+                                <div style="margin-bottom: 6px;"><span style="color: #00BCD4;">Conectando a:
+                                        Wokwi-GUEST</span></div>
+                                <div style="margin-bottom: 6px;">.....</div>
+                                <div style="margin-bottom: 6px;"><span style="color: #4CAF50;">Conectado!</span></div>
+                                <div style="margin-bottom: 6px;">IP: 192.168.4.2</div>
+                                <div style="margin-bottom: 6px;"><span style="color: #FF9800;">Conexão perdida!
+                                        Reconectando...</span></div>
+                                <div>Conectando a: Wokwi-GUEST</div>
+                            </div>
+                        </div>
+                        <div class="function-section">
+                            <div class="function-item">
+                                <div class="function-name">WiFi.begin()</div>
+                                <div class="function-desc">Inicia conexão</div>
+                            </div>
+                            <div class="function-item">
+                                <div class="function-name">WiFi.status()</div>
+                                <div class="function-desc">Verifica estado</div>
+                            </div>
+                            <div class="function-item">
+                                <div class="function-name">WiFi.localIP()</div>
+                                <div class="function-desc">Obtém IP</div>
+                            </div>
+                            <div class="function-item">
+                                <div class="function-name">WiFi.reconnect()</div>
+                                <div class="function-desc">Reconecta</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Aula em andamento</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-arrow-right" style="font-size: 12px; margin-right: 8px;"></i>
+                <span>Próximo: Código Limpo</span>
+            </div>
+            <div class="status-item">
+                <i class="far fa-clock" style="margin-right: 8px;"></i>
+                <span>Duração: 1h 45min</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

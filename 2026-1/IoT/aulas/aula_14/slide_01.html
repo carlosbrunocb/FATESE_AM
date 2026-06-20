@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aula 14 - Plataformas em Nuvem e IoT Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        /* Background decorative elements */
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            padding: 40px 60px 120px 60px;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: rgba(120, 119, 198, 0.2);
+            border: 1px solid rgba(120, 119, 198, 0.4);
+            border-radius: 20px;
+            padding: 8px 24px;
+            margin-bottom: 20px;
+        }
+
+        .module-text {
+            color: #a8a5e6;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .main-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .main-title span {
+            background: linear-gradient(90deg, #a8a5e6, #ffffff);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #a8a5e6;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Info cards */
+        .info-cards {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            flex: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(120, 119, 198, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .card-highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        /* Bottom info bar */
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 60px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .institution-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .institution-logo {
+            width: 40px;
+            height: 40px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 20px;
+        }
+
+        .institution-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .institution-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .professor-info {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .professor-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .professor-contact {
+            color: #a8a5e6;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Decorative elements */
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            opacity: 0.1;
+            background: radial-gradient(circle, rgba(120, 119, 198, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(120, 119, 198, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* Status indicators */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .topic-tags {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .topic-tag {
+            background: rgba(120, 119, 198, 0.1);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 16px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #a8a5e6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="glow-effect"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="module-badge">
+                    <span class="module-text">Módulo IV - Integração com Nuvem e Dashboards</span>
+                </div>
+                <h1 class="main-title">
+                    <span>Plataformas em Nuvem</span><br />
+                    e IoT Analytics
+                </h1>
+                <p class="subtitle">Conectando dispositivos ESP32 à nuvem com TagoIO</p>
+                <p class="description">
+                    Aprenda a integrar dispositivos IoT com plataformas em nuvem,
+                    enviar telemetria em formato JSON e analisar dados de sensores em tempo real.
+                </p>
+                <div class="topic-tags">
+                    <span class="topic-tag"><i class="fas fa-cloud" style="margin-right: 4px;"></i> Cloud</span>
+                    <span class="topic-tag"><i class="fas fa-database" style="margin-right: 4px;"></i> Telemetria</span>
+                    <span class="topic-tag"><i class="fas fa-chart-line" style="margin-right: 4px;"></i>
+                        Analytics</span>
+                    <span class="topic-tag"><i class="fas fa-shield-alt" style="margin-right: 4px;"></i>
+                        Segurança</span>
+                </div>
+            </div>
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <span class="card-title">ESP32</span>
+                    </div>
+                    <div class="card-content">
+                        Programação do microcontrolador para envio de dados via HTTP POST para plataformas IoT Cloud
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <span class="card-title">TagoIO</span>
+                    </div>
+                    <div class="card-content">
+                        Plataforma PaaS para ingestão, armazenamento e análise de dados de dispositivos IoT
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <span class="card-title">Analytics</span>
+                    </div>
+                    <div class="card-content">
+                        Visualização de dados em tempo real com dashboards e alertas automáticos
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <div class="institution-info">
+                <div class="institution-logo">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="institution-text">
+                    <div class="institution-name">Faculdade de Tecnologia do Senac (FATESE)</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Curso: Análise e Desenvolvimento de
+                        Sistemas</div>
+                </div>
+            </div>
+            <div class="professor-info">
+                <div class="professor-name">Prof. Carlos Bruno Oliveira Lopes</div>
+                <div class="professor-contact">
+                    <i class="fas fa-envelope" style="margin-right: 4px;"></i> carlos.lopes@am.senac.br
+                </div>
+            </div>
+        </div>
+        <div class="floating-shapes"></div>
+    </div>
+</body>
+
+</html>

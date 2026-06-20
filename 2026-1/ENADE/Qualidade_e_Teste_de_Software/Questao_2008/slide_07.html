@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Análise do Código e Identificação de Riscos</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;family=Montserrat:wght@400;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #1a202c 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .main-content {
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            width: 91%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .badge {
+            background: #48bb78;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            flex: 1;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #48bb78;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flowchart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step-box {
+            flex: 1;
+            padding: 20px;
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 15px;
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .step-box.risk {
+            background: rgba(237, 137, 54, 0.1);
+            border-color: rgba(237, 137, 54, 0.3);
+        }
+
+        .step-box::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .step-arrow {
+            color: #48bb78;
+            font-size: 24px;
+        }
+
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(237, 137, 54, 0.1);
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+
+        .risk-icon {
+            color: #ed8936;
+            font-size: 18px;
+        }
+
+        .risk-text {
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .code-analysis {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .code-line-number {
+            color: #718096;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .code-keyword {
+            color: #63b3ed;
+            font-weight: 600;
+        }
+
+        .code-function {
+            color: #68d391;
+        }
+
+        .code-comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .highlight-box {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .highlight-text {
+            color: #e2e8f0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .status-warning {
+            background: rgba(237, 137, 54, 0.2);
+            color: #ed8936;
+        }
+
+        .bottom-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+
+        .info-item i {
+            color: #48bb78;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .flow-node {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .flow-node.risk {
+            border-left-color: #ed8936;
+            background: rgba(237, 137, 54, 0.05);
+        }
+
+        .node-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(72, 187, 120, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #48bb78;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .node-icon.risk {
+            background: rgba(237, 137, 54, 0.2);
+            color: #ed8936;
+        }
+
+        .node-content {
+            flex: 1;
+        }
+
+        .node-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+        }
+
+        .node-desc {
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        .risk-points {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .risk-item-icon {
+            color: #ed8936;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="badge">ENADE 2008</div>
+                <h1 class="main-title">Análise do Código e Identificação de Riscos</h1>
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                    <span class="status-indicator status-success">
+                        <i class="fas fa-check-circle"></i>
+                        Análise
+                    </span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="left-panel">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-title">
+                            <i class="fas fa-code"></i>
+                            Fluxo do Algoritmo
+                        </div>
+                        <div class="flowchart-container">
+                            <div class="flow-step">
+                                <div class="step-box">
+                                    <div style="font-weight: 600; color: #48bb78; font-size: 16px;">i = 0</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Inicialização</div>
+                                </div>
+                                <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="step-box">
+                                    <div style="font-weight: 600; color: #48bb78; font-size: 16px;">i &lt; Gn?</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Condição</div>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-box">
+                                    <div style="font-weight: 600; color: #48bb78; font-size: 16px;">i = i + 1</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Incremento</div>
+                                </div>
+                                <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="step-box risk">
+                                    <div style="font-weight: 600; color: #ed8936; font-size: 16px;">calc(i)</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Risco de loop</div>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-box">
+                                    <div style="font-weight: 600; color: #48bb78; font-size: 16px;">calc(i) ≤ Gn?</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Decisão</div>
+                                </div>
+                                <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="step-box">
+                                    <div style="font-weight: 600; color: #48bb78; font-size: 16px;">f1(i) / f2(i)</div>
+                                    <div style="font-size: 14px; color: #a0aec0; margin-top: 6px;">Execução</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-indicator">
+                            <div class="risk-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="risk-text">Risco: calc, f1 ou f2 podem alterar Gn ou entrar em loop</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-title">
+                            <i class="fas fa-search"></i>
+                            Análise de Riscos
+                        </div>
+                        <div class="flow-diagram">
+                            <div class="flow-node">
+                                <div class="node-icon"><i class="fas fa-sync"></i></div>
+                                <div class="node-content">
+                                    <div class="node-title">Loop Interno</div>
+                                    <div class="node-desc">calc(), f1() ou f2() podem entrar em loop infinito</div>
+                                </div>
+                            </div>
+                            <div class="flow-node risk">
+                                <div class="node-icon risk"><i class="fas fa-globe"></i></div>
+                                <div class="node-content">
+                                    <div class="node-title">Alteração de Gn</div>
+                                    <div class="node-desc">Módulos podem modificar a variável global Gn</div>
+                                </div>
+                            </div>
+                            <div class="flow-node">
+                                <div class="node-icon"><i class="fas fa-clock"></i></div>
+                                <div class="node-content">
+                                    <div class="node-title">Timeout</div>
+                                    <div class="node-desc">Necessário definir oráculo temporal</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-points">
+                            <div class="risk-item">
+                                <div class="risk-item-icon"><i class="fas fa-check"></i></div>
+                                <div>Testar isoladamente</div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-item-icon"><i class="fas fa-check"></i></div>
+                                <div>Monitorar Gn</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-info">
+                <div class="info-left">
+                    <div class="info-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>FATESE - Análise e Desenvolvimento de Sistemas</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Tempo estimado: 45 minutos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

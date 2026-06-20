@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HiveMQ vs Mosquitto: Comparativo de Brokers MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        }
+
+        /* Header Section */
+        .header-section {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            background: #e8f5e9;
+            color: #4CAF50;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            right: 60px;
+            bottom: 80px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Left Column - Broker Comparison */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .broker-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .broker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .broker-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .broker-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .hivemq-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .mosquitto-icon {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+        }
+
+        .broker-features {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        .feature-icon.check {
+            background: #4CAF50;
+        }
+
+        .feature-icon.cross {
+            background: #f44336;
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: #666;
+            flex: 1;
+        }
+
+        .feature-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Right Column - Environment Comparison */
+        .right-column {
+            width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .env-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .env-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .env-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .env-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .env-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .env-box:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .env-type {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .env-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .env-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.public {
+            background: #4CAF50;
+        }
+
+        .status-dot.private {
+            background: #FF9800;
+        }
+
+        .status-text {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-label {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .page-number {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+
+        .highlight-text {
+            font-size: 13px;
+            color: #2e7d32;
+            line-height: 1.4;
+        }
+
+        .highlight-icon {
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+
+        .recommendation {
+            background: #fff3e0;
+            border: 2px solid #FF9800;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+
+        .recommendation-text {
+            font-size: 12px;
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <div class="header-left">
+                <div class="header-title">
+                    <i class="fas fa-server" style="margin-right: 12px; color: #667eea;"></i>
+                    HiveMQ vs Mosquitto: Comparativo de Brokers MQTT
+                </div>
+                <div class="header-subtitle">Análise de recursos, escalabilidade e casos de uso</div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <i class="fas fa-check-circle" style="margin-right: 5px;"></i>
+                    Comparativo
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="broker-card">
+                    <div class="broker-header">
+                        <div class="broker-title">
+                            <div class="broker-icon hivemq-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            HiveMQ
+                        </div>
+                        <div style="font-size: 14px; color: #666;">Enterprise-grade</div>
+                    </div>
+                    <div class="broker-features">
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Escalabilidade</div>
+                            <div class="feature-value">Alta</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Clustering</div>
+                            <div class="feature-value">Sim</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Extensões</div>
+                            <div class="feature-value">Sim</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Observabilidade</div>
+                            <div class="feature-value">Avançada</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Suporte Comercial</div>
+                            <div class="feature-value">24/7</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="broker-card">
+                    <div class="broker-header">
+                        <div class="broker-title">
+                            <div class="broker-icon mosquitto-icon">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            Mosquitto
+                        </div>
+                        <div style="font-size: 14px; color: #666;">Open-source</div>
+                    </div>
+                    <div class="broker-features">
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Leveza</div>
+                            <div class="feature-value">Alta</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon cross">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="feature-text">Clustering</div>
+                            <div class="feature-value">Não</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Open Source</div>
+                            <div class="feature-value">Sim</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Embarcado</div>
+                            <div class="feature-value">Ideal</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">Comunidade</div>
+                            <div class="feature-value">Ativa</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="env-card">
+                    <div class="env-header">
+                        <div class="env-title">
+                            <i class="fas fa-globe" style="margin-right: 8px;"></i>
+                            Ambiente de Deployment
+                        </div>
+                    </div>
+                    <div class="env-grid">
+                        <div class="env-box">
+                            <div class="env-type">
+                                <i class="fas fa-cloud"></i>
+                                Público
+                            </div>
+                            <div class="env-desc">Broker compartilhado, ideal para testes e desenvolvimento</div>
+                            <div class="env-status">
+                                <div class="status-dot public"></div>
+                                <span class="status-text">broker.hivemq.com</span>
+                            </div>
+                        </div>
+                        <div class="env-box">
+                            <div class="env-type">
+                                <i class="fas fa-lock"></i>
+                                Privado
+                            </div>
+                            <div class="env-desc">Broker dedicado, ideal para produção e segurança</div>
+                            <div class="env-status">
+                                <div class="status-dot private"></div>
+                                <span class="status-text">Local/Cloud</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-table">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fas fa-table" style="margin-right: 8px;"></i>
+                            Comparação Técnica
+                        </div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">
+                            <i class="fas fa-microchip" style="color: #FF9800;"></i>
+                            Uso de Memória
+                        </div>
+                        <div class="table-value">HiveMQ: 512MB+ | Mosquitto: 50MB+</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">
+                            <i class="fas fa-users" style="color: #4CAF50;"></i>
+                            Conexões Simultâneas
+                        </div>
+                        <div class="table-value">HiveMQ: 200M+ | Mosquitto: 1M+</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">
+                            <i class="fas fa-dollar-sign" style="color: #2196F3;"></i>
+                            Custo
+                        </div>
+                        <div class="table-value">HiveMQ: Pago | Mosquitto: Grátis</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">
+                            <i class="fas fa-cog" style="color: #9C27B0;"></i>
+                            Configuração
+                        </div>
+                        <div class="table-value">HiveMQ: Complexa | Mosquitto: Simples</div>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <div class="highlight-text">
+                        <i class="fas fa-lightbulb highlight-icon"></i>
+                        <strong>Recomendação:</strong> Use HiveMQ para projetos enterprise que precisam de
+                        escalabilidade e suporte comercial. Use Mosquitto para projetos pequenos, embarcados ou de baixo
+                        custo.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-left">
+                <div class="footer-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="footer-info">
+                    <div class="footer-name">Carlos Bruno O. Lopes</div>
+                    <div class="footer-role">Professor de IoT</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">FATESE - Senac</span>
+                <span class="page-number">23/29</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

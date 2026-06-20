@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Redes Sem Fio - Wi-Fi no ESP32</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a1628;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a1628 0%, #1a365d 50%, #0d1b2a 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(33, 150, 243, 0.05) 0%, transparent 30%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            opacity: 0.1;
+        }
+
+        .circuit-line {
+            position: absolute;
+            background: #00BCD4;
+            height: 2px;
+        }
+
+        .circuit-line:nth-child(1) {
+            top: 100px;
+            left: 0;
+            width: 300px;
+        }
+
+        .circuit-line:nth-child(2) {
+            top: 150px;
+            left: 0;
+            width: 200px;
+        }
+
+        .circuit-line:nth-child(3) {
+            top: 200px;
+            left: 0;
+            width: 250px;
+        }
+
+        .circuit-line:nth-child(4) {
+            top: 250px;
+            left: 0;
+            width: 180px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 50px;
+            width: 93.8%;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 50px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 58px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #00BCD4;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .module-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+
+        .module-badge {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            padding: 4px 14px;
+            border-radius: 20px;
+            color: #2196F3;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .professor-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 5px;
+        }
+
+        .professor-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2196F3, #00BCD4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .professor-details {
+            flex: 1;
+        }
+
+        .professor-name {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .professor-role {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+        }
+
+        .contact-item i {
+            color: #00BCD4;
+            width: 16px;
+            text-align: center;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .tech-tag {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            color: #2196F3;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .esp32-visual {
+            position: absolute;
+            right: 0px;
+            top: 140px;
+            width: 180px;
+            height: 180px;
+            z-index: 15;
+        }
+
+        .esp32-icon {
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(33, 150, 243, 0.5);
+            box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .esp32-icon i {
+            font-size: 90px;
+            color: #00BCD4;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BCD4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #00BCD4;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .wifi-signal {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            z-index: 10;
+        }
+
+        .wifi-icon {
+            color: #00BCD4;
+            font-size: 24px;
+        }
+
+        .course-info {
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .course-title {
+            color: #00BCD4;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .course-details {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-overlay"></div>
+        <div class="circuit-lines">
+            <div class="circuit-line"></div>
+            <div class="circuit-line"></div>
+            <div class="circuit-line"></div>
+            <div class="circuit-line"></div>
+        </div>
+        <div class="wifi-signal">
+            <i class="fas fa-wifi wifi-icon"></i>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <div class="title-section">
+                    <div class="main-title">Redes Sem Fio - Wi-Fi no ESP32</div>
+                    <div class="subtitle">Plano de Aula 08 - Módulo III: Conectividade</div>
+                    <div class="module-info">
+                        <span class="module-badge"><i class="fas fa-network-wired"></i> IoT</span>
+                        <span>•</span>
+                        <span>Internet das Coisas</span>
+                        <span>•</span>
+                        <span>ESP32</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="card-title">Informações do Professor</div>
+                    </div>
+                    <div class="professor-info">
+                        <div class="professor-avatar">CB</div>
+                        <div class="professor-details">
+                            <div class="professor-name">Carlos Bruno Oliveira Lopes</div>
+                            <div class="professor-role">Professor de IoT e Sistemas Embarcados</div>
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>carlos.lopes@am.senac.br</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-github"></i>
+                            <span>github.com/carlosbrunocb</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-linkedin"></i>
+                            <span>in/carlosbruno-lopes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="card-title">Instituição</div>
+                    </div>
+                    <div class="course-info">
+                        <div class="course-title">Faculdade de Tecnologia do Senac (FATESE)</div>
+                        <div class="course-details">
+                            <strong>Curso:</strong> Análise e Desenvolvimento de Sistemas<br />
+                            <strong>Disciplina:</strong> Internet das Coisas (IoT)<br />
+                            <strong>Módulo:</strong> III - Conectividade
+                        </div>
+                    </div>
+                    <div class="tech-stack">
+                        <span class="tech-tag">ESP32</span>
+                        <span class="tech-tag">Wi-Fi</span>
+                        <span class="tech-tag">IoT</span>
+                        <span class="tech-tag">Arduino</span>
+                        <span class="tech-tag">Wokwi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="esp32-visual">
+            <div class="esp32-icon">
+                <i class="fas fa-microchip"></i>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Conexão: Ativa</span>
+            </div>
+            
+            <div class="status-item">
+                <span>Internet das Coisas - IoT</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

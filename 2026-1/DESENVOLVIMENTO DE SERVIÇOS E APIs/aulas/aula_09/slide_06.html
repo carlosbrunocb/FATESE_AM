@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Slide 6 - Escalabilidade MongoDB</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ED64, #00a854);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 237, 100, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(0, 237, 100, 0.1);
+            color: #007732;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 237, 100, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main content area */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+            height: 560px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Architecture diagram */
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .diagram-node {
+            width: 120px;
+            height: 85px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .diagram-node.active {
+            border-color: #00ED64;
+            background: rgba(0, 237, 100, 0.05);
+        }
+
+        .node-icon {
+            font-size: 18px;
+            color: #00ED64;
+            margin-bottom: 4px;
+        }
+
+        .node-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+
+        .node-desc {
+            font-size: 10px;
+            color: #6c757d;
+            line-height: 1.1;
+        }
+
+        .arrow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+        }
+
+        .arrow {
+            color: #00ED64;
+            font-size: 14px;
+        }
+
+        /* Feature list */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #00ED64;
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .feature-desc {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+
+        /* Configuration panel */
+        .config-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #e9ecef;
+            margin-top: auto;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .config-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-active {
+            background: #00ED64;
+        }
+
+        /* Performance metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .metric-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+
+        .metric-change {
+            font-size: 11px;
+            color: #00a854;
+            font-weight: 600;
+        }
+
+        /* Best practices */
+        .practices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .practice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .practice-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 237, 100, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ED64;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            color: #00a854;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Escalabilidade MongoDB</h1>
+                    <p>Replicação, Sharding, Consistência e Boas Práticas</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge">
+                    <i class="fas fa-layer-group"></i> Replica Set
+                </div>
+                <div class="badge">
+                    <i class="fas fa-sitemap"></i> Sharding
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Left column: Architecture -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="card-title">Topologia do Sistema</div>
+                </div>
+                <div class="card-content">
+                    <div class="architecture-diagram">
+                        <div class="diagram-row">
+                            <div class="diagram-node active">
+                                <div class="node-icon"><i class="fas fa-users"></i></div>
+                                <div class="node-title">Clientes</div>
+                                <div class="node-desc">Aplicação Node.js</div>
+                            </div>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right arrow"></i>
+                            </div>
+                            <div class="diagram-node">
+                                <div class="node-icon"><i class="fas fa-network-wired"></i></div>
+                                <div class="node-title">Mongos</div>
+                                <div class="node-desc">Router</div>
+                            </div>
+                        </div>
+                        <div class="diagram-row">
+                            <div class="diagram-node">
+                                <div class="node-icon"><i class="fas fa-database"></i></div>
+                                <div class="node-title">Config Servers</div>
+                                <div class="node-desc">Metadados</div>
+                            </div>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right arrow"></i>
+                            </div>
+                            <div class="diagram-node">
+                                <div class="node-icon"><i class="fas fa-hdd"></i></div>
+                                <div class="node-title">Shards</div>
+                                <div class="node-desc">Dados</div>
+                            </div>
+                        </div>
+                        <div class="diagram-row">
+                            <div class="diagram-node">
+                                <div class="node-icon"><i class="fas fa-sync"></i></div>
+                                <div class="node-title">Replica Set</div>
+                                <div class="node-desc">Primário + 2 Sec.</div>
+                            </div>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right arrow"></i>
+                            </div>
+                            <div class="diagram-node">
+                                <div class="node-icon"><i class="fas fa-shield-alt"></i></div>
+                                <div class="node-title">Failover</div>
+                                <div class="node-desc">Automático</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-panel">
+                        <div class="config-item">
+                            <span class="config-label">Read Preference</span>
+                            <span class="config-value">primaryPreferred</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Write Concern</span>
+                            <span class="config-value">majority</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Read Concern</span>
+                            <span class="config-value">local</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Middle column: Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="card-title">Configurações</div>
+                </div>
+                <div class="card-content">
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-copy"></i></div>
+                            <div class="feature-text">
+                                <div class="feature-title">Replica Set</div>
+                                <div class="feature-desc">Primário + 2 secundários para alta disponibilidade</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-random"></i></div>
+                            <div class="feature-text">
+                                <div class="feature-title">Sharding</div>
+                                <div class="feature-desc">Distribuição horizontal de dados entre múltiplos clusters
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-balance-scale"></i></div>
+                            <div class="feature-text">
+                                <div class="feature-title">Consistência</div>
+                                <div class="feature-desc">Read/Write concern configurável por operação</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="feature-text">
+                                <div class="feature-title">Failover</div>
+                                <div class="feature-desc">Failover automático transparente em menos de 10s</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Latência</div>
+                            <div class="metric-value">5ms</div>
+                            <div class="metric-change">↓ 20%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Throughput</div>
+                            <div class="metric-value">10K/s</div>
+                            <div class="metric-change">↑ 15%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right column: Best practices -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-title">Boas Práticas</div>
+                </div>
+                <div class="card-content">
+                    <div class="practices-list">
+                        <div class="practice-item">
+                            <div class="practice-icon"><i class="fas fa-key"></i></div>
+                            <span>Escolher <span class="highlight">shard key</span> com base em padrões de
+                                consultas</span>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon"><i class="fas fa-index"></i></div>
+                            <span>Criar índices que começam pela shard key para evitar broadcast</span>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon"><i class="fas fa-chart-line"></i></div>
+                            <span>Monitorar <span class="highlight">métricas</span> em tempo real no MongoDB
+                                Atlas</span>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon"><i class="fas fa-bug"></i></div>
+                            <span>Testar periodicamente cenários de <span class="highlight">failover</span></span>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+                            <span>Evitar <span class="highlight">hotspots</span> de shard via keys balanceadas</span>
+                        </div>
+                    </div>
+                    <div class="config-panel">
+                        <div class="config-item">
+                            <span class="config-label">Status do Cluster</span>
+                            <span class="config-value">
+                                <span class="status-indicator status-active"></span>
+                                Ativo / Saudável
+                            </span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Disponibilidade Nodes</span>
+                            <span class="config-value">3/3 Ativos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Middleware de Aplicação vs Middleware de Roteador</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accent-text {
+            color: #8CC84B;
+        }
+
+        .bg-accent {
+            background-color: #8CC84B;
+        }
+
+        .border-accent {
+            border-color: #8CC84B;
+        }
+
+        /* Layout Structure */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .title-badge {
+            background-color: rgba(140, 200, 75, 0.2);
+            color: #8CC84B;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: inline-block;
+            border: 1px solid rgba(140, 200, 75, 0.4);
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .columns-container {
+            display: flex;
+            flex: 1;
+            gap: 40px;
+        }
+
+        .column {
+            flex: 1;
+            background-color: #252526;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .column-header {
+            padding: 25px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .column-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+        }
+
+        .icon-app {
+            background-color: rgba(66, 133, 244, 0.2);
+            color: #4285F4;
+            border: 1px solid rgba(66, 133, 244, 0.4);
+        }
+
+        .icon-router {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: #EA4335;
+            border: 1px solid rgba(234, 67, 53, 0.4);
+        }
+
+        .column-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .column-subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin: 0;
+        }
+
+        .column-content {
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .feature-check {
+            color: #8CC84B;
+            margin-right: 12px;
+            margin-top: 4px;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+            border-left: 3px solid;
+            margin-top: auto;
+        }
+
+        .code-app {
+            border-color: #4285F4;
+        }
+
+        .code-router {
+            border-color: #EA4335;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .function {
+            color: #dcdcaa;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .variable {
+            color: #9cdcfe;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        /* Background Decorations */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 0;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: #1e1e1e;
+            border: 2px solid #8CC84B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            font-weight: 900;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Background Elements -->
+        <div class="bg-circle" style="width: 600px; height: 600px; top: -200px; right: -200px; opacity: 0.5;"></div>
+        <div class="bg-circle" style="width: 300px; height: 300px; bottom: 50px; left: -100px; opacity: 0.3;"></div>
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="header-section mb-8">
+                <div class="title-badge">Comparativo de Escopo</div>
+                <h1 class="main-title">Tipos de <span class="accent-text">Middleware</span> no Express</h1>
+                <p class="text-gray-400 text-lg mt-2">Diferenciando o escopo de execução global vs específico.</p>
+            </div>
+            <!-- Comparison Columns -->
+            <div class="columns-container relative">
+                <!-- VS Badge in center -->
+                <div class="vs-badge">VS</div>
+                <!-- Application Level Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-icon icon-app">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div>
+                            <h2 class="column-title">Nível de Aplicação</h2>
+                            <p class="column-subtitle">Escopo Global (app.use)</p>
+                        </div>
+                    </div>
+                    <div class="column-content">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Executado em <strong>todas</strong> as requisições que
+                                    chegam ao servidor, independentemente da rota.</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Ideal para configurações gerais: parsing de JSON, CORS,
+                                    Logs, Segurança (Helmet).</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Define o comportamento padrão da API inteira.</p>
+                            </li>
+                        </ul>
+                        <div class="code-block code-app">
+                            <span class="comment">// Aplica a TODAS as rotas</span><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="function">logger</span>);<br /><br />
+                            <span class="comment">// Aplica a caminhos específicos</span><br />
+                            <span class="variable">app</span>.<span class="function">use</span>(<span
+                                class="string">'/api'</span>, <span class="variable">apiRoutes</span>);
+                        </div>
+                    </div>
+                </div>
+                <!-- Router Level Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-icon icon-router">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div>
+                            <h2 class="column-title">Nível de Roteador</h2>
+                            <p class="column-subtitle">Escopo Específico (router.use)</p>
+                        </div>
+                    </div>
+                    <div class="column-content">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Limitado a um <strong>grupo de rotas</strong> específico ou
+                                    a uma única rota.</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Ideal para regras de negócio específicas: Validação de
+                                    dados, Autenticação de admin.</p>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check feature-check"></i>
+                                <p class="text-gray-300 m-0">Permite modularizar a aplicação em mini-apps independentes.
+                                </p>
+                            </li>
+                        </ul>
+                        <div class="code-block code-router">
+                            <span class="keyword">const</span> <span class="variable">router</span> = <span
+                                class="variable">express</span>.<span class="function">Router</span>();<br /><br />
+                            <span class="comment">// Só afeta rotas deste router</span><br />
+                            <span class="variable">router</span>.<span class="function">use</span>(<span
+                                class="function">authMiddleware</span>);<br /><br />
+                            <span class="comment">// Apenas nesta rota específica</span><br />
+                            <span class="variable">router</span>.<span class="function">post</span>(<span
+                                class="string">'/'</span>, <span class="function">validaLivro</span>, <span
+                                class="function">criar</span>);
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="mt-6 flex justify-between items-center border-t border-gray-800 pt-4">
+                <p class="text-gray-500 text-xs">Análise e Desenvolvimento de Sistemas - FATESE</p>
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <p class="text-gray-500 text-xs">Global</p>
+                    <div class="w-2 h-2 rounded-full bg-red-500 ml-2"></div>
+                    <p class="text-gray-500 text-xs">Específico</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

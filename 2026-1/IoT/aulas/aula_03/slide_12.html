@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Debounce por Software</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 5vh 5vw;
+            position: relative;
+            z-index: 2;
+        }
+
+        .circuit-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5vw;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 3vh;
+            border-bottom: 4px solid #60a5fa;
+            padding-bottom: 1.5vh;
+        }
+
+        .code-section {
+            display: flex;
+            gap: 2vw;
+            flex: 1;
+            height: 100%;
+        }
+
+        .code-block-container {
+            flex: 1.2;
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 2vh 2vw;
+            border: 2px solid #334155;
+            overflow: auto;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2vh;
+            padding-bottom: 1vh;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-icon {
+            color: #60a5fa;
+            font-size: 1.5vw;
+        }
+
+        .code-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2vw;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .code-content {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.3vw;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 1vw;
+        }
+
+        .line-number {
+            color: #475569;
+            text-align: right;
+            min-width: 2vw;
+            user-select: none;
+        }
+
+        .line-code {
+            flex: 1;
+        }
+
+        .keyword { color: #c084fc; font-weight: 500; }
+        .function { color: #60a5fa; }
+        .operator { color: #f472b6; }
+        .number { color: #34d399; }
+        .comment { color: #64748b; font-style: italic; }
+
+        .explanation-panel {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+        }
+
+        .explanation-item {
+            background-color: rgba(30, 41, 59, 0.6);
+            padding: 2vh 1.5vw;
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+        }
+
+        .explanation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4vw;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 1vh;
+        }
+
+        .explanation-text {
+            font-size: 1.2vw;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .accent-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <svg class="circuit-bg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="200" cy="150" fill="none" r="60" stroke="currentColor" stroke-width="2"></circle>
+            <circle cx="1080" cy="570" fill="none" r="80" stroke="currentColor" stroke-width="2"></circle>
+            <line stroke="currentColor" stroke-width="2" x1="100" x2="300" y1="100" y2="100"></line>
+            <line stroke="currentColor" stroke-width="2" x1="980" x2="1180" y1="620" y2="620"></line>
+        </svg>
+        <div class="content-wrapper">
+            <div>
+                <p class="slide-title">Debounce por Software (simples)</p>
+            </div>
+            <div class="code-section">
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <i class="fas fa-code code-icon"></i>
+                        <p class="code-title">Pseudocódigo de Debounce</p>
+                    </div>
+                    <div class="code-content">
+                        <div class="code-line"><p class="line-number">1</p><p class="line-code"><span class="keyword">if</span> (leitura <span class="operator">==</span> <span class="keyword">LOW</span>) {</p></div>
+                        <div class="code-line"><p class="line-number">2</p><p class="line-code"> &nbsp;&nbsp;<span class="function">delay</span>(<span class="number">50</span>); <span class="comment">// aguarda 50ms</span></p></div>
+                        <div class="code-line"><p class="line-number">3</p><p class="line-code"> </p></div>
+                        <div class="code-line"><p class="line-number">4</p><p class="line-code"> &nbsp;&nbsp;<span class="keyword">if</span> (leitura <span class="operator">==</span> <span class="keyword">LOW</span>) {</p></div>
+                        <div class="code-line"><p class="line-number">5</p><p class="line-code"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// confirma o estado</span></p></div>
+                        <div class="code-line"><p class="line-number">6</p><p class="line-code"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">acionaEvento</span>();</p></div>
+                        <div class="code-line"><p class="line-number">7</p><p class="line-code"> &nbsp;&nbsp;}</p></div>
+                        <div class="code-line"><p class="line-number">8</p><p class="line-code">}</p></div>
+                    </div>
+                </div>
+                <div class="explanation-panel">
+                    <div class="explanation-item">
+                        <div><p class="explanation-title">Estratégia</p></div>
+                        <div><p class="explanation-text">Ao detectar mudança, aguardar curto período e confirmar estado.</p></div>
+                    </div>
+                    <div class="explanation-item">
+                        <div><p class="explanation-title">Janela Típica</p></div>
+                        <div><p class="explanation-text">20–50 ms (usaremos 50 ms neste projeto).</p></div>
+                    </div>
+                    <div class="explanation-item">
+                        <div><p class="explanation-title">Vantagens</p></div>
+                        <div><p class="explanation-text">Fácil implementação e suficiente para botões comuns. Elimina leituras falsas causadas por ruído mecânico.</p></div>
+                    </div>
+                    <div class="explanation-item">
+                        <div><p class="explanation-title">Observação</p></div>
+                        <div><p class="explanation-text">Usa delay() para simplificar, mas bloqueia o processador durante a espera.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accent-bar"></div>
+    </div>
+</body>
+</html>

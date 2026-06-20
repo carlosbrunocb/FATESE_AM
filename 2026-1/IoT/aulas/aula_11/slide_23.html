@@ -1,0 +1,296 @@
+Aqui está o código HTML atualizado. Substituí todo o posicionamento absoluto (`position: absolute`) por um layout moderno e responsivo baseado em **CSS Grid** e **Flexbox**.
+
+O contêiner principal agora usa um Grid para dividir a tela perfeitamente entre cabeçalho, conteúdo e rodapé. Além disso, a seção das três colunas foi adaptada com `grid-template-columns` para que elas se adaptem e preencham o espaço de forma fluida, empilhando-se automaticamente em telas menores (como celulares e tablets).
+
+### Código Atualizado
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tratamento de Erros HTTP e Parsing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+        }
+
+        /* Container principal com CSS Grid */
+        .slide-container {
+            width: 100%;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto; /* Header, Main, Footer */
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            box-sizing: border-box;
+        }
+
+        /* Classes de layout responsivo */
+        .slide-header {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .slide-main {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 30px 5%;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: auto;
+            margin: 0 auto;
+        }
+
+        /* Grid para as 3 colunas fluídas */
+        .grid-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            flex: 1;
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 5%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Estilos dos Cards mantidos originais */
+        .content-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            box-sizing: border-box;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .error-card {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .success-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .warning-card {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .syntax-key { color: #fbbf24; }
+        .syntax-string { color: #34d399; }
+        .syntax-number { color: #60a5fa; }
+        .syntax-function { color: #60a5fa; }
+        .syntax-type { color: #3b82f6; }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        
+        <div class="slide-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-shield-alt" style="font-size: 24px; color: #3b82f6;"></i>
+                <span style="font-size: clamp(16px, 2vw, 20px); color: #ffffff; font-weight: 600;">Tratamento de Erros HTTP e Parsing</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <span style="font-size: 14px; color: #94a3b8;">Aula 11</span>
+                <span style="font-size: 14px; color: #94a3b8;" class="hidden sm:inline">|</span>
+                <span style="font-size: 14px; color: #94a3b8;">Robustez e Resiliência</span>
+            </div>
+        </div>
+
+        <div class="slide-main">
+            
+            <div style="text-align: center;">
+                <h1 style="font-size: clamp(24px, 4vw, 36px); font-weight: 700; color: #ffffff; margin: 0 0 8px 0;">
+                    <i class="fas fa-bug" style="color: #ef4444; margin-right: 12px;"></i>Estratégias de Tratamento de Erros
+                </h1>
+                <p style="font-size: clamp(14px, 2vw, 18px); color: #94a3b8; margin: 0;">
+                    HTTP, WiFi, JSON Parsing e Reconexão com Backoff
+                </p>
+            </div>
+
+            <div class="grid-columns">
+                
+                <div class="content-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 18px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 18px; font-weight: 600; color: #ffffff;">Erros HTTP</div>
+                            <div style="font-size: 13px; color: #94a3b8;">Códigos de status</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+                        <div class="success-card" style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: #ffffff;">200 OK</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Sucesso</div>
+                            </div>
+                            <span style="font-size: 14px; color: #10b981;">✓</span>
+                        </div>
+                        <div class="warning-card" style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: #ffffff;">400/404</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Bad Request</div>
+                            </div>
+                            <span style="font-size: 14px; color: #f59e0b;">⚠</span>
+                        </div>
+                        <div class="warning-card" style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: #ffffff;">429</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Too Many Requests</div>
+                            </div>
+                            <span style="font-size: 14px; color: #f59e0b;">⚠</span>
+                        </div>
+                        <div class="error-card" style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: #ffffff;">500/503</div>
+                                <div style="font-size: 12px; color: #94a3b8;">Server Error</div>
+                            </div>
+                            <span style="font-size: 14px; color: #ef4444;">✗</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                            <i class="fas fa-wifi" style="font-size: 18px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 18px; font-weight: 600; color: #ffffff;">WiFi &amp; Parsing</div>
+                            <div style="font-size: 13px; color: #94a3b8;">Conexão e JSON</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+                        <div class="success-card">
+                            <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 4px;">WiFi Status</div>
+                            <div style="font-size: 12px; color: #94a3b8;">Verificar WiFi.status() antes de GET</div>
+                        </div>
+                        <div class="warning-card">
+                            <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 4px;">JSON Parsing</div>
+                            <div style="font-size: 12px; color: #94a3b8;">DeserializationError check</div>
+                        </div>
+                        <div class="code-block" style="flex-grow: 0;">
+                            <span class="syntax-key">if</span> (err) {<br />
+                            &nbsp;&nbsp;<span class="syntax-type">Serial.println</span>(err.c_str());<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-sync-alt" style="font-size: 18px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 18px; font-weight: 600; color: #ffffff;">Retry Strategy</div>
+                            <div style="font-size: 13px; color: #94a3b8;">Backoff exponencial</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+                        <div class="success-card">
+                            <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 4px;">Backoff Exponencial</div>
+                            <div style="font-size: 12px; color: #94a3b8;">delay(1000 * attempt)</div>
+                        </div>
+                        <div class="code-block" style="flex-grow: 0;">
+                            <span class="syntax-key">int</span> retry = <span class="syntax-number">0</span>;<br />
+                            <span class="syntax-key">while</span> (retry &lt; <span class="syntax-number">3</span>) {<br />
+                            &nbsp;&nbsp;<span class="syntax-key">if</span> (http.<span class="syntax-function">GET</span>() == <span class="syntax-number">200</span>) <span class="syntax-key">break</span>;<br />
+                            &nbsp;&nbsp;<span class="syntax-function">delay</span>(<span class="syntax-number">1000</span> * ++retry);<br />
+                            }
+                        </div>
+                        <div style="font-size: 12px; color: #94a3b8; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; margin-top: auto;">
+                            <strong style="color: #ffffff;">Max retries:</strong> 3 tentativas
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 6px; display: flex; align-items: center; gap: 14px;">
+                <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 20px; flex-shrink: 0;"></i>
+                <div style="font-size: clamp(14px, 2vw, 16px); color: #cbd5e1; line-height: 1.5;">
+                    <strong style="color: #ffffff;">Dica:</strong> Sempre implemente tratamento de erros para manter o firmware resiliente e evitar travamentos.
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="slide-footer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-shield-alt" style="font-size: 14px; color: #3b82f6;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">Tratamento de Erros HTTP e Parsing - ESP32</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="font-size: 14px; color: #475569;"></i>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 500;">16 de Maio de 2026</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
+
+```

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>JWT Signature - Verificação de Integridade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0f172a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .jwt-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #8b5cf6;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+
+        .right-column {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+
+        .signature-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .signature-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .signature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            font-size: 18px;
+        }
+
+        .signature-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .signature-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .signature-formula {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .formula-part {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .formula-arrow {
+            color: #8b5cf6;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .verification-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .verification-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verification-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .verification-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .verification-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .security-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-top: auto;
+        }
+
+        .warning-icon {
+            color: #ef4444;
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: #fca5a5;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #64748b;
+        }
+
+        .code-keyword {
+            color: #8b5cf6;
+        }
+
+        .code-string {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="background-pattern"></div>
+        <div class="grid-pattern"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="title-section">
+                    <div class="title-icon">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <div>
+                        <h1 class="title">JWT Signature - Assinatura Digital</h1>
+                        <p class="subtitle">Verificação de integridade e autenticidade do token</p>
+                    </div>
+                </div>
+                <div class="jwt-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>JWT Security</span>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="signature-box" style="flex: 1.1;">
+                        <div class="signature-header">
+                            <div class="signature-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="signature-title">Como funciona a Assinatura?</div>
+                        </div>
+                        <div class="signature-content">
+                            <div style="margin-bottom: 8px;">
+                                <span style="color: #8b5cf6;">HMACSHA256</span>(
+                            </div>
+                            <div style="padding-left: 24px; margin-bottom: 8px;">
+                                <span style="color: #f59e0b;">base64UrlEncode(header)</span> + "." +<br />
+                                <span style="color: #f59e0b;">base64UrlEncode(payload)</span>,<br />
+                                <span style="color: #10b981;">your-256-bit-secret</span>
+                            </div>
+                            <div>)</div>
+                        </div>
+                        <div class="signature-formula">
+                            <div class="formula-part">Header</div>
+                            <div class="formula-arrow">+</div>
+                            <div class="formula-part">Payload</div>
+                            <div class="formula-arrow">+</div>
+                            <div class="formula-part" style="color: #10b981;">Secret</div>
+                            <div class="formula-arrow">=</div>
+                            <div class="formula-part" style="color: #8b5cf6;">Signature</div>
+                        </div>
+                        <div class="info-text">
+                            A assinatura é gerada usando <span class="highlight">HMAC-SHA256</span> combinando o header
+                            codificado, payload codificado e a chave secreta.
+                            Isso garante que o token não foi alterado no caminho.
+                        </div>
+                    </div>
+                    <div class="signature-box" style="flex: 0.9;">
+                        <div class="signature-header">
+                            <div class="signature-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="signature-title">Processo de Verificação</div>
+                        </div>
+                        <div class="code-block">
+                            <span class="code-comment">// Verificação no servidor</span><br />
+                            <span class="code-keyword">const</span> token = req.headers.authorization?.split('
+                            ')[1];<br />
+                            <span class="code-keyword">try</span> {<br />
+                              <span class="code-keyword">const</span> decoded = jwt.verify(token, <span
+                                class="code-string">process.env.JWT_SECRET</span>);<br />
+                              req.user = decoded;<br />
+                              next();<br />
+                            } <span class="code-keyword">catch</span> (err) {<br />
+                              <span class="code-keyword">return</span> res.status(403).json({ error: <span
+                                class="code-string">'Token inválido'</span> });<br />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="verification-box">
+                        <div class="verification-header">
+                            <div class="verification-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="verification-title">Verificação do Token</div>
+                        </div>
+                        <div class="verification-steps">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-text">Extrair token do header Authorization</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-text">Verificar formato Bearer &lt;token&gt;</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-text">Validar assinatura com secret</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-text">Verificar expiração (exp)</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">5</div>
+                                <div class="step-text">Extrair claims do payload</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="security-warning">
+                        <i class="fas fa-exclamation-triangle warning-icon"></i>
+                        <div class="warning-text">
+                            <strong>Importante:</strong> A chave secreta deve ser armazenada em variáveis de ambiente e
+                            nunca commitada no repositório.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

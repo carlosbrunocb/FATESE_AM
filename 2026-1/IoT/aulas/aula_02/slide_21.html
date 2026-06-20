@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Versão 2: Código (Loop — Estados Verde e Amarelo)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Evita barras de rolagem indesejadas */
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #3b82f6;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 45px 70px;
+        }
+
+        .slide-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 30px 0;
+            border-left: 6px solid #3b82f6;
+            padding-left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #16a34a;
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-container {
+            flex: 1;
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #334155;
+        }
+
+        .code-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #334155;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+            font-size: 16px;
+        }
+
+        .file-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-yellow {
+            background-color: #eab308;
+        }
+
+        .dot-green {
+            background-color: #22c55e;
+        }
+
+        .code-block {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #e2e8f0;
+            margin: 0;
+            white-space: pre;
+        }
+
+        .code-comment { color: #6b7280; font-style: italic; }
+        .code-keyword { color: #c084fc; font-weight: 600; }
+        .code-type { color: #60a5fa; font-weight: 500; }
+        .code-function { color: #fbbf24; font-weight: 500; }
+        .code-constant { color: #34d399; }
+        .code-string { color: #f472b6; }
+        .code-number { color: #fb923c; }
+
+        .info-note {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #064e3b;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-top: 20px;
+        }
+
+        .info-icon {
+            min-width: 28px;
+            width: 28px;
+            height: 28px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .info-text {
+            flex: 1;
+            color: #d1fae5;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #1e40af;
+            opacity: 0.04;
+        }
+
+        .circle-1 {
+            width: 280px;
+            height: 280px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -60px;
+            left: -80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" style="overflow-y: auto;">
+        <div class="header-bar"></div>
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="content-wrapper">
+            <h1 class="slide-title">
+                <p>Versão 2: Código (Loop — Estados Verde e Amarelo)</p>
+                <div class="version-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Não Bloqueante</p>
+                </div>
+            </h1>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-label">
+                        <div class="code-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <p>semaforo_millis.ino (parte 2/3)</p>
+                    </div>
+                    <div class="file-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                </div>
+                <pre class="code-block"><span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+  <span class="code-type">unsigned long</span> tempoAtual = <span class="code-function">millis</span>(); <span class="code-comment">// Checa o relógio do sistema</span>
+
+  <span class="code-comment">// Lógica de Máquina de Estados</span>
+  <span class="code-keyword">if</span> (estadoSemaforo == <span class="code-number">0</span>) { <span class="code-comment">// Estado Verde</span>
+    <span class="code-function">digitalWrite</span>(ledVerde, <span class="code-constant">HIGH</span>);
+    <span class="code-function">digitalWrite</span>(ledVermelho, <span class="code-constant">LOW</span>);
+    
+    <span class="code-comment">// Verifica se já passou o tempo do Verde</span>
+    <span class="code-keyword">if</span> (tempoAtual - tempoAnterior &gt;= intervaloVerde) {
+      tempoAnterior = tempoAtual; <span class="code-comment">// Reseta o cronômetro</span>
+      estadoSemaforo = <span class="code-number">1</span>;         <span class="code-comment">// Vai para o próximo estado</span>
+      <span class="code-function">digitalWrite</span>(ledVerde, <span class="code-constant">LOW</span>);
+    }
+  } 
+  <span class="code-keyword">else if</span> (estadoSemaforo == <span class="code-number">1</span>) { <span class="code-comment">// Estado Amarelo</span>
+    <span class="code-function">digitalWrite</span>(ledAmarelo, <span class="code-constant">HIGH</span>);
+    
+    <span class="code-keyword">if</span> (tempoAtual - tempoAnterior &gt;= intervaloAmarelo) {
+      tempoAnterior = tempoAtual;
+      estadoSemaforo = <span class="code-number">2</span>;
+      <span class="code-function">digitalWrite</span>(ledAmarelo, <span class="code-constant">LOW</span>);
+    }
+  }</pre>
+                <div class="info-note">
+                    <div class="info-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <p class="info-text">Observe: O loop não fica travado! A cada iteração, verificamos o tempo
+                        decorrido e atualizamos o estado conforme necessário.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

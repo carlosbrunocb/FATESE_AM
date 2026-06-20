@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mapa da Aula - Aula 13</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .title-area {
+            flex: 1;
+        }
+
+        .title-area h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f1f5f9;
+            padding: 12px 24px;
+            border-radius: 30px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 60%;
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 15px;
+            flex: 1;
+        }
+
+        .topic-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .topic-icon {
+            width: 40px;
+            height: 40px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e40af;
+            font-size: 18px;
+        }
+
+        .topic-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .topic-content {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .topic-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .topic-content li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .topic-content li::before {
+            content: "•";
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 2px;
+            font-size: 16px;
+        }
+
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .highlight {
+            background: #dbeafe;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #cbd5e1;
+        }
+
+        .learning-objectives {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .objective-item i {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+
+        .next-steps {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .next-steps button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .next-steps button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="title-section">
+                <div class="title-area">
+                    <h1><i class="fas fa-map-marked-alt"></i> Mapa da Aula</h1>
+                    <div class="subtitle">Estrutura e conteúdo da Aula 13: Segurança - Autorização (RBAC) e Proteção
+                    </div>
+                </div>
+                <div class="progress-indicator">
+                    <span class="progress-text">Progresso da aula</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <span class="progress-text">60%</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="topic-title">1. Fundamentos de RBAC</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Autenticação vs Autorização</li>
+                            <li>Conceitos de <span class="highlight">papéis</span> e <span
+                                    class="highlight">permissões</span></li>
+                            <li>Modelo de controle de acesso</li>
+                            <li>Benefícios do RBAC</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 40 min
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="topic-title">2. Implementação de Roles</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Modelo de usuário com role</li>
+                            <li>JWT com payload de roles</li>
+                            <li>Middleware de autorização</li>
+                            <li>Restrição de rotas</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 35 min
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-shield-virus"></i>
+                        </div>
+                        <div class="topic-title">3. Vulnerabilidades</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Injection (SQL/NoSQL)</li>
+                            <li>DDoS e Força Bruta</li>
+                            <li>XSS e XSS Refletido</li>
+                            <li>OWASP Top 10</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 25 min
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="topic-title">4. Proteções</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Helmet para headers</li>
+                            <li>Rate Limiting</li>
+                            <li>Validação de entrada</li>
+                            <li>Sanitização de dados</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 30 min
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="topic-title">5. Blindagem do Servidor</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Configuração de segurança</li>
+                            <li>Middlewares de proteção</li>
+                            <li>Tratamento de erros</li>
+                            <li>Logs e monitoramento</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 25 min
+                        </div>
+                    </div>
+                </div>
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="topic-title">6. Testes e Validação</div>
+                    </div>
+                    <div class="topic-content">
+                        <ul>
+                            <li>Testes no Postman</li>
+                            <li>Cenários de 403/401</li>
+                            <li>Validação de roles</li>
+                            <li>Documentação</li>
+                        </ul>
+                        <div class="time-badge">
+                            <i class="fas fa-clock"></i> 25 min
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <div class="learning-objectives">
+                    <div class="objective-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Compreender RBAC</span>
+                    </div>
+                    <div class="objective-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Implementar middlewares</span>
+                    </div>
+                    <div class="objective-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Proteger APIs</span>
+                    </div>
+                    <div class="objective-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Testar segurança</span>
+                    </div>
+                </div>
+                <div class="next-steps">
+                    <span>Próximo: Implementação prática</span>
+                    <button>
+                        <i class="fas fa-arrow-right"></i> Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

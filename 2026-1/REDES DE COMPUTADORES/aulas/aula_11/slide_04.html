@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hierarquia do DNS - Aula 11</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header section */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #888888;
+            margin: 3px 0 0 0;
+        }
+
+        .header-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #00ffff;
+        }
+
+        /* Main content area */
+        .main-content {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* Left column - DNS Hierarchy */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .hierarchy-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dns-hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid #00ffff;
+        }
+
+        .level-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .level-content {
+            flex: 1;
+        }
+
+        .level-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .level-desc {
+            font-size: 14px;
+            color: #888888;
+        }
+
+        .level-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Right column - Diagram and details */
+        .right-column {
+            width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .diagram-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .diagram-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dns-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .step-detail {
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .step-arrow {
+            color: #00ffff;
+            font-size: 16px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .highlight {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .dns-records {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .record-type {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #00ffff;
+        }
+
+        .example-domain {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .domain-text {
+            font-size: 16px;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .domain-label {
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Hierarquia do DNS</h1>
+                    <p>Estrutura distribuída de servidores de nomes</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-server"></i> 3 Níveis Hierárquicos
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <div class="hierarchy-card">
+                    <div class="card-title">
+                        <i class="fas fa-layer-group"></i>
+                        Estrutura Hierárquica do DNS
+                    </div>
+                    <div class="dns-hierarchy">
+                        <!-- Root Servers -->
+                        <div class="hierarchy-level">
+                            <div class="level-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-name">Root Servers (Servidores Raiz)</div>
+                                <div class="level-desc">13 identificadores lógicos, múltiplas instâncias anycast globais
+                                </div>
+                            </div>
+                            <div class="level-status">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                        <!-- TLD Servers -->
+                        <div class="hierarchy-level">
+                            <div class="level-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-name">TLD Servers (Top-Level Domain)</div>
+                                <div class="level-desc">Servidores para .com, .br, .org, .net, etc.</div>
+                            </div>
+                            <div class="level-status">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                        <!-- Authoritative Servers -->
+                        <div class="hierarchy-level">
+                            <div class="level-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-name">Authoritative Servers</div>
+                                <div class="level-desc">Mantêm os registros finais de uma organização</div>
+                            </div>
+                            <div class="level-status">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                        <!-- Resolver -->
+                        <div class="hierarchy-level">
+                            <div class="level-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-name">DNS Resolver</div>
+                                <div class="level-desc">Servidor que realiza consultas recursivas para o cliente</div>
+                            </div>
+                            <div class="level-status">
+                                <div class="status-dot"></div>
+                                <span>Ativo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-domain">
+                        <div class="domain-label">Exemplo de resolução:</div>
+                        <div class="domain-text">www.example.com → 192.168.1.100</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <div class="diagram-card">
+                    <div class="diagram-title">
+                        <i class="fas fa-project-diagram"></i>
+                        Processo de Resolução DNS
+                    </div>
+                    <div class="dns-flow">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-name">Consulta ao Root</div>
+                                <div class="step-detail">Cliente → Resolver → Root Server</div>
+                            </div>
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-name">Resposta TLD</div>
+                                <div class="step-detail">Root → TLD Server (.com, .br)</div>
+                            </div>
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-name">Consulta Authoritative</div>
+                                <div class="step-detail">TLD → Authoritative Server</div>
+                            </div>
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-name">Resposta Final</div>
+                                <div class="step-detail">Authoritative → Resolver → Cliente</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Porta DNS</div>
+                            <div class="info-value">53 (UDP/TCP)</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">TTL Padrão</div>
+                            <div class="info-value">3600s</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Cache</div>
+                            <div class="info-value">Ativado</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Protocolo</div>
+                            <div class="info-value">UDP/TCP</div>
+                        </div>
+                    </div>
+                    <div class="dns-records">
+                        <div class="record-type">A</div>
+                        <div class="record-type">AAAA</div>
+                        <div class="record-type">CNAME</div>
+                        <div class="record-type">MX</div>
+                        <div class="record-type">PTR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

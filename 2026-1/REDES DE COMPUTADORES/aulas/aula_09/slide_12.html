@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Three-Way Handshake: Demonstração Dinâmica</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Reutilizando Header do Slide Anterior */
+        .header {
+            height: 100px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2c5282 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e3a5f;
+            font-size: 24px;
+            margin-right: 20px;
+        }
+
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            padding: 40px 50px;
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 30px;
+            height: calc(100vh - 160px);
+        }
+
+        /* Área do Diagrama Animado */
+        .animation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            overflow: hidden;
+        }
+
+        /* Linhas de Vida */
+        .lifeline {
+            width: 4px;
+            height: 100%;
+            background: #cbd5e0;
+            border-radius: 2px;
+            position: relative;
+            border-left: 2px dashed #2c5282;
+        }
+
+        .lifeline::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -30px;
+            left: 45%;
+            width: 150px;
+            transform: translateX(-50%);
+            font-weight: 700;
+            color: #1e3a5f;
+            text-transform: uppercase;
+        }
+
+        /* Pacotes Animados */
+        .packet {
+            position: absolute;
+            width: 120px;
+            height: 40px;
+            background: #2c5282;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        /* Animação Step 1: SYN */
+        @keyframes synFlow {
+            0% {
+                left: 15%;
+                top: 10%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            30% {
+                left: 75%;
+                top: 30%;
+                opacity: 1;
+            }
+
+            35% {
+                left: 75%;
+                top: 30%;
+                opacity: 0;
+            }
+
+            100% {
+                left: 75%;
+                top: 30%;
+                opacity: 0;
+            }
+        }
+
+        /* Animação Step 2: SYN-ACK */
+        @keyframes synAckFlow {
+            0% {
+                right: 15%;
+                top: 35%;
+                opacity: 0;
+            }
+
+            35% {
+                right: 15%;
+                top: 35%;
+                opacity: 0;
+            }
+
+            45% {
+                opacity: 1;
+            }
+
+            65% {
+                right: 75%;
+                top: 55%;
+                opacity: 1;
+            }
+
+            70% {
+                right: 75%;
+                top: 55%;
+                opacity: 0;
+            }
+
+            100% {
+                right: 75%;
+                top: 55%;
+                opacity: 0;
+            }
+        }
+
+        /* Animação Step 3: ACK */
+        @keyframes ackFlow {
+            0% {
+                left: 15%;
+                top: 60%;
+                opacity: 0;
+            }
+
+            70% {
+                left: 15%;
+                top: 60%;
+                opacity: 0;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            95% {
+                left: 75%;
+                top: 80%;
+                opacity: 1;
+            }
+
+            100% {
+                left: 75%;
+                top: 80%;
+                opacity: 0;
+            }
+        }
+
+        .p-syn {
+            animation: synFlow 6s infinite;
+        }
+
+        .p-synack {
+            animation: synAckFlow 6s infinite;
+            background: #2b6cb0;
+        }
+
+        .p-ack {
+            animation: ackFlow 6s infinite;
+            background: #48bb78;
+        }
+
+        /* Painel de Texto Lateral */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #2c5282;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card h4 {
+            font-size: 14px;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .info-card p {
+            font-size: 12pt;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5282 0%, #1e3a5f 100%);
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <div class="header-icon"><i class="fas fa-play-circle"></i></div>
+            <div>
+                <div class="header-title">Three-Way Handshake: Fluxo em Tempo Real</div>
+                <div class="header-subtitle">Visualização do sincronismo entre camadas de transporte</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="animation-card">
+                <div class="lifeline" data-label="Cliente (Host A)"></div>
+                
+                <div class="packet p-syn">SYN (Seq=100)</div>
+                <div class="packet p-synack">SYN-ACK (Ack=101)</div>
+                <div class="packet p-ack">ACK (Ack=301)</div>
+
+                <div class="lifeline" data-label="Servidor (Host B)"></div>
+
+                <svg style="position: absolute; width: 100%; height: 100%; pointer-events: none; opacity: 0.2;">
+                    <line x1="20%" y1="10%" x2="80%" y2="30%" stroke="#2c5282" stroke-width="2" stroke-dasharray="5" />
+                    <line x1="80%" y1="35%" x2="20%" y2="55%" stroke="#2c5282" stroke-width="2" stroke-dasharray="5" />
+                    <line x1="20%" y1="60%" x2="80%" y2="80%" stroke="#2c5282" stroke-width="2" stroke-dasharray="5" />
+                </svg>
+            </div>
+
+            <div class="info-panel">
+                <div class="info-card">
+                    <h4 style="font-size: 13pt;"><i class="fas fa-arrow-right"></i> Solicitação (SYN)</h4>
+                    <p>O cliente envia o sinal de sincronização para abrir o canal.</p>
+                </div>
+                <div class="info-card" style="border-left-color: #2b6cb0;">
+                    <h4 style="font-size: 13pt;"><i class="fas fa-reply"></i> Resposta (SYN-ACK)</h4>
+                    <p>O servidor reconhece o pedido e envia seu próprio sinal de sincronização.</p>
+                </div>
+                <div class="info-card" style="border-left-color: #48bb78;">
+                    <h4 style="font-size: 13pt;"><i class="fas fa-check-double"></i> Confirmação (ACK)</h4>
+                    <p>O cliente finaliza o aperto de mão. A conexão está pronta para troca de dados.</p>
+                </div>
+                <div style="background: #ebf8ff; padding: 15px; border-radius: 8px; border: 1px solid #bee3f8;">
+                    <p style="font-size: 10.5pt; color: #2c5282; font-weight: 600;">
+                        <i class="fas fa-info-circle"></i> Repare como o número de ACK é sempre o Seq recebido + 1.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div style="display: flex; gap: 20px;">
+                <div style="font-size: 13px; color: #4a5568;"><i class="fas fa-user-graduate"
+                        style="color: #2c5282;"></i> ADS - FATESE</div>
+                <div style="font-size: 13px; color: #4a5568;"><i class="fas fa-clock" style="color: #2c5282;"></i>
+                    Progresso: 50%</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 12px; color: #4a5568;">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

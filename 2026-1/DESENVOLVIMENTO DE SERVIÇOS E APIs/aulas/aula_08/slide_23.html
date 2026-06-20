@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Scripts SQL Iniciais (PostgreSQL)</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 90%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 80px;
+            width: 90%;
+            height: auto;
+            z-index: 10;
+            display: flex;
+            gap: 24px;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .right-section {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: auto;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .code-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11pt;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.4;
+            max-height: auto;
+            overflow-y: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .line-number {
+            color: #64748b;
+            min-width: 24px;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .code-content {
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .sql-keyword {
+            color: #f472b6;
+            font-weight: 600;
+        }
+
+        .sql-string {
+            color: #86efac;
+        }
+
+        .sql-number {
+            color: #60a5fa;
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon i {
+            font-size: 12px;
+            color: #3b82f6;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+            width: 90%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .highlight-box {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 4px;
+        }
+
+        .highlight-text {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="header" data-object="true" data-object-type="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Scripts SQL Iniciais (PostgreSQL)</div>
+                    <div class="header-subtitle">Comandos para criar banco, tabela e inserir dados de exemplo</div>
+                </div>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                <div class="header-icon" style="background: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-check-circle" style="color: #22c55e;"></i>
+                </div>
+                <div class="header-text" style="text-align: right;">
+                    <div class="header-title" style="font-size: 16px;">4 passos</div>
+                    <div class="header-subtitle">Configuração completa</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content" data-object="true" data-object-type="content">
+            <div class="left-section">
+                <div class="code-card" style="padding: 16px;">
+                    <div class="code-header">
+                        <div>
+                            <div class="code-title">Script SQL Completo</div>
+                            <div class="code-subtitle">PostgreSQL - Criação de banco, tabela e seed</div>
+                        </div>
+                        <div class="header-icon"
+                            style="background: rgba(59, 130, 246, 0.1); width: 32px; height: 32px;">
+                            <i class="fab fa-postgresql" style="color: #3b82f6; font-size: 16px;"></i>
+                        </div>
+                    </div>
+                    <div class="code-block" style="max-height: auto; padding: 10px;">
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <span class="code-content"><span class="code-comment">-- 1) Criar o banco (rode conectado ao servidor Postgres)</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <span class="code-content"><span class="sql-keyword">CREATE DATABASE</span> <span
+                                    class="sql-string">livraria_db</span>;</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <span class="code-content"><span class="code-comment">-- 2) Conectar ao banco (no psql: \c livraria_db)</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            <span class="code-content"><span class="sql-keyword">USE</span> <span
+                                    class="sql-string">livraria_db</span>;</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            <span class="code-content"><span class="code-comment">-- 3) Criar a tabela</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            <span class="code-content"><span class="sql-keyword">CREATE TABLE IF NOT EXISTS</span> <span
+                                    class="sql-string">livros</span> (</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            <span class="code-content"> <span class="sql-string">id</span> <span
+                                    class="sql-keyword">SERIAL PRIMARY KEY</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            <span class="code-content"> <span class="sql-string">titulo</span> <span
+                                    class="sql-keyword">VARCHAR</span>(<span class="sql-number">255</span>) <span
+                                    class="sql-keyword">NOT NULL</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            <span class="code-content"> <span class="sql-string">autor</span> <span
+                                    class="sql-keyword">VARCHAR</span>(<span class="sql-number">255</span>) <span
+                                    class="sql-keyword">NOT NULL</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            <span class="code-content"> <span class="sql-string">ano</span> <span
+                                    class="sql-keyword">INTEGER</span> <span class="sql-keyword">NOT NULL</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            <span class="code-content"> <span class="sql-string">"createdAt"</span> <span
+                                    class="sql-keyword">TIMESTAMP WITH TIME ZONE</span> <span
+                                    class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span>,</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            <span class="code-content"> <span class="sql-string">"updatedAt"</span> <span
+                                    class="sql-keyword">TIMESTAMP WITH TIME ZONE</span> <span
+                                    class="sql-keyword">DEFAULT CURRENT_TIMESTAMP</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            <span class="code-content">);</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">16</span>
+                            <span class="code-content"></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">17</span>
+                            <span class="code-content"><span class="code-comment">-- 4) Inserir dados de exemplo (Seed)</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">18</span>
+                            <span class="code-content"><span class="sql-keyword">INSERT INTO</span> <span
+                                    class="sql-string">livros</span> (<span class="sql-string">titulo</span>, <span
+                                    class="sql-string">autor</span>, <span class="sql-string">ano</span>, <span
+                                    class="sql-string">"createdAt"</span>, <span class="sql-string">"updatedAt"</span>) <span class="sql-keyword">VALUES</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">19</span>
+                            <span class="code-content">(<span class="sql-string">'O Senhor dos Anéis'</span>, <span
+                                    class="sql-string">'J.R.R. Tolkien'</span>, <span class="sql-number">1954</span>, <span class="sql-keyword">NOW</span>(), <span class="sql-keyword">NOW</span>()),</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">20</span>
+                            <span class="code-content">(<span class="sql-string">'1984'</span>, <span
+                                    class="sql-string">'George Orwell'</span>, <span class="sql-number">1949</span>, <span class="sql-keyword">NOW</span>(), <span class="sql-keyword">NOW</span>()),</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">21</span>
+                            <span class="code-content">(<span class="sql-string">'Dom Quixote'</span>, <span
+                                    class="sql-string">'Miguel de Cervantes'</span>, <span
+                                    class="sql-number">1605</span>, <span class="sql-keyword">NOW</span>(), <span
+                                    class="sql-keyword">NOW</span>());</span>
+                        </div>
+                    </div>
+                    <div class="highlight-box" style="padding: 10px;">
+                        <div class="highlight-text">
+                            <i class="fas fa-check-circle" style="color: #22c55e; margin-right: 8px;"></i>
+                            <strong>Dica:</strong> Use <span class="sql-keyword">NOW()</span> para timestamps
+                            automáticos. As aspas duplas em <span class="sql-string">"createdAt"</span> são necessárias
+                            no PostgreSQL para camelCase.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="code-card">
+                    <div class="code-header">
+                        <div>
+                            <div class="code-title">Passos para Executar</div>
+                            <div class="code-subtitle">Ordem recomendada</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            <strong>Criar banco:</strong> Execute <span class="sql-keyword">CREATE DATABASE</span> no
+                            psql ou pgAdmin
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            <strong>Conectar:</strong> Use <span class="sql-keyword">\c livraria_db</span> ou selecione
+                            o banco
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">
+                            <strong>Criar tabela:</strong> Execute o comando <span class="sql-keyword">CREATE
+                                TABLE</span>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-text">
+                            <strong>Inserir dados:</strong> Execute os comandos <span class="sql-keyword">INSERT
+                                INTO</span>
+                        </div>
+                    </div>
+                    <div class="info-box" style="margin-top: 8px;">
+                        <div class="info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Nota:</strong> O Sequelize também pode criar a tabela automaticamente com <span
+                                class="sql-keyword">sequelize.sync()</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" data-object="true" data-object-type="footer">
+            <div class="footer-left">
+                <i class="fas fa-database" style="color: #3b82f6;"></i>
+                <span class="footer-text">Aula 08: Persistência SQL com Sequelize</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">Progresso da aula</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arquitetura da Solução Prática - Wokwi → TagoIO</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url("https://www.genspark.ai/image_placeholder.png");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 24px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #a8a5e6;
+        }
+
+        .architecture-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .flow-stage {
+            flex: 1;
+            text-align: center;
+            padding: 20px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .flow-stage:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(120, 119, 198, 0.3);
+        }
+
+        .stage-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: #a8a5e6;
+            font-size: 20px;
+        }
+
+        .stage-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .stage-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        .arrow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(120, 119, 198, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a8a5e6;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .highlight {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            font-size: 13px;
+            color: #4ade80;
+            margin-top: auto;
+            width: max-content;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 24px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-label {
+            color: #a8a5e6;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a8a5e6;
+            font-size: 14px;
+        }
+
+        .flow-line {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #a8a5e6, #7877c6);
+            border-radius: 1px;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tech-tag {
+            background: rgba(120, 119, 198, 0.1);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: #a8a5e6;
+        }
+
+        .wokwi-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tago-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="bg-pattern"></div>
+        <div class="grid-lines"></div>
+        <div class="main-content" style="padding-bottom: 104px;">
+            <div class="header-section">
+                <div class="header-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="header-text">
+                    <div class="header-title">Arquitetura da Solução Prática</div>
+                    <div class="header-subtitle">Wokwi → ESP32 → TagoIO: Fluxo de telemetria completo</div>
+                </div>
+            </div>
+            <div class="architecture-container">
+                <div class="flow-diagram">
+                    <div class="flow-stage">
+                        <div class="stage-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="stage-title">Wokwi Simulator</div>
+                        <div class="stage-desc">ESP32 Virtual</div>
+                        <div class="tech-stack">
+                            <span class="wokwi-badge">Wokwi</span>
+                            <span class="tech-tag">Simulado</span>
+                        </div>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="flow-arrow">
+                            <div class="flow-line"></div>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="flow-stage">
+                        <div class="stage-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="stage-title">ESP32</div>
+                        <div class="stage-desc">Coleta de Dados</div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">WiFi</span>
+                            <span class="tech-tag">HTTP</span>
+                        </div>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="flow-arrow">
+                            <div class="flow-line"></div>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="flow-stage">
+                        <div class="stage-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="stage-title">TagoIO Cloud</div>
+                        <div class="stage-desc">Plataforma IoT</div>
+                        <div class="tech-stack">
+                            <span class="tago-badge">TagoIO</span>
+                            <span class="tech-tag">PaaS</span>
+                        </div>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="flow-arrow">
+                            <div class="flow-line"></div>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="flow-stage">
+                        <div class="stage-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="stage-title">Dashboard</div>
+                        <div class="stage-desc">Visualização</div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Live</span>
+                            <span class="tech-tag">Analytics</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="card-title">Simulação Wokwi</div>
+                        </div>
+                        <div class="card-content">
+                            <div>
+                                <p style="margin-bottom: 8px;">• <span class="highlight">ESP32 Virtual</span>: Simulação
+                                    de hardware no Wokwi</p>
+                                <p style="margin-bottom: 8px;">• <span class="highlight">Sensores Simulados</span>:
+                                    Temperatura e umidade</p>
+                                <p>• <span class="highlight">WiFi Simulado</span>: Conexão à rede Wokwi-GUEST</p>
+                            </div>
+                            <div class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Simulando</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="card-title">Integração TagoIO</div>
+                        </div>
+                        <div class="card-content">
+                            <div>
+                                <p style="margin-bottom: 8px;">• <span class="highlight">Device Token</span>:
+                                    Autenticação segura</p>
+                                <p style="margin-bottom: 8px;">• <span class="highlight">HTTP POST</span>: Envio de
+                                    telemetria</p>
+                                <p>• <span class="highlight">Live Inspector</span>: Monitoramento em tempo real</p>
+                            </div>
+                            <div class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Conectado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-info">
+            <div class="info-item">
+                <i class="fas fa-wifi" style="color: #a8a5e6; margin-right: 8px;"></i>
+                <span><span class="info-label">Protocolo:</span> HTTP POST</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock" style="color: #a8a5e6; margin-right: 8px;"></i>
+                <span><span class="info-label">Intervalo:</span> 10s</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-check-circle" style="color: #a8a5e6; margin-right: 8px;"></i>
+                <span><span class="info-label">Status:</span> Ativo</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

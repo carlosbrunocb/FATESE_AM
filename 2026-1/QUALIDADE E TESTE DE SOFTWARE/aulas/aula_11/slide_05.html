@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Retest vs Regressão</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;600&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #004A8D 0%, #F7931E 100%);
+            z-index: 100;
+        }
+
+        .main-content {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            right: 0;
+            bottom: 60px;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .aula-number {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #F7931E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .aula-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .aula-subtitle {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .content-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .comparison-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .retest-icon {
+            background: #dcfce7;
+        }
+
+        .regressao-icon {
+            background: #fef3c7;
+        }
+
+        .comparison-icon i {
+            font-size: 18px;
+        }
+
+        .retest-icon i {
+            color: #16a34a;
+        }
+
+        .regressao-icon i {
+            color: #f59e0b;
+        }
+
+        .comparison-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .comparison-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .comparison-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comparison-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .item-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+            min-width: 75px;
+        }
+
+        .item-text {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .practical-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .practical-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .practical-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .practical-icon i {
+            color: #004A8D;
+            font-size: 14px;
+        }
+
+        .practical-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .practical-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .practical-left {
+            flex: 1;
+        }
+
+        .practical-right {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .code-example {
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #374151;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .rule-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+
+        .rule-text {
+            font-size: 12pt;
+            color: #166534;
+            line-height: 1.3;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #dcfce7;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #166534;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <div class="header-bar"></div>
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div class="aula-number">AULA 11</div>
+                    <div class="aula-title">Retest vs Regressão</div>
+                    <div class="aula-subtitle">Diferenças, quando usar e como aplicar</div>
+                </div>
+                <div class="header-right">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        Comparativo
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <div class="comparison-header">
+                            <div class="comparison-icon retest-icon">
+                                <i class="fas fa-redo"></i>
+                            </div>
+                            <div>
+                                <div class="comparison-title">Retest (Re-teste)</div>
+                                <div class="comparison-subtitle">Verificar se o defeito foi corrigido</div>
+                            </div>
+                        </div>
+                        <div class="comparison-content">
+                            <div class="comparison-item">
+                                <div class="item-label">Objetivo:</div>
+                                <div class="item-text">Verificar se o defeito específico foi corrigido</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Escopo:</div>
+                                <div class="item-text">O(s) teste(s) que falharam anteriormente</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Gatilho:</div>
+                                <div class="item-text">Após o bug fix</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Dados:</div>
+                                <div class="item-text">Mesmos cenários que reproduziam o erro</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Sucesso:</div>
+                                <div class="item-text">O teste problemático agora passa</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comparison-card">
+                        <div class="comparison-header">
+                            <div class="comparison-icon regressao-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div>
+                                <div class="comparison-title">Regressão</div>
+                                <div class="comparison-subtitle">Garantir que correção não quebrou o restante</div>
+                            </div>
+                        </div>
+                        <div class="comparison-content">
+                            <div class="comparison-item">
+                                <div class="item-label">Objetivo:</div>
+                                <div class="item-text">Garantir que a correção não quebrou o restante</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Escopo:</div>
+                                <div class="item-text">Testes relacionados ao impacto (módulo alterado e dependentes)
+                                </div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Gatilhos:</div>
+                                <div class="item-text">Bug fix, nova feature, refatoração, mudança de ambiente</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Seleção:</div>
+                                <div class="item-text">Por impacto, criticidade e histórico de falhas</div>
+                            </div>
+                            <div class="comparison-item">
+                                <div class="item-label">Sucesso:</div>
+                                <div class="item-text">Testes relevantes permanecem verdes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="practical-section">
+                    <div class="practical-header">
+                        <div class="practical-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="practical-title">Regra Prática e Exemplo</div>
+                    </div>
+                    <div class="practical-content">
+                        <div class="practical-left">
+                            <div class="rule-box">
+                                <div class="rule-text">
+                                    <strong>Regra:</strong> Sempre faça Retest do defeito corrigido, depois execute
+                                    Regressão no impacto mínimo necessário (risco &gt; custo)
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 13pt; color: #64748b;">
+                                <strong>Exemplo:</strong> Calculadora com função de divisão corrigida para evitar
+                                divisão por zero
+                            </div>
+                        </div>
+                        <div class="practical-right">
+                            <div style="font-size: 13pt; color: #374151; margin-bottom: 6px;">
+                                <strong>Fluxo:</strong>
+                            </div>
+                            <div style="font-size: 12pt; color: #64748b; line-height: 1.4;">
+                                1. Retest: test_divisao_por_zero após corrigir divisão<br />
+                                2. Regressão: rodar testes de somar/multiplicar<br />
+                                3. Verificar: nenhuma regressão introduzida
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bar">
+            <div class="footer-left">
+                <span class="footer-text">Aula 11 - Testes de Regressão</span>
+            </div>
+            <div class="footer-right">
+                <span class="date-info">28/04/2026</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

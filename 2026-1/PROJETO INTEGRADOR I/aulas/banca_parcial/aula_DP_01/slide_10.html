@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Diferencial e Inovação - AdoptMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT GRID PRINCIPAL --- */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: grid;
+            grid-template-rows: 90px 1fr;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(90deg, #0066CC 0%, #004080 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon i {
+            font-size: 24pt;
+            color: white;
+        }
+
+        .header-text {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .header-text .title {
+            font-size: 24pt;
+            font-weight: 700;
+        }
+
+        .header-text .subtitle {
+            font-size: 13pt;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-right .title {
+            font-size: 14pt;
+            font-weight: 600;
+        }
+
+        .header-right .subtitle {
+            font-size: 11pt;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL (CSS GRID) --- */
+        .main-content {
+            background: white;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Divide a tela em duas colunas iguais */
+            gap: 30px; /* Cria um espaçamento seguro entre os cards, evitando sobreposição */
+            padding: 25px 40px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- COLUNAS --- */
+        .left-column,
+        .right-column {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            width: 100%; /* Permite que o Grid controle a largura */
+            height: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background: #0066CC;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-box i {
+            font-size: 18pt;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .section-subtitle {
+            font-size: 12pt;
+            color: #64748b;
+        }
+
+        .diff-badge {
+            background: #fef3c7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #f59e0b;
+        }
+
+        .diff-badge span {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        /* Tabela Comparativa */
+        .comparison-table {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1; /* Faz a tabela ocupar o espaço disponível */
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 2px;
+        }
+
+        .table-header div {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            align-items: center;
+        }
+
+        .table-row div {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .table-row div.highlight-green {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .table-row div.highlight-blue {
+            color: #0066CC;
+            font-weight: 600;
+        }
+
+        /* Diferenciais Chave */
+        .key-diff-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .key-diff-card {
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .key-diff-card.yellow {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .key-diff-card.blue {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-left: 4px solid #0066CC;
+        }
+
+        .key-diff-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .key-diff-header i.yellow {
+            color: #f59e0b;
+            font-size: 14pt;
+        }
+
+        .key-diff-header i.blue {
+            color: #0066CC;
+            font-size: 14pt;
+        }
+
+        .key-diff-title {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .key-diff-text {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        /* --- COLUNA DIREITA (INOVAÇÕES E VALIDAÇÕES) --- */
+        .right-icon-box {
+            width: 40px;
+            height: 40px;
+            background: #FF6600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right-icon-box i {
+            font-size: 18pt;
+            color: white;
+        }
+
+        /* Grade de Inovações */
+        .innov-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex: 1; /* Expande para preencher o espaço */
+        }
+
+        .innov-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .innov-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .innov-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .innov-icon.blue { background: #0066CC; }
+        .innov-icon.green { background: #10B981; }
+        .innov-icon.orange { background: #F59E0B; }
+        .innov-icon.purple { background: #8B5CF6; }
+
+        .innov-icon i {
+            font-size: 14pt;
+            color: white;
+        }
+
+        .innov-title {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .innov-subtitle {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .innov-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .innov-status-label {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .innov-status-val.green {
+            font-size: 11pt;
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .innov-status-val.orange {
+            font-size: 11pt;
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+        .innov-status-val.purple {
+            font-size: 11pt;
+            color: #8B5CF6;
+            font-weight: 600;
+        }
+
+        /* Validações Planejadas */
+        .validation-box {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #FF6600;
+        }
+
+        .validation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .validation-header i {
+            color: #FF6600;
+            font-size: 14pt;
+        }
+
+        .validation-header p {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .validation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .validation-item {
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .validation-item p {
+            font-size: 11pt;
+            color: #64748b;
+        }
+
+        .validation-item i {
+            color: #0066CC;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="header-text">
+                    <p class="title">DIFERENCIAL E INOVAÇÃO</p>
+                    <p class="subtitle">O que torna o AdoptMatch único</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <p class="title">AdoptMatch</p>
+                <p class="subtitle">Adoção por Afinidade</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <section class="left-column">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <div class="icon-box">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div>
+                            <p class="section-title">Comparativo</p>
+                            <p class="section-subtitle">AdoptMatch vs Classificados tradicionais</p>
+                        </div>
+                    </div>
+                    <div class="diff-badge">
+                        <span>Diferença: 40% menos devoluções</span>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <div class="table-header">
+                        <div>Critério</div>
+                        <div>Classificados</div>
+                        <div>AdoptMatch</div>
+                    </div>
+                    <div class="table-row">
+                        <div>Foco</div>
+                        <div>Fotos/Lista</div>
+                        <div class="highlight-blue">Afinidade</div>
+                    </div>
+                    <div class="table-row">
+                        <div>Triagem</div>
+                        <div>Sem análise</div>
+                        <div class="highlight-green">Comportamental</div>
+                    </div>
+                    <div class="table-row">
+                        <div>Devolução</div>
+                        <div>Alta (80%)</div>
+                        <div class="highlight-green">Baixa (40%)</div>
+                    </div>
+                    <div class="table-row">
+                        <div>Suporte</div>
+                        <div>Limitado</div>
+                        <div class="highlight-blue">Chat + Acompanhamento</div>
+                    </div>
+                </div>
+
+                <div class="key-diff-grid">
+                    <div class="key-diff-card yellow">
+                        <div class="key-diff-header">
+                            <i class="fas fa-brain yellow"></i>
+                            <p class="key-diff-title">Psicologia</p>
+                        </div>
+                        <p class="key-diff-text">Análise comportamental</p>
+                    </div>
+                    <div class="key-diff-card blue">
+                        <div class="key-diff-header">
+                            <i class="fas fa-gamepad blue"></i>
+                            <p class="key-diff-title">Gamificação</p>
+                        </div>
+                        <p class="key-diff-text">Quiz interativo</p>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="right-column">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <div class="right-icon-box">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div>
+                            <p class="section-title">Inovações</p>
+                            <p class="section-subtitle">Diferenciais técnicos e validações</p>
+                        </div>
+                    </div>
+                    <div class="diff-badge">
+                        <span>MVP: Quiz + Match</span>
+                    </div>
+                </div>
+
+                <div class="innov-grid">
+                    <div class="innov-card">
+                        <div>
+                            <div class="innov-header">
+                                <div class="innov-icon blue">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div>
+                                    <p class="innov-title">PWA Leve</p>
+                                    <p class="innov-subtitle">Acesso rápido em abrigos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="innov-status">
+                            <span class="innov-status-label">Status:</span>
+                            <span class="innov-status-val green">Implementado</span>
+                        </div>
+                    </div>
+
+                    <div class="innov-card">
+                        <div>
+                            <div class="innov-header">
+                                <div class="innov-icon green">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div>
+                                    <p class="innov-title">Chat Interno</p>
+                                    <p class="innov-subtitle">Validação de visita</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="innov-status">
+                            <span class="innov-status-label">Status:</span>
+                            <span class="innov-status-val green">Em teste</span>
+                        </div>
+                    </div>
+
+                    <div class="innov-card">
+                        <div>
+                            <div class="innov-header">
+                                <div class="innov-icon orange">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div>
+                                    <p class="innov-title">Gamificação</p>
+                                    <p class="innov-subtitle">Badges e recompensas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="innov-status">
+                            <span class="innov-status-label">Status:</span>
+                            <span class="innov-status-val orange">Planejado</span>
+                        </div>
+                    </div>
+
+                    <div class="innov-card">
+                        <div>
+                            <div class="innov-header">
+                                <div class="innov-icon purple">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <p class="innov-title">IA Match</p>
+                                    <p class="innov-subtitle">Algoritmo avançado</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="innov-status">
+                            <span class="innov-status-label">Status:</span>
+                            <span class="innov-status-val purple">Desenvolvimento</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="validation-box">
+                    <div class="validation-header">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Validações Planejadas</p>
+                    </div>
+                    <div class="validation-grid">
+                        <div class="validation-item">
+                            <p><i class="fas fa-users"></i>Teste com 10 usuários</p>
+                        </div>
+                        <div class="validation-item">
+                            <p><i class="fas fa-hospital"></i>Parceria com ONGs</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+</body>
+
+</html>
